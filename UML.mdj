@@ -9063,7 +9063,7 @@
 											"top": 391,
 											"width": 142.62890625,
 											"height": 13,
-											"text": "Cargo Hold"
+											"text": "CargoHold"
 										},
 										{
 											"_type": "LabelView",
@@ -9289,7 +9289,7 @@
 											"top": 391,
 											"width": 142.62890625,
 											"height": 13,
-											"text": "Special Cargo Hold"
+											"text": "SpecialCargoHold"
 										},
 										{
 											"_type": "LabelView",
@@ -9777,7 +9777,7 @@
 											"top": 535,
 											"width": 143,
 											"height": 13,
-											"text": "Starting Cabin"
+											"text": "StartingCabin"
 										},
 										{
 											"_type": "LabelView",
@@ -17495,14 +17495,6 @@
 				},
 				{
 					"_type": "UMLClass",
-					"_id": "AAAAAAGVPHCTxlYYHPQ=",
-					"_parent": {
-						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
-					},
-					"name": "Class2"
-				},
-				{
-					"_type": "UMLClass",
 					"_id": "AAAAAAGVPHI3ylZp7C8=",
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
@@ -17604,14 +17596,6 @@
 							"type": ""
 						}
 					]
-				},
-				{
-					"_type": "UMLEnumeration",
-					"_id": "AAAAAAGVPHK1TFaUeoc=",
-					"_parent": {
-						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
-					},
-					"name": "Enumeration1"
 				},
 				{
 					"_type": "UMLClass",
@@ -19034,7 +19018,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGVR4oaSYejCNA="
 									},
-									"name": "Boolean"
+									"name": "Boolean",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -19042,7 +19027,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGVR4oaSYejCNA="
 									},
-									"name": "Integer"
+									"name": "Integer",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -19733,7 +19719,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Cargo Hold",
+					"name": "CargoHold",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
@@ -19789,7 +19775,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Special Cargo Hold",
+					"name": "SpecialCargoHold",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
@@ -19928,7 +19914,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "Starting Cabin",
+					"name": "StartingCabin",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
