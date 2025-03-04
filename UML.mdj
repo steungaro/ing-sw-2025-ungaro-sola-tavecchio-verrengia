@@ -16645,20 +16645,6 @@
 							}
 						},
 						{
-							"_type": "UMLTextView",
-							"_id": "AAAAAAGVS+qzI0WihMg=",
-							"_parent": {
-								"$ref": "AAAAAAFF+qBtyKM79qY="
-							},
-							"font": "Arial;13;0",
-							"parentStyle": false,
-							"left": 1213,
-							"top": 1209,
-							"width": 100,
-							"height": 25,
-							"text": "Text"
-						},
-						{
 							"_type": "UMLAssociationView",
 							"_id": "AAAAAAGVS+reZF8f5eo=",
 							"_parent": {
@@ -17221,6 +17207,34 @@
 							"headQualifiersCompartment": {
 								"$ref": "AAAAAAGVS+r+wnY/Ewg="
 							}
+						},
+						{
+							"_type": "UMLNoteView",
+							"_id": "AAAAAAGVYGFV/QZ83f0=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"parentStyle": false,
+							"left": 1472,
+							"top": 304,
+							"width": 102.38623046875,
+							"height": 90,
+							"text": "Connector possono essere array di enumerazione 0, 1 ,2, U"
+						},
+						{
+							"_type": "UMLNoteView",
+							"_id": "AAAAAAGVYHRfgZlg6SM=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"font": "Arial;13;0",
+							"parentStyle": false,
+							"left": 1208,
+							"top": 208,
+							"width": 176,
+							"height": 38,
+							"text": "Fire Boolean -> segna riga o colonna"
 						}
 					]
 				},
