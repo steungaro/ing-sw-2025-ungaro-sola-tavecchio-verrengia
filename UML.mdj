@@ -5898,7 +5898,7 @@
 											"top": 1551,
 											"width": 87,
 											"height": 13,
-											"text": "heavyMeteor"
+											"text": "HeavyMeteor"
 										},
 										{
 											"_type": "LabelView",
@@ -18868,7 +18868,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "heavyMeteor",
+					"name": "HeavyMeteor",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
