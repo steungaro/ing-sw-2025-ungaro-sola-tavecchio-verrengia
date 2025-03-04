@@ -5614,7 +5614,7 @@
 											"top": 1271,
 											"width": 95,
 											"height": 13,
-											"text": "lightMeteor"
+											"text": "LightMeteor"
 										},
 										{
 											"_type": "LabelView",
@@ -18845,7 +18845,7 @@
 					"_parent": {
 						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
 					},
-					"name": "lightMeteor",
+					"name": "LightMeteor",
 					"ownedElements": [
 						{
 							"_type": "UMLGeneralization",
