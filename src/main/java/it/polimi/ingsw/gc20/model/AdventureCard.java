@@ -15,7 +15,7 @@ public abstract class AdventureCard {
     }
 
     /**
-     * 
+     * level can be 0 for learners, 1 for level 1 cards and 2 for level 2 cards
      */
     private Integer level;
 
@@ -28,7 +28,6 @@ public abstract class AdventureCard {
      *
      */
     public void ApplyCard(Board b) {
-        // TODO implement here
     }
 
 }

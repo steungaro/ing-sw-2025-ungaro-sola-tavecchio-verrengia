@@ -29,4 +29,11 @@ public class AbandonedShip extends AdventureCard {
      */
     private Integer lostDays;
 
+    /**
+     *
+     */
+    @Override
+    public void ApplyCard(Board b) {
+
+    }
 }

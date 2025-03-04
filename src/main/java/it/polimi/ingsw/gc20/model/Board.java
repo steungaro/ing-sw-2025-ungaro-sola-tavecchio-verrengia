@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * @author GC20
  */
-public class Board {
+public abstract class Board {
 
     /**
      * Default constructor
