@@ -3,88 +3,67 @@ package it.polimi.ingsw.gc20.model.Components;
 import java.io.*;
 import java.util.*;
 
-/**
- * @author GC20
- */
 public class Cabin extends Component {
 
-    /**
-     * Default constructor
-     */
+    private Integer astronauts;
+    private List aliens;
+    private Boolean canHostAliens;
+    private AlienColor[] LifeSupport = new AlienColor[2];
+
     public Cabin() {
     }
 
-    /**
-     * 
-     */
-    private Integer astronauts;
-
-    /**
-     * 
-     */
-    private Integer aliens;
-
-    /**
-     * 
-     */
-    private Boolean canHostAliens;
-
-    /**
-     * 
-     */
-    private AlienColor color;
-
-    /**
-     * @param Integer n 
-     * @return
-     */
-    public void setAstronauts(void Integer n) {
-        // TODO implement here
-        return null;
+    public Integer getAstronauts() {
+        return astronauts;
     }
 
-    /**
-     * @param Integer n 
-     * @return
-     */
-    public void setAliens(void Integer n) {
-        // TODO implement here
-        return null;
+    public void setAstronauts(Integer astronauts) {
+        this.astronauts = astronauts;
     }
 
-    /**
-     * @param Integer n 
-     * @return
-     */
-    public void unloadAstronauts(void Integer n) {
-        // TODO implement here
-        return null;
+    public Integer getAliens() {
+        return aliens;
     }
 
-    /**
-     * @param Integer n 
-     * @return
-     */
-    public void unloadAliens(void Integer n) {
-        // TODO implement here
-        return null;
+    public void setAliens(Integer aliens) {
+        this.aliens = aliens;
     }
 
-    /**
-     * @param AlienColor c 
-     * @return
-     */
-    public void addSupport(void AlienColor c) {
-        // TODO implement here
-        return null;
+    public Boolean getCanHostAliens() {
+        return canHostAliens;
     }
 
-    /**
-     * @return
-     */
+    public void setCanHostAliens(Boolean canHostAliens) {
+        this.canHostAliens = canHostAliens;
+    }
+
+    public AlienColor getColor() {
+        return color;
+    }
+
+    public void setColor(AlienColor color) {
+        this.color = color;
+    }
+
+    public void unloadAstronauts(Integer n) {
+        if(getAstronauts()-n > 0)
+            setAstronauts(getAstronauts() - n);
+        else
+            setAstronauts(0);
+    }
+
+    public void unloadAliens(Integer n) {
+        if(getAstronauts()-n > 0)
+            setAliens(getAliens() - n);
+        else
+            setAliens(0);
+    }
+
+    public void addSupport(AlienColor c) {
+        this.setColor(c);
+    }
+
     public void removeSupport() {
         // TODO implement here
-        return null;
     }
-
 }
