@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.Gamesets;
 
+import it.polimi.ingsw.gc20.model.Playerclasses.Player;
+
 import java.io.*;
 import java.util.*;
 
@@ -8,131 +10,72 @@ import java.util.*;
  */
 public class Game {
 
+    private List<Player> players;
+    private Board board;
+    private Integer gameID;
+    private Pile pile;
+    private Map<Cargo, Integer> cargoAvailable;
+
     /**
      * Default constructor
      */
     public Game() {
+        this.players = new ArrayList<Player>();
+        this.board = null;
+        this.gameID = null;
+        this.pile = null;
+        this.cargoAvailable = new HashMap<Cargo, Integer>();
+    }
+    //funzione per aggiungere un giocatore alla partita
+    public void addPlayer(Player p){
+        players.add(p);
     }
 
-    /**
-     * 
-     */
-    private List<Player> players;
-
-    /**
-     * 
-     */
-    private Board board;
-
-    /**
-     * 
-     */
-    private Integer gameID;
-
-    /**
-     * 
-     */
-    private Pile pile;
-
-    /**
-     * 
-     */
-    private Map<Cargo; Integer> cargoAvailable;
-
-    /**
-     * @return
-     */
-    public void createGame() {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param Player p 
-     * @return
-     */
-    public void addPlayer(void Player p) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
-     */
+    //funzione per avere la lista di player
     public List<Player> getPlayers() {
-        // TODO implement here
-        return null;
+        return this.players;
     }
 
-    /**
-     * @return
-     */
+    //meotodo che aggiunge una boarda alla partita
+    public void addBoard(Board board){
+        this.board = board;
+    }
+
+    //metodo che restituisce la board
+    public Board getBoard() {
+        return this.board;
+    }
+
+    //metodo che restituisce l'id della partita
     public Integer getID() {
+        return this.gameID;
+    }
+
+    //metodo che setta l'id della partita
+    public void setID(Integer id) {
+        this.gameID = id;
+    }
+
+    //metodo che restituisce la quantità di cargo disponibili di un determinato colore
+    public Integer getCargoAvailable(Cargo c) {
         // TODO implement here
         return null;
     }
 
-    /**
-     * @param Integer id 
-     * @return
-     */
-    public void setID(void Integer id) {
+    //funzione che setta la quantità di cargo disponibili di un determinato colore
+    public void setCargoAvailable(Cargo c, Integer i) {
         // TODO implement here
         return null;
     }
 
-    /**
-     * @param Component c 
-     * @return
-     */
-    public void getComponent(void Component c) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param Component c 
-     * @param Boolean vis 
-     * @return
-     */
-    public void addComponent(void Component c, void Boolean vis) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param Cargo c 
-     * @return
-     */
-    public Integer getCargoAvailable(void Cargo c) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param Cargo c 
-     * @param Integer i 
-     * @return
-     */
-    public void setCargoAvailable(void Cargo c, void Integer i) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
-     */
+    //metodo che restituisce la pila di componenti
     public Pile getPile() {
-        // TODO implement here
-        return null;
+        return this.pile;
     }
 
-    /**
-     * @return
-     */
-    public void createPile() {
-        // TODO implement here
-        return null;
+    //metodo che setta la pila di componenti
+    public void setPile(Pile pile) {
+        this.pile = pile;
     }
 
 }
