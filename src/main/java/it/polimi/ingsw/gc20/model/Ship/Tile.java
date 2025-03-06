@@ -30,42 +30,39 @@ public class Tile {
      * @return
      */
     public void killComponent() {
-        // TODO implement here
-        return null;
     }
 
     /**
      * @return
      */
     public Component getComponent() {
-        // TODO implement here
-        return null;
+        return component;
     }
 
     /**
      * @param Component c 
      * @return
      */
-    public void addComponent(void Component c) {
-        // TODO implement here
-        return null;
+    public void addComponent(Component c) {
+        if(availability) {
+            this.component = c;
+        }
     }
 
     /**
      * @return
      */
     public Boolean getAvailability() {
-        // TODO implement here
-        return null;
+
+        return availability;
     }
 
     /**
      * @param Boolean a 
      * @return
      */
-    public void setAvailability(void Boolean a) {
-        // TODO implement here
-        return null;
+    public void setAvailability( Boolean a) {
+        availability = a;
     }
 
 }
