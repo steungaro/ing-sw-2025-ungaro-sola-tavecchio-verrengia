@@ -13,6 +13,9 @@ public abstract class Component {
 
     private Integer orientation;
 
+    /*
+    * This function rotates the component clockwise by 90 degrees
+    * */
     public void rotateClockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.LEFT));
@@ -21,6 +24,9 @@ public abstract class Component {
         connectors.put(Direction.RIGHT, conn);
     }
 
+    /*
+    * This function rotates the component counterclockwise by 90 degrees
+    * */
     public void rotateCounterclockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.RIGHT));

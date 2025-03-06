@@ -4,16 +4,9 @@ import java.util.*;
 
 public class Shield extends Component {
 
-    private Direction[] coveredSides;
+    private Direction[] coveredSides = new Direction[2];
 
-    public Shield(Integer ID, Map<Direction, ConnectorEnum> conn, Direction[] coveredSides) {
-        this.setIDComponent(ID);
-        this.setConnectors(new HashMap<Direction, ConnectorEnum>());
-        this.getConnectors().put(Direction.UP, conn.get(Direction.UP));
-        this.getConnectors().put(Direction.LEFT, conn.get(Direction.LEFT));
-        this.getConnectors().put(Direction.DOWN, conn.get(Direction.DOWN));
-        this.getConnectors().put(Direction.RIGHT, conn.get(Direction.RIGHT));
-        this.coveredSides = coveredSides;
+    public Shield() {
     }
 
     public Direction[] getCoveredSides() {
@@ -24,6 +17,10 @@ public class Shield extends Component {
         this.coveredSides = coveredSides;
     }
 
+    /*
+        * Rotate the shield counterclockwise
+        * The connectors are rotated and the covered sides are updated
+     */
     public void rotateCounterclockwise() {
         ConnectorEnum conn = getConnectors().get(Direction.UP);
         Map<Direction, ConnectorEnum> newConnectors = new HashMap<>();
@@ -48,6 +45,10 @@ public class Shield extends Component {
         }
     }
 
+    /*
+        * Rotate the shield clockwise
+        * The connectors are rotated and the covered sides are updated
+     */
     public void rotateClockwise() {
         ConnectorEnum conn = getConnectors().get(Direction.UP);
         getConnectors().put(Direction.UP, getConnectors().get(Direction.LEFT));

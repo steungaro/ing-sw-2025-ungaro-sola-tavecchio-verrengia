@@ -13,17 +13,6 @@ public class CargoHold extends Component {
     public CargoHold() {
     }
 
-    public CargoHold(Integer ID, Integer space, Map<Direction, ConnectorEnum> conn) {
-        this.setIDComponent(ID);
-        this.space = space;
-        this.setConnectors(new HashMap<Direction, ConnectorEnum>());
-        this.getConnectors().put(Direction.UP, conn.get(Direction.UP));
-        this.getConnectors().put(Direction.LEFT, conn.get(Direction.LEFT));
-        this.getConnectors().put(Direction.DOWN, conn.get(Direction.DOWN));
-        this.getConnectors().put(Direction.RIGHT, conn.get(Direction.RIGHT));
-        this.cargoHeld = new ArrayList<Cargo>();
-    }
-
     public List<Cargo> getCargoHeld() {
         return cargoHeld;
     }
@@ -40,11 +29,18 @@ public class CargoHold extends Component {
         this.cargoHeld = cargoHeld;
     }
 
+    /*
+        * This method is used to load a cargo in the cargo hold
+        * @param g the cargo to be loaded
+     */
     public void loadCargo(Cargo g) {
-        if(g!=Cargo.RED) //Note: RED is a special cargo that can't be added
-            cargoHeld.add(g);
+        cargoHeld.add(g);
     }
 
+    /*
+        * This method is used to unload a cargo from the cargo hold
+        * @param i the index of the cargo to be unloaded
+     */
     public void unloadCargo(Integer i) {
         cargoHeld.remove(i);
         //Scroll the list to the left
@@ -52,4 +48,5 @@ public class CargoHold extends Component {
             cargoHeld.set(j, cargoHeld.get(j + 1));
         }
     }
+
 }
