@@ -43,6 +43,8 @@ public abstract class Ship {
      */
     private Float singleCannonsPower;
 
+    private Integer batteries;
+
     /**
      * Function that determines the total fire power of the ship
      * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half power)
@@ -69,8 +71,8 @@ public abstract class Ship {
     /**
      * @return
      */
-    public Integer batteriesAvailable() {
-        return null;
+    public Integer getBatteriesAvailable() {
+        return batteries;
     }
 
     /**
