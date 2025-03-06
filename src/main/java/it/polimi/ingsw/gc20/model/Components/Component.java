@@ -3,46 +3,48 @@ package it.polimi.ingsw.gc20.model.Components;
 import java.io.*;
 import java.util.*;
 
-/**
- * @author GC20
- */
 public abstract class Component {
 
-    /**
-     * Default constructor
-     */
     public Component() {
     }
 
-    /**
-     * 
-     */
-    private Map<Direction; ConnectorEnum> connectors;
+    private Map<Direction, ConnectorEnum> connectors;
 
-    /**
-     * 
-     */
     private Integer IDComponent;
 
-    /**
-     * 
-     */
-    private Integer ? orientation;
+    private Integer orientation;
 
-    /**
-     * @return
-     */
     public void rotateClockwise() {
-        // TODO implement here
-        return null;
+        ConnectorEnum conn = connectors.get(Direction.UP);
+        connectors.put(Direction.UP, connectors.get(Direction.LEFT));
+        connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
+        connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
+        connectors.put(Direction.RIGHT, conn);
     }
 
-    /**
-     * @return
-     */
     public void rotateCounterclockwise() {
-        // TODO implement here
-        return null;
+        ConnectorEnum conn = connectors.get(Direction.UP);
+        connectors.put(Direction.UP, connectors.get(Direction.RIGHT));
+        connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
+        connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
+        connectors.put(Direction.LEFT, conn);
     }
 
+    public Integer getIDComponent() {
+        return IDComponent;
+    }
+
+    public void setIDComponent(Integer IDComponent) {
+        this.IDComponent = IDComponent;
+    }
+
+    public Map<Direction, ConnectorEnum> getConnectors() {
+        return connectors;
+    }
+
+    public void setConnectors(Map<Direction, ConnectorEnum> connectors) {
+        for(Direction dir : Direction.values()){
+            this.connectors.put(dir, connectors.get(dir));
+        }
+    }
 }
