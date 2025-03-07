@@ -25,15 +25,19 @@ public class NormalBoard extends Board {
         this.setSpaces(24);
     }
 
-    //funzione che unisce i 4 deck e mischia il mazzo spostando una carta di livello 2 in cima
+    /** function that merges the decks and shuffles them
+     */
     public void mergeDecks() {
+        // deck merging
         List <AdventureCard> deck = this.getDeck();
         deck.addAll(this.firstVisible);
         deck.addAll(this.secondVisible);
         deck.addAll(this.thirdVisible);
         deck.addAll(this.invisible);
 
+        //shuffling
         Collections.shuffle(deck);
+        //first card is always a level 2 card
         for (int i=0; i<deck.size(); i++){
             if (deck.get(i).getLevel() == 2){
                 Collections.swap(deck, 0, i);
@@ -42,7 +46,11 @@ public class NormalBoard extends Board {
         }
     }
 
-    //prende in input un intero e guarda il deck corrispondente, lancia eccezione se l'intero non è valido
+    /** function that peek the numDeck deck and returns it
+     * @param numDeck the deck to peek
+     * @return List<AdventureCard>
+     * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
+     */
     public List<AdventureCard> peekDeck(Integer numDeck) throws IllegalArgumentException {
         switch (numDeck){
             case 1:
@@ -56,10 +64,11 @@ public class NormalBoard extends Board {
         }
     }
 
-    //funzione che crea un deck di carte avventura
+    /** function that creates the decks
+     * @param n number of deck to create
+     */
     public void createDeck(Integer n) {
         // TODO implement here
-        return null;
     }
 
 }

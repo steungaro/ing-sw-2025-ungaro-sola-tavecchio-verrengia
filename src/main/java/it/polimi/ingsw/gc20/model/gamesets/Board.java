@@ -18,36 +18,48 @@ public abstract class Board {
         this.spaces=0;
     }
 
-    //metodo che persca la prima carta del deck, eccezione se il deck è vuoto
+    /** function that draw the first card from the deck
+     * @exception  NoSuchElementException if the deck is empty
+     * @return AdventureCard
+     */
     public AdventureCard drawCard() throws NoSuchElementException{
-        if (this.deck.size() > 0) {
-            return this.deck.remove(0);
-        } else { //deck vuoto
+        if (this.deck.isEmpty()) {
+            return this.deck.removeFirst();
+        } else { // deck is empty
             throw new NoSuchElementException("Deck is empty");
         }
     }
 
-    //metodo che setta il numero di spazi della board
+    /** set function for spaces
+     * @param spaces number of spaces
+     */
     public void setSpaces(Integer spaces) {
         this.spaces = spaces;
     }
 
-    //funzione che crea un deck
+    /** function that creates the deck
+     */
     public void createDeck() {
         // TODO implement here
     }
 
-    //funzione che restituisce gli spazi della board
+    /** get function for spaces
+     * @return Integer
+     */
     public Integer getSpaces() {
         return this.spaces;
     }
 
-    //funzione che setta il deck
+    /** set function for deck
+     * @param deck list of AdventureCard
+     */
     public void setDeck(List<AdventureCard> deck) {
         this.deck = deck;
     }
 
-    //funzione che restituisce il deck
+    /** get function for deck
+     * @return List<AdventureCard>
+     */
     public List<AdventureCard> getDeck() {
         return this.deck;
     }

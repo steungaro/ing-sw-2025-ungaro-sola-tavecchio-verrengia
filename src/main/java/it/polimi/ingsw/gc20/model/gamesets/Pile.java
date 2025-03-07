@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.model.components.Component;
+
 import java.util.*;
 
 /**
@@ -9,55 +11,75 @@ public class Pile {
 
     private List<Component> viewed;
     private List<Component> unviewed;
-
+    /**
+     * Default constructor
+     */
     public Pile() {
         this.viewed = new ArrayList<Component>();
         this.unviewed = new ArrayList<Component>();
     }
 
+    /** get function for viewed components
+     * @return List<Component>
+     */
     public List<Component> getViewed() {
         return this.viewed;
     }
 
+    /** get function for unviewed components
+     * @return List<Component>
+     */
     public List<Component> getUnviewed() {
         return this.unviewed;
     }
 
-    //funzione per rimuovere un componente dalla lista viewed, se non presente lancia eccezione
+    /** function that remove a component from the viewed list, if not present throws exception
+     * @param c component to remove
+     * @throws NoSuchElementException if the component is not present in the viewed list
+     */
     public void removeViewed(Component c) throws NoSuchElementException{
-        // verifico se l'elemento è presente nella lista viewed
+        // check if element is present in the viewed list
         if (this.viewed.contains(c)) {
-            //se presente lo rimuovo
+            // if present remove it
             this.viewed.remove(c);
-        }else {
+        }else { //if not present throw exception
             throw new NoSuchElementException("Component not found in viewed list");
         }
     }
-    //funzione per rimuovere un componente dalla lista unviewed, se non presente lancia eccezione
+    /** function that remove a component from the unviewed list, if not present throws exception
+     * @param c component to remove
+     * @throws NoSuchElementException if the component is not present in the unviewed list
+     */
     public void removeUnviewed(Component c) throws NoSuchElementException {
-        // verifico se l'elemento è presente nella lista unviewed
+        // check if element is present in the unviewed list
         if (this.unviewed.contains(c)) {
-            //se presente lo rimuovo
+            //if present remove it
             this.unviewed.remove(c);
-        }else {
+        }else { //if not present throw exception
             throw new NoSuchElementException("Component not found in unviewed list");
         }
     }
 
-    //funzione per aggiungere un componente alla lista viewed, se gia presente lancia eccezione
+    /** function that add a component to the viewed list, if already present throws exception
+     * @param c component to add
+     * @throws IllegalArgumentException if the component is already present in the viewed list
+     */
     public void addViewed(Component c) throws IllegalArgumentException {
-        //verifico se l'elemento è già presente nella lista viewed
+        // check if element is already present in the viewed list
         if (this.viewed.contains(c)) {
+            //if present throw exception
             throw new IllegalArgumentException();
         } else {
-            //se non presente lo aggiungo
+            //if not present add it
             this.viewed.add(c);
         }
     }
 
-    //funzione per caricare la lista di tutti i componenti in unviewed a runtime
+    /** function that create the unviewed list
+     * @param c list of components to add
+     */
     public void addUnviewed(List<Component> c) {
-        //aggiungo tutti gli elementi della lista c alla lista unviewed
+        //add all the components to the unviewed list
         this.unviewed.addAll(c);
     }
 
