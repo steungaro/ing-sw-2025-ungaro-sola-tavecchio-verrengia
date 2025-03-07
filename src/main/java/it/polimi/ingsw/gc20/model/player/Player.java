@@ -1,161 +1,144 @@
 package it.polimi.ingsw.gc20.model.player;
 
-import Ship.Ship;
+import it.polimi.ingsw.gc20.model.ship.Ship;
 
 /**
  * @author GC20
  */
 public class Player {
 
+    private PlayerColor color;
+    private String username;
+    private Ship ship;
+    private Integer credits;
+    private boolean leader;
+    private Integer posInBoard;
+    private boolean inGame;
+
     /**
      * Default constructor
      */
     public Player() {
+        this.credits = 0;
+        this.color = null;
+        this.ship = null;
+        this.username = "";
+        this.posInBoard = 0;
+        this.leader = false;
     }
 
-    /**
-     * 
-     */
-    private PlayerColor color;
 
-    /**
-     * 
-     */
-    private String username;
 
-    /**
-     * 
+    /** Function that return true if the player is the leader
+     * @return Boolean leader
      */
-    private Ship ship;
-
-    /**
-     * 
-     */
-    private Integer credits;
-
-    /**
-     * 
-     */
-    public void Attribute1;
-
-    /**
-     * 
-     */
-    private Boolean leader;
-
-    /**
-     * 
-     */
-    private Integer posInBoard;
-
-    /**
-     * @param Color c 
-     * @return
-     */
-    public void setColor(void Color c) {
-        // TODO implement here
-        return null;
+    public Boolean isLeader () {
+        return this.leader;
     }
 
-    /**
-     * @return
+    /** set function for the color of the player
+     * @param c  color of the player
      */
-    public Color getColor() {
-        // TODO implement here
-        return null;
+    public void setColor(PlayerColor c) {
+        this.color = c;
     }
 
-    /**
-     * @return
+    /** get function for the color of the player
+     * @return PlayerColor color
+     */
+    public PlayerColor getColor() {
+        return this.color;
+    }
+
+    /** get function for the ship of the player
+     * @return Ship ship
      */
     public Ship getShip() {
-        // TODO implement here
-        return null;
+        return this.ship;
     }
 
-    /**
-     * @param Ship s 
-     * @return
+    /** set function for the ship of the player
+     * @param s ship of the player
      */
-    public void setShip(void Ship s) {
-        // TODO implement here
-        return null;
+    public void setShip(Ship s) {
+       this.ship = s;
     }
 
-    /**
-     * @return
+    /**get function for the username of the player
+     * @return String username
      */
     public String getUsername() {
-        // TODO implement here
-        return "";
+        return this.username;
     }
 
-    /**
-     * @param String s 
-     * @return
-     */
-    public void setUsername(void String s) {
-        // TODO implement here
-        return null;
+    /** set function for the username of the player
+     * @param s username
+    */
+    public void setUsername(String s) {
+        this.username = s;
     }
 
-    /**
-     * @return
+    /** set function if player is the leader
      */
     public void setLeader() {
-        // TODO implement here
-        return null;
+        this.leader = true;
     }
 
-    /**
-     * @return
+
+    /** function to add credits to the player
+     * @param c number of credits to add
      */
-    public Boolean isLeader() {
-        // TODO implement here
-        return null;
+    public void addCredits(Integer c) {
+        this.credits += c;
     }
 
-    /**
-     * @param Integer c 
-     * @return
+    /** function to remove credits to the player
+     * @param c number of credits to remove
+     *          @throws IllegalArgumentException if the player doesn't have enough credits
      */
-    public void addCredits(void Integer c) {
-        // TODO implement here
-        return null;
+    public void removeCredits(Integer c) throws IllegalArgumentException {
+        this.credits -= c;
+        //if the player doesn't have enough credits, the credits are set to 0
+        if (credits < 0) {
+            this.credits = 0;
+            //throw an exception if the player doesn't have enough credits, to be caught by the controller
+            throw new IllegalArgumentException("You don't have enough credits");
+        }
     }
 
-    /**
-     * @param Integer c 
-     * @return
-     */
-    public void removeCredits(void Integer c) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @return
+    /** get function for the credits of the player
+     * @return Integer credits
      */
     public Integer getCredits() {
-        // TODO implement here
-        return null;
+        return this.credits;
     }
 
-    /**
-     * @param Integer m 
-     * @return
-     */
-    public void move(void Integer m) {
-        // TODO implement here
-        return null;
-    }
 
-    /**
-     * @return
+    /** getfunction for the position of the player in the board
+     * @return Integer position
      */
     public Integer getPosition() {
-        // TODO implement here
-        return null;
+        return this.posInBoard;
     }
 
+    /** set function for the position of the player in the board
+     * @param p position
+     */
+    public void setPosition(Integer p) {
+        this.posInBoard = p;
+    }
+
+    /** function to determine if the player is in the game
+     * @return Boolean inGame
+     */
+    public Boolean isInGame() {
+        return this.inGame;
+    }
+
+    /** function to set if the player is in the game
+     * @param b game status
+     */
+    public void setGameStatus(Boolean b) {
+        this.inGame = b;
+    }
 }
