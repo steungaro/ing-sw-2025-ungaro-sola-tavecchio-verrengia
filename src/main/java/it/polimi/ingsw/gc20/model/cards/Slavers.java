@@ -95,4 +95,12 @@ public class Slavers extends AdventureCard {
         // TODO implement here
     }
 
+    /**
+     * @param p
+     * @param g
+     */
+    public void EffectSuccess(Player p, Game g) {
+        // TODO implement here
+    }
+
 }
