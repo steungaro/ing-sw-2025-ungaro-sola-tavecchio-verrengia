@@ -12,6 +12,7 @@ public class MeteorSwarm extends AdventureCard {
      * Default constructor
      */
     public MeteorSwarm() {
+        super();
     }
 
     /**
