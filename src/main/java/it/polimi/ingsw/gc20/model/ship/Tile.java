@@ -30,7 +30,7 @@ public class Tile {
     }
 
     /**
-     * @return
+     * @return commponent
      */
     public Component getComponent() {
         return component;
