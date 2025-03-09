@@ -62,4 +62,9 @@ public class Tile {
         availability = a;
     }
 
+    public void removeCommpoent(){
+        this.component = null;
+        this.availability = true;
+    }
+
 }

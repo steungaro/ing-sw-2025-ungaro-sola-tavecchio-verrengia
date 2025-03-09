@@ -23,4 +23,19 @@ public class LearnerShip extends Ship {
      */
     private List<Tile> trash;
 
+    public Integer getRows(){
+        return 5;
+    }
+
+    public Integer getCols(){
+        return 5;
+    }
+
+    @Override
+    protected  Component getComponentAt(int row, int col) {
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            return table[row][col].getComponent();
+        }
+        return null;
+    }
 }
