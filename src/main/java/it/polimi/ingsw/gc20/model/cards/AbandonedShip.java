@@ -3,18 +3,22 @@ package it.polimi.ingsw.gc20.model.cards;
 import java.io.*;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.*;
+
+import it.polimi.ingsw.gc20.model.components.Cabin;
+import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.ship.*;
+import it.polimi.ingsw.gc20.model.bank.*;
 
 /**
  * @author GC20
  */
 public class AbandonedShip extends AdventureCard {
 
-    private Integer lostCrew;
-    private Integer credits;
-    private Integer lostDays;
+    private int lostCrew;
+    private int credits;
+    private int lostDays;
 
     /**
      * Default constructor
@@ -31,7 +35,7 @@ public class AbandonedShip extends AdventureCard {
      * @param lostCrew
      */
 
-    public void setLostCrew(Integer lostCrew) {
+    public void setLostCrew(int lostCrew) {
         this.lostCrew = lostCrew;
     }
 
@@ -40,7 +44,7 @@ public class AbandonedShip extends AdventureCard {
      * @return lostCrew
      */
 
-    public Integer getLostCrew() {
+    public int getLostCrew() {
         return lostCrew;
     }
 
@@ -49,7 +53,7 @@ public class AbandonedShip extends AdventureCard {
      * @param credits credits
      */
 
-    public void setCredits(Integer credits) {
+    public void setCredits(int credits) {
         this.credits = credits;
     }
 
@@ -58,7 +62,7 @@ public class AbandonedShip extends AdventureCard {
      * @return credits
      */
 
-    public Integer getCredits() {
+    public int getCredits() {
         return credits;
     }
 
@@ -67,7 +71,7 @@ public class AbandonedShip extends AdventureCard {
      * @param lostDays lostDays
      */
 
-    public void setLostDays(Integer lostDays) {
+    public void setLostDays(int lostDays) {
         this.lostDays = lostDays;
     }
 
@@ -76,7 +80,7 @@ public class AbandonedShip extends AdventureCard {
      * @return lostDays
      */
 
-    public Integer getLostDays() {
+    public int getLostDays() {
         return lostDays;
     }
 
@@ -84,18 +88,17 @@ public class AbandonedShip extends AdventureCard {
      * Applies card effect on player p, applying effect means the player accepted the card
      * @param p player that accepted the card
      * @param g game
-     * @effect player p loses lostCrew crew members, gains credits credits and loses lostDays days
-     * @TODO CREW MODIFICATION (maybe a list of components is needed)
-     * @throws IllegalArgumentException if the player does not have enough crew members
+     * @param l list of lost crew members
+     * @effect player p loses lostCrew crew members, gains credits and loses lostDays days
      */
-    public void Effect(Player p, Game g) {
-        if (p.getShip().getCrew() < lostCrew) {
-            throw new IllegalArgumentException("Not enough crew members for player " + p.getUsername());
-        } else {
-            // TODO CREW MODIFICATION
-            p.addCredits(credits);
-            g.move(p, -lostDays);
+    public void Effect(Player p, Game g, List<Crew> l) {
+        for (Crew i : c) {
+            if (i instanceof Alien) {
+                Component cabin = i.getCabin();
+                (Cabin) cabin.removeAliens(i);
+            }
         }
+        p.addCredits(credits);
+        g.move(p, -lostDays);
     }
-
 }
