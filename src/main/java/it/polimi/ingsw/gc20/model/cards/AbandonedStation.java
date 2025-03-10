@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import java.io.*;
 import java.util.*;
-import it.polimi.ingsw.gc20.model.gamesets.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -12,7 +11,7 @@ import it.polimi.ingsw.gc20.model.components.*;
  */
 public class AbandonedStation extends AdventureCard {
     private Integer lostMembers;
-    private List<Cargo> reward;
+    private List<CargoColor> reward;
     private Integer lostDays;
 
     /**
@@ -46,7 +45,7 @@ public class AbandonedStation extends AdventureCard {
      * @param reward reward
      * @requires reward is already ordered by value
      */
-    public void setReward(List<Cargo> reward) {
+    public void setReward(List<CargoColor> reward) {
         this.reward = reward;
     }
 
@@ -54,7 +53,7 @@ public class AbandonedStation extends AdventureCard {
      * Getter method for reward
      * @return reward
      */
-    public List<Cargo> getReward() {
+    public List<CargoColor> getReward() {
         return reward;
     }
 
@@ -87,7 +86,7 @@ public class AbandonedStation extends AdventureCard {
             throw new IllegalArgumentException("Not enough cargo holds passed");
         }
         for (int i = 0; i < ch.size(); i++) {
-            if(reward.get(i).equals(Cargo.RED)) {
+            if(reward.get(i).equals(CargoColor.RED)) {
                 if (ch.get(i) instanceof SpecialCargoHold) {
                     ch.get(i).loadCargo(reward.get(i));
                 } else {

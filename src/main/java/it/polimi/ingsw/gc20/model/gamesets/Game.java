@@ -13,7 +13,7 @@ public class Game {
     private Board board;
     private Integer gameID;
     private Pile pile;
-    private Map<Cargo, Integer> cargoAvailable;
+    private Map<CargoColor, Integer> cargoAvailable;
 
     /**
      * Default constructor
@@ -23,7 +23,7 @@ public class Game {
         this.board = null;
         this.gameID = null;
         this.pile = null;
-        this.cargoAvailable = new HashMap<Cargo, Integer>();
+        this.cargoAvailable = new HashMap<CargoColor, Integer>();
     }
     /** add function for players
      * @param p player to add
@@ -71,7 +71,7 @@ public class Game {
      * @param c cargo color to get availability
      * @return Integer
      */
-    public Integer getCargoAvailable(Cargo c) {
+    public Integer getCargoAvailable(CargoColor c) {
         // TODO implement here
         return null;
     }
@@ -79,7 +79,7 @@ public class Game {
     /** set function for cargoAvailable
      * @param c color of the cargo to set, i number of cargo to set as available
      */
-    public void setCargoAvailable(Cargo c, Integer i) {
+    public void setCargoAvailable(CargoColor c, Integer i) {
         // TODO implement here
     }
 

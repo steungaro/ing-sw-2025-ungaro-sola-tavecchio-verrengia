@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.bank;
 
-import components.Battery;
+import it.polimi.ingsw.gc20.model.components.*;
 
 import java.io.*;
 import java.util.*;
@@ -10,32 +10,27 @@ import java.util.*;
  */
 public class Energy {
 
+    private Battery battery;
+
     /**
      * Default constructor
      */
     public Energy() {
+        this.battery = null;
     }
 
-    /**
-     * 
-     */
-    private Battery battery;
-
-    /**
-     * @return
+    /** get function for the battery where the energy is stored
+     * @return Battery battery where the energy is stored
      */
     public Battery getBattery() {
-        // TODO implement here
-        return null;
+        return this.battery;
     }
 
-    /**
-     * @param Battery b 
-     * @return
+    /** set function for the battery where the energy is stored
+     * @param Battery b
      */
-    public void setBattery(void Battery b) {
-        // TODO implement here
-        return null;
+    public void setBattery(Battery b) {
+        this.battery = b;
     }
 
 }

@@ -1,19 +1,19 @@
 package it.polimi.ingsw.gc20.model.components;
-import it.polimi.ingsw.gc20.model.gamesets.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 
 
 import java.util.*;
 
 public class CargoHold extends Component {
 
-    private List<Cargo> cargoHeld;
+    private List<CargoColor> cargoHeld;
 
     private Integer space;
 
     public CargoHold() {
     }
 
-    public List<Cargo> getCargoHeld() {
+    public List<CargoColor> getCargoHeld() {
         return cargoHeld;
     }
 
@@ -25,7 +25,7 @@ public class CargoHold extends Component {
         this.space = space;
     }
 
-    public void setCargoHeld(List<Cargo> cargoHeld) {
+    public void setCargoHeld(List<CargoColor> cargoHeld) {
         this.cargoHeld = cargoHeld;
     }
 
@@ -33,7 +33,7 @@ public class CargoHold extends Component {
         * This method is used to load a cargo in the cargo hold
         * @param g the cargo to be loaded
      */
-    public void loadCargo(Cargo g) {
+    public void loadCargo(CargoColor g) {
         cargoHeld.add(g);
     }
 

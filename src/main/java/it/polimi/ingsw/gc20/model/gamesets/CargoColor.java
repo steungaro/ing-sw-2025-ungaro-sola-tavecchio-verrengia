@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.model.gamesets;
 /**
  * 
  */
-public enum Cargo {
+public enum CargoColor {
     RED,
     YELLOW,
     GREEN,
