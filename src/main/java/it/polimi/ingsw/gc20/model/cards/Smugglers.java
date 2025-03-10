@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.gamesets.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 
@@ -13,7 +13,7 @@ public class Smugglers extends AdventureCard {
     private Integer lostCargo;
     private Integer firePower;
     private Integer lostDays;
-    private List<Cargo> reward;
+    private List<CargoColor> reward;
 
     /**
      * Default constructor
@@ -23,7 +23,7 @@ public class Smugglers extends AdventureCard {
         lostCargo = 0;
         firePower = 0;
         lostDays = 0;
-        reward = new ArrayList<Cargo>();
+        reward = new ArrayList<CargoColor>();
     }
 
     /**
@@ -79,7 +79,7 @@ public class Smugglers extends AdventureCard {
      * @param reward reward
      * @requires reward is already ordered by value
      */
-    public void setReward(List<Cargo> reward) {
+    public void setReward(List<CargoColor> reward) {
         this.reward = reward;
     }
 
@@ -87,7 +87,7 @@ public class Smugglers extends AdventureCard {
      * Getter method for reward
      * @return reward
      */
-    public List<Cargo> getReward() {
+    public List<CargoColor> getReward() {
         return reward;
     }
 
