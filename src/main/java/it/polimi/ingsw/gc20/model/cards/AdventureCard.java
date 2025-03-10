@@ -5,8 +5,8 @@ package it.polimi.ingsw.gc20.model.cards;
  */
 public abstract class AdventureCard {
 
-    private Integer level;
-    private Integer IDCard;
+    private int level;
+    private int IDCard;
 
     /**
      * Default constructor
@@ -21,7 +21,7 @@ public abstract class AdventureCard {
      * Public getter for the level attribute
      * @return level
      */
-    public Integer getLevel() {
+    public int getLevel() {
         return level;
     }
 
@@ -29,7 +29,7 @@ public abstract class AdventureCard {
      * Public getter for the IDCard attribute
      * @return IDCard
      */
-    public Integer getIDCard() {
+    public int getIDCard() {
         return IDCard;
     }
 
@@ -38,8 +38,7 @@ public abstract class AdventureCard {
      * @param level the level to set
      * @throws IllegalArgumentException if the level is not 0, 1 or 2
      */
-
-    public void setLevel(Integer level) {
+    public void setLevel(int level) {
         if (level != 0 && level != 1 && level != 2) {
             throw new IllegalArgumentException("Invalid level");
         }
@@ -50,8 +49,7 @@ public abstract class AdventureCard {
      * Public setter for the IDCard attribute
      * @param IDCard the IDCard to set
      */
-    public void setIDCard(Integer IDCard) {
+    public void setIDCard(int IDCard) {
         this.IDCard = IDCard;
     }
-
 }
