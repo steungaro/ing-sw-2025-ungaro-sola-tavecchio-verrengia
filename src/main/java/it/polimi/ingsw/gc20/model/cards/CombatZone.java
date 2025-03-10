@@ -1,16 +1,18 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.model.bank.Cargo;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.components.Component;
+import it.polimi.ingsw.gc20.model.components.CargoHold;
 
 /**
  * @author GC20
  */
 public class CombatZone extends AdventureCard {
-    private Integer lostDays;
-    private Integer lostCargo;
+    private int lostDays;
+    private int lostCargo;
     private List<Projectile> cannonFire;
 
     /**
@@ -19,14 +21,14 @@ public class CombatZone extends AdventureCard {
     public CombatZone() {
         lostDays = 0;
         lostCargo = 0;
-        cannonFire = new ArrayList<>();
+        cannonFire = new ArrayList<Projectile>();
     }
 
     /**
      * Setter method for lostDays
-     * @param lostDays lostDays
+     * @param lostDays lost days
      */
-    public void setLostDays(Integer lostDays) {
+    public void setLostDays(int lostDays) {
         this.lostDays = lostDays;
     }
 
@@ -34,7 +36,7 @@ public class CombatZone extends AdventureCard {
      * Getter method for lostDays
      * @return lostDays
      */
-    public Integer getLostDays() {
+    public int getLostDays() {
         return lostDays;
 
     }
@@ -42,14 +44,16 @@ public class CombatZone extends AdventureCard {
     /**
      * Setter method for lostCargo
      * @param lostCargo lostCargo
+     * @implSpec cargo is always the most valuable cargo for player
      */
-    public void setLostCargo(Integer lostCargo) {
+    public void setLostCargo(int lostCargo) {
         this.lostCargo = lostCargo;
     }
 
     /**
      * Getter method for lostCargo
      * @return lostCargo
+     * @implSpec cargo is always the most valuable cargo for player
      */
     public Integer getLostCargo() {
         return lostCargo;
@@ -75,7 +79,7 @@ public class CombatZone extends AdventureCard {
      * applies the effect of the card to the player
      * @param p player
      * @param g game
-     * @effect the player loses days
+     * @implNote the player loses days
      */
     public void EffectLostDays(Player p, Game g) {
         g.move(p, -lostDays);
@@ -85,22 +89,27 @@ public class CombatZone extends AdventureCard {
      * applies the effect of the card to the player
      * @param p player
      * @param g game
-     * @effect the player loses cargo
-     * @TODO implement (a list of components is needed)
+     * @param c cargo lost
+     * @implNote the player loses cargo
      */
-    public void EffectLostCargo(Player p, Game g, List<Component> comps) {
-        //TODO
+    public void EffectLostCargo(Player p, Game g, List<Cargo> c) {
+        for(Cargo i : c) {
+            CargoHold ch = i.getCargoHold();
+            ch.unloadCargo(i);
+        }
     }
 
     /**
      * applies the effect of the card to the player
      * @param p player
      * @param g game
-     * @effect the player is fired at
+     * @implNote the player is fired at
+     * @? should we delete this method and let the controller loop through the cannonFire list?
+     * @TODO: check if this method is needed
      */
     public void EffectCannonFire(Player p, Game g) {
         for (Projectile projectile : cannonFire) {
-            projectile.Fire(p.getShip());
+            projectile.Fire(p.getShip(), diceResult);
         }
     }
 }

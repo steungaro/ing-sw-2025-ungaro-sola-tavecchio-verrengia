@@ -44,9 +44,9 @@ public class AbandonedStation extends AdventureCard {
     /**
      * Setter method for reward
      * @param reward reward
-     * @requires reward is already ordered by value
+     * @implSpec  reward is already ordered by value
      */
-    public void setReward(List<Cargo> reward) {
+    public void setReward(List<CargoColor> reward) {
         this.reward = reward;
     }
 
@@ -54,7 +54,7 @@ public class AbandonedStation extends AdventureCard {
      * Getter method for reward
      * @return reward
      */
-    public List<Cargo> getReward() {
+    public List<CargoColor> getReward() {
         return reward;
     }
 
@@ -78,8 +78,8 @@ public class AbandonedStation extends AdventureCard {
      * @param p is the player that has to be affected by the card
      * @param g is the game where the player is playing
      * @param c is the crew lost by the player
-     * @effect the player loses the lostDays, the lostMembers and gains the reward
-     * @IMPORTANT the reward must be added by the controller: use getReward() to get the reward
+     * @implNote The player loses the lostDays, the lostMembers and gains the reward
+     * @apiNote  the reward must be added by the controller: use getReward() to get the reward
      */
     public void Effect(Player p, Game g, List<Crew> c) {
         g.move(p, -lostDays);
