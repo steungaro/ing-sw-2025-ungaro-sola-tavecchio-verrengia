@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.io.*;
 import java.util.*;
+import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.ship.Ship;
 
 /**
  * @author GC20
@@ -15,15 +17,10 @@ public class Epidemic extends AdventureCard {
     }
 
     /**
-     * 
+     * @param p
      */
-    public void Attribute1;
-
-    /**
-     * @param Player p
-     */
-    public void Effect(void Player p) {
-        // TODO implement here
+    public void Effect(Player p) {
+        Ship s = p.getShip();
     }
 
 }
