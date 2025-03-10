@@ -2,18 +2,18 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.io.*;
 import java.util.*;
-import it.polimi.ingsw.gc20.model.gamesets.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.model.bank.*;
 
 /**
  * @author GC20
  */
 public class AbandonedStation extends AdventureCard {
-    private Integer lostMembers;
-    private List<Cargo> reward;
-    private Integer lostDays;
+    private int lostMembers;
+    private List<CargoColor> reward;
+    private int lostDays;
 
     /**
      * Default constructor
@@ -21,7 +21,7 @@ public class AbandonedStation extends AdventureCard {
     public AbandonedStation() {
         super();
         lostMembers = 0;
-        reward = new ArrayList<>();
+        reward = new ArrayList<CargoColor>();
         lostDays = 0;
     }
 
@@ -29,7 +29,7 @@ public class AbandonedStation extends AdventureCard {
      * Setter method for lostMembers
      * @param lostMembers lostMembers
      */
-    public void setLostMembers(Integer lostMembers) {
+    public void setLostMembers(int lostMembers) {
         this.lostMembers = lostMembers;
     }
 
@@ -37,7 +37,7 @@ public class AbandonedStation extends AdventureCard {
      * Getter method for lostMembers
      * @return lostMembers
      */
-    public Integer getLostMembers() {
+    public int getLostMembers() {
         return lostMembers;
     }
 
@@ -77,35 +77,18 @@ public class AbandonedStation extends AdventureCard {
     /**
      * @param p is the player that has to be affected by the card
      * @param g is the game where the player is playing
-     * @param ch is the list of cargo holds of the player that will be loaded with the reward, in the same order as the reward
-     * @param cabins is the list of cabins of the player that will be losing members
-     * @param crew is the list of crew members lost in order of cabins
-     * @param aliens is the list of aliens lost in order of cabins
+     * @param c is the crew lost by the player
+     * @effect the player loses the lostDays, the lostMembers and gains the reward
+     * @IMPORTANT the reward must be added by the controller: use getReward() to get the reward
      */
-    public void Effect(Player p, Game g, List<CargoHold> ch, List<Cabin> cabins, List<Integer> crew, List<Boolean> aliens) {
-        if (ch.size()!= reward.size()) {
-            throw new IllegalArgumentException("Not enough cargo holds passed");
-        }
-        for (int i = 0; i < ch.size(); i++) {
-            if(reward.get(i).equals(Cargo.RED)) {
-                if (ch.get(i) instanceof SpecialCargoHold) {
-                    ch.get(i).loadCargo(reward.get(i));
-                } else {
-                    throw new IllegalArgumentException("Can't load RED cargo in a normal cargo hold");
-                }
-            } else {
-                ch.get(i).loadCargo(reward.get(i));
-            }
-        }
+    public void Effect(Player p, Game g, List<Crew> c) {
+        g.move(p, -lostDays);
 
-        for (int i = 0; i < lostMembers; i++) {
-            if (aliens.get(i)) {
-                cabins.get(i).removeAlien();
-            } else {
-                cabins.get(i).removeCrew(crew.get(i));
+        for (Crew i : c) {
+            if (i instanceof Alien) {
+                Component cabin = i.getCabin();
+                (Cabin) cabin.removeAliens(i);
             }
         }
     }
-
-
 }
