@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.bank;
 
-import it.polimi.ingsw.gc20.model.components.CargoHold;
-import it.polimi.ingsw.gc20.model.components.SpecialCargoHold;
+import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 
 import java.io.*;
@@ -41,8 +40,8 @@ public class Cargo {
      * throws IllegalArgumentException if the cargo is red and it trying to be stored in a non special cargo hold
      */
     public void setCargoHold(CargoHold ch) throws IllegalArgumentException {
-        if (this.color == RED) {
-            if (!ch instanceof SpecialCargoHold) {
+        if (this.color == CargoColor.RED) {
+            if (!(ch instanceof SpecialCargoHold)) {
                 throw new IllegalArgumentException("red cargo can only be stored in a special cargo hold");
             } else {
                 this.cargoHold = ch;
