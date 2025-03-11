@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.model.bank.Astronaut;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartingCabin extends Cabin {
+public class StartingCabin extends Component {
 
     private List<Astronaut> astronauts;
 

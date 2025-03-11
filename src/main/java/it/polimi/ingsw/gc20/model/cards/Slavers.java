@@ -101,11 +101,11 @@ public class Slavers extends AdventureCard {
         for (Crew c : l) {
             Component comp = c.getCabin();
             if (c instanceof Alien && comp instanceof Cabin) {
-                ((Cabin) comp).unloadAliens(c);
+                ((Cabin) comp).unloadAliens((Alien)c);
             } else if (c instanceof Astronaut && comp instanceof Cabin) {
-                ((Cabin) comp).unloadAstronauts(c);
-            } else if (comp instanceof StartingCabin) {
-                ((StartingCabin) comp).unloadAstronauts(c);
+                ((Cabin) comp).unloadAstronauts((Astronaut)c);
+            } else if (c instanceof Astronaut && comp instanceof StartingCabin) {
+                ((StartingCabin) comp).unloadAstronauts((Astronaut)c);
             }
         }
     }
