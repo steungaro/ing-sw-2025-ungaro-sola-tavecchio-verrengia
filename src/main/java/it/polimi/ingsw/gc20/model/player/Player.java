@@ -94,16 +94,18 @@ public class Player {
 
     /** function to remove credits to the player
      * @param c number of credits to remove
-     *          @throws IllegalArgumentException if the player doesn't have enough credits
+     * @return Integer debit (the difference between the credits to remove and the credits of the player)
      */
-    public void removeCredits(Integer c) throws IllegalArgumentException {
+    public Integer removeCredits(Integer c) throws IllegalArgumentException {
+        Integer debit = 0;
         this.credits -= c;
-        //if the player doesn't have enough credits, the credits are set to 0
-        if (credits < 0) {
+
+        //if the player doesn't have enough credits, the credits are set to 0 and the difference is returned
+        if (this.credits < 0) {
+            debit = - this.credits;
             this.credits = 0;
-            //throw an exception if the player doesn't have enough credits, to be caught by the controller
-            throw new IllegalArgumentException("You don't have enough credits");
         }
+        return debit;
     }
 
     /** get function for the credits of the player
