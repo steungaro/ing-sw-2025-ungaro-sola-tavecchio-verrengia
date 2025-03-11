@@ -326,6 +326,15 @@ public abstract class Ship {
     }
 
     /**
+     * In order to be valid a ship must have all components connected directly or indirectly to the StartingCabin
+     * A component is connected to the StartingCabin if there is a path of connectors that connect the component to the StartingCabin
+     * @return if a ship is valid
+     */
+    public boolean isValid() {
+        return isValid(0, 0);
+    }
+
+    /**
      * @return
      */
     public Set<Component> getWaste() {
@@ -355,7 +364,7 @@ public abstract class Ship {
      */
     public void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()=Direction.UP){
+            if(((Cannon) c).getOrientation()==Direction.UP){
                 if(((Cannon) c).getPower() == 1){
                     singleCannonsPower += add;
                 }else{
@@ -370,19 +379,23 @@ public abstract class Ship {
                     }
             }
         }else if(c instanceof Engine){
-            if(((Engine) c).isdouble()){
+            if(((Engine) c).getDoublePower()){
                 doubleEngines += add;
             }else{
                 singleEngines += add;
                 }
         }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getEnergy().length();
+            totalEnergy -= ((Battery) c).getEnergy().size();
         } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts inside the cabin
-            astronauts -= ((Cabin) c).getAstronauts().length();
+            astronauts -= ((Cabin) c).getAstronauts().size();
         } else if (c instanceof CargoHold && add == -1) {
             ((CargoHold) c).getCargoHeld().forEach(k -> cargo.remove(k));
             ((CargoHold) c).cleanCargo();
         }
+    }
+
+    public void epidemic() {
+        //TODO implement here
     }
 }

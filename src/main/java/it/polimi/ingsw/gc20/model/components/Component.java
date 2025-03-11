@@ -1,11 +1,13 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import java.util.*;
+import it.polimi.ingsw.gc20.model.ship.Tile;
 
 public abstract class Component {
 
     protected Map<Direction, ConnectorEnum> connectors;
     protected Integer IDComponent;
+    private Tile tile;
 
     public Component() {
         connectors = new HashMap<Direction, ConnectorEnum>();
@@ -66,5 +68,26 @@ public abstract class Component {
         for(Direction dir : Direction.values()){
             this.connectors.put(dir, connectors.get(dir));
         }
+    }
+
+    /**
+     * This function returns the tile of the component
+     * @return the tile of the component
+     */
+    public Tile getTile() {
+        return tile;
+    }
+
+    /**
+     * This function sets the tile of the component
+     * @param tile the tile of the component
+     */
+    public void setTile(Tile tile) {
+        this.tile = tile;
+    }
+
+    public Boolean isValid(Component c, Direction d){
+        //TODO implement
+        return true;
     }
 }

@@ -60,7 +60,7 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * @param Component c 
+     * @param c
      * @return
      * @throws IllegalArgumentException Component not valid, not in booked
      */
@@ -82,7 +82,7 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * @param Component c 
+     * @param c
      * @return
      */
     public void addBooked(Component c) {
@@ -141,7 +141,7 @@ public class NormalShip extends Ship {
      */
     public void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()=Direction.UP){
+            if(((Cannon) c).getOrientation()==Direction.UP){
                 if(((Cannon) c).getPower() == 1){
                     singleCannonsPower += add;
                 }else{
@@ -156,17 +156,17 @@ public class NormalShip extends Ship {
                 }
             }
         }else if(c instanceof Engine){
-            if(((Engine) c).isdouble()){
+            if(((Engine) c).getDoublePower()){
                 doubleEngines += add;
             }else{
                 singleEngines += add;
             }
         }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getEnergy().length();
+            totalEnergy -= ((Battery) c).getEnergy().size();
         } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts and aliens inside the cabin
-            astronauts -= ((Cabin) c).getAstronauts().length();
-            if(((Cabin) c).getAlien()){
+            astronauts -= ((Cabin) c).getAstronauts().size();
+            if(((Cabin) c).getAlien() != null){
                 aliens -= 1;
                 if(((Cabin) c).getAlien().getColor() == AlienColor.BROWN){
                     brownAlien = false;

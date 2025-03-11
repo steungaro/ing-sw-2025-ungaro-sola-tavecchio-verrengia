@@ -20,7 +20,7 @@ public class Energy {
     }
 
     /** get function for the battery where the energy is stored
-     * @return Battery battery where the energy is stored
+     * @return battery where the energy is stored
      */
     public Battery getBattery() {
         return this.battery;

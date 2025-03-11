@@ -87,11 +87,11 @@ public class AbandonedStation extends AdventureCard {
         for (Crew i : c) {
             if (i instanceof Alien) {
                 Component cabin = i.getCabin();
-                (Cabin) cabin.removeAliens(i);
+                ((Cabin) cabin).unloadAliens((Alien)i);
             } else if (i.getCabin() instanceof Cabin) {
-                ((Cabin) i.getCabin()).unloadAstronauts(i);
+                ((Cabin) i.getCabin()).unloadAstronauts((Astronaut)i);
             } else if (i.getCabin() instanceof StartingCabin) {
-                ((StartingCabin) i.getCabin()).unloadCrew(i);
+                ((StartingCabin) i.getCabin()).unloadAstronauts((Astronaut)i);
             }
         }
     }

@@ -91,14 +91,14 @@ public class AbandonedShip extends AdventureCard {
      * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
      */
     public void Effect(Player p, Game g, List<Crew> l) {
-        for (Crew i : c) {
+        for (Crew i : l) {
             if (i instanceof Alien) {
                 Component cabin = i.getCabin();
-                (Cabin) cabin.removeAliens(i);
+                ((Cabin) cabin).unloadAliens((Alien)i);
             } else if (i.getCabin() instanceof Cabin) {
-                ((Cabin) i.getCabin()).unloadAstronauts(i);
+                ((Cabin) i.getCabin()).unloadAstronauts((Astronaut)i);
             } else if (i.getCabin() instanceof StartingCabin) {
-                ((StartingCabin) i.getCabin()).unloadCrew(i);
+                ((StartingCabin) i.getCabin()).unloadAstronauts((Astronaut)i);
             }
         }
         p.addCredits(credits);

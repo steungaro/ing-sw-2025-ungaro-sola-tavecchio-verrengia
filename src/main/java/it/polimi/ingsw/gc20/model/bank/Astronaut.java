@@ -12,6 +12,7 @@ public class Astronaut extends Crew {
      * Default constructor
      */
     public Astronaut() {
+        super();
     }
 
 }

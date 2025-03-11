@@ -6,11 +6,11 @@ import java.util.*;
 
 public class CargoHold extends Component {
 
-    protected List<Cargo> cargoHold;
+    protected List<Cargo> cargoHeld;
     protected Integer slots;
 
     public CargoHold() {
-        cargoHold = new ArrayList<>();
+        cargoHeld = new ArrayList<>();
         slots = 0;
     }
 
@@ -18,8 +18,8 @@ public class CargoHold extends Component {
      * Function that returns the cargo in the cargo hold.
      * @return the cargo in the cargo hold
      */
-    public List<Cargo> getCargoHold() {
-        return cargoHold;
+    public List<Cargo> getCargoHeld() {
+        return cargoHeld;
     }
 
     /**
@@ -40,10 +40,10 @@ public class CargoHold extends Component {
 
     /**
      * Function that sets the cargo in the cargo hold.
-     * @param newCargoHold the cargo to set
+     * @param newCargoHeld the cargo to set
      */
-    public void setCargoHold(List<Cargo> newCargoHold) {
-        this.cargoHold.addAll( newCargoHold );
+    public void setCargoHeld(List<Cargo> newCargoHeld) {
+        this.cargoHeld.addAll( newCargoHeld );
     }
 
     /**
@@ -51,7 +51,7 @@ public class CargoHold extends Component {
         * @param g the cargo to be loaded
      */
     public void loadCargo(Cargo g) {
-        cargoHold.add(g);
+        cargoHeld.add(g);
     }
 
     /**
@@ -59,7 +59,7 @@ public class CargoHold extends Component {
         * @param c the cargo to be unloaded
      */
     public void unloadCargo(Cargo c) {
-        cargoHold.remove(c);
+        cargoHeld.remove(c);
     }
 
     /**
@@ -67,7 +67,7 @@ public class CargoHold extends Component {
      * @return the cargo hold
      */
     public void cleanCargo() {
-        cargoHold.clear();
+        cargoHeld.clear();
     }
 
 }

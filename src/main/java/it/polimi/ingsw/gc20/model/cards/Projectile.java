@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.model.cards;
 import java.io.*;
 import java.util.*;
 import it.polimi.ingsw.gc20.model.ship.*;
-import it.polimi.ingsw.gc20.model.components.Direction;
+import it.polimi.ingsw.gc20.model.components.*;
 
 /**
  * @author GC20
