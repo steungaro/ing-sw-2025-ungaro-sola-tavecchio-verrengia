@@ -48,8 +48,8 @@ public class Engine extends Component {
      * Function that returns the orientation of the engine.
      * @return the orientation of the engine
      */
-    public void getOrientation(Direction orientation) {
-        this.orientation = orientation;
+    public Direction getOrientation() {
+        return this.orientation;
     }
 
     /**

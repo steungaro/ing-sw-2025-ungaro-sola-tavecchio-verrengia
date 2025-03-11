@@ -349,8 +349,8 @@ public abstract class Ship {
         waste.add(c);
     }
 
-    public Boolean killComponent(Tile t){
-        Component c = t.getComponent();
+    public Boolean killComponent(Component c){
+        Tile t = c.getTile();
         updateParameters(c, -1);
         waste.add(c);
         t.removeComponent();
