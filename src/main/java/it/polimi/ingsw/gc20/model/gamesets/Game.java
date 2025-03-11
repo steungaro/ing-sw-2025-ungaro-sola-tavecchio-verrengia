@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
 import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.bank.*;
+
 
 import java.util.*;
 
@@ -25,11 +27,13 @@ public class Game {
         this.pile = null;
         this.cargoAvailable = new HashMap<CargoColor, Integer>();
     }
-    /** add function for players
+    /** add function for players and add the player to the stallBox in the board
      * @param p player to add
      */
     public void addPlayer(Player p){
+
         players.add(p);
+        board.addPlayer(p);
     }
 
     /** get function for players
@@ -37,6 +41,13 @@ public class Game {
      */
     public List<Player> getPlayers() {
         return this.players;
+    }
+
+    /** remove function for players
+     * @param p player to remove
+     */
+    public void removePlayer(Player p){
+        players.remove(p);
     }
 
     /** add function for board
