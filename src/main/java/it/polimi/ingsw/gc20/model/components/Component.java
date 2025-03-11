@@ -86,8 +86,35 @@ public abstract class Component {
         this.tile = tile;
     }
 
+
+    /**
+     * This function checks if the component is linked correctly to the other component
+     * @param c the component to check
+     * @param d the direction of the component
+     * @return true if the link is correct, false otherwise
+     */
     public Boolean isValid(Component c, Direction d){
-        //TODO implement
-        return true;
+        Direction opposite;
+        if(d==Direction.UP){
+            opposite = Direction.DOWN;
+        } else if(d==Direction.DOWN){
+            opposite = Direction.UP;
+        } else if(d==Direction.LEFT){
+            opposite = Direction.RIGHT;
+        } else {
+            opposite = Direction.LEFT;
+        }
+
+        if(this.connectors.get(d) == c.connectors.get(opposite) && this.connectors.get(d) != ConnectorEnum.ZERO){
+            return true;
+        }
+        if(this.connectors.get(d) == ConnectorEnum.U && c.connectors.get(opposite) != ConnectorEnum.ZERO){
+            return true;
+        }
+        if(c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(opposite) != ConnectorEnum.ZERO){
+            return true;
+        }
+
+        return false;
     }
 }
