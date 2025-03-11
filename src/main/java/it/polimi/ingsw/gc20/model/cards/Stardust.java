@@ -21,7 +21,8 @@ public class Stardust extends AdventureCard {
     /**
      * @param p player affected by the card
      * @param g game
-     * @effect Each player loses a fly day for each exposed connector in their ship
+     * @implNote Each player loses a fly day for each exposed connector in their ship
+     * @see Ship
      */
     public void Effect(Player p, Game g) {
         g.move(p, -p.getShip().getAllExposed());

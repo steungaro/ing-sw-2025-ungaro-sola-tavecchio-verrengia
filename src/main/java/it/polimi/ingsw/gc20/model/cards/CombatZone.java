@@ -19,6 +19,7 @@ public class CombatZone extends AdventureCard {
      * Default constructor
      */
     public CombatZone() {
+        super();
         lostDays = 0;
         lostCargo = 0;
         cannonFire = new ArrayList<Projectile>();
@@ -101,15 +102,10 @@ public class CombatZone extends AdventureCard {
 
     /**
      * applies the effect of the card to the player
-     * @param p player
-     * @param g game
-     * @implNote the player is fired at
-     * @? should we delete this method and let the controller loop through the cannonFire list?
-     * @TODO: check if this method is needed
+     * @apiNote the controller needs to verify for each fire the requirements and then apply the rules specified in Projectile
+     * @see Projectile
      */
-    public void EffectCannonFire(Player p, Game g) {
-        for (Projectile projectile : cannonFire) {
-            projectile.Fire(p.getShip(), diceResult);
-        }
+    public List<Projectile> EffectCannonFire() {
+        return this.getCannonFire();
     }
 }

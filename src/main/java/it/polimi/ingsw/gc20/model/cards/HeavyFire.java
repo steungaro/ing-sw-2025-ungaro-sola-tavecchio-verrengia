@@ -16,5 +16,6 @@ public class HeavyFire extends Projectile {
      * Default constructor
      */
     public HeavyFire() {
+        super();
     }
 }

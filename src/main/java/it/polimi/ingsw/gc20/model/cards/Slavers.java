@@ -2,15 +2,19 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+import it.polimi.ingsw.gc20.model.bank.*;
+import java.util.*;
+import it.polimi.ingsw.gc20.model.components.*;
 
 /**
  * @author GC20
  */
 public class Slavers extends AdventureCard {
-    private Integer firePower;
-    private Integer lostMembers;
-    private Integer reward;
-    private Integer lostDays;
+    private int firePower;
+    private int lostMembers;
+    private int reward;
+    private int lostDays;
 
     /**
      * Default constructor
@@ -27,7 +31,7 @@ public class Slavers extends AdventureCard {
      * Setter method for the firepower
      * @param firePower firepower
      */
-    public void setFirePower(Integer firePower) {
+    public void setFirePower(int firePower) {
         this.firePower = firePower;
     }
 
@@ -35,7 +39,7 @@ public class Slavers extends AdventureCard {
      * Getter method for the firepower
      * @return firepower
      */
-    public Integer getFirePower() {
+    public int getFirePower() {
         return firePower;
     }
 
@@ -43,7 +47,7 @@ public class Slavers extends AdventureCard {
      * Setter method for the lostMembers
      * @param lostMembers lostMembers
      */
-    public void setLostMembers(Integer lostMembers) {
+    public void setLostMembers(int lostMembers) {
         this.lostMembers = lostMembers;
     }
 
@@ -51,7 +55,7 @@ public class Slavers extends AdventureCard {
      * Getter method for the lostMembers
      * @return lostMembers
      */
-    public Integer getLostMembers() {
+    public int getLostMembers() {
         return lostMembers;
     }
 
@@ -59,7 +63,7 @@ public class Slavers extends AdventureCard {
      * Setter method for the reward
      * @param reward reward
      */
-    public void setReward(Integer reward) {
+    public void setReward(int reward) {
         this.reward = reward;
     }
 
@@ -67,7 +71,7 @@ public class Slavers extends AdventureCard {
      * Getter method for the reward
      * @return reward
      */
-    public Integer getReward() {
+    public int getReward() {
         return reward;
     }
 
@@ -75,7 +79,7 @@ public class Slavers extends AdventureCard {
      * Setter method for the lostDays
      * @param lostDays lostDays
      */
-    public void setLostDays(Integer lostDays) {
+    public void setLostDays(int lostDays) {
         this.lostDays = lostDays;
     }
 
@@ -83,24 +87,36 @@ public class Slavers extends AdventureCard {
      * Getter method for the lostDays
      * @return lostDays
      */
-    public Integer getLostDays() {
+    public int getLostDays() {
         return lostDays;
     }
 
     /**
-     * @param p
-     * @param g
+     * @param p is the player that the card has to affect
+     * @param g is the game
+     * @param l is the lost members list
+     * @implNote The player loses the crew members
      */
-    public void EffectFailure(Player p, Game g) {
-        // TODO implement here
+    public void EffectFailure(Player p, Game g, List<Crew> l) {
+        for (Crew c : l) {
+            Component comp = c.getCabin();
+            if (c instanceof Alien && comp instanceof Cabin) {
+                ((Cabin) comp).unloadAliens(c);
+            } else if (c instanceof Astronaut && comp instanceof Cabin) {
+                ((Cabin) comp).unloadAstronauts(c);
+            } else if (comp instanceof StartingCabin) {
+                ((StartingCabin) comp).unloadAstronauts(c);
+            }
+        }
     }
 
     /**
-     * @param p
-     * @param g
+     * @param p is the player that the card has to affect
+     * @param g is the game
+     * @implNote The player loses the lostDays and gains the reward
      */
     public void EffectSuccess(Player p, Game g) {
-        // TODO implement here
+        p.addCredits(reward);
+        g.move(p, -lostDays);
     }
-
 }

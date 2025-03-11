@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.bank.Cargo;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
+import it.polimi.ingsw.gc20.model.gamesets.*;
 
 import java.util.*;
 
@@ -10,9 +10,9 @@ import java.util.*;
  * @author GC20
  */
 public class Smugglers extends AdventureCard {
-    private Integer lostCargo;
-    private Integer firePower;
-    private Integer lostDays;
+    private int lostCargo;
+    private int firePower;
+    private int lostDays;
     private List<CargoColor> reward;
 
     /**
@@ -30,7 +30,7 @@ public class Smugglers extends AdventureCard {
      * Setter method for lostCargo
      * @param lostCargo lostCargo
      */
-    public void setLostCargo(Integer lostCargo) {
+    public void setLostCargo(int lostCargo) {
         this.lostCargo = lostCargo;
     }
 
@@ -38,7 +38,7 @@ public class Smugglers extends AdventureCard {
      * Getter method for lostCargo
      * @return lostCargo
      */
-    public Integer getLostCargo() {
+    public int getLostCargo() {
         return lostCargo;
     }
 
@@ -46,7 +46,7 @@ public class Smugglers extends AdventureCard {
      * Setter method for firePower
      * @param firePower firePower
      */
-    public void setFirePower(Integer firePower) {
+    public void setFirePower(int firePower) {
         this.firePower = firePower;
     }
 
@@ -54,7 +54,7 @@ public class Smugglers extends AdventureCard {
      * Getter method for firePower
      * @return firePower
      */
-    public Integer getFirePower() {
+    public int getFirePower() {
         return firePower;
     }
 
@@ -62,7 +62,7 @@ public class Smugglers extends AdventureCard {
      * Setter method for lostDays
      * @param lostDays lostDays
      */
-    public void setLostDays(Integer lostDays) {
+    public void setLostDays(int lostDays) {
         this.lostDays = lostDays;
     }
 
@@ -70,7 +70,7 @@ public class Smugglers extends AdventureCard {
      * Getter method for lostDays
      * @return lostDays
      */
-    public Integer getLostDays() {
+    public int getLostDays() {
         return lostDays;
     }
 
@@ -93,18 +93,25 @@ public class Smugglers extends AdventureCard {
 
 
     /**
-     * @param p
-     * @param g
+     * @param p is the player that has the effect applied onto
+     * @param g is the game where the player is playing
+     * @param l is the list of cargo that the player has to lose
+     * @implNote The player loses cargo
+     * @apiNote The controller needs to verify that the player has enough cargo to lose (or call removeEnergy) and that the cargo lost is the most valuable owned by the player
      */
-    public void EffectFailure(Player p, Game g) {
-        // TODO implement here
+    public void EffectFailure(Player p, Game g, List<Cargo> l) {
+        for (Cargo c : l) {
+            c.getCargoHold().unloadCargo(c);
+        }
     }
 
     /**
-     * @param p
-     * @param g
+     * @param p is the player that has the effect applied onto
+     * @param g is the game where the player is playing
+     * @implNote The player loses lostDays
+     * @apiNote The controller needs to add the cargo to the player's cargo hold by itself
      */
     public void EffectSuccess(Player p, Game g) {
-        // TODO implement here
-
+        g.move(p, -lostDays);
+    }
 }
