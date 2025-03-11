@@ -1,9 +1,9 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.gamesets.Cargo;
 
 import java.util.*;
+import it.polimi.ingsw.gc20.model.bank.Cargo;
 
 /**
  * @author GC20
@@ -153,7 +153,7 @@ public abstract class Ship {
         int cols = getCols();
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < cols; j++){
-                if(getComponentAt(i, j) && getComponentAt(i, j) instanceof Shield && ((Shield) (getComponentAt(i, j)).getCoveredSides().contains(d))){
+                if(getComponentAt(i, j) != null && (getComponentAt(i, j) instanceof Shield) && Arrays.asList(((Shield) (getComponentAt(i, j))).getCoveredSides()).contains(d)){
                     return true;
                 }
             }
@@ -349,8 +349,8 @@ public abstract class Ship {
         waste.add(c);
     }
 
-    public Boolean killComponent(Tile t){
-        Component c = t.getComponent();
+    public Boolean killComponent(Component c){
+        Tile t = c.getTile();
         updateParameters(c, -1);
         waste.add(c);
         t.removeComponent();
