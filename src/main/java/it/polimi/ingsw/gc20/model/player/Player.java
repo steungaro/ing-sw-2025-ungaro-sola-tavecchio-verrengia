@@ -25,6 +25,7 @@ public class Player {
         this.username = "";
         this.posInBoard = 0;
         this.leader = false;
+        this.inGame = false;
     }
 
 
