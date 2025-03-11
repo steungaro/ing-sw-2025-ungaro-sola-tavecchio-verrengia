@@ -1,12 +1,9 @@
 package it.polimi.ingsw.gc20.model.components;
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.bank.Cargo;
 
 public class SpecialCargoHold extends CargoHold {
 
     public SpecialCargoHold() {
     }
 
-    public void loadCargo(CargoColor g) {
-        this.getCargoHeld().add(g);
-    }
 }

@@ -1,52 +1,73 @@
 package it.polimi.ingsw.gc20.model.components;
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.bank.Cargo;
 
 
 import java.util.*;
 
 public class CargoHold extends Component {
 
-    private List<CargoColor> cargoHeld;
-
-    private Integer space;
+    protected List<Cargo> cargoHold;
+    protected Integer slots;
 
     public CargoHold() {
+        cargoHold = new ArrayList<>();
+        slots = 0;
     }
 
-    public List<CargoColor> getCargoHeld() {
-        return cargoHeld;
+    /**
+     * Function that returns the cargo in the cargo hold.
+     * @return the cargo in the cargo hold
+     */
+    public List<Cargo> getCargoHold() {
+        return cargoHold;
     }
 
+    /**
+     * Function that returns the space of the cargo hold.
+     * @return the space of the cargo hold
+     */
     public Integer getSpace() {
-        return space;
+        return slots;
     }
 
-    public void setSpace(Integer space) {
-        this.space = space;
+    /**
+     * Function that sets the space of the cargo hold.
+     * @param slots the space of the cargo hold
+     */
+    public void setSpace(Integer slots) {
+        this.slots = slots;
     }
 
-    public void setCargoHeld(List<CargoColor> cargoHeld) {
-        this.cargoHeld = cargoHeld;
+    /**
+     * Function that sets the cargo in the cargo hold.
+     * @param newCargoHold the cargo to set
+     */
+    public void setCargoHold(List<Cargo> newCargoHold) {
+        this.cargoHold.addAll( newCargoHold );
     }
 
-    /*
+    /**
         * This method is used to load a cargo in the cargo hold
         * @param g the cargo to be loaded
      */
-    public void loadCargo(CargoColor g) {
-        cargoHeld.add(g);
+    public void loadCargo(Cargo g) {
+        cargoHold.add(g);
     }
 
-    /*
+    /**
         * This method is used to unload a cargo from the cargo hold
-        * @param i the index of the cargo to be unloaded
+        * @param c the cargo to be unloaded
      */
-    public void unloadCargo(Integer i) {
-        cargoHeld.remove(i);
-        //Scroll the list to the left
-        for (int j = i; j < cargoHeld.size(); j++) {
-            cargoHeld.set(j, cargoHeld.get(j + 1));
-        }
+    public void unloadCargo(Cargo c) {
+        cargoHold.remove(c);
+    }
+
+    /**
+     * This method is used to clean the cargo hold
+     * @return the cargo hold
+     */
+    public void cleanCargo() {
+        cargoHold.clear();
     }
 
 }

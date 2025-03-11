@@ -6,18 +6,26 @@ public class Shield extends Component {
 
     private Direction[] coveredSides = new Direction[2];
 
-    public Shield() {
-    }
-
+    /**
+     * This function returns the covered sides of the shield
+     * @return the covered sides of the shield
+     */
     public Direction[] getCoveredSides() {
         return coveredSides;
     }
 
+    public Shield() {
+    }
+
+    /**
+        * This function returns the covered sides of the shield
+        * @return the covered sides of the shield
+     */
     public void setCoveredSides(Direction[] coveredSides) {
         this.coveredSides = coveredSides;
     }
 
-    /*
+    /**
         * Rotate the shield counterclockwise
         * The connectors are rotated and the covered sides are updated
      */
@@ -45,7 +53,7 @@ public class Shield extends Component {
         }
     }
 
-    /*
+    /**
         * Rotate the shield clockwise
         * The connectors are rotated and the covered sides are updated
      */
