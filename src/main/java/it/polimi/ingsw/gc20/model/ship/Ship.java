@@ -21,7 +21,7 @@ public abstract class Ship {
     protected List<Cargo> cargo;
     protected Integer astronauts;
     protected Integer aliens;
-
+    List<Component> trash = new ArrayList<Component>();
     /**
      * Default constructor
      */
@@ -92,8 +92,7 @@ public abstract class Ship {
      * @return
      */
     public Integer crew() {
-        //TODO implement here
-        return null;
+        return astronauts + aliens;
     }
 
     /**

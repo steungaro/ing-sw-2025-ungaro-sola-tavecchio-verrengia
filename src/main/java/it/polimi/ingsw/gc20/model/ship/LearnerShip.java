@@ -19,8 +19,6 @@ public class LearnerShip extends Ship {
     /**
      * 
      */
-    private List<Tile> trash = new ArrayList<Tile>();
-
     public LearnerShip() {
         super();
         table[2][2].setAvailability(false);

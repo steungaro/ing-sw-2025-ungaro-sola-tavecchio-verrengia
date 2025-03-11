@@ -40,7 +40,6 @@ public class NormalShip extends Ship {
     /**
      * 
      */
-    private List<Component> trash = new ArrayList<Component>();
 
     /**
      * 
