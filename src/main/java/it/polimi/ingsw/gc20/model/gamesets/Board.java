@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.model.cards.*;
+import it.polimi.ingsw.gc20.model.player.*;
 
 import java.util.*;
 
@@ -10,12 +11,14 @@ import java.util.*;
 public abstract class Board {
     private List<AdventureCard> deck;
     private Integer spaces;
+    private List<Player> stallBox;
     /**
      * Default constructor
      */
     public Board() {
         this.deck = new ArrayList<>();
         this.spaces=0;
+        this.stallBox = new ArrayList<>();
     }
 
     /** function that draw the first card from the deck
@@ -63,5 +66,22 @@ public abstract class Board {
     public List<AdventureCard> getDeck() {
         return this.deck;
     }
-
+    /** add function for the stall box
+     * @param p player to add
+     */
+    public void addPlayer (Player p){
+        stallBox.add(p);
+    }
+    /** remove function for the stall box
+     * @param p player to remove
+     */
+    public void removePlayer (Player p){
+        stallBox.remove(p);
+    }
+    /** get function for the stall box
+     * @return List<Player>
+     */
+    public List<Player> getStallBox() {
+        return stallBox;
+    }
 }

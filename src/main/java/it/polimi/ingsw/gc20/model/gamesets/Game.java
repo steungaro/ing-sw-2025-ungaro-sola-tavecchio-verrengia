@@ -25,11 +25,13 @@ public class Game {
         this.pile = null;
         this.cargoAvailable = new HashMap<CargoColor, Integer>();
     }
-    /** add function for players
+    /** add function for players and add the player to the stallBox in the board
      * @param p player to add
      */
     public void addPlayer(Player p){
+
         players.add(p);
+        board.addPlayer(p);
     }
 
     /** get function for players
