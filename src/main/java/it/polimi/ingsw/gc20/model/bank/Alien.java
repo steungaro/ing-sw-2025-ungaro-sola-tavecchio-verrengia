@@ -10,7 +10,6 @@ import java.util.*;
  * @author GC20
  */
 public class Alien extends Crew {
-    private Component component;
     private AlienColor color;
 
     /**

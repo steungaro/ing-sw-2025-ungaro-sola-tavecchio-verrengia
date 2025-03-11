@@ -27,7 +27,7 @@ public class Energy {
     }
 
     /** set function for the battery where the energy is stored
-     * @param Battery b
+     * @param b battery where the energy is stored
      */
     public void setBattery(Battery b) {
         this.battery = b;

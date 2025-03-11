@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Crew {
 
-    private Component component;
+    protected Component component;
 
     /**
      * Default constructor
