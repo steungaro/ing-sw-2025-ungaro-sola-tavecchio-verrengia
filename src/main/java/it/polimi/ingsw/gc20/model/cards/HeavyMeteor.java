@@ -14,17 +14,43 @@ public class HeavyMeteor extends Projectile {
      * Default constructor
      */
     public HeavyMeteor() {
+        super();
     }
 
+    /**
+     * @param s is the ship that is being attacked
+     * @param diceResult is the result of the dice
+     * @return the list of cannons that can defeat the HeavyMeteor
+     * @see Ship
+     * @see Cannon
+     * @apiNote The controller needs to verify whether the list contains single cannons or double cannons and ask the user to activate them
+     * @implNote HeavyMeteor from above can be defeated by a cannon in the same coloumn, HeavyMeteor from the other directions can be defeated by a cannon in the same row/column or in the previous/next one
+     */
     public List<Cannon> getCannons(Ship s, int diceResult) {
-        if (direction == Direction.UP || direction == Direction.DOWN) {
+        List<Cannon> cannons;
+        if (direction == Direction.UP) {
             if (s instanceof NormalShip) {
-                s.getCannon(direction, diceResult - 4);
+                return s.getCannons(direction, diceResult - 4);
             } else {
-                s.getCannon(direction, diceResult - 5);
+                return s.getCannons(direction, diceResult - 5);
+            }
+        } else if (direction == Direction.DOWN) {
+            if (s instanceof NormalShip) {
+                cannons = s.getCannons(direction, diceResult - 4);
+                cannons.addAll(s.getCannons(direction, diceResult - 5));
+                cannons.addAll(s.getCannons(direction, diceResult - 3));
+                return cannons;
+            } else {
+                cannons = s.getCannons(direction, diceResult - 5);
+                cannons.addAll(s.getCannons(direction, diceResult - 6));
+                cannons.addAll(s.getCannons(direction, diceResult - 4));
+                return cannons;
             }
         } else {
-            s.getCannon(direction, diceResult - 5);
+            cannons = s.getCannons(direction, diceResult - 5);
+            cannons.addAll(s.getCannons(direction, diceResult - 6));
+            cannons.addAll(s.getCannons(direction, diceResult - 4));
+            return cannons;
         }
     }
 }

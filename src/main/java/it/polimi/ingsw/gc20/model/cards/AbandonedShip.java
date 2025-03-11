@@ -4,8 +4,7 @@ import java.io.*;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.*;
 
-import it.polimi.ingsw.gc20.model.components.Cabin;
-import it.polimi.ingsw.gc20.model.components.Component;
+import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.ship.*;
@@ -32,7 +31,7 @@ public class AbandonedShip extends AdventureCard {
 
     /**
      * Setter method for lostCrew
-     * @param lostCrew
+     * @param lostCrew lost crew
      */
 
     public void setLostCrew(int lostCrew) {
@@ -89,13 +88,17 @@ public class AbandonedShip extends AdventureCard {
      * @param p player that accepted the card
      * @param g game
      * @param l list of lost crew members
-     * @effect player p loses lostCrew crew members, gains credits and loses lostDays days
+     * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
      */
     public void Effect(Player p, Game g, List<Crew> l) {
         for (Crew i : c) {
             if (i instanceof Alien) {
                 Component cabin = i.getCabin();
                 (Cabin) cabin.removeAliens(i);
+            } else if (i.getCabin() instanceof Cabin) {
+                ((Cabin) i.getCabin()).unloadAstronauts(i);
+            } else if (i.getCabin() instanceof StartingCabin) {
+                ((StartingCabin) i.getCabin()).unloadCrew(i);
             }
         }
         p.addCredits(credits);

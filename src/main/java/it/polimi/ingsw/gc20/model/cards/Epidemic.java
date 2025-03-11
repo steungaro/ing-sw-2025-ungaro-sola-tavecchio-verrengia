@@ -17,10 +17,11 @@ public class Epidemic extends AdventureCard {
     }
 
     /**
-     * @param p
+     * @param p player
+     * @implNote The card calls the epidemic method of the player's ship
      */
     public void Effect(Player p) {
-        Ship s = p.getShip();
+        p.getShip().epidemic();
     }
 
 }
