@@ -230,7 +230,7 @@ public class GameModel {
         Alien alien = new Alien();
         alien.setColor(a);
         alien.setCabin(c);
-        s.addAlien (alien, c);
+        ((NormalShip) s).addAlien(alien, c);
     }
 
     /** function that sets the astronaut in the ship

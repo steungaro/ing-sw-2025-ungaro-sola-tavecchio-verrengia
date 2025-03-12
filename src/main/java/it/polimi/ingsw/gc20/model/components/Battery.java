@@ -44,7 +44,9 @@ public class Battery extends Component {
     public void setSlots(Integer q) {
         this.slots = q;
         for(int i=0; i<q; i++) {
-            energy.add(new Energy());
+            Energy e = new Energy();
+            e.setBattery(this);
+            energy.add(e);
         }
     }
 
