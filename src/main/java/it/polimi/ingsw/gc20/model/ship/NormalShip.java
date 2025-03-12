@@ -30,21 +30,18 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * 
+     * Matrx of tiles representing the ship
      */
     private Tile[][] table = new Tile[7][5];
 
     /**
-     * 
+     *  Components that the player is holding in hand
      */
     private Component[] booked = new Component[2];
 
-    /**
-     * 
-     */
 
     /**
-     * 
+     * if a brown/purple alien is present in the ship
      */
     private Boolean brownAlien;
 
@@ -52,7 +49,7 @@ public class NormalShip extends Ship {
 
 
     /**
-     * @return
+     * Function to be called at the end of construction phase to move the booked components to the waste
      */
     public void addBookedToWaste() {
         trash.addAll(Arrays.asList(booked));
@@ -61,11 +58,11 @@ public class NormalShip extends Ship {
     }
 
     /**
+     * Function to remove a component from the booked components
      * @param c
-     * @return
      * @throws IllegalArgumentException Component not valid, not in booked
      */
-    public void removeBooked(Component c) {
+    public void removeBooked(Component c) throws IllegalArgumentException {
         if (booked[0] == c) {
             booked[0]=null;
         } else if (booked[1] == c) {
@@ -76,13 +73,14 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * @return
+     * @return booked components
      */
     public List<Component> getBooked() {
         return Arrays.asList(booked);
     }
 
     /**
+     * Add a component to the booked components
      * @param c
      * @return
      */
@@ -94,15 +92,25 @@ public class NormalShip extends Ship {
         }
     }
 
-
+    /**
+     * @return the number of rows of the ship
+     */
     public Integer getRows(){
         return 7;
     }
 
+    /**
+     * @return the number of columns of the ship
+     */
     public Integer getCols(){
         return 5;
     }
 
+    /**
+     * @param row: position of the component
+     * @param col: position of the component
+     * @return the component at the given position
+     */
     @Override
     protected Component getComponentAt(int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
@@ -111,6 +119,12 @@ public class NormalShip extends Ship {
         return null;
     }
 
+    /**
+     * Add a component to the ship
+     * @param c: the component to be added
+     * @param row: position of the component
+     * @param col: position of the component
+     */
     @Override
     protected void setComponentAt(Component c, int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
@@ -118,6 +132,11 @@ public class NormalShip extends Ship {
         }
     }
 
+    /**
+     * Function to calculate the firepower of the ship
+     * @param cannons Set<Component>: the double cannons the user wants to activate
+     * @return power: the firepower of the ship
+     */
     @Override
     public float firePower(Set<Cannon> cannons) {
         if(cannons.size()>totalEnergy)
@@ -129,17 +148,22 @@ public class NormalShip extends Ship {
         return power + (purpleAlien ? 2 : 0);
     }
 
+    /**
+     * Function to calculate the engine power of the ship
+     * @param doubleEnginesActivated: the number of double engines the user wants to activate => the number of battery cells consumed
+     * @return enginePower: the engine power of the ship
+     */
     @Override
     public Integer enginePower(Integer doubleEnginesActivated) {
         return doubleEnginesActivated * 2 + singleEngines + (brownAlien ? 2 : 0);
     }
 
-    @Override
     /**
      * Special version of update to also update the aliens
      * @param c: the component to be added or removed to the ship
      * @param add: 1 if the component is added, -1 if the component is removed
      */
+    @Override
     protected void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
             if(((Cannon) c).getOrientation()==Direction.UP){
@@ -180,6 +204,12 @@ public class NormalShip extends Ship {
         }
     }
 
+    /**
+     * Function to add an alien to the ship
+     * @param alien: the alien to be added
+     * @param c: the cabin where the alien will be added
+     * @throws IllegalArgumentException: the cabin cannot host the alien
+     */
     public void addAlien(Alien alien, Component c) throws IllegalArgumentException {
         if(((Cabin) c).getColor() != alien.getColor())
             throw new IllegalArgumentException("this cabin cannot host this alien");

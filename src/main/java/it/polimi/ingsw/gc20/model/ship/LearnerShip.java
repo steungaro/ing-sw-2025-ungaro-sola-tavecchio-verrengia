@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import java.util.*;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -8,16 +7,12 @@ import it.polimi.ingsw.gc20.model.components.*;
 public class LearnerShip extends Ship {
 
     /**
-     * Default constructor
-     */
-
-    /**
-     * 
+     * Matrix of tiles representing the ship
      */
     private Tile[][] table = new Tile[5][5];
 
     /**
-     * 
+     * Default constructor
      */
     public LearnerShip() {
         super();
@@ -25,14 +20,28 @@ public class LearnerShip extends Ship {
         Component sc = new StartingCabin();
         table[2][2].addComponent(sc);
     }
+
+    /**
+     * Getter for the number of rows
+     * @return rows
+     */
     public Integer getRows(){
         return 5;
     }
 
+    /**
+     * Getter for the number of columns
+     * @return cols
+     */
     public Integer getCols(){
         return 5;
     }
 
+    /**
+     * @param row: position of the component
+     * @param col: position of the component
+     * @return the component at the given position
+     */
     @Override
     protected  Component getComponentAt(int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
@@ -41,6 +50,12 @@ public class LearnerShip extends Ship {
         return null;
     }
 
+    /**
+     * Add a component to the ship
+     * @param c: the component to be added
+     * @param row: position of the component
+     * @param col: position of the component
+     */
     @Override
     protected void setComponentAt(Component c, int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {

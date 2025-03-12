@@ -23,7 +23,7 @@ public abstract class Ship {
     protected Integer astronauts;
     List<Component> trash = new ArrayList<Component>();
     /**
-     * Default constructor
+     * Default constructor. Initializes default ship values.
      */
     public Ship() {
         waste = new HashSet<>();
@@ -37,12 +37,23 @@ public abstract class Ship {
         astronauts = 0;
     }
 
+    /**
+     * Adds a component to the ship at the specified position and updates ship parameters
+     * @param c Component to add
+     * @param row Row position
+     * @param col Column position
+     */
     public void addComponent(Component c, int row, int col){
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             updateParameters(c, 1);
         }
     }
+
+    /**
+     * Gets the total number of rows in the ship grid
+     * @return Number of rows
+     */
     public abstract Integer getRows();
 
     /**
@@ -51,9 +62,22 @@ public abstract class Ship {
      */
     public abstract Integer getCols();
 
+    /**
+     * Gets the component at the specified position
+     * @param row Row index
+     * @param col Column index
+     * @return Component at position, or null if empty
+     */
     protected abstract Component getComponentAt(int row, int col);
 
+    /**
+     * Sets a component at the specified position
+     * @param c Component to place
+     * @param row Row index
+     * @param col Column index
+     */
     protected abstract void setComponentAt(Component c, int row, int col);
+
     /**
      * Function that determines the total firepower of the ship
      * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half power)
@@ -61,8 +85,9 @@ public abstract class Ship {
      * it also checks if the ship has the necessary amount of batteries
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
+     * @throws IllegalArgumentException if the number of cannons is greater than the total energy of the ship
      */
-    public float firePower(Set<Cannon> cannons) {
+    public float firePower(Set<Cannon> cannons) throws IllegalArgumentException {
         if(cannons.size()>totalEnergy)
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
@@ -81,14 +106,16 @@ public abstract class Ship {
     }
 
     /**
-     * @return
+     * Gets the total energy available from batteries
+     * @return Total energy
      */
     public Integer getTotalEnergy() {
         return totalEnergy;
     }
 
     /**
-     * @return
+     * Gets the total number of astronauts in the ship
+     * @return Crew count
      */
     public Integer crew() {
         return astronauts;
@@ -96,7 +123,6 @@ public abstract class Ship {
 
     /**
      * Function that gets the first component of the ship from a certain direction to determine what component will be hit
-     *
      * @param d Direction: the direction from which the component will be hit
      * @param n Integer: row or column of the component ATTENTION it is the row or colum get from the dice NOT the row or column of the ship
      * @return component_hit
@@ -160,10 +186,10 @@ public abstract class Ship {
     }
 
     /**
-     * Check if there is a cannon that points to a certain direction in a particular row/column
-     * @param d Direction
-     * @param n Integer
-     * @return
+     * Finds all cannons pointing in a specific direction at a given row/column
+     * @param d Direction to check
+     * @param n Row/column index to check
+     * @return List of cannons pointing in that direction
      */
     public List<Cannon> getCannons(Direction d, Integer n) {
         int cols = getCols();
@@ -189,9 +215,8 @@ public abstract class Ship {
     }
 
     /**
-     * Get the number of connectors that are exposed to space
-     * We check all the components at the border of the ship and we count the number of sides that have connectors not attached to another connector
-     * @return exposedConnectors
+     * Counts all connectors that are exposed to space (not connected to another component)
+     * @return Number of exposed connectors
      */
     public Integer getAllExposed() {
         int rows = getRows();
@@ -236,11 +261,12 @@ public abstract class Ship {
         }
         return exposedConnectors;
     }
+
     /**
-     * In order to be valid a ship must have all components connected directly or indirectly to the StartingCabin
-     * A component is connected to the StartingCabin if there is a path of connectors that connect the component to the StartingCabin
-     * @parameter
-     * @return if a ship is valid
+     * Validates if all components are connected to the starting position
+     * @param startRow Starting row for validation
+     * @param startCol Starting column for validation
+     * @return True if ship is valid, false otherwise
      */
     public boolean isValid(int startRow, int startCol) {
         int rows = getRows();
@@ -324,29 +350,34 @@ public abstract class Ship {
     }
 
     /**
-     * In order to be valid a ship must have all components connected directly or indirectly to the StartingCabin
-     * A component is connected to the StartingCabin if there is a path of connectors that connect the component to the StartingCabin
-     * @return if a ship is valid
+     * Validates if the ship structure is valid (all components connected) starting from the starting cabin
+     * @return True if ship is valid, false otherwise
      */
     public boolean isValid() {
-        return isValid(0, 0);
+        return isValid(getRows()/2, getCols()/2);
     }
 
     /**
-     * @return
+     * Gets the set of components in the waste
+     * @return Set of waste components
      */
     public Set<Component> getWaste() {
         return waste;
     }
 
     /**
-     * @param c Component
-     * @return
+     * Adds a component to the waste
+     * @param c Component to add to waste
      */
     public void addToWaste(Component c) {
         waste.add(c);
     }
 
+    /**
+     * Removes a component from ship and adds it to waste
+     * @param c Component to destroy
+     * @return True if ship remains valid after removal
+     */
     public Boolean killComponent(Component c){
         Tile t = c.getTile();
         updateParameters(c, -1);
@@ -356,9 +387,9 @@ public abstract class Ship {
     }
 
     /**
-     *
-     * @param c: the component to be added or removed to the ship
-     * @param add: 1 if the component is added, -1 if the component is removed
+     * Updates ship parameters when components are added or removed
+     * @param c Component being added/removed
+     * @param add 1 if adding, -1 if removing
      */
     protected void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
@@ -393,7 +424,11 @@ public abstract class Ship {
         }
     }
 
-
+    /**
+     * Adds a single astronaut to a cabin
+     * @param a Astronaut to add
+     * @param c Cabin component to place astronaut
+     */
     public void addSingleAstronaut(Astronaut a, Component c){
         astronauts++;
         ((Cabin) c).getAstronauts().add(a);
