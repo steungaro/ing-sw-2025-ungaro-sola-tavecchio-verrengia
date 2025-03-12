@@ -234,8 +234,6 @@ public class GameModel {
     }
 
     /** function that sets the astronaut in the ship
-     * @param a astronaut to add
-     * @param c cabin for the astronaut
      * @param p player that adds the astronaut
      * @throws IllegalArgumentException if the component is not a cabin
      * @throws InvalidParameterException if the cabin cannot host this type of astronaut
