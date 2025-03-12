@@ -112,7 +112,7 @@ public class Game {
      * @param position position to check
      * @return boolean
      */
-    private boolean isOccupied(int position) {
+    public boolean isOccupied(int position) {
         for (Player p : players) {
             if (p.getPosition() == position) {
                 return true;
