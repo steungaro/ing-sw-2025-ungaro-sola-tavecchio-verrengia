@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.model.bank.Astronaut;
 import it.polimi.ingsw.gc20.model.components.*;
 
 import java.util.*;
@@ -20,7 +21,6 @@ public abstract class Ship {
     protected Integer totalEnergy;
     protected List<Cargo> cargo;
     protected Integer astronauts;
-    protected Integer aliens;
     List<Component> trash = new ArrayList<Component>();
     /**
      * Default constructor
@@ -35,7 +35,6 @@ public abstract class Ship {
         totalEnergy = 0;
         cargo = new ArrayList<>();
         astronauts = 0;
-        aliens = 0;
     }
 
     public void addComponent(Component c, int row, int col){
@@ -92,7 +91,7 @@ public abstract class Ship {
      * @return
      */
     public Integer crew() {
-        return astronauts + aliens;
+        return astronauts;
     }
 
     /**
@@ -361,7 +360,7 @@ public abstract class Ship {
      * @param c: the component to be added or removed to the ship
      * @param add: 1 if the component is added, -1 if the component is removed
      */
-    public void updateParameters(Component c, Integer add){
+    protected void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
             if(((Cannon) c).getOrientation()==Direction.UP){
                 if(((Cannon) c).getPower() == 1){
@@ -391,6 +390,31 @@ public abstract class Ship {
         } else if (c instanceof CargoHold && add == -1) {
             ((CargoHold) c).getCargoHeld().forEach(k -> cargo.remove(k));
             ((CargoHold) c).cleanCargo();
+        }
+    }
+
+
+    public void addSingleAstronaut(Astronaut a, Component c){
+        astronauts++;
+        ((Cabin) c).getAstronauts().add(a);
+    }
+
+
+    /**
+     * Function that fills the cabins at the beginning of the game
+     */
+    public void addAllAstronauts(){
+        int row = getRows();
+        int col = getCols();
+        for(int i=0; i<row; row++){
+            for(int j=0; j<col; j++){
+                Component c = getComponentAt(i, j);
+                if(c instanceof Cabin){
+                    for(int k=0; k< 2 - ((Cabin) c).getOccupants(); k++){
+                        addSingleAstronaut(new Astronaut(), c);
+                    }
+                }
+            }
         }
     }
 
