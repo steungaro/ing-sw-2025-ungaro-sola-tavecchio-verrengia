@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.model.bank.Alien;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -138,7 +140,7 @@ public class NormalShip extends Ship {
      * @param c: the component to be added or removed to the ship
      * @param add: 1 if the component is added, -1 if the component is removed
      */
-    public void updateParameters(Component c, Integer add){
+    protected void updateParameters(Component c, Integer add){
         if(c instanceof Cannon){
             if(((Cannon) c).getOrientation()==Direction.UP){
                 if(((Cannon) c).getPower() == 1){
@@ -162,20 +164,30 @@ public class NormalShip extends Ship {
             }
         }else if(c instanceof Battery){
             totalEnergy -= ((Battery) c).getEnergy().size();
-        } else if (c instanceof Cabin && add == -1) {
+        } else if (c instanceof Cabin) {
             //kill all the astronauts and aliens inside the cabin
-            astronauts -= ((Cabin) c).getAstronauts().size();
+            astronauts += ((Cabin) c).getAstronauts().size()*add;
             if(((Cabin) c).getAlien() != null){
-                aliens -= 1;
                 if(((Cabin) c).getAlien().getColor() == AlienColor.BROWN){
-                    brownAlien = false;
+                    brownAlien = (add == 1);
                 }else{
-                    purpleAlien = false;
+                    purpleAlien = (add == 1);
                 }
             }
         } else if (c instanceof CargoHold && add == -1) {
             ((CargoHold) c).getCargoHeld().forEach(k -> cargo.remove(k));
             ((CargoHold) c).cleanCargo();
+        }
+    }
+
+    public void addAlien(Alien alien, Component c) throws IllegalArgumentException {
+        if(((Cabin) c).getColor() != alien.getColor())
+            throw new IllegalArgumentException("this cabin cannot host this alien");
+        ((Cabin) c).setAliens(alien);
+        if(alien.getColor() == AlienColor.BROWN){
+            brownAlien = true;
+        }else{
+            purpleAlien = true;
         }
     }
 }

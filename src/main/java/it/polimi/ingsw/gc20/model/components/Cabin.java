@@ -94,4 +94,8 @@ public class Cabin extends Component {
         else
             color=c;
     }
+
+    public Integer getOccupants(){
+        return astronauts.size() + (alien == null ? 0 : 1);
+    }
 }
