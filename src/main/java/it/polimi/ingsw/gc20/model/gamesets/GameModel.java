@@ -7,7 +7,9 @@ import it.polimi.ingsw.gc20.model.bank.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 public class GameModel {
     private Game game;
@@ -250,5 +252,48 @@ public class GameModel {
         ((NormalBoard) b).mergeDecks();
     }
 
+    /** function that automatically draw the first card of the deck and set it as active
+     * @return the card drawn
+     */
+    public AdventureCard drawCard () {
+        this.setActiveCard(game.getBoard().drawCard());
+        return this.getActiveCard();
+    }
 
+    /** function to call when the Planet card is active and the player select a planet to land
+     * @param p player that lands
+     * @param index index of the planet
+     * @return the list of cargo colors
+     */
+    public List<CargoColor> PlanetLand (Player p, int index) {
+        AdventureCard c = getActiveCard();
+        Planet planet = ((Planets) c).getPlanet(index);
+        return ((Planets) c).land(p, planet);
+    }
+
+    /** function to call when the Abandoned ship card is active and the player select the crew member to lose
+     * @param p player whose chose to activate the effect of the card
+     * @param a list of crew members to remove
+     * @return the list of cargo colors
+     */
+    public void AbbandonedShip (Player p, List<Crew> a) {
+        AdventureCard c = getActiveCard();
+        setActiveCard(null);
+        ((AbandonedStation) c).Effect(p, game, a);
+    }
+    public void AbbandonedStation (Player p){
+        AdventureCard c = getActiveCard();
+        //TODO mancano i metodi per il conteggio della crew e per l'effetto
+    }
+
+    public int FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
+        try {
+            p.getShip().firePower(cannons, energy.size());
+            for (Energy e : energy) {
+                e.getBattery().useEnergy(e);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException ("Not enough energy");
+        }
+    }
 }
