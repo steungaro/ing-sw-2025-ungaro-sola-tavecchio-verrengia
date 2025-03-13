@@ -18,50 +18,60 @@ public class GameModel {
     /**
      * Default Constructor
      */
-    public void GameModel (){
+    public void GameModel() {
         this.game = null;
         this.activeCard = null;
     }
 
-    /** set function for the game
+    /**
+     * set function for the game
+     *
      * @param game
      */
     public void setGame(Game game) {
         this.game = game;
     }
 
-    /** get function for the game
+    /**
+     * get function for the game
+     *
      * @return game
      */
     public Game getGame() {
         return this.game;
     }
 
-    /** set function for the active card
+    /**
+     * set function for the active card
+     *
      * @param activeCard
      */
     public void setActiveCard(AdventureCard activeCard) {
         this.activeCard = activeCard;
     }
 
-    /** get function for the active card
+    /**
+     * get function for the active card
+     *
      * @return activeCard
      */
     public AdventureCard getActiveCard() {
         return this.activeCard;
     }
 
-    /** function that starts the game
+    /**
+     * function that starts the game
+     *
      * @param numberOfPlayers number of players
-     * @param livello level of the game
-     * @param username username of the player
+     * @param livello         level of the game
+     * @param username        username of the player
      */
     public void startGame(int numberOfPlayers, int livello, String username) {
         Game game = new Game();
         Pile pile = new Pile();
         Board board;
         //creating the board based on the level
-        if (livello==2) {
+        if (livello == 2) {
             board = new NormalBoard();
             //TODO create and setting the four deck
         } else {
@@ -70,19 +80,19 @@ public class GameModel {
         }
 
         //creating the players and setting the first player
-        for (int i=0; i<numberOfPlayers; i++) {
+        for (int i = 0; i < numberOfPlayers; i++) {
             Player player = new Player();
-            if (i==0) {
+            if (i == 0) {
                 //setting username and status of the first player
                 player.setUsername(username);
                 player.setGameStatus(true);
             }
             player.setColor(PlayerColor.values()[i]);
             //setting the ship based on the level
-            if (livello==2){
-                player.setShip (new NormalShip());
+            if (livello == 2) {
+                player.setShip(new NormalShip());
             } else {
-                player.setShip (new LearnerShip());
+                player.setShip(new LearnerShip());
             }
             board.addPlayer(player);
             game.addPlayer(player);
@@ -94,12 +104,14 @@ public class GameModel {
         this.setGame(game);
     }
 
-    /** function that allows the player to join the game
+    /**
+     * function that allows the player to join the game
+     *
      * @param username username of the player
      */
-    public void joinGame (String username){
+    public void joinGame(String username) {
         //searching for the first player not in game
-        for (Player player: game.getPlayers()) {
+        for (Player player : game.getPlayers()) {
             if (!player.isInGame()) {
                 player.setUsername(username);
                 player.setGameStatus(true);
@@ -108,100 +120,120 @@ public class GameModel {
         }
     }
 
-    /** function when a component is taken from the unviewed list
+    /**
+     * function when a component is taken from the unviewed list
+     *
      * @param c component to remove
      * @param p player that takes the component
      * @throws NoSuchElementException if the component is not present in the unviewed list
      */
-    public void componentFromUnviewed (Component c, Player p )  throws NoSuchElementException {
+    public void componentFromUnviewed(Component c, Player p) throws NoSuchElementException {
         game.getPile().removeUnviewed(c);
     }
 
-    /** function when a component is taken from the viewed list
+    /**
+     * function when a component is taken from the viewed list
+     *
      * @param c component to remove
      * @param p player that takes the component
      * @throws NoSuchElementException if the component is not present in the viewed list
      */
-    public void componentFromViewed (Component c, Player p )  throws NoSuchElementException {
+    public void componentFromViewed(Component c, Player p) throws NoSuchElementException {
         game.getPile().removeViewed(c);
     }
 
-    /** function when a component is taken from the booked list
+    /**
+     * function when a component is taken from the booked list
+     *
      * @param c component to remove
      * @param p player that takes the component
      * @throws IllegalArgumentException if the component is not present in the booked list
      */
-    public void componentFromBooked (Component c, Player p )  throws IllegalArgumentException {
+    public void componentFromBooked(Component c, Player p) throws IllegalArgumentException {
         Ship s = p.getShip();
         ((NormalShip) s).removeBooked(c);
     }
-    /** method that allows the player to view the deck only called in level 2 games
+
+    /**
+     * method that allows the player to view the deck only called in level 2 games
+     *
      * @param numDeck the deck to view
      * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
      */
-    public void viewDeck (int numDeck) throws IllegalArgumentException {
+    public void viewDeck(int numDeck) throws IllegalArgumentException {
         Board b = game.getBoard();
         ((NormalBoard) b).peekDeck(numDeck);
     }
 
-    /** function that allows the player to rotate the component taken clockwise
+    /**
+     * function that allows the player to rotate the component taken clockwise
+     *
      * @param c component to rotate
      * @param p player that rotates the component
      */
-    public void RotateClockwise (Component c, Player p){
+    public void RotateClockwise(Component c, Player p) {
         c.rotateClockwise();
     }
 
-    /** function that allows the player to rotate the component taken counterclockwise
+    /**
+     * function that allows the player to rotate the component taken counterclockwise
+     *
      * @param c component to rotate
      * @param p player that rotates the component
      */
-    public void RotateCounterclockwise(Component c, Player p){
+    public void RotateCounterclockwise(Component c, Player p) {
         c.rotateCounterclockwise();
     }
 
-    /**function to add a component to the booked list only called in level 2 games
+    /**
+     * function to add a component to the booked list only called in level 2 games
+     *
      * @param c component to add
      * @param p player that adds the component
      */
-    public void componentToBooked (Component c, Player p){
+    public void componentToBooked(Component c, Player p) {
         Ship s = p.getShip();
         ((NormalShip) s).addBooked(c);
     }
 
-    /** function to add a component to the viewed list
+    /**
+     * function to add a component to the viewed list
+     *
      * @param c component to add
      * @param p player that adds the component
      */
-    public void componentToViewed (Component c, Player p){
+    public void componentToViewed(Component c, Player p) {
         game.getPile().addViewed(c);
     }
 
-    /** function to add a component to the ship
+    /**
+     * function to add a component to the ship
+     *
      * @param c component to add
      * @param p player that adds the component
      * @param x x coordinate of the component
      * @param y y coordinate of the component
      */
-    public void addToShip (Component c, Player p, int x, int y)
-    {
+    public void addToShip(Component c, Player p, int x, int y) {
         Ship s = p.getShip();
         s.addComponent(c, x, y);
     }
 
-    /** function when a player stop assembling
-     * @param p player that stops assembling
+    /**
+     * function when a player stop assembling
+     *
+     * @param p        player that stops assembling
      * @param position position chosen by the player (1-4)
      * @throws IllegalArgumentException if the position is already occupied
      */
-    public void stopAssembling (Player p, int position) throws IllegalArgumentException{
+    public void stopAssembling(Player p, int position) throws IllegalArgumentException {
         game.getBoard().removePlayer(p);
-        if (game.isOccupied(position)){
+        if (game.isOccupied(position)) {
             throw new IllegalArgumentException("Position already occupied");
         } else {
             for (Player player : game.getPlayers()) {
                 if (player == p) {
-                    if (position == 1){
+                    if (position == 1) {
                         player.setLeader();
                     }
                     player.setPosition(position);
@@ -211,23 +243,27 @@ public class GameModel {
 
     }
 
-    /** function that validates the ship
+    /**
+     * function that validates the ship
+     *
      * @param p player that validates the ship
      * @return boolean true if the ship is valid, false otherwise
      */
-    public boolean shipValidating (Player p){
+    public boolean shipValidating(Player p) {
         Ship s = p.getShip();
         return s.isValid();
     }
 
-    /** function that sets the alien in the ship
+    /**
+     * function that sets the alien in the ship
+     *
      * @param a color of the alien
      * @param c cabin for the alien
      * @param p player that adds the alien
-     * @throws IllegalArgumentException if the component is not a cabin
+     * @throws IllegalArgumentException  if the component is not a cabin
      * @throws InvalidParameterException if the cabin cannot host this type of alien
      */
-    public void setAlien (AlienColor a, Component c, Player p) throws IllegalArgumentException, InvalidParameterException {
+    public void setAlien(AlienColor a, Component c, Player p) throws IllegalArgumentException, InvalidParameterException {
         Ship s = p.getShip();
         Alien alien = new Alien();
         alien.setColor(a);
@@ -235,68 +271,82 @@ public class GameModel {
         ((NormalShip) s).addAlien(alien, c);
     }
 
-    /** function that sets the astronaut in the ship
+    /**
+     * function that sets the astronaut in the ship
+     *
      * @param p player that adds the astronaut
-     * @throws IllegalArgumentException if the component is not a cabin
+     * @throws IllegalArgumentException  if the component is not a cabin
      * @throws InvalidParameterException if the cabin cannot host this type of astronaut
      */
-    public void addPieces (Player p){
+    public void addPieces(Player p) {
         p.getShip().addAllAstronauts();
     }
 
-    /** function that creates the deck for the game
+    /**
+     * function that creates the deck for the game
      * it is called only in second level games
      */
-    public void createDeck () {
+    public void createDeck() {
         Board b = game.getBoard();
         ((NormalBoard) b).mergeDecks();
     }
 
-    /** function that automatically draw the first card of the deck and set it as active
+    /**
+     * function that automatically draw the first card of the deck and set it as active
+     *
      * @return the card drawn
      */
-    public AdventureCard drawCard () {
+    public AdventureCard drawCard() {
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
 
-    /** function to call when the Planet card is active and the player select a planet to land
-     * @param p player that lands
+    /**
+     * function to call when the Planet card is active and the player select a planet to land
+     *
+     * @param p     player that lands
      * @param index index of the planet
      * @return the list of cargo colors
      */
-    public List<CargoColor> PlanetLand (Player p, int index) {
+    public List<Cargo> PlanetLand(Player p, int index) {
         AdventureCard c = getActiveCard();
         Planet planet = ((Planets) c).getPlanet(index);
         return ((Planets) c).land(p, planet);
     }
 
-    /** function to call when the Abandoned ship card is active and the player select the crew member to lose
+    /**
+     * function to call when the Abandoned ship card is active and the player select the crew member to lose
+     *
      * @param p player whose chose to activate the effect of the card
      * @param a list of crew members to remove
      * @return the list of cargo colors
      */
-    public void AbbandonedShip (Player p, List<Crew> a) {
+    public void AbbandonedShip(Player p, List<Crew> a) {
         AdventureCard c = getActiveCard();
         setActiveCard(null);
         ((AbandonedStation) c).Effect(p, game, a);
     }
-    /** function to call when the Abandoned station card is active and the player chose to activate the effect
+
+    /**
+     * function to call when the Abandoned station card is active and the player chose to activate the effect
+     *
      * @param p player whose chose to activate the effect of the card
      * @return the list of cargo colors
      */
-    public List<CargoColor> AbbandonedStation (Player p){
+    public List<Cargo> AbbandonedStation(Player p) {
         AdventureCard c = getActiveCard();
         //TODO mancano i metodi per il conteggio della crew e per l'effetto
         return null;
     }
 
-    /** function to call when is needed to calculate the firepower of the ship
-     * @param p player whose chose to activate the effect of the card
+    /**
+     * function to call when is needed to calculate the firepower of the ship
+     *
+     * @param p       player whose chose to activate the effect of the card
      * @param cannons double cannons to activate
-     * @param energy energy to use
+     * @param energy  energy to use
      */
-    public int FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
+    public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
         int power = 0;
         try {
             power = p.getShip().firePower(cannons, energy.size());
@@ -304,8 +354,62 @@ public class GameModel {
                 e.getBattery().useEnergy(e);
             }
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException ("Not enough energy");
+            throw new IllegalArgumentException("Not enough energy");
         }
         return power;
     }
+
+    /** function to call when is needed to calculate the firepower of the ship
+     * @param p player whose chose to activate the effect of the card
+     * @param doubleEngines number of double engines to activate
+     * @param energy list of energy to use
+     * @return the engine power of the ship
+     * @throws IllegalArgumentException
+     */
+    public int EnginePower(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
+        int power = 0;
+        if (doubleEngines < energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
+            power = p.getShip().enginePower(doubleEngines);
+            for (Energy e : energy) {
+                e.getBattery().useEnergy(e);
+            }
+        } else {
+            throw new IllegalArgumentException("Not enough energy");
+        }
+        return power;
+    }
+
+    /** method to move or remove a cargo from the ship if the to cargoHold is null
+     * @param p player whose chose to activate the effect of the card
+     * @param c cargo to move
+     * @param from cargoHold from
+     * @param to cargoHold to
+     */
+    public void MoveCargo(Player p, Cargo c, CargoHold from, CargoHold to) {
+        c.setCargoHold(to);
+        from.unloadCargo(c);
+        if (to == null){
+            //aggiungere metodo per rimuovere il cargo dal conteggio dei cargo rimanenti
+        } else {
+            to.loadCargo(c);
+        }
+    }
+
+    public void addCargo(Player p, Cargo c, CargoHold ch) {
+        ch.loadCargo(c);
+        c.setCargoHold(ch);
+    }
+
+    public void OpenSpace (Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
+        int power = 0;
+        AdventureCard c = getActiveCard();
+        try {
+            power = EnginePower(p, doubleEngines, energy);
+            ((OpenSpace) c).Effect(p, game, power);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Not enough energy");
+        }
+    }
+    
+
 }
