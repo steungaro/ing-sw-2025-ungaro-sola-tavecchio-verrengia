@@ -138,8 +138,8 @@ public class NormalShip extends Ship {
      * @return power: the firepower of the ship
      */
     @Override
-    public float firePower(Set<Cannon> cannons) {
-        if(cannons.size()>totalEnergy)
+    public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
+        if(energies > totalEnergy || energies != cannons.size())
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
@@ -219,5 +219,14 @@ public class NormalShip extends Ship {
         }else{
             purpleAlien = true;
         }
+    }
+
+    /**
+     * Gets the total number of astronauts in the ship
+     * @return Crew count
+     */
+    @Override
+    public Integer crew(){
+        return astronauts + (brownAlien ? 1 : 0) + (purpleAlien ? 1 : 0);
     }
 }

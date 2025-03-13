@@ -87,8 +87,8 @@ public abstract class Ship {
      * @return power
      * @throws IllegalArgumentException if the number of cannons is greater than the total energy of the ship
      */
-    public float firePower(Set<Cannon> cannons) throws IllegalArgumentException {
-        if(cannons.size()>totalEnergy)
+    public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
+        if(energies > totalEnergy || cannons.size() != energies)
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
