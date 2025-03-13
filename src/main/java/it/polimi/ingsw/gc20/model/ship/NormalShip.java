@@ -229,4 +229,15 @@ public class NormalShip extends Ship {
     public Integer crew(){
         return astronauts + (brownAlien ? 1 : 0) + (purpleAlien ? 1 : 0);
     }
+
+    /*
+     * Function to remove aliens from the ship
+     */
+    public void removeAlien(Alien alien){
+        if(alien.getColor() == AlienColor.BROWN){
+            brownAlien = false;
+        }else{
+            purpleAlien = false;
+        }
+    }
 }

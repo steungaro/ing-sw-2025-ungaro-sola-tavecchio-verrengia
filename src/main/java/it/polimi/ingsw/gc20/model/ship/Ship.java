@@ -453,7 +453,84 @@ public abstract class Ship {
         }
     }
 
+    /**
+     * Function that there are 2 adjacent cabins that have aliens or astronauts inside them kill one beeing per cabin
+     * if there are no astronauts or aliens in the cabin, nothing happens
+     */
     public void epidemic() {
-        //TODO implement here
+        int rows = getRows();
+        int cols = getCols();
+        for(int i=0; i<rows; i++){
+            for(int j=0; j<cols; j++){
+                Component c = getComponentAt(i, j);
+                if(c instanceof Cabin){
+                    if(!((Cabin) c).getAstronauts().isEmpty() || ((Cabin) c).getAlien() != null){
+                        //check all directions to find a cabin with astronauts or aliens
+                        if(i-1 >= 0){
+                            Component c1 = getComponentAt(i-1, j);
+                            if(c1 instanceof Cabin){
+                                if(!((Cabin) c1).getAstronauts().isEmpty() || ((Cabin) c1).getAlien() != null){
+                                    if(!((Cabin) c).getAstronauts().isEmpty()){
+                                        ((Cabin) c).getAstronauts().remove(0);
+                                    }else{
+                                        ((Cabin) c).setAliens(null);
+                                    }
+                                }
+                            }
+                        }
+                        if(i+1 < rows){
+                            Component c2 = getComponentAt(i+1, j);
+                            if(c2 instanceof Cabin){
+                                if(!((Cabin) c2).getAstronauts().isEmpty() || ((Cabin) c2).getAlien() != null){
+                                    if(!((Cabin) c).getAstronauts().isEmpty()){
+                                        ((Cabin) c).getAstronauts().remove(0);
+                                    }else{
+                                        ((Cabin) c).setAliens(null);
+                                    }
+                                }
+                            }
+                        }
+                        if(j-1 >= 0){
+                            Component c3 = getComponentAt(i, j-1);
+                            if(c3 instanceof Cabin){
+                                if(!((Cabin) c3).getAstronauts().isEmpty() || ((Cabin) c3).getAlien() != null){
+                                    if(!((Cabin) c).getAstronauts().isEmpty()){
+                                        ((Cabin) c).getAstronauts().remove(0);
+                                    }else{
+                                        ((Cabin) c).setAliens(null);
+                                    }
+                                }
+                            }
+                        }
+                        if(j+1 < cols) {
+                            Component c4 = getComponentAt(i, j + 1);
+                            if (c4 instanceof Cabin) {
+                                if (!((Cabin) c4).getAstronauts().isEmpty() || ((Cabin) c4).getAlien() != null) {
+                                    if (!((Cabin) c).getAstronauts().isEmpty()) {
+                                        ((Cabin) c).getAstronauts().remove(0);
+                                    } else {
+                                        ((Cabin) c).setAliens(null);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /*
+    * Remove astronaut from the ship
+     */
+    public void removeAstronaut() {
+        astronauts--;
+    }
+
+    /*
+    * Removes an energy from the ship
+     */
+    public void useEnergy() {
+        totalEnergy -= 1;
     }
 }
