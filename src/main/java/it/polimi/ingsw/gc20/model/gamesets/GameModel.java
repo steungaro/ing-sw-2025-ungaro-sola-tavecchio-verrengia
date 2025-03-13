@@ -281,19 +281,31 @@ public class GameModel {
         setActiveCard(null);
         ((AbandonedStation) c).Effect(p, game, a);
     }
-    public void AbbandonedStation (Player p){
+    /** function to call when the Abandoned station card is active and the player chose to activate the effect
+     * @param p player whose chose to activate the effect of the card
+     * @return the list of cargo colors
+     */
+    public List<CargoColor> AbbandonedStation (Player p){
         AdventureCard c = getActiveCard();
         //TODO mancano i metodi per il conteggio della crew e per l'effetto
+        return null;
     }
 
+    /** function to call when is needed to calculate the firepower of the ship
+     * @param p player whose chose to activate the effect of the card
+     * @param cannons double cannons to activate
+     * @param energy energy to use
+     */
     public int FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
+        int power = 0;
         try {
-            p.getShip().firePower(cannons, energy.size());
+            power = p.getShip().firePower(cannons, energy.size());
             for (Energy e : energy) {
                 e.getBattery().useEnergy(e);
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException ("Not enough energy");
         }
+        return power;
     }
 }
