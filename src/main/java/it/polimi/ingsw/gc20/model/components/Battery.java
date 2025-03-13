@@ -18,8 +18,7 @@ public class Battery extends Component {
      * @param e the energy of the battery
      */
     public void useEnergy(Energy e) {
-        int i = energy.indexOf(e);
-        energy.get(i).setBattery(null);
+        e.setBattery(null);
         energy.remove(e);
     }
 
