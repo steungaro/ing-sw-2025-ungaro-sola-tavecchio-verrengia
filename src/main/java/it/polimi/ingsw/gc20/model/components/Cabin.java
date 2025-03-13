@@ -70,6 +70,8 @@ public class Cabin extends Component {
         * @param a the astronaut to unload
      */
     public void unloadAstronauts(Astronaut a) {
+        int i = astronauts.indexOf(a);
+        astronauts.get(i).setCabin(null);
         astronauts.remove(a);
     }
 
@@ -78,6 +80,7 @@ public class Cabin extends Component {
         * @param a the alien to unload
      */
     public void unloadAliens(Alien a) {
+        alien.setCabin(null);
         alien=null;
     }
 
