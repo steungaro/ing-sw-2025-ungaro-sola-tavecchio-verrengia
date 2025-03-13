@@ -352,6 +352,7 @@ public class GameModel {
             power = p.getShip().firePower(cannons, energy.size());
             for (Energy e : energy) {
                 e.getBattery().useEnergy(e);
+                p.getShip().useEnergy();
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Not enough energy");
@@ -372,6 +373,7 @@ public class GameModel {
             power = p.getShip().enginePower(doubleEngines);
             for (Energy e : energy) {
                 e.getBattery().useEnergy(e);
+                p.getShip().useEnergy();
             }
         } else {
             throw new IllegalArgumentException("Not enough energy");
@@ -395,11 +397,22 @@ public class GameModel {
         }
     }
 
+    /** method to add a cargo to the cargoHold
+     * @param p player whose is adding the cargo
+     * @param c cargo to add
+     * @param ch cargoHold to add the cargo it needs to be not full
+     */
     public void addCargo(Player p, Cargo c, CargoHold ch) {
         ch.loadCargo(c);
         c.setCargoHold(ch);
     }
 
+    /** method for the openSpace card
+     * @param p player whose chose to activate the effect of the card
+     * @param doubleEngines number of double engines to activate
+     * @param energy list of energy to use
+     * @throws IllegalArgumentException if there is not enough energy
+     */
     public void OpenSpace (Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
         int power = 0;
         AdventureCard c = getActiveCard();
@@ -410,6 +423,5 @@ public class GameModel {
             throw new IllegalArgumentException("Not enough energy");
         }
     }
-    
 
 }
