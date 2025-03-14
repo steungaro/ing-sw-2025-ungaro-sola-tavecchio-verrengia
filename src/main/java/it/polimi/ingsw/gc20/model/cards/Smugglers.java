@@ -77,7 +77,7 @@ public class Smugglers extends AdventureCard {
     /**
      * Setter method for reward
      * @param reward reward
-     * @requires reward is already ordered by value
+     * @implNote reward has to be already ordered by value
      */
     public void setReward(List<CargoColor> reward) {
         this.reward = reward;
@@ -108,10 +108,16 @@ public class Smugglers extends AdventureCard {
     /**
      * @param p is the player that has the effect applied onto
      * @param g is the game where the player is playing
+     * @return the list of cargo that the player gains
      * @implNote The player loses lostDays
-     * @apiNote The controller needs to add the cargo to the player's cargo hold by itself
      */
-    public void EffectSuccess(Player p, Game g) {
+    public List<Cargo> EffectSuccess(Player p, Game g) {
         g.move(p, -lostDays);
+
+        List<Cargo> cargo = new ArrayList<Cargo>();
+        return reward.stream().filter(color -> g.getCargoAvailable(color) > 0)
+                .peek(g::removeCargoAvailable)
+                .map(Cargo::new)
+                .toList();
     }
 }

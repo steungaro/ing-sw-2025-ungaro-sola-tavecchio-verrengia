@@ -23,8 +23,8 @@ public class HeavyMeteor extends Projectile {
      * @return the list of cannons that can defeat the HeavyMeteor
      * @see Ship
      * @see Cannon
-     * @apiNote The controller needs to verify whether the list contains single cannons or double cannons and ask the user to activate them
-     * @implNote HeavyMeteor from above can be defeated by a cannon in the same coloumn, HeavyMeteor from the other directions can be defeated by a cannon in the same row/column or in the previous/next one
+     * @apiNote The controller needs to verify whether the user has sent a valid cannon to defeat the HeavyMeteor and then activate the Fire method if needed
+     * @implNote HeavyMeteor from above can be defeated by a cannon in the same column, HeavyMeteor from the other directions can be defeated by a cannon in the same row/column or in the previous/next one
      */
     public List<Cannon> getCannons(Ship s, int diceResult) {
         List<Cannon> cannons;
@@ -39,13 +39,12 @@ public class HeavyMeteor extends Projectile {
                 cannons = s.getCannons(direction, diceResult - 4);
                 cannons.addAll(s.getCannons(direction, diceResult - 5));
                 cannons.addAll(s.getCannons(direction, diceResult - 3));
-                return cannons;
             } else {
                 cannons = s.getCannons(direction, diceResult - 5);
                 cannons.addAll(s.getCannons(direction, diceResult - 6));
                 cannons.addAll(s.getCannons(direction, diceResult - 4));
-                return cannons;
             }
+            return cannons;
         } else {
             cannons = s.getCannons(direction, diceResult - 5);
             cannons.addAll(s.getCannons(direction, diceResult - 6));

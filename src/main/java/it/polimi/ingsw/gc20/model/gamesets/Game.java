@@ -36,6 +36,50 @@ public class Game {
         board.addPlayer(p);
     }
 
+    /** Getter method for cargoAvailable
+     * @return cargoAvailable
+     */
+    public Map<CargoColor, Integer> getCargoAvailable() {
+        return cargoAvailable;
+    }
+
+    /** Setter method for cargoAvailable
+     * @param cargoAvailable cargoAvailable
+     */
+    public void setCargoAvailable(Map<CargoColor, Integer> cargoAvailable) {
+        this.cargoAvailable = cargoAvailable;
+    }
+
+    /** Getter method for cargoAvailable
+     * @return number of cargo available for each color
+     */
+    public int getCargoAvailable(CargoColor c) {
+        return cargoAvailable.get(c);
+    }
+
+    /** Setter method for cargoAvailable
+     * @param c cargo color to set
+     * @param amount amount of cargo to set
+     */
+    public void setCargoAvailable(CargoColor c, int amount) {
+        this.cargoAvailable.put(c, amount);
+    }
+
+    /** Setter method for cargoAvailable
+     * @param c cargo color to set
+     * @param amount amount of cargo to set
+     */
+    public void removeCargoAvailable(CargoColor c, int amount) {
+        this.cargoAvailable.put(c, cargoAvailable.get(c) - amount);
+    }
+
+    /** Setter method for cargoAvailable
+     * @param c cargo color to set
+     */
+    public void removeCargoAvailable(CargoColor c) {
+        removeCargoAvailable(c, 1);
+    }
+
     /** get function for players
      * @return List<Player>
      */
@@ -76,22 +120,6 @@ public class Game {
      */
     public void setID(Integer id) {
         this.gameID = id;
-    }
-
-    /** get function for cargoAvailable
-     * @param c cargo color to get availability
-     * @return Integer
-     */
-    public Integer getCargoAvailable(CargoColor c) {
-        // TODO implement here
-        return null;
-    }
-
-    /** set function for cargoAvailable
-     * @param c color of the cargo to set, i number of cargo to set as available
-     */
-    public void setCargoAvailable(CargoColor c, Integer i) {
-        // TODO implement here
     }
 
     /** get function for pile

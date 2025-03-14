@@ -25,7 +25,7 @@ public class LightMeteor extends Projectile {
      * @return the list of shields that can defeat the LightFire
      * @see Ship
      * @see Cannon
-     * @apiNote The controller needs to verify whether the list contains shields and ask the user to activate them
+     * @apiNote The controller needs to verify whether the list contains shields and verify the shield received by the player, then manage the attack through the Fire method
      */
     public List<Shield> getShields(Ship s, int diceResult) {
         return s.getShield(direction);
