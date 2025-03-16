@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
-import lobby.Lobby;
+import it.polimi.ingsw.gc20.model.lobby.Lobby;
 
 import java.io.*;
 import java.util.*;
@@ -27,11 +27,6 @@ public class MatchController {
     private List<String> usernames;
 
     /**
-     * 
-     */
-    private List<GameController> games;
-
-    /**
      * @return
      */
     public MatchController getInstance() {
@@ -55,7 +50,7 @@ public class MatchController {
      */
     public void setMaxLobbies(Integer m) {
         // TODO implement here
-        return null;
+        return;
     }
 
     /**
@@ -64,7 +59,7 @@ public class MatchController {
      */
     public void setMaxMatches(Integer m) {
         // TODO implement here
-        return null;
+        return;
     }
 
     /**
@@ -88,20 +83,20 @@ public class MatchController {
      * @param player 
      * @return
      */
-    public Lobby getLobby(String player) {
+    /*public Lobby getLobby(String player) {
         // TODO implement here
         return null;
-    }
+    }*/
 
     /**
      * @param lobby 
      * @param user 
      * @return
      */
-    public LobbyInfo joinLobby(String lobby, String user) {
+    /*public LobbyInfo joinLobby(String lobby, String user) {
         // TODO implement here
         return null;
-    }
+    }*/
 
     /**
      * @param name 
@@ -110,10 +105,11 @@ public class MatchController {
      * @param id 
      * @return
      */
-    public LobbyInfo createLobby(String name, Integer maxPlayers, String user, String id) {
+
+    /*public LobbyInfo createLobby(String name, Integer maxPlayers, String user, String id) {
         // TODO implement here
         return null;
-    }
+    }*/
 
     /**
      * @param id 
@@ -121,7 +117,7 @@ public class MatchController {
      */
     public void leaveLobby(String id) {
         // TODO implement here
-        return null;
+        return;
     }
 
     /**
@@ -130,7 +126,7 @@ public class MatchController {
      */
     public void startLobby(String id) {
         // TODO implement here
-        return null;
+        return;
     }
 
 }

@@ -66,7 +66,7 @@ public class GameModel {
      * @param livello         level of the game
      * @param username        username of the player
      */
-    public void startGame(int numberOfPlayers, int livello, String username) {
+    /*public void startGame(int numberOfPlayers, int livello, String username) {
         Game game = new Game();
         Pile pile = new Pile();
         Board board;
@@ -98,11 +98,11 @@ public class GameModel {
             game.addPlayer(player);
         }
         game.addBoard(board);
-        pile.addUnviewed(/*all components*/);
+        pile.addUnviewed(/*all components);
         game.setPile(pile);
 
         this.setGame(game);
-    }
+    }*/
 
     /**
      * function that allows the player to join the game
@@ -308,11 +308,11 @@ public class GameModel {
      * @param index index of the planet
      * @return the list of cargo colors
      */
-    public List<Cargo> PlanetLand(Player p, int index) {
+    /*public List<Cargo> PlanetLand(Player p, int index) {
         AdventureCard c = getActiveCard();
         Planet planet = ((Planets) c).getPlanet(index);
         return ((Planets) c).land(p, planet);
-    }
+    }*/
 
     /**
      * function to call when the Abandoned ship card is active and the player select the crew member to lose
@@ -321,11 +321,11 @@ public class GameModel {
      * @param a list of crew members to remove
      * @return the list of cargo colors
      */
-    public void AbbandonedShip(Player p, List<Crew> a) {
+    /*public void AbbandonedShip(Player p, List<Crew> a) {
         AdventureCard c = getActiveCard();
         setActiveCard(null);
         ((AbandonedStation) c).Effect(p, game, a);
-    }
+    }*/
 
     /**
      * function to call when the Abandoned station card is active and the player chose to activate the effect
@@ -346,7 +346,7 @@ public class GameModel {
      * @param cannons double cannons to activate
      * @param energy  energy to use
      */
-    public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
+    /*public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
         int power = 0;
         try {
             power = p.getShip().firePower(cannons, energy.size());
@@ -358,7 +358,7 @@ public class GameModel {
             throw new IllegalArgumentException("Not enough energy");
         }
         return power;
-    }
+    }*/
 
     /** function to call when is needed to calculate the firepower of the ship
      * @param p player whose chose to activate the effect of the card

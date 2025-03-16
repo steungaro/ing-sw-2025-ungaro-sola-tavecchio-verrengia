@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
-import it.polimi.ingsw.gc20.model.GameModel;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import java.io.*;
 import java.util.*;
 
