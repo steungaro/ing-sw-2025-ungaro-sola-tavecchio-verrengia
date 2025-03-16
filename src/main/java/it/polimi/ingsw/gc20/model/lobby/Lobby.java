@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.lobby;
 
-import GameController;
-
+import it.polimi.ingsw.gc20.controller.GameController;
 import java.io.*;
 import java.util.*;
 
@@ -9,60 +8,98 @@ import java.util.*;
  * 
  */
 public class Lobby {
+    private List<String> users;
+    private String id;
+    private int maxPlayers;
+    private String ownerUsername;
+    private String name;
 
     /**
      * Default constructor
      */
-    public Lobby() {
+    public Lobby(String name, String ownerUsername, int maxPlayers) {
+        this.users = new ArrayList<String>();
+        this.id = UUID.randomUUID().toString();
+        this.maxPlayers = maxPlayers;
+        this.ownerUsername = ownerUsername;
+        this.name = name;
+        this.users.add(ownerUsername);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public List<String> getUsers() {
+        return users;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setUsers(List<String> users) {
+        this.users = users;
+    }
+
+    public boolean containsUser(String user) {
+        return users.contains(user);
     }
 
     /**
-     * 
-     */
-    private List<String> users;
-
-    /**
-     * 
-     */
-    private String id;
-
-    /**
-     * 
-     */
-    private int maxPlayers;
-
-    /**
-     * 
-     */
-    private String ownerUsername;
-
-    /**
-     * 
-     */
-    private String name;
-
-    /**
-     * @param
-     * @return
+     * @param user is the username of the player that wants to leave the lobby
+     *             the owner of the lobby can't leave the lobby
      */
     public void removePlayer(String user) {
-        // TODO implement here
+        if (user.equals(ownerUsername)) {
+            throw new IllegalArgumentException("The owner of the lobby can't leave the lobby");
+        } else {
+            this.users.remove(user);
+        }
     }
 
     /**
-     * @param String 
-     * @return
+     * @param user is the username of the player that wants to join the lobby
      */
     public void addPlayer(String user) {
-        // TODO implement here
+        if (!users.contains(user) && users.size() < maxPlayers) {
+            this.users.add(user);
+        } else {
+            throw new IllegalArgumentException("The lobby is full");
+        }
     }
 
     /**
-     * @return
+     * @return the game controller created from the lobby
+     * @see GameController
+     * @TODO implement the creation of the game controller
      */
     public GameController createGameController() {
-        // TODO implement here
-        return null;
+        return new GameController();
     }
 
 }
