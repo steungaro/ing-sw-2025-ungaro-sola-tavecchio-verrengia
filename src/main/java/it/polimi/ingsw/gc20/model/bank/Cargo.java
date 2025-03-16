@@ -22,6 +22,15 @@ public class Cargo {
         this.cargoHold = null;
     }
 
+    /**
+     * Constructor
+     * @param c color of the cargo
+     */
+    public Cargo(CargoColor c) {
+        this.color = c;
+        this.cargoHold = null;
+    }
+
     /** get function for the color of the cargo
      * @return CargoColor color of the cargo
      */
