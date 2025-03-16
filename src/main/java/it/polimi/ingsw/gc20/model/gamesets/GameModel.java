@@ -7,9 +7,8 @@ import it.polimi.ingsw.gc20.model.bank.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
+
 
 public class GameModel {
     private Game game;
@@ -324,7 +323,7 @@ public class GameModel {
     public void AbbandonedShip(Player p, List<Crew> a) {
         AdventureCard c = getActiveCard();
         setActiveCard(null);
-        ((AbandonedStation) c).Effect(p, game, a);
+        ((AbandonedShip) c).Effect(p, game, a);
     }
 
     /**
@@ -347,7 +346,7 @@ public class GameModel {
      * @param energy  energy to use
      */
     public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
-        int power = 0;
+        float power = 0;
         try {
             power = p.getShip().firePower(cannons, energy.size());
             for (Energy e : energy) {
@@ -424,4 +423,31 @@ public class GameModel {
         }
     }
 
+    public void UseShield (Player p, Energy e) {
+        e.getBattery().useEnergy(e);
+        p.getShip().useEnergy();
+    }
+
+    public void Stardust (Player p){
+        AdventureCard c = getActiveCard();
+        ((Stardust) c).Effect(p, game);
+    }
+
+    public void Epidemic (Player p){
+        AdventureCard c = getActiveCard();
+        ((Epidemic) c).Effect(p);
+    }
+
+    public void calculateScore (int livello) {
+        Map<Player, Integer> score = new HashMap();
+
+        for (Player p : game.getPlayers()) {
+            int points = 0;
+            //TODO metodo per calcolare il punteggio
+            score.put(p, points);
+        }
+    }
+
+
+    //TODO metodi per Combatzone, schiavisti, smugglers and pirates.
 }
