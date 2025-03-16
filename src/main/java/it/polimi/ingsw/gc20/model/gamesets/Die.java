@@ -7,32 +7,26 @@ import java.util.*;
  * 
  */
 public class Die {
+    private int lastRolled;
+    private final Random rand = new Random();
 
-    /**
-     * Default constructor
-     */
     public Die() {
+        this.lastRolled = 0;
     }
 
-    /**
-     * 
-     */
-    private int lastRolled;
-
-    /**
-     * @return
-     */
     public int rollDie() {
-        // TODO implement here
-        return 0;
+        this.lastRolled = rand.nextInt(6) + 1;
+        return this.lastRolled;
     }
 
     /**
      * @return
      */
     public int getLastRolled() {
-        // TODO implement here
-        return 0;
+        if (this.lastRolled == 0) {
+            throw new ArithmeticException("Die not rolled yet");
+        }
+        return this.lastRolled;
     }
 
 }
