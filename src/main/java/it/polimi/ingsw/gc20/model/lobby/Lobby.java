@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.lobby;
-
 import it.polimi.ingsw.gc20.controller.GameController;
+
 import java.io.*;
 import java.util.*;
 
@@ -84,6 +84,7 @@ public class Lobby {
 
     /**
      * @param user is the username of the player that wants to join the lobby
+     * @return
      */
     public void addPlayer(String user) {
         if (!users.contains(user) && users.size() < maxPlayers) {
