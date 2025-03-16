@@ -1,51 +1,60 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import java.io.*;
 import java.util.*;
 
 /**
- * 
+ * @author GC20
  */
 public class Hourglass {
+    private int period;
+    private int turned;
+    private int remainingTime;
 
     /**
      * Default constructor
      */
-    public Hourglass() {
+    public Hourglass(int period) {
+        this.period = period;
+        this.turned = 0;
+        this.remainingTime = period;
     }
 
-    /**
-     * 
-     */
-    private int period;
+    public int getPeriod() {
+        return period;
+    }
 
-    /**
-     * 
-     */
-    private int turned;
+    public int getTurned() {
+        return turned;
+    }
 
-    /**
-     * @return
-     */
+    public void setPeriod(int period) {
+        this.period = period;
+    }
+
     public void turn() {
-        // TODO implement here
-        return null;
+        this.turned++;
+        this.remainingTime = this.period;
+        this.initCountdown();
     }
 
-    /**
-     * @return
-     */
     public int getRemainingTime() {
-        // TODO implement here
-        return 0;
+        return remainingTime;
     }
 
-    /**
-     * @return
-     */
+    public int getTotalElapsed() {
+        return period * turned - remainingTime;
+    }
+
     public void initCountdown() {
-        // TODO implement here
-        return null;
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                if(remainingTime == 0) {
+                    timer.cancel();
+                } else {
+                    remainingTime--;
+                }
+            }
+        }, 0, 1000);
     }
-
 }
