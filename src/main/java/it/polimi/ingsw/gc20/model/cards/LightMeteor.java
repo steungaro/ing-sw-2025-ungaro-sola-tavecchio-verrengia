@@ -27,8 +27,8 @@ public class LightMeteor extends Projectile {
      * @see Cannon
      * @apiNote The controller needs to verify whether the list contains shields and verify the shield received by the player, then manage the attack through the Fire method
      */
-    public List<Shield> getShields(Ship s, int diceResult) {
+    /*public List<Shield> getShields(Ship s, int diceResult) {
         return s.getShield(direction);
-    }
+    }*/
 
 }
