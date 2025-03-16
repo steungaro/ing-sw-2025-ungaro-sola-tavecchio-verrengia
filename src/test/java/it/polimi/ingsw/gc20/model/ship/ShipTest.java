@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.ship.Ship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,7 +30,7 @@ class ShipTest {
 
         downCannon = new Cannon();
         downCannon.setOrientation(Direction.DOWN);
-        downCannon.setPower(1);
+        downCannon.setPower(2);
 
         singleEngine = new Engine();
         singleEngine.setPower(1);
@@ -42,6 +41,9 @@ class ShipTest {
         battery = new Battery();
         cabin = new Cabin();
 
+        // Set up tiles for components
+        setupTiles();
+
         // Set up a known configuration
         ship.addComponent(upCannon, 1, 1);
         ship.addComponent(downCannon, 2, 1);
@@ -49,15 +51,13 @@ class ShipTest {
         ship.addComponent(doubleEngine, 1, 2);
         ship.addComponent(battery, 1, 3);
         ship.addComponent(cabin, 2, 3);
-
-        // Set up tiles for components
-        setupTiles();
     }
 
-    private void setupTiles() {
+     private void setupTiles() {
         Tile tile1 = new Tile();
         ship.table[1][1] = tile1;
         tile1.setAvailability(true);
+        this.addComponent(upCannon, 1, 1);
         tile1.addComponent(upCannon);
         upCannon.setTile(tile1);
 
@@ -71,13 +71,13 @@ class ShipTest {
         ship.table[2][2] = tile3;
         tile3.setAvailability(true);
         tile3.addComponent(singleEngine);
-        singleEngine.setTile(tile1);
+        singleEngine.setTile(tile3);
 
         Tile tile4 = new Tile();
         ship.table[1][2] = tile4;
         tile4.setAvailability(true);
         tile4.addComponent(doubleEngine);
-        upCannon.setTile(tile1);
+        doubleEngine.setTile(tile4);
 
         Tile tile5 = new Tile();
         ship.table[1][3] = tile5;
@@ -113,8 +113,10 @@ class ShipTest {
         Set<Cannon> cannons = new HashSet<>();
         cannons.add(downCannon);
 
+        ship.totalEnergy = 1;
+
         float power = ship.firePower(cannons, 1);
-        assertEquals(3.0f, power); // 1 from singleCannonsPower + 2 from downCannon
+        assertEquals(2.0f, power); // 1 from singleCannonsPower + 2 from downCannon
     }
 
     @Test
@@ -130,6 +132,16 @@ class ShipTest {
 
     private class TestShip extends Ship {
         private Tile[][] table = new Tile[4][4];
+
+        // Constructor to initialize all tiles
+        public TestShip() {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    table[i][j] = new Tile();
+                    table[i][j].setAvailability(true);
+                }
+            }
+        }
 
         @Override
         public Integer getRows() {
@@ -152,6 +164,14 @@ class ShipTest {
         protected void setComponentAt(Component c, int row, int col) {
             if (row >= 0 && row < getRows() && col >= 0 && col < getCols())
                 table[row][col].addComponent(c);
+        }
+
+        @Override
+        public void addComponent(Component c, int row, int col){
+            if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+                setComponentAt( c, row, col);
+                updateParameters(c, 1);
+            }
         }
     }
 }
