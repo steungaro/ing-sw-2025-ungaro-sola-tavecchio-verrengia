@@ -62,4 +62,18 @@ public class LearnerShip extends Ship {
             table[row][col].addComponent(c);
         }
     }
+
+    /**
+     * Adds a component to the ship at the specified position and updates ship parameters
+     * @param c Component to add
+     * @param row Row position
+     * @param col Column position
+     */
+    public void addComponent(Component c, int row, int col){
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            setComponentAt( c, row, col);
+            updateParameters(c, 1);
+            c.setTile(table[row][col]);
+        }
+    }
 }

@@ -37,18 +37,7 @@ public abstract class Ship {
         astronauts = 0;
     }
 
-    /**
-     * Adds a component to the ship at the specified position and updates ship parameters
-     * @param c Component to add
-     * @param row Row position
-     * @param col Column position
-     */
-    public void addComponent(Component c, int row, int col){
-        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
-            setComponentAt( c, row, col);
-            updateParameters(c, 1);
-        }
-    }
+    public abstract void addComponent(Component c, int row, int col);
 
     /**
      * Gets the total number of rows in the ship grid

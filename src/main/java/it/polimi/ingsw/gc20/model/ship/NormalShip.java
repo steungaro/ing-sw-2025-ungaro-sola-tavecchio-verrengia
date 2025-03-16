@@ -188,19 +188,61 @@ public class NormalShip extends Ship {
             }
         }else if(c instanceof Battery){
             totalEnergy -= ((Battery) c).getEnergy().size();
-        } else if (c instanceof Cabin) {
+        } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts and aliens inside the cabin
-            astronauts += ((Cabin) c).getAstronauts().size()*add;
-            if(((Cabin) c).getAlien() != null){
-                if(((Cabin) c).getAlien().getColor() == AlienColor.BROWN){
-                    brownAlien = (add == 1);
-                }else{
-                    purpleAlien = (add == 1);
-                }
-            }
+            astronauts -= ((Cabin) c).getAstronauts().size();
         } else if (c instanceof CargoHold && add == -1) {
             ((CargoHold) c).getCargoHeld().forEach(k -> cargo.remove(k));
             ((CargoHold) c).cleanCargo();
+        } else if(c instanceof LifeSupport){
+            updateLifeSupport(c, add);
+        }
+    }
+
+    /**
+     * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+     * @param c: the component that was added or removed from the ship
+     * @param add: if the component was added or removed
+     */
+    private void updateLifeSupport(Component c, Integer add) {
+        int row, col, i=0, j=0;
+        outerloop:
+        for(i = 0; i < getRows(); i++){
+            for(j = 0; j < getCols(); j++){
+                if(table[i][j].getComponent()== c){
+                    break outerloop;
+                }
+            }
+        }
+        Map<Direction, ConnectorEnum> connectors = c.getConnectors();
+        for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+            row = i;
+            col = j;
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[i][j].getComponent() instanceof  Cabin)) {
+                continue;
+            }
+            switch (entry.getKey()) {
+                case UP:
+                    row--;
+                    break;
+                case DOWN:
+                    row++;
+                    break;
+                case LEFT:
+                    col--;
+                    break;
+                case RIGHT:
+                    col++;
+                    break;
+            }
+            if(c.isValid(table[row][col].getComponent(), entry.getKey())){
+                Cabin comp = (Cabin)table[row][col].getComponent();
+                if(add==1){
+                    comp.addSupport((LifeSupport) c);
+                }else{
+                    comp.removeSupport((LifeSupport) c);
+                }
+            }
         }
     }
 
@@ -211,7 +253,7 @@ public class NormalShip extends Ship {
      * @throws IllegalArgumentException: the cabin cannot host the alien
      */
     public void addAlien(Alien alien, Component c) throws IllegalArgumentException {
-        if(((Cabin) c).getColor() != alien.getColor())
+        if(((Cabin) c).getColor() != alien.getColor() && ((Cabin) c).getColor() != AlienColor.BOTH)
             throw new IllegalArgumentException("this cabin cannot host this alien");
         ((Cabin) c).setAliens(alien);
         if(alien.getColor() == AlienColor.BROWN){
@@ -238,6 +280,20 @@ public class NormalShip extends Ship {
             brownAlien = false;
         }else{
             purpleAlien = false;
+        }
+    }
+
+    /**
+     * Adds a component to the ship at the specified position and updates ship parameters
+     * @param c Component to add
+     * @param row Row position
+     * @param col Column position
+     */
+    public void addComponent(Component c, int row, int col){
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            setComponentAt( c, row, col);
+            updateParameters(c, 1);
+            c.setTile(table[row][col]);
         }
     }
 }

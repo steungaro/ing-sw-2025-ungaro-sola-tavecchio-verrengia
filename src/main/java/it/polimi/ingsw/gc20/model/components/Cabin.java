@@ -85,17 +85,31 @@ public class Cabin extends Component {
 
     /**
         * Function that adds support to the cabin.
-        * @param c the color of the support to add
+        * @param ls the lifeSupport that gets added
      */
-    public void addSupport(AlienColor c) {
+    public void addSupport(LifeSupport ls) {
+        AlienColor c = ls.getType();
         if(c==color || color==AlienColor.BOTH)
             return;
-
-        if((c!=color) && (color!=AlienColor.NONE))
+        if(color!=AlienColor.NONE)
             color=AlienColor.BOTH;
         else
             color=c;
     }
+
+    /**
+     * Function that removes support to the cabin.
+     * @param ls the lifeSupport that gets removed
+     */
+    public void removeSupport(LifeSupport ls) {
+        AlienColor c = ls.getType();
+        if(c==color){
+            color=AlienColor.NONE;
+        } else if (color==AlienColor.BOTH) {
+            color = c == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
+        }
+    }
+
 
     public Integer getOccupants(){
         return astronauts.size() + (alien == null ? 0 : 1);
