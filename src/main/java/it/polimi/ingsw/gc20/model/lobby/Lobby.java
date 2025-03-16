@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.lobby;
 
-import GameController;
+import it.polimi.ingsw.gc20.controller.GameController;
 
 import java.io.*;
 import java.util.*;
@@ -50,7 +50,7 @@ public class Lobby {
     }
 
     /**
-     * @param String 
+     * @param user
      * @return
      */
     public void addPlayer(String user) {
