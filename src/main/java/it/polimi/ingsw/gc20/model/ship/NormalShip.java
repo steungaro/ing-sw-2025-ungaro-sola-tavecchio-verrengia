@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc20.model.ship;
 import java.util.*;
 
 import it.polimi.ingsw.gc20.model.bank.Alien;
+import it.polimi.ingsw.gc20.model.bank.Astronaut;
+import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -205,6 +207,21 @@ public class NormalShip extends Ship {
             ((CargoHold) c).cleanCargo();
         } else if(c instanceof LifeSupport){
             updateLifeSupport(c, add);
+        }
+    }
+
+    @Override
+    public void unloadCrew(Crew c) {
+        if (c instanceof Alien){
+            c.getCabin().unloadAlien((Alien)c);
+            if (((Alien) c).getColor() == AlienColor.PURPLE) {
+                purpleAlien = false;
+            } else {
+                brownAlien = false;
+            }
+        } else {
+            c.getCabin().unloadAstronaut((Astronaut)c);
+            astronauts--;
         }
     }
 

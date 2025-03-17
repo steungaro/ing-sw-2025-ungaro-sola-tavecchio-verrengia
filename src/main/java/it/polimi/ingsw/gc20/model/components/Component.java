@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc20.model.ship.Tile;
 public abstract class Component {
 
     protected Map<Direction, ConnectorEnum> connectors;
-    protected Integer IDComponent;
+    protected int IDComponent;
     private Tile tile;
 
     public Component() {
@@ -40,7 +40,7 @@ public abstract class Component {
      * This function returns the ID of the component
      * @return the ID of the component
      */
-    public Integer getIDComponent() {
+    public int getIDComponent() {
         return IDComponent;
     }
 
@@ -48,7 +48,7 @@ public abstract class Component {
      * This function sets the ID of the component
      * @param IDComponent the ID of the component
      */
-    public void setIDComponent(Integer IDComponent) {
+    public void setIDComponent(int IDComponent) {
         this.IDComponent = IDComponent;
     }
 

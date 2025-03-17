@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc20.model.bank.Astronaut;
 import java.util.*;
 
 public class Cabin extends Component {
-
     private List<Astronaut> astronauts;
     private Alien alien;
     private AlienColor color;
@@ -135,8 +134,7 @@ public class Cabin extends Component {
         }
     }
 
-
-    public Integer getOccupants(){
+    public int getOccupants(){
         return astronauts.size() + (alien == null ? 0 : 1);
     }
 }

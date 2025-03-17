@@ -59,8 +59,11 @@ public class CargoHold extends Component {
         if (newCargoHeld.stream().anyMatch(c -> c.getColor() == CargoColor.RED)) {
             throw new IllegalArgumentException("CargoHold cannot hold red cargo");
         }
-        this.cargoHeld.addAll( newCargoHeld );
+        this.cargoHeld.addAll(newCargoHeld);
         this.availableSlots -= cargoHeld.size();
+        for (Cargo c : cargoHeld) {
+            c.setCargoHold(this);
+        }
     }
 
     /**
@@ -70,6 +73,7 @@ public class CargoHold extends Component {
     public void loadCargo(Cargo g) {
         cargoHeld.add(g);
         this.availableSlots--;
+        g.setCargoHold(this);
     }
 
     /**
@@ -79,6 +83,7 @@ public class CargoHold extends Component {
     public void unloadCargo(Cargo c) {
         cargoHeld.remove(c);
         this.availableSlots++;
+        c.setCargoHold(null);
     }
 
     /**
@@ -86,6 +91,9 @@ public class CargoHold extends Component {
      * @return the cargo hold
      */
     public void cleanCargo() {
+        for (Cargo c : cargoHeld) {
+            c.setCargoHold(null);
+        }
         cargoHeld.clear();
         this.availableSlots = slots;
     }

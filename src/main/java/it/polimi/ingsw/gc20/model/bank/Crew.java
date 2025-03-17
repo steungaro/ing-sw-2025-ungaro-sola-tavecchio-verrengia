@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Crew {
 
-    protected Component component;
+    protected Cabin component;
 
     /**
      * Default constructor
@@ -21,13 +21,11 @@ public class Crew {
 
     /** set function for the cabin of the crew member
      * @param c cabin for the crew member
-     * throws IllegalArgumentException if the component is not a cabin
+     * @throws IllegalArgumentException if the component is not a cabin
      */
     public void setCabin(Component c) {
         if (c instanceof Cabin) {
-            this.component = c;
-        } else if (c instanceof StartingCabin) {
-            this.component = c;
+            this.component = (Cabin)c;
         } else {
             throw new IllegalArgumentException("The component is not a cabin");
         }
@@ -36,7 +34,7 @@ public class Crew {
     /** get function for the cabin of the crew member
      * @return Component cabin of the crew member
      */
-    public Component getCabin() {
+    public Cabin getCabin() {
         return this.component;
     }
 

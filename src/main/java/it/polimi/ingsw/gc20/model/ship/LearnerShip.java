@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.model.bank.Alien;
+import it.polimi.ingsw.gc20.model.bank.Astronaut;
+import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -75,5 +78,11 @@ public class LearnerShip extends Ship {
             updateParameters(c, 1);
             c.setTile(table[row][col]);
         }
+    }
+
+    @Override
+    public void unloadCrew(Crew c) {
+        c.getCabin().unloadAstronaut((Astronaut)c);
+        astronauts--;
     }
 }

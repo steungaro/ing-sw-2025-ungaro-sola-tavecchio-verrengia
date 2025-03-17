@@ -53,12 +53,16 @@ public class Battery extends Component {
      */
     public void setEnergy(List<Energy> energy) {
         this.energy.addAll(energy);
+        for (Energy e : energy) {
+            e.setBattery(this);
+        }
     }
 
     /**
      * Function that fills the battery.
      */
     public void fillBattery() {
+
         Energy e = new Energy();
         energy.add(e);
         e.setBattery(this);

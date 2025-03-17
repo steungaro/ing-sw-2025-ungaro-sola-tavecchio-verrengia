@@ -279,7 +279,7 @@ public class GameModel {
      * @throws InvalidParameterException if the cabin cannot host this type of astronaut
      */
     public void addPieces(Player p) {
-        p.getShip().addAllAstronauts();
+        p.getShip().initAstronauts();
     }
 
     /**
@@ -351,8 +351,7 @@ public class GameModel {
         try {
             power = p.getShip().firePower(cannons, energy.size());
             for (Energy e : energy) {
-                e.getBattery().useEnergy(e);
-                p.getShip().useEnergy();
+                p.getShip().useEnergy(e);
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Not enough energy");
@@ -372,8 +371,7 @@ public class GameModel {
         if (doubleEngines < energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Energy e : energy) {
-                e.getBattery().useEnergy(e);
-                p.getShip().useEnergy();
+                p.getShip().useEnergy(e);
             }
         } else {
             throw new IllegalArgumentException("Not enough energy");

@@ -18,6 +18,9 @@ public class SpecialCargoHold extends CargoHold {
     public void setCargoHeld(List<Cargo> newCargoHeld) {
         this.cargoHeld.addAll(newCargoHeld);
         this.availableSlots -= cargoHeld.size();
+        for (Cargo cargo : cargoHeld) {
+            cargo.setCargoHold(this);
+        }
     }
 
 }
