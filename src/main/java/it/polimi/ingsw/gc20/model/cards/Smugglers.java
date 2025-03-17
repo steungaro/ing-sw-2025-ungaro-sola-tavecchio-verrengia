@@ -113,8 +113,6 @@ public class Smugglers extends AdventureCard {
      */
     public List<Cargo> EffectSuccess(Player p, Game g) {
         g.move(p, -lostDays);
-
-        List<Cargo> cargo = new ArrayList<Cargo>();
         return reward.stream().filter(color -> g.getCargoAvailable(color) > 0)
                 .peek(g::removeCargoAvailable)
                 .map(Cargo::new)

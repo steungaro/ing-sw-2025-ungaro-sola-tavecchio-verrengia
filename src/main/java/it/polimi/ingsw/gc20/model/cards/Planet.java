@@ -50,10 +50,13 @@ public class Planet {
         this.available = false;
     }
     
-    public List<CargoColor> land (Player player) {
+    public List<Cargo> land (Game g, Player player) {
         this.player = player;
         this.setUnavailable();
-        return this.reward;
+        return reward.stream().filter(color -> g.getCargoAvailable(color) > 0)
+                .peek(g::removeCargoAvailable)
+                .map(Cargo::new)
+                .toList();
     }
 
     public void leave() {
