@@ -4,7 +4,6 @@ import java.util.*;
 
 import it.polimi.ingsw.gc20.model.bank.Cargo;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.gamesets.*;
 
 /**
  * @author GC20
