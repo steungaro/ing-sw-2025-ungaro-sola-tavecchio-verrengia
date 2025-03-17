@@ -6,7 +6,6 @@ import it.polimi.ingsw.gc20.model.bank.Cargo;
 import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.components.CargoHold;
 
 /**
  * @author GC20
@@ -25,7 +24,7 @@ public class CombatZone extends AdventureCard {
         lostDays = 0;
         lostCargo = 0;
         lostCrew = 0;
-        cannonFire = new ArrayList<Projectile>();
+        cannonFire = new ArrayList<>();
     }
 
     /**
@@ -45,21 +44,20 @@ public class CombatZone extends AdventureCard {
     }
 
     /**
+     * Getter method for lostCargo
+     * @return lostCargo
+     */
+    public int getLostCargo() {
+        return lostCargo;
+    }
+
+    /**
      * Setter method for lostCargo
      * @param lostCargo lostCargo
      * @implSpec cargo is always the most valuable cargo for player
      */
     public void setLostCargo(int lostCargo) {
         this.lostCargo = lostCargo;
-    }
-
-    /**
-     * Getter method for lostCargo
-     * @return lostCargo
-     * @implSpec cargo is always the most valuable cargo for player
-     */
-    public Integer getLostCargo() {
-        return lostCargo;
     }
 
     /**
@@ -78,9 +76,6 @@ public class CombatZone extends AdventureCard {
         return cannonFire;
     }
 
-    public int getLostCrew() {
-        return lostCrew;
-    }
 
     public void setLostCrew(int lostCrew) {
         this.lostCrew = lostCrew;
@@ -116,7 +111,7 @@ public class CombatZone extends AdventureCard {
      */
     public void EffectLostCrew(Player p, List<Crew> c) {
         for(Crew i : c) {
-
+            p.getShip().unloadCrew(i);
         }
     }
 
@@ -128,7 +123,7 @@ public class CombatZone extends AdventureCard {
      */
     public void EffectLostCargo(Player p, List<Cargo> c) {
         for(Cargo i : c) {
-            p.getShip().unloadCargo(i.getCargoHold(), i);
+            p.getShip().unloadCargo(i);
         }
     }
 

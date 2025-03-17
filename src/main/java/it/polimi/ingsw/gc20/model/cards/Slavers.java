@@ -2,10 +2,8 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.ship.Ship;
 import it.polimi.ingsw.gc20.model.bank.*;
 import java.util.*;
-import it.polimi.ingsw.gc20.model.components.*;
 
 /**
  * @author GC20
@@ -93,20 +91,12 @@ public class Slavers extends AdventureCard {
 
     /**
      * @param p is the player that the card has to affect
-     * @param g is the game
      * @param l is the lost members list
      * @implNote The player loses the crew members
      */
-    public void EffectFailure(Player p, Game g, List<Crew> l) {
+    public void EffectFailure(Player p, List<Crew> l) {
         for (Crew c : l) {
-            Component comp = c.getCabin();
-            if (c instanceof Alien && comp instanceof Cabin) {
-                ((Cabin) comp).unloadAlien((Alien)c);
-            } else if (c instanceof Astronaut && comp instanceof Cabin) {
-                ((Cabin) comp).unloadAstronaut((Astronaut)c);
-            } else if (c instanceof Astronaut && comp instanceof StartingCabin) {
-                ((StartingCabin) comp).unloadAstronauts((Astronaut)c);
-            }
+            p.getShip().unloadCrew(c);
         }
     }
 

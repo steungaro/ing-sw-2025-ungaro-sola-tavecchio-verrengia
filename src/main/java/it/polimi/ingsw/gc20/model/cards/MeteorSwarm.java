@@ -1,12 +1,12 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import java.io.*;
 import java.util.*;
 
 /**
  * @author GC20
  */
-public class MeteorSwarm extends AdventureCard {
+public class
+MeteorSwarm extends AdventureCard {
     private List<Projectile> meteors;
 
     /**
@@ -14,7 +14,7 @@ public class MeteorSwarm extends AdventureCard {
      */
     public MeteorSwarm() {
         super();
-        meteors = new ArrayList<Projectile>();
+        meteors = new ArrayList<>();
     }
 
     public void setMeteors(List<Projectile> meteors) {
