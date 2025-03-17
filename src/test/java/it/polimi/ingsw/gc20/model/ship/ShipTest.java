@@ -54,41 +54,7 @@ class ShipTest {
     }
 
      private void setupTiles() {
-        Tile tile1 = new Tile();
-        ship.table[1][1] = tile1;
-        tile1.setAvailability(true);
-        this.addComponent(upCannon, 1, 1);
-        tile1.addComponent(upCannon);
-        upCannon.setTile(tile1);
 
-        Tile tile2 = new Tile();
-        ship.table[2][1] = tile2;
-        tile2.setAvailability(true);
-        tile2.addComponent(downCannon);
-        downCannon.setTile(tile2);
-
-        Tile tile3 = new Tile();
-        ship.table[2][2] = tile3;
-        tile3.setAvailability(true);
-        tile3.addComponent(singleEngine);
-        singleEngine.setTile(tile3);
-
-        Tile tile4 = new Tile();
-        ship.table[1][2] = tile4;
-        tile4.setAvailability(true);
-        tile4.addComponent(doubleEngine);
-        doubleEngine.setTile(tile4);
-
-        Tile tile5 = new Tile();
-        ship.table[1][3] = tile5;
-        tile5.setAvailability(true);
-        tile5.addComponent(battery);
-        battery.setTile(tile5);
-
-        Tile tile6 = new Tile();
-        ship.table[2][3] = tile6;
-        tile6.setAvailability(true);
-        tile6.addComponent(cabin);
     }
 
     @Test
