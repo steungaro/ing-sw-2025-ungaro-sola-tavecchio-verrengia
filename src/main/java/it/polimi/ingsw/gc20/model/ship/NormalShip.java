@@ -18,13 +18,21 @@ public class NormalShip extends Ship {
         super();
         brownAlien = false;
         purpleAlien = false;
+
+        //initialize table
+        for (int i=0; i<7; i++) {
+            for (int j=0; j<5; j++) {
+                table[i][j] = new Tile();
+            }
+        }
+
         table[0][0].setAvailability(false);
         table[0][1].setAvailability(false);
         table[1][0].setAvailability(false);
-        table[0][3].setAvailability(false);
-        table[0][6].setAvailability(false);
-        table[0][5].setAvailability(false);
-        table[1][6].setAvailability(false);
+        table[3][0].setAvailability(false);
+        table[6][0].setAvailability(false);
+        table[0][5].setAvailability(false);//
+        table[6][1].setAvailability(false);
         table[4][3].setAvailability(false);
         table[2][3].setAvailability(false);
         Component sc = new StartingCabin();
