@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.components;
 import it.polimi.ingsw.gc20.model.bank.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 
 
 import java.util.*;
@@ -7,11 +8,14 @@ import java.util.*;
 public class CargoHold extends Component {
 
     protected List<Cargo> cargoHeld;
-    protected Integer slots;
+    protected int slots;
+    protected int availableSlots;
 
     public CargoHold() {
+        super();
         cargoHeld = new ArrayList<>();
         slots = 0;
+        availableSlots = 0;
     }
 
     /**
@@ -26,16 +30,25 @@ public class CargoHold extends Component {
      * Function that returns the space of the cargo hold.
      * @return the space of the cargo hold
      */
-    public Integer getSpace() {
+    public int getSlots() {
         return slots;
+    }
+
+    /**
+     * Function that returns the available slots in the cargo hold.
+     * @return the available slots in the cargo hold
+     */
+    public int getAvailableSlots() {
+        return availableSlots;
     }
 
     /**
      * Function that sets the space of the cargo hold.
      * @param slots the space of the cargo hold
      */
-    public void setSpace(Integer slots) {
+    public void setSlots(int slots) {
         this.slots = slots;
+        this.availableSlots = slots;
     }
 
     /**
@@ -43,7 +56,14 @@ public class CargoHold extends Component {
      * @param newCargoHeld the cargo to set
      */
     public void setCargoHeld(List<Cargo> newCargoHeld) {
-        this.cargoHeld.addAll( newCargoHeld );
+        if (newCargoHeld.stream().anyMatch(c -> c.getColor() == CargoColor.RED)) {
+            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
+        }
+        this.cargoHeld.addAll(newCargoHeld);
+        this.availableSlots -= cargoHeld.size();
+        for (Cargo c : cargoHeld) {
+            c.setCargoHold(this);
+        }
     }
 
     /**
@@ -52,6 +72,8 @@ public class CargoHold extends Component {
      */
     public void loadCargo(Cargo g) {
         cargoHeld.add(g);
+        this.availableSlots--;
+        g.setCargoHold(this);
     }
 
     /**
@@ -60,6 +82,8 @@ public class CargoHold extends Component {
      */
     public void unloadCargo(Cargo c) {
         cargoHeld.remove(c);
+        this.availableSlots++;
+        c.setCargoHold(null);
     }
 
     /**
@@ -67,7 +91,11 @@ public class CargoHold extends Component {
      * @return the cargo hold
      */
     public void cleanCargo() {
+        for (Cargo c : cargoHeld) {
+            c.setCargoHold(null);
+        }
         cargoHeld.clear();
+        this.availableSlots = slots;
     }
 
 }

@@ -9,7 +9,8 @@ public class Battery extends Component {
     private Integer slots;
 
     public Battery() {
-        energy = new ArrayList<Energy>();
+        super();
+        energy = new ArrayList<>();
         slots = 0;
     }
 
@@ -44,11 +45,6 @@ public class Battery extends Component {
      */
     public void setSlots(Integer q) {
         this.slots = q;
-        for(int i=0; i<q; i++) {
-            Energy e = new Energy();
-            e.setBattery(this);
-            energy.add(e);
-        }
     }
 
     /**
@@ -57,5 +53,18 @@ public class Battery extends Component {
      */
     public void setEnergy(List<Energy> energy) {
         this.energy.addAll(energy);
+        for (Energy e : energy) {
+            e.setBattery(this);
+        }
+    }
+
+    /**
+     * Function that fills the battery.
+     */
+    public void fillBattery() {
+
+        Energy e = new Energy();
+        energy.add(e);
+        e.setBattery(this);
     }
 }

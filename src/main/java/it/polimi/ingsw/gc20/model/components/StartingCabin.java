@@ -1,50 +1,46 @@
 package it.polimi.ingsw.gc20.model.components;
+import it.polimi.ingsw.gc20.model.bank.Alien;
 import it.polimi.ingsw.gc20.model.bank.Astronaut;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartingCabin extends Component {
+public class StartingCabin extends Cabin {
 
     private List<Astronaut> astronauts;
 
     public StartingCabin() {
+        super();
         astronauts = new ArrayList<Astronaut>();
     }
 
-    /**
-     * function to set the astronauts
-     * @param a the astronauts to set
-     */
-    public void setAstronauts(List<Astronaut> a) {
-        this.astronauts = a;
-        return;
+    @Override
+    public void setAlien(Alien a) {
+        throw new IllegalArgumentException("Cannot set an alien in the starting cabin");
+    }
+
+    @Override
+    public Alien getAlien() {
+        return null;
+    }
+
+    @Override
+    public void unloadAlien(Alien a) {
+        throw new IllegalArgumentException("Cannot unload an alien in the starting cabin");
     }
 
     /**
-     * function to get the astronauts
-     * @return the astronauts
+     * Function that adds support to the cabin.
+     * @param ls the lifeSupport that's added
      */
-    public List<Astronaut> getAstronauts() {
-        return astronauts;
+    @Override
+    public void addSupport(LifeSupport ls) {
+        super.setColor(AlienColor.NONE);
     }
 
-    /**
-     * function to unload the astronauts
-     * @param a the astronaut to unload
-     */
-    public void unloadAstronauts(Astronaut a) {
-        astronauts.remove(a);
-        return;
-    }
-
-    /**
-     * function to add an astronaut
-     * @param a the astronaut to add
-     */
-    public void addAstronaut(Astronaut a) {
-        astronauts.add(a);
-        return;
+    @Override
+    public void removeSupport(LifeSupport ls) {
+        super.setColor(AlienColor.NONE);
     }
 
 }

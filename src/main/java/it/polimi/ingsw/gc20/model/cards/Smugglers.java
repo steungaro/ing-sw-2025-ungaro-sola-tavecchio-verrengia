@@ -23,7 +23,7 @@ public class Smugglers extends AdventureCard {
         lostCargo = 0;
         firePower = 0;
         lostDays = 0;
-        reward = new ArrayList<CargoColor>();
+        reward = new ArrayList<>();
     }
 
     /**
@@ -94,14 +94,13 @@ public class Smugglers extends AdventureCard {
 
     /**
      * @param p is the player that has the effect applied onto
-     * @param g is the game where the player is playing
      * @param l is the list of cargo that the player has to lose
      * @implNote The player loses cargo
      * @apiNote The controller needs to verify that the player has enough cargo to lose (or call removeEnergy) and that the cargo lost is the most valuable owned by the player
      */
-    public void EffectFailure(Player p, Game g, List<Cargo> l) {
+    public void EffectFailure(Player p, List<Cargo> l) {
         for (Cargo c : l) {
-            c.getCargoHold().unloadCargo(c);
+            p.getShip().unloadCargo(c);
         }
     }
 

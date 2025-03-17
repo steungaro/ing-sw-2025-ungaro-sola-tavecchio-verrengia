@@ -1,11 +1,11 @@
 package it.polimi.ingsw.gc20.model.components;
 
 public class Cannon extends Component {
-
-    private Integer power;
+    private int power;
     private Direction orientation;
 
     public Cannon() {
+        super();
         power=0;
         orientation=Direction.UP;
     }
@@ -14,7 +14,7 @@ public class Cannon extends Component {
      * Function that returns the power of the cannon.
      * @return the power of the cannon
      */
-    public Integer getPower() {
+    public int getPower() {
         return power;
     }
 
@@ -22,7 +22,7 @@ public class Cannon extends Component {
      * Function that sets the power of the cannon.
      * @param power the power of the cannon
      */
-    public void setPower(Integer power) {
+    public void setPower(int power) {
         this.power = power;
     }
 
@@ -45,6 +45,7 @@ public class Cannon extends Component {
     /**
      * This function rotates the component clockwise by 90 degrees
      * */
+    @Override
     public void rotateClockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.LEFT));
@@ -66,6 +67,7 @@ public class Cannon extends Component {
     /**
      * This function rotates the component counterclockwise by 90 degrees
      * */
+    @Override
     public void rotateCounterclockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.RIGHT));

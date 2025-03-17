@@ -66,14 +66,12 @@ public class Pirates extends AdventureCard {
     }
 
     /**
-     * @param p is the player that has drawn the card
-     * @param g is the game
      * @return the list of projectiles that will be fired
      * @implNote the projectiles are fired in the order they are in the list
      * @apiNote the controller needs to obtain the list of fires and apply the rules specified in Projectile
      * @see Projectile
      */
-    public List<Projectile> EffectFailure(Player p, Game g) {
+    public List<Projectile> EffectFailure() {
         return this.getCannonFire();
     }
 }

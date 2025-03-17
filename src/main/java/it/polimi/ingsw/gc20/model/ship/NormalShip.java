@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc20.model.ship;
 import java.util.*;
 
 import it.polimi.ingsw.gc20.model.bank.Alien;
+import it.polimi.ingsw.gc20.model.bank.Astronaut;
+import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -47,6 +49,15 @@ public class NormalShip extends Ship {
 
     private Boolean purpleAlien;
 
+    private AlienColor colorHostable;
+
+    public AlienColor getColorHostable() {
+        return colorHostable;
+    }
+
+    public void setColorHostable(AlienColor colorHostable) {
+        this.colorHostable = colorHostable;
+    }
 
     /**
      * Function to be called at the end of construction phase to move the booked components to the waste
@@ -81,8 +92,7 @@ public class NormalShip extends Ship {
 
     /**
      * Add a component to the booked components
-     * @param c
-     * @return
+     * @param c the component to be added to booked
      */
     public void addBooked(Component c) {
         if (booked[0] == null) {
@@ -188,19 +198,80 @@ public class NormalShip extends Ship {
             }
         }else if(c instanceof Battery){
             totalEnergy -= ((Battery) c).getEnergy().size();
-        } else if (c instanceof Cabin) {
+        } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts and aliens inside the cabin
-            astronauts += ((Cabin) c).getAstronauts().size()*add;
-            if(((Cabin) c).getAlien() != null){
-                if(((Cabin) c).getAlien().getColor() == AlienColor.BROWN){
-                    brownAlien = (add == 1);
-                }else{
-                    purpleAlien = (add == 1);
-                }
-            }
+            astronauts -= ((Cabin) c).getAstronauts().size();
         } else if (c instanceof CargoHold && add == -1) {
             ((CargoHold) c).getCargoHeld().forEach(k -> cargo.remove(k));
             ((CargoHold) c).cleanCargo();
+        } else if(c instanceof LifeSupport){
+            updateLifeSupport(c, add);
+        }
+    }
+
+    @Override
+    public void unloadCrew(Crew c) {
+        if (c instanceof Alien){
+            c.getCabin().unloadAlien((Alien)c);
+            if (((Alien) c).getColor() == AlienColor.PURPLE) {
+                purpleAlien = false;
+            } else {
+                brownAlien = false;
+            }
+        } else {
+            c.getCabin().unloadAstronaut((Astronaut)c);
+            astronauts--;
+        }
+    }
+
+    /**
+     * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+     * @param c: the component that was added or removed from the ship
+     * @param add: if the component was added or removed
+     */
+    private void updateLifeSupport(Component c, Integer add) {
+        int row, col, i=0, j=0;
+        outerloop:
+        for(i = 0; i < getRows(); i++){
+            for(j = 0; j < getCols(); j++){
+                if(table[i][j].getComponent()== c){
+                    break outerloop;
+                }
+            }
+        }
+        Map<Direction, ConnectorEnum> connectors = c.getConnectors();
+        for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+            row = i;
+            col = j;
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[i][j].getComponent() instanceof  Cabin)) {
+                continue;
+            }
+            switch (entry.getKey()) {
+                case UP:
+                    row--;
+                    break;
+                case DOWN:
+                    row++;
+                    break;
+                case LEFT:
+                    col--;
+                    break;
+                case RIGHT:
+                    col++;
+                    break;
+            }
+            if(c.isValid(table[row][col].getComponent(), entry.getKey())){
+                Cabin comp = (Cabin)table[row][col].getComponent();
+                if(add==1){
+                    comp.addSupport((LifeSupport) c);
+                }else{
+                    try {
+                        comp.removeSupport((LifeSupport) c);
+                    } catch (Exception e) {
+                        super.updateParameters(c, -1);
+                    }
+                }
+            }
         }
     }
 
@@ -211,9 +282,9 @@ public class NormalShip extends Ship {
      * @throws IllegalArgumentException: the cabin cannot host the alien
      */
     public void addAlien(Alien alien, Component c) throws IllegalArgumentException {
-        if(((Cabin) c).getColor() != alien.getColor())
+        if(((Cabin) c).getColor() != alien.getColor() && ((Cabin) c).getColor() != AlienColor.BOTH)
             throw new IllegalArgumentException("this cabin cannot host this alien");
-        ((Cabin) c).setAliens(alien);
+        ((Cabin) c).setAlien(alien);
         if(alien.getColor() == AlienColor.BROWN){
             brownAlien = true;
         }else{
@@ -239,5 +310,49 @@ public class NormalShip extends Ship {
         }else{
             purpleAlien = false;
         }
+    }
+
+    /**
+     * Adds a component to the ship at the specified position and updates ship parameters
+     * @param c Component to add
+     * @param row Row position
+     * @param col Column position
+     */
+    public void addComponent(Component c, int row, int col){
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            setComponentAt( c, row, col);
+            updateParameters(c, 1);
+            c.setTile(table[row][col]);
+        }
+    }
+
+    public void addAlien(Cabin c, Alien a) {
+        if (c.getOccupants() != 0) {
+            throw new IllegalArgumentException("Cannot add alien to cabin already occupied by astronauts/alien");
+        }
+        if (c.getColor() != a.getColor() && c.getColor() != AlienColor.BOTH) {
+            throw new IllegalArgumentException("Cannot add " + a.getColor().toString() + " alien to " + c.getColor().toString() + " cabin");
+        }
+        c.setAlien(a);
+        this.updateParameters(c, 1);
+    }
+
+    public void removeAlien(Cabin c, Alien a) {
+        if (c.getAlien() == null) {
+            throw new IllegalArgumentException("Cannot remove alien from empty cabin");
+        }
+        if (c.getAlien() != a) {
+            throw new IllegalArgumentException("Cannot remove alien from cabin if it is not the alien in the cabin");
+        }
+        c.setAlien(null);
+        this.updateParameters(c, -1);
+    }
+
+    public void removeAlien(Cabin c) {
+        if (c.getAlien() == null) {
+            throw new IllegalArgumentException("Cannot remove alien from empty cabin");
+        }
+        c.setAlien(null);
+        this.updateParameters(c, -1);
     }
 }
