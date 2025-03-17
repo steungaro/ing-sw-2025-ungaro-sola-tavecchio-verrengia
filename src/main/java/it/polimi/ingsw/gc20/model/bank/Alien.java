@@ -48,7 +48,7 @@ public class Alien extends Crew {
             if (((Cabin) c).getColor()!=this.color) {
                 throw new InvalidParameterException("cabin cannot host this type of alien");
             } else {
-            this.component = c;
+            this.component = (Cabin) c;
         }
         }
     }

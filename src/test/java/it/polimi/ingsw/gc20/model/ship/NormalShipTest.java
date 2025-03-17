@@ -6,7 +6,9 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -103,7 +105,18 @@ class NormalShipTest {
 
     @Test
     void epidemic() {
+        Astronaut a = new Astronaut();
+        Astronaut b = new Astronaut();
 
+        Map<Direction, ConnectorEnum> connectorsC1 = new HashMap<>();
+        connectorsC1.put(Direction.LEFT, ConnectorEnum.S);
+        Map<Direction, ConnectorEnum> connectorsStart = new HashMap<>();
+        connectorsStart.put(Direction.RIGHT, ConnectorEnum.S);
+
+        Cabin1.setConnectors(connectorsC1);
+
+        ;
+        StartingCabin.setConnectors(connectorsStart);
     }
 
     @Test
