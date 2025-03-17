@@ -530,6 +530,7 @@ public abstract class Ship {
      */
     public void useEnergy(Energy e) {
         e.getBattery().useEnergy(e);
+        totalEnergy--;
     }
 
     /**

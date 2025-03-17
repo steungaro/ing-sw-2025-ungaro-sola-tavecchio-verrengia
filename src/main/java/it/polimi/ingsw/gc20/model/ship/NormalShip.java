@@ -92,8 +92,7 @@ public class NormalShip extends Ship {
 
     /**
      * Add a component to the booked components
-     * @param c
-     * @return
+     * @param c the component to be added to booked
      */
     public void addBooked(Component c) {
         if (booked[0] == null) {
