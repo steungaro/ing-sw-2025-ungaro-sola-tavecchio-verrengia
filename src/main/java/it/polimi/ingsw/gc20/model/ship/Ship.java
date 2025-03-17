@@ -152,14 +152,14 @@ public abstract class Ship {
                 }
             case LEFT:
                 for(int i = 0; i < cols; i++){
-                    if(getComponentAt(i,n)!=null){
-                        return getComponentAt(i,n);
+                    if(getComponentAt(n,i)!=null){
+                        return getComponentAt(n,i);
                     }
                 }
             case RIGHT:
                 for(int i = cols-1; i >= 0; i--){
-                    if(getComponentAt(i,n)!=null){
-                        return getComponentAt(i,n);
+                    if(getComponentAt(n,i)!=null){
+                        return getComponentAt(n,i);
                     }
                 }
         }
@@ -405,14 +405,14 @@ public abstract class Ship {
                     doubleCannonsPower += add;
                 }else{
                     singleCannonsPower += 0.5f*add;
-                    }
+                }
             }
         }else if(c instanceof Engine){
             if(((Engine) c).getDoublePower()){
                 doubleEngines += add;
             }else{
                 singleEngines += add;
-                }
+            }
         }else if(c instanceof Battery){
             totalEnergy -= ((Battery) c).getEnergy().size();
         } else if (c instanceof Cabin && add == -1) {
@@ -521,14 +521,14 @@ public abstract class Ship {
     }
 
     /*
-    * Remove astronaut from the ship
+     * Remove astronaut from the ship
      */
     public void removeAstronaut() {
         astronauts--;
     }
 
     /*
-    * Removes an energy from the ship
+     * Removes an energy from the ship
      */
     public void useEnergy() {
         totalEnergy -= 1;
