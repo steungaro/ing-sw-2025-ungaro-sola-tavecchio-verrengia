@@ -40,7 +40,10 @@ public class Planets extends AdventureCard {
      * @apiNote the controller needs to verify that the planet is available and then manage Cargo loading
      */
     public List<Cargo> land (Player player, Planet planet) {
-        return planet.land(player).stream().map(Cargo::new).toList();
+        if (!planet.getAvailable()) {
+            throw new IllegalArgumentException("The planet is not available");
+        }
+        return planet.land(player);
     }
 
 
