@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
 import it.polimi.ingsw.gc20.model.lobby.Lobby;
-import lobby.Lobby;
 
 import java.util.*;
 

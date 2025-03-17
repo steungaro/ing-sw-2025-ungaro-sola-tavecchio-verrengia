@@ -28,7 +28,8 @@ class DieTest {
 
     @Test
     void getLastRolled() {
-    die.rollDie();
-    int lastRolled = die.getLastRolled();
-    assertTrue(lastRolled >= 1 && lastRolled <= 6, "Last rolled value should be between 1 and 6");
+        die.rollDie();
+        int lastRolled = die.getLastRolled();
+        assertTrue(lastRolled >= 1 && lastRolled <= 6, "Last rolled value should be between 1 and 6");
+    }
 }

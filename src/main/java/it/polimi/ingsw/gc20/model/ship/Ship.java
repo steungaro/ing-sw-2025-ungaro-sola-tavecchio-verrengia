@@ -112,6 +112,14 @@ public abstract class Ship {
         return astronauts;
     }
 
+
+    /**
+     * @return the number of astronauts
+     */
+    public Integer getAstronauts() {
+        return astronauts;
+    }
+
     /**
      * Function that gets the first component of the ship from a certain direction to determine what component will be hit
      * @param d Direction: the direction from which the component will be hit
@@ -537,4 +545,11 @@ public abstract class Ship {
      * @param c is the crew member to be unloaded
      */
     public abstract void unloadCrew(Crew c);
+
+    /**
+     * @return whether the ship has engines or not
+     */
+    public boolean hasEngines() {
+        return singleEngines > 0 || doubleEngines > 0;
+    }
 }
