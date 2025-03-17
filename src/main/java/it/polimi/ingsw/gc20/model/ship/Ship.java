@@ -378,10 +378,10 @@ public abstract class Ship {
     }
 
     /**
-     * @param comp is the CargoHold component where the cargo will be loaded
      * @param cargo is the cargo to be loaded
      */
-    public void loadCargo(CargoHold comp, Cargo cargo) {
+    public void loadCargo(Cargo cargo) {
+        CargoHold comp = cargo.getCargoHold();
         if (comp.getAvailableSlots() < 1) {
             throw new IllegalArgumentException("No available slots in cargo hold");
         }
@@ -391,10 +391,10 @@ public abstract class Ship {
     }
 
     /**
-     * @param comp is the CargoHold component where the cargo will be unloaded
      * @param cargo is the cargo to be unloaded
      */
-    public void unloadCargo(CargoHold comp, Cargo cargo) {
+    public void unloadCargo(Cargo cargo) {
+        CargoHold comp = cargo.getCargoHold();
         comp.unloadCargo(cargo);
         cargo.setCargoHold(null);
         this.cargo.remove(cargo);

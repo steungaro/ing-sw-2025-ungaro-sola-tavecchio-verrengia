@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import java.io.*;
 import java.util.*;
-import it.polimi.ingsw.gc20.model.bank.*;
+
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
@@ -42,10 +41,6 @@ public class Planet {
         this.reward.add(reward);
     }
     
-    public void setAvailable() {
-        this.available = true;
-    }
-    
     public void setUnavailable() {
         this.available = false;
     }
@@ -56,8 +51,13 @@ public class Planet {
         return this.reward;
     }
 
-    public void leave() {
-        this.player = null;
-        this.setAvailable();
+
+    public Player getPlayer() {
+        return player;
     }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
 }

@@ -19,7 +19,7 @@ public class AbandonedStation extends AdventureCard {
     public AbandonedStation() {
         super();
         crewNeeded = 0;
-        reward = new ArrayList<CargoColor>();
+        reward = new ArrayList<>();
         lostDays = 0;
     }
 
@@ -81,7 +81,6 @@ public class AbandonedStation extends AdventureCard {
     public List<Cargo> Effect(Player p, Game g) {
         g.move(p, -lostDays);
 
-        List<Cargo> cargo = new ArrayList<Cargo>();
         return reward.stream()
                 .map(Cargo::new)
                 .toList();
