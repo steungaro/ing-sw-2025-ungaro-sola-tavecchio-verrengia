@@ -21,7 +21,7 @@ public class Game {
      * Default constructor
      */
     public Game() {
-        this.players = new ArrayList<Player>();
+        this.players = new ArrayList<>();
         this.board = null;
         this.gameID = null;
         this.pile = null;
@@ -188,5 +188,13 @@ public class Game {
             }
 
         }
+    }
+    public void sortPlayerByPosition(){
+        players.sort(new Comparator<Player>() {
+            @Override
+            public int compare(Player p1, Player p2) {
+                return p1.getPosition() - p2.getPosition();
+            }
+        });
     }
 }

@@ -296,6 +296,7 @@ public class GameModel {
      * @return the card drawn
      */
     public AdventureCard drawCard() {
+        game.sortPlayerByPosition();
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
@@ -423,31 +424,65 @@ public class GameModel {
         }
     }
 
+    /** method to remove a battery when  a shield is utilized
+     * @param p player whose chose to activate the effect of the card
+     * @param e energy to use
+     */
     public void UseShield (Player p, Energy e) {
         e.getBattery().useEnergy(e);
         p.getShip().useEnergy();
     }
 
+    /** method for the stardust card
+     * @param p player victim of the effect of the card
+     */
     public void Stardust (Player p){
         AdventureCard c = getActiveCard();
         ((Stardust) c).Effect(p, game);
     }
 
+    /** method for the epidemic card
+     * @param p player victim of the effect of the card
+     */
     public void Epidemic (Player p){
         AdventureCard c = getActiveCard();
         ((Epidemic) c).Effect(p);
     }
-
+    /** method to calculate the score of the players
+     * @param livello level of the game
+     */
     public void calculateScore (int livello) {
         Map<Player, Integer> score = new HashMap();
-
+        game.sortPlayerByPosition();
+        int min=0;
+        int waste = 0;
+        Player g=null;
         for (Player p : game.getPlayers()) {
-            int points = 0;
-            //TODO metodo per calcolare il punteggio
-            score.put(p, points);
+            int points = game.getPlayers().size() -1;
+            if (min > p.getShip().getAllExposed() || min == 0) {
+                min = p.getShip().getAllExposed();
+                g = p;
+            }
+            if (livello == 2){
+                score.put(p, points*2);
+            } else {
+                score.put(p, points);
+            }
+            waste = p.getShip().getWaste().size();
+            score.put(p, score.get(p) - waste);
+            // TODO metodo per calccolare punteggio dei cargo
+        }
+        if (livello == 2) {
+            score.put(g, score.get(g) + 4);
+        } else {
+            score.put(g, score.get(g) + 2);
         }
     }
 
 
-    //TODO metodi per Combatzone, schiavisti, smugglers and pirates.
+    //TODO metodi per Combatzone, schiavisti, smugglers and pirates,
+    //TODO gestione rimozione crediti, rimozione cargo insufficienti
+    //TODO metodi per gestione casi in cui il player viene eliminato o sceglie di ritirarsi
+    //TODO gestione creazione dei deck
+    //TODO capire come gestire i giocatori quando non sono piu in partita
 }
