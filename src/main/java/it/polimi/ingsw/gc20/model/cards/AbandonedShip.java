@@ -90,9 +90,9 @@ public class AbandonedShip extends AdventureCard {
         for (Crew i : l) {
             if (i instanceof Alien) {
                 Component cabin = i.getCabin();
-                ((Cabin) cabin).unloadAliens((Alien)i);
+                ((Cabin) cabin).unloadAlien((Alien)i);
             } else if (i.getCabin() instanceof Cabin) {
-                ((Cabin) i.getCabin()).unloadAstronauts((Astronaut)i);
+                ((Cabin) i.getCabin()).unloadAstronaut((Astronaut)i);
             } else if (i.getCabin() instanceof StartingCabin) {
                 ((StartingCabin) i.getCabin()).unloadAstronauts((Astronaut)i);
             }

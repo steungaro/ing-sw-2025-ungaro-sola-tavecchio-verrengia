@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.cards;
 import java.util.*;
 
 import it.polimi.ingsw.gc20.model.bank.Cargo;
+import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
@@ -14,6 +15,7 @@ public class CombatZone extends AdventureCard {
     private int lostDays;
     private int lostCargo;
     private List<Projectile> cannonFire;
+    private int lostCrew;
 
     /**
      * Default constructor
@@ -22,6 +24,7 @@ public class CombatZone extends AdventureCard {
         super();
         lostDays = 0;
         lostCargo = 0;
+        lostCrew = 0;
         cannonFire = new ArrayList<Projectile>();
     }
 
@@ -39,7 +42,6 @@ public class CombatZone extends AdventureCard {
      */
     public int getLostDays() {
         return lostDays;
-
     }
 
     /**
@@ -76,6 +78,26 @@ public class CombatZone extends AdventureCard {
         return cannonFire;
     }
 
+    public int getLostCrew() {
+        return lostCrew;
+    }
+
+    public void setLostCrew(int lostCrew) {
+        this.lostCrew = lostCrew;
+    }
+
+    /**
+     * @return the type of combat
+     * @implNote if the card has lostCrew > 0, the method returns 1, else 0
+     */
+    public int combatType() {
+        if (lostCrew > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
     /**
      * applies the effect of the card to the player
      * @param p player
@@ -89,14 +111,24 @@ public class CombatZone extends AdventureCard {
     /**
      * applies the effect of the card to the player
      * @param p player
-     * @param g game
+     * @param c lost crew
+     * @implNote the player loses days
+     */
+    public void EffectLostCrew(Player p, List<Crew> c) {
+        for(Crew i : c) {
+
+        }
+    }
+
+    /**
+     * applies the effect of the card to the player
+     * @param p player
      * @param c cargo lost
      * @implNote the player loses cargo
      */
-    public void EffectLostCargo(Player p, Game g, List<Cargo> c) {
+    public void EffectLostCargo(Player p, List<Cargo> c) {
         for(Cargo i : c) {
-            CargoHold ch = i.getCargoHold();
-            ch.unloadCargo(i);
+            p.getShip().unloadCargo(i.getCargoHold(), i);
         }
     }
 

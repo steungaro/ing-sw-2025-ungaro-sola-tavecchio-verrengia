@@ -10,7 +10,7 @@ public abstract class Component {
     private Tile tile;
 
     public Component() {
-        connectors = new HashMap<Direction, ConnectorEnum>();
+        connectors = new HashMap<>();
         IDComponent = 0;
     }
 

@@ -4,8 +4,12 @@ package it.polimi.ingsw.gc20.model.gamesets;
  * 
  */
 public enum CargoColor {
-    RED,
-    YELLOW,
+    BLUE,
     GREEN,
-    BLUE
+    YELLOW,
+    RED;
+
+    public int value() {
+        return ordinal() + 1;
+    }
 }

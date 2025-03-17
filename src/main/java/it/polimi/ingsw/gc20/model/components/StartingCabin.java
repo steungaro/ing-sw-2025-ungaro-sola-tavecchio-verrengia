@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.model.bank.Astronaut;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartingCabin extends Component {
+public class StartingCabin extends Cabin {
 
     private List<Astronaut> astronauts;
 
@@ -18,7 +18,6 @@ public class StartingCabin extends Component {
      */
     public void setAstronauts(List<Astronaut> a) {
         this.astronauts = a;
-        return;
     }
 
     /**
@@ -35,7 +34,6 @@ public class StartingCabin extends Component {
      */
     public void unloadAstronauts(Astronaut a) {
         astronauts.remove(a);
-        return;
     }
 
     /**

@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.model.bank.Alien;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.model.components.AlienColor;
+import it.polimi.ingsw.gc20.model.components.Cabin;
 
 import java.util.*;
 

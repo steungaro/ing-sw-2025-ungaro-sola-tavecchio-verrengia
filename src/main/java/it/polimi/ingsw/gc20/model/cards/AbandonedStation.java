@@ -82,8 +82,7 @@ public class AbandonedStation extends AdventureCard {
         g.move(p, -lostDays);
 
         List<Cargo> cargo = new ArrayList<Cargo>();
-        return reward.stream().filter(color -> g.getCargoAvailable(color) > 0)
-                .peek(g::removeCargoAvailable)
+        return reward.stream()
                 .map(Cargo::new)
                 .toList();
     }

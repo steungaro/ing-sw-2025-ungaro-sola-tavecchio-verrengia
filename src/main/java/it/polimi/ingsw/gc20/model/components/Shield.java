@@ -15,6 +15,7 @@ public class Shield extends Component {
     }
 
     public Shield() {
+        super();
     }
 
     /**
@@ -29,6 +30,7 @@ public class Shield extends Component {
         * Rotate the shield counterclockwise
         * The connectors are rotated and the covered sides are updated
      */
+    @Override
     public void rotateCounterclockwise() {
         ConnectorEnum conn = getConnectors().get(Direction.UP);
         Map<Direction, ConnectorEnum> newConnectors = new HashMap<>();
@@ -57,6 +59,7 @@ public class Shield extends Component {
         * Rotate the shield clockwise
         * The connectors are rotated and the covered sides are updated
      */
+    @Override
     public void rotateClockwise() {
         ConnectorEnum conn = getConnectors().get(Direction.UP);
         getConnectors().put(Direction.UP, getConnectors().get(Direction.LEFT));

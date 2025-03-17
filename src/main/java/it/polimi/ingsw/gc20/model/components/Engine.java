@@ -2,11 +2,12 @@ package it.polimi.ingsw.gc20.model.components;
 
 public class Engine extends Component {
 
-    private Integer power;
+    private int power;
     private boolean doublePower;
     private Direction orientation;
 
     public Engine() {
+        super();
         power = 0;
         doublePower = false;
         orientation = Direction.DOWN;
@@ -16,7 +17,7 @@ public class Engine extends Component {
      * Function that creates a new engine with the given parameters.
      * @return the power of the engine
      */
-    public Integer getPower() {
+    public int getPower() {
         return power;
     }
 
@@ -24,7 +25,7 @@ public class Engine extends Component {
      * Function that sets the power of the engine.
      * @param power the power of the engine
      */
-    public void setPower(Integer power) {
+    public void setPower(int power) {
         this.power = power;
     }
 
@@ -63,6 +64,7 @@ public class Engine extends Component {
     /**
      * This function rotates the component clockwise by 90 degrees
      * */
+    @Override
     public void rotateClockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.LEFT));
@@ -84,6 +86,7 @@ public class Engine extends Component {
     /**
      * This function rotates the component counterclockwise by 90 degrees
      * */
+    @Override
     public void rotateCounterclockwise() {
         ConnectorEnum conn = connectors.get(Direction.UP);
         connectors.put(Direction.UP, connectors.get(Direction.RIGHT));

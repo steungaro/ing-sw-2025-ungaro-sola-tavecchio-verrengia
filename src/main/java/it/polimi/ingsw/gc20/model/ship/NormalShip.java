@@ -47,6 +47,15 @@ public class NormalShip extends Ship {
 
     private Boolean purpleAlien;
 
+    private AlienColor colorHostable;
+
+    public AlienColor getColorHostable() {
+        return colorHostable;
+    }
+
+    public void setColorHostable(AlienColor colorHostable) {
+        this.colorHostable = colorHostable;
+    }
 
     /**
      * Function to be called at the end of construction phase to move the booked components to the waste
@@ -240,7 +249,11 @@ public class NormalShip extends Ship {
                 if(add==1){
                     comp.addSupport((LifeSupport) c);
                 }else{
-                    comp.removeSupport((LifeSupport) c);
+                    try {
+                        comp.removeSupport((LifeSupport) c);
+                    } catch (Exception e) {
+                        super.updateParameters(c, -1);
+                    }
                 }
             }
         }
@@ -255,7 +268,7 @@ public class NormalShip extends Ship {
     public void addAlien(Alien alien, Component c) throws IllegalArgumentException {
         if(((Cabin) c).getColor() != alien.getColor() && ((Cabin) c).getColor() != AlienColor.BOTH)
             throw new IllegalArgumentException("this cabin cannot host this alien");
-        ((Cabin) c).setAliens(alien);
+        ((Cabin) c).setAlien(alien);
         if(alien.getColor() == AlienColor.BROWN){
             brownAlien = true;
         }else{
@@ -295,5 +308,35 @@ public class NormalShip extends Ship {
             updateParameters(c, 1);
             c.setTile(table[row][col]);
         }
+    }
+
+    public void addAlien(Cabin c, Alien a) {
+        if (c.getOccupants() != 0) {
+            throw new IllegalArgumentException("Cannot add alien to cabin already occupied by astronauts/alien");
+        }
+        if (c.getColor() != a.getColor() && c.getColor() != AlienColor.BOTH) {
+            throw new IllegalArgumentException("Cannot add " + a.getColor().toString() + " alien to " + c.getColor().toString() + " cabin");
+        }
+        c.setAlien(a);
+        this.updateParameters(c, 1);
+    }
+
+    public void removeAlien(Cabin c, Alien a) {
+        if (c.getAlien() == null) {
+            throw new IllegalArgumentException("Cannot remove alien from empty cabin");
+        }
+        if (c.getAlien() != a) {
+            throw new IllegalArgumentException("Cannot remove alien from cabin if it is not the alien in the cabin");
+        }
+        c.setAlien(null);
+        this.updateParameters(c, -1);
+    }
+
+    public void removeAlien(Cabin c) {
+        if (c.getAlien() == null) {
+            throw new IllegalArgumentException("Cannot remove alien from empty cabin");
+        }
+        c.setAlien(null);
+        this.updateParameters(c, -1);
     }
 }

@@ -5,6 +5,7 @@ public class LifeSupport extends Component {
     private AlienColor type;
 
     public LifeSupport() {
+        super();
         type = AlienColor.NONE;
     }
 
