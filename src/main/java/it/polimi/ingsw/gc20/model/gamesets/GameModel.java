@@ -239,6 +239,7 @@ public class GameModel {
                 }
             }
         }
+        //TODO metodo per mettere i pezzi booked nei wasted
 
     }
 
@@ -251,6 +252,17 @@ public class GameModel {
     public boolean shipValidating(Player p) {
         Ship s = p.getShip();
         return s.isValid();
+    }
+
+    /**
+     * function to remove a component from the ship
+     *
+     * @param c component to remove
+     * @param p player that removes the component
+     */
+    public void removeComponent(Component c, Player p) {
+        Ship s = p.getShip();
+        s.killComponent(c);
     }
 
     /**
@@ -360,10 +372,12 @@ public class GameModel {
         return power;
     }
 
-    /** function to call when is needed to calculate the firepower of the ship
-     * @param p player whose chose to activate the effect of the card
+    /**
+     * function to call when is needed to calculate the firepower of the ship
+     *
+     * @param p             player whose chose to activate the effect of the card
      * @param doubleEngines number of double engines to activate
-     * @param energy list of energy to use
+     * @param energy        list of energy to use
      * @return the engine power of the ship
      * @throws IllegalArgumentException
      */
@@ -381,25 +395,29 @@ public class GameModel {
         return power;
     }
 
-    /** method to move or remove a cargo from the ship if the to cargoHold is null
-     * @param p player whose chose to activate the effect of the card
-     * @param c cargo to move
+    /**
+     * method to move or remove a cargo from the ship if the to cargoHold is null
+     *
+     * @param p    player whose chose to activate the effect of the card
+     * @param c    cargo to move
      * @param from cargoHold from
-     * @param to cargoHold to
+     * @param to   cargoHold to
      */
     public void MoveCargo(Player p, Cargo c, CargoHold from, CargoHold to) {
         c.setCargoHold(to);
         from.unloadCargo(c);
-        if (to == null){
+        if (to == null) {
             //aggiungere metodo per rimuovere il cargo dal conteggio dei cargo rimanenti
         } else {
             to.loadCargo(c);
         }
     }
 
-    /** method to add a cargo to the cargoHold
-     * @param p player whose is adding the cargo
-     * @param c cargo to add
+    /**
+     * method to add a cargo to the cargoHold
+     *
+     * @param p  player whose is adding the cargo
+     * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
     public void addCargo(Player p, Cargo c, CargoHold ch) {
@@ -407,13 +425,15 @@ public class GameModel {
         c.setCargoHold(ch);
     }
 
-    /** method for the openSpace card
-     * @param p player whose chose to activate the effect of the card
+    /**
+     * method for the openSpace card
+     *
+     * @param p             player whose chose to activate the effect of the card
      * @param doubleEngines number of double engines to activate
-     * @param energy list of energy to use
+     * @param energy        list of energy to use
      * @throws IllegalArgumentException if there is not enough energy
      */
-    public void OpenSpace (Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
+    public void OpenSpace(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
         int power = 0;
         AdventureCard c = getActiveCard();
         try {
@@ -424,47 +444,56 @@ public class GameModel {
         }
     }
 
-    /** method to remove a battery when  a shield is utilized
+    /**
+     * method to remove a battery when  a shield is utilized
+     *
      * @param p player whose chose to activate the effect of the card
      * @param e energy to use
      */
-    public void UseShield (Player p, Energy e) {
+    public void UseShield(Player p, Energy e) {
         e.getBattery().useEnergy(e);
         p.getShip().useEnergy();
     }
 
-    /** method for the stardust card
+    /**
+     * method for the stardust card
+     *
      * @param p player victim of the effect of the card
      */
-    public void Stardust (Player p){
+    public void Stardust(Player p) {
         AdventureCard c = getActiveCard();
         ((Stardust) c).Effect(p, game);
     }
 
-    /** method for the epidemic card
+    /**
+     * method for the epidemic card
+     *
      * @param p player victim of the effect of the card
      */
-    public void Epidemic (Player p){
+    public void Epidemic(Player p) {
         AdventureCard c = getActiveCard();
         ((Epidemic) c).Effect(p);
     }
-    /** method to calculate the score of the players
+
+    /**
+     * method to calculate the score of the players
+     *
      * @param livello level of the game
      */
-    public void calculateScore (int livello) {
+    public void calculateScore(int livello) {
         Map<Player, Integer> score = new HashMap();
         game.sortPlayerByPosition();
-        int min=0;
+        int min = 0;
         int waste = 0;
-        Player g=null;
+        Player g = null;
         for (Player p : game.getPlayers()) {
-            int points = game.getPlayers().size() -1;
+            int points = game.getPlayers().size() - 1;
             if (min > p.getShip().getAllExposed() || min == 0) {
                 min = p.getShip().getAllExposed();
                 g = p;
             }
-            if (livello == 2){
-                score.put(p, points*2);
+            if (livello == 2) {
+                score.put(p, points * 2);
             } else {
                 score.put(p, points);
             }
@@ -485,4 +514,9 @@ public class GameModel {
     //TODO metodi per gestione casi in cui il player viene eliminato o sceglie di ritirarsi
     //TODO gestione creazione dei deck
     //TODO capire come gestire i giocatori quando non sono piu in partita
+    //TODO metodo per rimuovere componenti dalla ship in validazione e metterli nei wasted
+    //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
+
 }
+
+
