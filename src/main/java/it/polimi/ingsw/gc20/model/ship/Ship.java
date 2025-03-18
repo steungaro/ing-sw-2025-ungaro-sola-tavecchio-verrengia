@@ -552,4 +552,11 @@ public abstract class Ship {
     public boolean hasEngines() {
         return singleEngines > 0 || doubleEngines > 0;
     }
+
+    /**
+     * @return cargo held by the ship
+     */
+    public List<Cargo> getCargo() {
+        return cargo;
+    }
 }
