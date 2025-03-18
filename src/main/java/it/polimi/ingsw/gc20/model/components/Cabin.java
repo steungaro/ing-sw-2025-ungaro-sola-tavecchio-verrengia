@@ -7,16 +7,11 @@ import it.polimi.ingsw.gc20.model.bank.Astronaut;
 import java.util.*;
 
 public class Cabin extends Component {
-    private List<Astronaut> astronauts;
-    private Alien alien;
-    private AlienColor color;
+    private List<Astronaut> astronauts = new ArrayList<>();
+    private Alien alien = null;
+    private AlienColor color = null;
 
-    public Cabin() {
-        super();
-        astronauts = new ArrayList<>();
-        alien=null;
-        color=AlienColor.NONE;
-    }
+    public Cabin() {}
 
     /**
      * Function that returns the astronauts in the cabin.

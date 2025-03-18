@@ -7,16 +7,11 @@ import java.util.*;
 
 public class CargoHold extends Component {
 
-    protected List<Cargo> cargoHeld;
+    protected List<Cargo> cargoHeld = new ArrayList<>();
     protected int slots;
     protected int availableSlots;
 
-    public CargoHold() {
-        super();
-        cargoHeld = new ArrayList<>();
-        slots = 0;
-        availableSlots = 0;
-    }
+    public CargoHold() {}
 
     /**
      * Function that returns the cargo in the cargo hold.
