@@ -104,10 +104,10 @@ public class Cabin extends Component {
      * @param ls the lifeSupport that's added
      */
     public void addSupport(LifeSupport ls) {
-        if (cabinColor != AlienColor.NONE && cabinColor != ls.getType()) {
+        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) {
             cabinColor = AlienColor.BOTH;
         } else {
-            cabinColor = ls.getType();
+            cabinColor = ls.getColor();
         }
     }
 
@@ -118,7 +118,7 @@ public class Cabin extends Component {
      */
     public void removeSupport(LifeSupport ls) throws DeadAlienException {
         if (cabinColor == AlienColor.BOTH) {
-            cabinColor = ls.getType() == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
+            cabinColor = ls.getColor() == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
         } else {
             cabinColor = AlienColor.NONE;
         }
