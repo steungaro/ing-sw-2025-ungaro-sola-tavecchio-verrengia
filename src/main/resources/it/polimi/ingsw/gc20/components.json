@@ -1,17 +1,701 @@
 {
   "components": [
     {
-      "type" : "Battery",
-      "ID" : "0",
-      "Tile" : "null",
-      "connectors" : {
+      "type": "Battery",
+      "ID": "0",
+      "Tile": "null",
+      "connectors": {
         "UP": "U",
         "DOWN": "D",
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "energy" : "null",
-      "slots"
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "1",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "2",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "S",
+        "RIGHT": "D",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "3",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "S"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "4",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "S"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "5",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "S",
+        "RIGHT": "S",
+        "LEFT": "S"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "6",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "D",
+        "RIGHT": "D",
+        "LEFT": "D"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "7",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "8",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "9",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "U",
+        "LEFT": "U"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "10",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "energy": "null",
+      "slots": "2"
+    },
+    {
+      "type": "Battery",
+      "ID": "11",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "ZERO",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+    {
+      "type": "Battery",
+      "ID": "12",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+    {
+      "type": "Battery",
+      "ID": "13",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+    {
+      "type": "Battery",
+      "ID": "14",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "S",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+    {
+      "type": "Battery",
+      "ID": "15",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "S",
+        "RIGHT": "D",
+        "LEFT": "ZERO"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+    {
+      "type": "Battery",
+      "ID": "16",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "S"
+      },
+      "energy": "null",
+      "slots": "3"
+    },
+
+
+    {
+      "type": "CargoHold",
+      "ID": "17",
+      "Tile": "null",
+      "connectors": {
+        "UP" : "D",
+        "DOWN" : "U",
+        "RIGHT" : "S",
+        "LEFT" : "ZERO"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "18",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "U",
+        "RIGHT": "S",
+        "LEFT": "S"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "19",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "U",
+        "LEFT": "S"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "20",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "21",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "22",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "S",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "23",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "24",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "25",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "slots": "2",
+      "availableSlots": "2"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "26",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "S"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "27",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "S",
+        "RIGHT": "ZERO",
+        "LEFT": "ZERO"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "28",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "D"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "29",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "ZERO",
+        "LEFT": "ZERO"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "30",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "ZERO"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+    {
+      "type": "CargoHold",
+      "ID": "31",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "S",
+        "RIGHT": "ZERO",
+        "LEFT": "D"
+      },
+      "slots": "3",
+      "availableSlots": "3"
+    },
+
+
+    {
+      "type": "Cabin",
+      "ID": "32",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "U",
+        "RIGHT": "ZERO",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "33",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "S",
+        "RIGHT": "D",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "34",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "D",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "35",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "36",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "S",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "37",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "S"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "38",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "U",
+        "RIGHT": "S",
+        "LEFT": "D"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "39",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "D"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "40",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "D"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "41",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "ZERO",
+        "LEFT": "D"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "42",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "S",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "43",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "S",
+        "RIGHT": "S",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "44",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "45",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "S",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "46",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "47",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "D",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Cabin",
+      "ID": "48",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "U"
+      }
+    },
+
+
+    {
+      "type": "Pipes",
+        "ID": "49",
+      "Tile": "null",
+        "connectors": {
+            "UP": "U",
+            "DOWN": "ZERO",
+            "RIGHT": "U",
+            "LEFT": "S"
+        }
+    },
+    {
+      "type": "Pipes",
+      "ID": "50",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "ZERO",
+        "RIGHT": "U",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "51",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "S",
+        "RIGHT": "U",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "52",
+      "Tile": "null",
+      "connectors": {
+        "UP": "S",
+        "DOWN": "D",
+        "RIGHT": "U",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "53",
+      "Tile": "null",
+      "connectors": {
+        "UP": "D",
+        "DOWN": "ZERO",
+        "RIGHT": "U",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "54",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "55",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "ZERO",
+        "RIGHT": "D",
+        "LEFT": "U"
+      }
+    },
+    {
+      "type": "Pipes",
+      "ID": "56",
+      "Tile": "null",
+      "connectors": {
+        "UP": "U",
+        "DOWN": "D",
+        "RIGHT": "D",
+        "LEFT": "U"
+      }
     }
   ]
 }
