@@ -181,7 +181,7 @@ public abstract class Ship {
                 }
             }
         }
-        return null;
+        return false;
     }
 
     /**

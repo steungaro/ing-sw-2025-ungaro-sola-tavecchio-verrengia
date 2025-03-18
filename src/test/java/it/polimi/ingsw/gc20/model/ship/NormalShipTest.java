@@ -6,11 +6,7 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,10 +73,6 @@ class NormalShipTest {
     }
 
     @Test
-    void getShield() {
-    }
-
-    @Test
     void getCannons() {
         // Test getting UP cannons at column 3
         List<Cannon> upCannons = ship.getCannons(Direction.UP, 3);
@@ -106,10 +98,26 @@ class NormalShipTest {
     }
 
     @Test
+    void getShield(){
+        assertEquals(false, ship.getShield(Direction.LEFT));
+        Shield shield = new Shield();
+        Direction[] coveredDirections = new Direction[4];
+        coveredDirections[0] = (Direction.LEFT);
+        shield.setCoveredSides(coveredDirections);
+
+        ship.addComponent(shield, 1, 1);
+
+        assertEquals(true, ship.getShield(Direction.LEFT));
+        assertEquals(false, ship.getShield(Direction.RIGHT));
+    }
+
+    @Test
     void epidemic() {
         Astronaut a = new Astronaut();
         Astronaut b = new Astronaut();
-        Cabin1.setAstronauts(List.of(a));
+        List<Astronaut> listA = new ArrayList<>();
+        listA.add(a);
+        Cabin1.setAstronauts(listA);
         StartingCabin stCabin = (StartingCabin) ship.getComponentAt(2,3);
         stCabin.setAstronauts(List.of(b));
 
