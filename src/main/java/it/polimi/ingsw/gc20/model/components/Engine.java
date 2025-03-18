@@ -4,14 +4,9 @@ public class Engine extends Component {
 
     private int power;
     private boolean doublePower;
-    private Direction orientation;
+    private Direction orientation = Direction.DOWN;
 
-    public Engine() {
-        super();
-        power = 0;
-        doublePower = false;
-        orientation = Direction.DOWN;
-    }
+    public Engine() {}
 
     /**
      * Function that creates a new engine with the given parameters.
