@@ -47,6 +47,7 @@ public class Tile {
     public void addComponent(Component c) {
         if(availability) {
             this.component = c;
+            c.setTile(this);
         }
     }
 

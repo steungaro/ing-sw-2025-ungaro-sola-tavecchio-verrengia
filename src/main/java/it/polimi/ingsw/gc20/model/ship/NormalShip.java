@@ -18,6 +18,14 @@ public class NormalShip extends Ship {
         super();
         brownAlien = false;
         purpleAlien = false;
+
+        // Init table
+        for (int i=0; i<5; i++) {
+            for (int j=0; j<7; j++) {
+                table[i][j] = new Tile();
+            }
+        }
+
         table[0][0].setAvailability(false);
         table[0][1].setAvailability(false);
         table[1][0].setAvailability(false);
@@ -26,15 +34,15 @@ public class NormalShip extends Ship {
         table[0][5].setAvailability(false);
         table[1][6].setAvailability(false);
         table[4][3].setAvailability(false);
-        table[2][3].setAvailability(false);
         Component sc = new StartingCabin();
-        table[2][3].addComponent(sc);
+        addComponent(sc, 2, 3);
+        table[2][3].setAvailability(false);
     }
 
     /**
      * Matrx of tiles representing the ship
      */
-    private Tile[][] table = new Tile[7][5];
+    private Tile[][] table = new Tile[5][7];
 
     /**
      *  Components that the player is holding in hand
@@ -106,14 +114,14 @@ public class NormalShip extends Ship {
      * @return the number of rows of the ship
      */
     public Integer getRows(){
-        return 7;
+        return 5;
     }
 
     /**
      * @return the number of columns of the ship
      */
     public Integer getCols(){
-        return 5;
+        return 7;
     }
 
     /**
@@ -197,7 +205,7 @@ public class NormalShip extends Ship {
                 singleEngines += add;
             }
         }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getEnergy().size();
+            totalEnergy += ((Battery) c).getEnergy().size()*add;
         } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts and aliens inside the cabin
             astronauts -= ((Cabin) c).getAstronauts().size();

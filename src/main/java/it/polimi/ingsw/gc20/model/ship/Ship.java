@@ -151,14 +151,14 @@ public abstract class Ship {
                 }
             case LEFT:
                 for(int i = 0; i < cols; i++){
-                    if(getComponentAt(i,n)!=null){
-                        return getComponentAt(i,n);
+                    if(getComponentAt(n,i)!=null){
+                        return getComponentAt(n,i);
                     }
                 }
             case RIGHT:
                 for(int i = cols-1; i >= 0; i--){
-                    if(getComponentAt(i,n)!=null){
-                        return getComponentAt(i,n);
+                    if(getComponentAt(n,i)!=null){
+                        return getComponentAt(n,i);
                     }
                 }
         }
@@ -181,7 +181,7 @@ public abstract class Ship {
                 }
             }
         }
-        return null;
+        return false;
     }
 
     /**
@@ -428,16 +428,16 @@ public abstract class Ship {
                     doubleCannonsPower += add;
                 }else{
                     singleCannonsPower += 0.5f*add;
-                    }
+                }
             }
         }else if(c instanceof Engine){
             if(((Engine) c).getDoublePower()){
                 doubleEngines += add;
             }else{
                 singleEngines += add;
-                }
+            }
         }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getEnergy().size();
+            totalEnergy += ((Battery) c).getEnergy().size()*add;
         } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts inside the cabin
             astronauts -= ((Cabin) c).getAstronauts().size();
