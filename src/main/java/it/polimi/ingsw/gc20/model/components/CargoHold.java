@@ -1,13 +1,10 @@
 package it.polimi.ingsw.gc20.model.components;
-import it.polimi.ingsw.gc20.model.bank.Cargo;
+
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-
-
 import java.util.*;
 
 public class CargoHold extends Component {
-
-    protected List<Cargo> cargoHeld = new ArrayList<>();
+    protected Map<CargoColor, Integer> cargoHeld = new HashMap<>();
     protected int slots;
     protected int availableSlots;
 
@@ -17,8 +14,16 @@ public class CargoHold extends Component {
      * Function that returns the cargo in the cargo hold.
      * @return the cargo in the cargo hold
      */
-    public List<Cargo> getCargoHeld() {
+    public Map<CargoColor, Integer> getCargoHeld() {
         return cargoHeld;
+    }
+
+    /**
+     * Function that returns the cargo in the cargo hold.
+     * @return the cargo in the cargo hold
+     */
+    public int getCargoHeld(CargoColor color) {
+        return cargoHeld.get(color);
     }
 
     /**
@@ -49,48 +54,48 @@ public class CargoHold extends Component {
     /**
      * Function that sets the cargo in the cargo hold.
      * @param newCargoHeld the cargo to set
+     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
      */
-    public void setCargoHeld(List<Cargo> newCargoHeld) {
-        if (newCargoHeld.stream().anyMatch(c -> c.getColor() == CargoColor.RED)) {
+    public void setCargoHeld(List<CargoColor> newCargoHeld) {
+        if (newCargoHeld.stream().anyMatch(c -> c == CargoColor.RED)) {
             throw new IllegalArgumentException("CargoHold cannot hold red cargo");
         }
-        this.cargoHeld.addAll(newCargoHeld);
-        this.availableSlots -= cargoHeld.size();
-        for (Cargo c : cargoHeld) {
-            c.setCargoHold(this);
+        for (CargoColor c : newCargoHeld) {
+            cargoHeld.put(c, cargoHeld.getOrDefault(c, 0) + 1);
         }
+        this.availableSlots -= newCargoHeld.size();
     }
 
     /**
-        * This method is used to load a cargo in the cargo hold
-        * @param g the cargo to be loaded
+     * This method is used to load a cargo in the cargo hold
+     * @param g the cargo to be loaded
+     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
      */
-    public void loadCargo(Cargo g) {
-        cargoHeld.add(g);
+    public void loadCargo(CargoColor g) {
+        if (g == CargoColor.RED) {
+            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
+        }
+        if (this.availableSlots == 0) {
+            throw new IllegalArgumentException("CargoHold is full");
+        }
+        cargoHeld.put(g, cargoHeld.getOrDefault(g, 0) + 1);
         this.availableSlots--;
-        g.setCargoHold(this);
     }
 
     /**
-        * This method is used to unload a cargo from the cargo hold
-        * @param c the cargo to be unloaded
+     * This method is used to unload a cargo from the cargo hold
+     * @param c the cargo to be unloaded
+     * @throws IllegalArgumentException if the cargo is not in the cargo hold
      */
-    public void unloadCargo(Cargo c) {
-        cargoHeld.remove(c);
+    public void unloadCargo(CargoColor c) {
+        cargoHeld.put(c, cargoHeld.get(c) - 1);
         this.availableSlots++;
-        c.setCargoHold(null);
     }
 
     /**
-     * This method is used to clean the cargo hold
-     * @return the cargo hold
+     * This method is used to clean the cargo hold.
      */
     public void cleanCargo() {
-        for (Cargo c : cargoHeld) {
-            c.setCargoHold(null);
-        }
         cargoHeld.clear();
-        this.availableSlots = slots;
     }
-
 }

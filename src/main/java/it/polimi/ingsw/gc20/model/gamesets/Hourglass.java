@@ -9,7 +9,7 @@ public class Hourglass {
     private int period;
     private int turned;
     private int remainingTime;
-    private Timer timer;
+    private final Timer timer;
 
     /**
      * Default constructor

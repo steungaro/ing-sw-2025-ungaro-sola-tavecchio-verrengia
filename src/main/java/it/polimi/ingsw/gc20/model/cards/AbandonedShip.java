@@ -1,9 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
-import it.polimi.ingsw.gc20.model.bank.*;
 
 /**
  * @author GC20
@@ -82,11 +83,11 @@ public class AbandonedShip extends AdventureCard {
      * Applies card effect on player p, applying effect means the player accepted the card
      * @param p player that accepted the card
      * @param g game
-     * @param l list of lost crew members
+     * @param l list of cabins to remove crew from
      * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
      */
-    public void Effect(Player p, Game g, List<Crew> l) {
-        for (Crew i : l) {
+    public void Effect(Player p, Game g, List<Cabin> l) {
+        for (Cabin i : l) {
             p.getShip().unloadCrew(i);
         }
         p.addCredits(credits);

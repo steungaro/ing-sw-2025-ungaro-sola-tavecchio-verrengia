@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
-
-import it.polimi.ingsw.gc20.model.bank.Cargo;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
@@ -46,12 +44,10 @@ public class Planet {
         this.available = false;
     }
     
-    public List<Cargo> land (Player player) {
+    public List<CargoColor> land (Player player) {
         this.player = player;
         this.setUnavailable();
-        return reward.stream()
-                .map(Cargo::new)
-                .toList();
+        return reward;
     }
 
 

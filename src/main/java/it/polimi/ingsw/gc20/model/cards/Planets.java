@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
-
-import it.polimi.ingsw.gc20.model.bank.Cargo;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 /**
@@ -38,7 +37,7 @@ public class Planets extends AdventureCard {
      * @return the list of cargo that the player can take from the planet, cargo is removed from bank, if not enough cargo is available in bank, it will not be created
      * @apiNote the controller needs to verify that the planet is available and then manage Cargo loading
      */
-    public List<Cargo> land (Player player, Planet planet) {
+    public List<CargoColor> land (Player player, Planet planet) {
         if (!planet.getAvailable()) {
             throw new IllegalArgumentException("The planet is not available");
         }
