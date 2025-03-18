@@ -41,15 +41,11 @@ public class Alien extends Crew {
      * throws IllegalArgumentException if the component is not a cabin
      * throws InvalidParameterException if the cabin cannot host this type of alien
      */
-    public void setCabin(Component c) throws IllegalArgumentException, InvalidParameterException {
-        if (!(c instanceof Cabin)) {
-            throw new IllegalArgumentException("component must be a cabin");
+    public void setCabin(Cabin c) throws IllegalArgumentException, InvalidParameterException {
+        if (c.getColor()!=this.color){
+            throw new InvalidParameterException("cabin cannot host this type of alien");
         } else {
-            if (((Cabin) c).getColor()!=this.color) {
-                throw new InvalidParameterException("cabin cannot host this type of alien");
-            } else {
             this.component = c;
-        }
         }
     }
 

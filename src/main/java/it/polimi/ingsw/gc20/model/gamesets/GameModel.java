@@ -278,7 +278,7 @@ public class GameModel {
         Ship s = p.getShip();
         Alien alien = new Alien();
         alien.setColor(a);
-        alien.setCabin(c);
+        alien.setCabin(((Cabin)c));
         ((NormalShip) s).addAlien(alien, c);
     }
 
