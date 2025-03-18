@@ -148,12 +148,7 @@ public class Game {
      * first to last
      */
     public void sortPlayerByPosition() {
-        players.sort(new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player p2) {
-                return p2.getPosition() - p1.getPosition();
-            }
-        });
+        players.sort((p1, p2) -> p2.getPosition() - p1.getPosition());
     }
     /** function that rolls the dice
      * @return int sum of the two dice

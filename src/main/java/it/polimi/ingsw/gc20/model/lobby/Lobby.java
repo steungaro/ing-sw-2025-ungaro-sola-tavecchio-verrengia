@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.lobby;
 import it.polimi.ingsw.gc20.controller.GameController;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -13,13 +12,13 @@ public class Lobby {
     private int maxPlayers;
     private String ownerUsername;
     private String name;
-    private int level;
+    private final int level;
 
     /**
      * Default constructor
      */
     public Lobby(String id, String name, String ownerUsername, int maxPlayers, int level) {
-        this.users = new ArrayList<String>();
+        this.users = new ArrayList<>();
         this.id = id;
         this.maxPlayers = maxPlayers;
         this.ownerUsername = ownerUsername;
@@ -90,7 +89,6 @@ public class Lobby {
 
     /**
      * @param user is the username of the player that wants to join the lobby
-     * @return
      */
     public void addPlayer(String user) {
         if (!users.contains(user) && users.size() < maxPlayers) {
@@ -106,7 +104,7 @@ public class Lobby {
      * @TODO implement the creation of the game controller
      */
     public GameController createGameController() {
-        return new GameController(users, level);
+        return new GameController(id, users, level);
     }
 
 }

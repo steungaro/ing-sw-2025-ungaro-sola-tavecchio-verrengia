@@ -1,15 +1,12 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
-import it.polimi.ingsw.gc20.model.bank.Alien;
-import it.polimi.ingsw.gc20.model.bank.Astronaut;
-
-import java.util.*;
 
 public class Cabin extends Component {
-    private List<Astronaut> astronauts = new ArrayList<>();
-    private Alien alien = null;
-    private AlienColor color = null;
+    private int astronauts;
+    private boolean alien = false;
+    private AlienColor alienColor = AlienColor.NONE;
+    private AlienColor cabinColor = AlienColor.NONE;
 
     public Cabin() {}
 
@@ -17,7 +14,7 @@ public class Cabin extends Component {
      * Function that returns the astronauts in the cabin.
      * @return the astronauts in the cabin
      */
-    public List<Astronaut> getAstronauts() {
+    public int getAstronauts() {
         return astronauts;
     }
 
@@ -25,49 +22,53 @@ public class Cabin extends Component {
     * Function that sets the astronauts in the cabin.
     * @param astronauts the astronauts to set
      */
-    public void setAstronauts(List<Astronaut> astronauts) {
-        if (alien != null) {
+    public void setAstronauts(int astronauts) {
+        if (alien) {
             throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin");
         }
-        if (astronauts.size() > 2) {
+        if (astronauts > 2) {
             throw new IllegalArgumentException("Cannot have more than 2 astronauts in the same cabin");
 
         }
-        this.astronauts.addAll(astronauts);
-
-        astronauts.get(0).setCabin(this);
-        astronauts.get(1).setCabin(this);
+        this.astronauts += astronauts;
     }
 
     /**
     * Getter method for alien parameter.
-    * @return the alien in the cabin
+    * @return the alien color in the cabin
      */
-    public Alien getAlien() {
+    public boolean getAlien() {
         return alien;
     }
 
     /**
     * Function that sets the alien in the cabin.
-    * @param a the aliens to set
+    * @param color is the color of the alien
      */
-    public void setAlien(Alien a) {
-        if (!astronauts.isEmpty()) {
+    public void setAlien(AlienColor color) {
+        if (astronauts != 0) {
             throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin.");
         }
-        if (color != alien.getColor() && color != AlienColor.BOTH) {
-            throw new IllegalArgumentException("Cannot have " + alien.getColor().toString() + " in " + color.toString() + "cabin.");
+        if (cabinColor != color && cabinColor != AlienColor.BOTH) {
+            throw new IllegalArgumentException("Cannot have " + color + " alien in " + cabinColor + "cabin.");
         }
-        alien = a;
-        a.setCabin(this);
+        alien = true;
     }
 
     /**
-     * Function that returns the color of the cabin.
+     * Function that returns the color of the alien in the cabin.
+     * @return the color of the alien
+     */
+    public AlienColor getAlienColor() {
+        return alienColor;
+    }
+
+    /**
+     * Function that returns the color of the alien in the cabin.
      * @return the color of the cabin
      */
-    public AlienColor getColor() {
-        return color;
+    public AlienColor getCabinColor() {
+        return cabinColor;
     }
 
     /**
@@ -76,40 +77,37 @@ public class Cabin extends Component {
      * @implNote if the cabin already has a different color, it will be set to BOTH
      */
     public void setColor(AlienColor color) {
-        if (this.color != AlienColor.NONE && this.color != color) {
-            this.color = AlienColor.BOTH;
+        if (cabinColor != AlienColor.NONE && cabinColor != color) {
+            cabinColor = AlienColor.BOTH;
         } else {
-            this.color = color;
+            cabinColor = color;
         }
     }
 
     /**
-    * Function that unloads the astronauts from the cabin.
-    * @param a the astronaut to unload
+     * Function that unloads one astronaut from the cabin.
      */
-    public void unloadAstronaut(Astronaut a) {
-        a.setCabin(null);
-        astronauts.remove(a);
+    public void unloadAstronaut() {
+        astronauts--;
     }
 
     /**
-    * Function that unloads the alien from the cabin.
-    * @param a the alien to unload
+    * Function that unloads one alien from the cabin.
      */
-    public void unloadAlien(Alien a) {
-        alien.setCabin(null);
-        alien=null;
+    public void unloadAlien() {
+        alien = false;
+        alienColor = AlienColor.NONE;
     }
 
     /**
-        * Function that adds support to the cabin.
-        * @param ls the lifeSupport that's added
+     * Function that adds support to the cabin.
+     * @param ls the lifeSupport that's added
      */
     public void addSupport(LifeSupport ls) {
-        if (color != AlienColor.NONE && color != ls.getType()) {
-            color = AlienColor.BOTH;
+        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) {
+            cabinColor = AlienColor.BOTH;
         } else {
-            color = ls.getType();
+            cabinColor = ls.getColor();
         }
     }
 
@@ -119,17 +117,18 @@ public class Cabin extends Component {
      * @throws DeadAlienException if the alien dies because of lack of support
      */
     public void removeSupport(LifeSupport ls) throws DeadAlienException {
-        if (color == ls.getType()) {
-            color = AlienColor.NONE;
-        } else { // color == BOTH
-            color = ls.getType() == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
-            if (alien.getColor() != ls.getType()) {
-                throw new DeadAlienException("Alien died because of lack of support");
-            }
+        if (cabinColor == AlienColor.BOTH) {
+            cabinColor = ls.getColor() == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
+        } else {
+            cabinColor = AlienColor.NONE;
+        }
+        if (alien && cabinColor != alienColor ) {
+            alien = false;
+            throw new DeadAlienException("Alien died because of lack of support");
         }
     }
 
     public int getOccupants(){
-        return astronauts.size() + (alien == null ? 0 : 1);
+        return astronauts + (alien ? 1 : 0);
     }
 }

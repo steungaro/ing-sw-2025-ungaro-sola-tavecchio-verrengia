@@ -20,7 +20,6 @@ public class Shield extends Component {
 
     /**
         * This function returns the covered sides of the shield
-        * @return the covered sides of the shield
      */
     public void setCoveredSides(Direction[] coveredSides) {
         this.coveredSides = coveredSides;

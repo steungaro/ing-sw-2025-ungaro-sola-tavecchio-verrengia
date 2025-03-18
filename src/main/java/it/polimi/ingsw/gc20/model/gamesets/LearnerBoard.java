@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import it.polimi.ingsw.gc20.model.cards.AdventureCard;
-
 /**
  * @author GC20
  */

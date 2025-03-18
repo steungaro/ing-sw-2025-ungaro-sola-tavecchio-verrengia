@@ -1,8 +1,5 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import it.polimi.ingsw.gc20.model.bank.Alien;
-import it.polimi.ingsw.gc20.model.bank.Astronaut;
-import it.polimi.ingsw.gc20.model.bank.Crew;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -75,14 +72,53 @@ public class LearnerShip extends Ship {
     public void addComponent(Component c, int row, int col){
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            updateParameters(c, 1);
+            updateParametersSet(c);
             c.setTile(table[row][col]);
         }
     }
 
     @Override
-    public void unloadCrew(Crew c) {
-        c.getCabin().unloadAstronaut((Astronaut)c);
+    public void unloadCrew(Cabin c) {
+        if (c.getAstronauts() < 1) {
+            throw new IllegalArgumentException("Empty cabin");
+        }
+        c.unloadAstronaut();
         astronauts--;
+    }
+
+    /**
+     * Updates ship parameters when components are removed
+     * @param c Component being removed
+     */
+    @Override
+    protected void updateParametersRemove(Component c){
+        if(c instanceof Cannon){
+            if(((Cannon) c).getOrientation()==Direction.UP){
+                if(((Cannon) c).getPower() == 1){
+                    singleCannonsPower--;
+                }else{
+                    doubleCannonsPower -= 2;
+                }
+            }else{
+                if(((Cannon) c).getPower() == 1) {
+                    doubleCannons--;
+                    doubleCannonsPower--;
+                }else{
+                    singleCannonsPower -= 0.5f;
+                }
+            }
+        }else if(c instanceof Engine){
+            if(((Engine) c).getDoublePower()){
+                doubleEngines--;
+            }else{
+                singleEngines--;
+            }
+        }else if(c instanceof Battery){
+            totalEnergy -= ((Battery) c).getAvailableEnergy();
+        } else if (c instanceof Cabin) {
+            astronauts -= ((Cabin) c).getOccupants();
+        } else if (c instanceof CargoHold) {
+            ((CargoHold) c).getCargoHeld().forEach((k, v) -> cargos.put(k, cargos.get(k) - v));
+        }
     }
 }

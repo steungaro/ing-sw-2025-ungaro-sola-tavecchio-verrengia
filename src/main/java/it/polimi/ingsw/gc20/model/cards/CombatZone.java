@@ -2,8 +2,8 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
 
-import it.polimi.ingsw.gc20.model.bank.Cargo;
-import it.polimi.ingsw.gc20.model.bank.Crew;
+import it.polimi.ingsw.gc20.model.components.Cabin;
+import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 
@@ -106,11 +106,11 @@ public class CombatZone extends AdventureCard {
     /**
      * applies the effect of the card to the player
      * @param p player
-     * @param c lost crew
+     * @param c is the list of cabins that lost crew
      * @implNote the player loses days
      */
-    public void EffectLostCrew(Player p, List<Crew> c) {
-        for(Crew i : c) {
+    public void EffectLostCrew(Player p, List<Cabin> c) {
+        for(Cabin i : c) {
             p.getShip().unloadCrew(i);
         }
     }
@@ -119,10 +119,10 @@ public class CombatZone extends AdventureCard {
      * applies the effect of the card to the player
      * @param p player
      * @param c cargo lost
-     * @implNote the player loses cargo
+     * @implNote the player loses cargo, the cargo is removed from the cargo hold from the most valuable one
      */
-    public void EffectLostCargo(Player p, List<Cargo> c) {
-        for(Cargo i : c) {
+    public void EffectLostCargo(Player p, List<CargoHold> c) {
+        for (CargoHold i : c) {
             p.getShip().unloadCargo(i);
         }
     }

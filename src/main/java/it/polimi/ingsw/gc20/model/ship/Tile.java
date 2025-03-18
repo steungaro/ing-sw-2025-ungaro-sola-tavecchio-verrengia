@@ -20,9 +20,6 @@ public class Tile {
     private Component component;
 
     /**
-     * @return
-     */
-    /**
      * Default constructor
      */
     public Tile() {
@@ -34,7 +31,7 @@ public class Tile {
     }
 
     /**
-     * @return commponent
+     * @return component
      */
     public Component getComponent() {
         return component;
@@ -42,7 +39,6 @@ public class Tile {
 
     /**
      * @param c Component
-     * @return
      */
     public void addComponent(Component c) {
         if(availability) {
@@ -52,7 +48,7 @@ public class Tile {
     }
 
     /**
-     * @return
+     * @return availability
      */
     public Boolean getAvailability() {
 
@@ -61,14 +57,12 @@ public class Tile {
 
     /**
      * @param a Boolean
-     * @return
      */
     public void setAvailability(Boolean a) {
         availability = a;
     }
 
     /**
-     * @return
      * @throws RuntimeException Component does not exist
      */
     public void removeComponent(){
