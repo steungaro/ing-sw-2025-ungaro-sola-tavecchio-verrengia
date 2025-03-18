@@ -187,6 +187,14 @@ public class Game {
 
         }
     }
+  
+    public void sortPlayerByPosition(){
+        players.sort(new Comparator<Player>() {
+            @Override
+            public int compare(Player p1, Player p2) {
+                return p1.getPosition() - p2.getPosition();
+            }
+        });
 
     /** function that rolls the dice
      * @return int sum of the two dice
