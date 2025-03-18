@@ -2,13 +2,9 @@ package it.polimi.ingsw.gc20.model.components;
 
 public class Cannon extends Component {
     private int power;
-    private Direction orientation;
+    private Direction orientation =  Direction.UP;
 
-    public Cannon() {
-        super();
-        power=0;
-        orientation=Direction.UP;
-    }
+    public Cannon() {}
 
     /**
      * Function that returns the power of the cannon.
