@@ -23,12 +23,8 @@ public class Crew {
      * @param c cabin for the crew member
      * @throws IllegalArgumentException if the component is not a cabin
      */
-    public void setCabin(Component c) {
-        if (c instanceof Cabin) {
-            this.component = (Cabin)c;
-        } else {
-            throw new IllegalArgumentException("The component is not a cabin");
-        }
+    public void setCabin(Cabin c) {
+        this.component = c;
     }
 
     /** get function for the cabin of the crew member
