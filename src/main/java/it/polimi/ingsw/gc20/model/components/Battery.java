@@ -1,37 +1,32 @@
 package it.polimi.ingsw.gc20.model.components;
-import it.polimi.ingsw.gc20.model.bank.Energy;
-import java.util.List;
-import java.util.ArrayList;
 
 public class Battery extends Component {
 
-    private List<Energy> energy;
-    private Integer slots;
+    private int availableEnergy;
+    private int slots;
 
     public Battery() {}
 
     /**
-     * Function that creates a new battery with the given parameters.
-     * @param e the energy of the battery
+     * Function that uses a power unit.
      */
-    public void useEnergy(Energy e) {
-        e.setBattery(null);
-        energy.remove(e);
+    public void useEnergy() {
+        availableEnergy--;
     }
 
     /**
-     * Function that returns the energy of the battery.
+     * Function that returns the available energy of the battery.
      * @return the energy of the battery
      */
-    public List<Energy> getEnergy() {
-        return energy;
+    public int getAvailableEnergy() {
+        return availableEnergy;
     }
 
     /**
      * Function that returns the slots of the battery.
      * @return the slots of the battery
      */
-    public Integer getSlots() {
+    public int getSlots() {
         return slots;
     }
 
@@ -39,27 +34,14 @@ public class Battery extends Component {
      * Function that sets the slots of the battery.
      * @param q the slots of the battery
      */
-    public void setSlots(Integer q) {
+    public void setSlots(int q) {
         this.slots = q;
-    }
-
-    /**
-     * Function that sets the energy of the battery.
-     * @param energy the energy of the battery
-     */
-    public void setEnergy(List<Energy> energy) {
-        this.energy.addAll(energy);
-        for (Energy e : energy) {
-            e.setBattery(this);
-        }
     }
 
     /**
      * Function that fills the battery.
      */
     public void fillBattery() {
-        Energy e = new Energy();
-        energy.add(e);
-        e.setBattery(this);
+        availableEnergy = slots;
     }
 }

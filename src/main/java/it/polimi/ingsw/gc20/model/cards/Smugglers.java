@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.bank.Cargo;
+import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
@@ -94,12 +94,12 @@ public class Smugglers extends AdventureCard {
 
     /**
      * @param p is the player that has the effect applied onto
-     * @param l is the list of cargo that the player has to lose
-     * @implNote The player loses cargo
+     * @param l is the list of cargoHold that lose cargo
+     * @implNote The player loses cargo (the most valuable one is removed from each cargoHold)
      * @apiNote The controller needs to verify that the player has enough cargo to lose (or call removeEnergy) and that the cargo lost is the most valuable owned by the player
      */
-    public void EffectFailure(Player p, List<Cargo> l) {
-        for (Cargo c : l) {
+    public void EffectFailure(Player p, List<CargoHold> l) {
+        for (CargoHold c : l) {
             p.getShip().unloadCargo(c);
         }
     }
