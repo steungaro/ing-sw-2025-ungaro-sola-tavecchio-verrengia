@@ -13,6 +13,7 @@ import java.util.*;
 public class GameModel {
     private Game game;
     private AdventureCard activeCard;
+    private int level;
 
     /**
      * Default Constructor
@@ -20,6 +21,14 @@ public class GameModel {
     public void GameModel() {
         this.game = null;
         this.activeCard = null;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return this.level;
     }
 
     /**
@@ -69,8 +78,9 @@ public class GameModel {
         Game game = new Game();
         Pile pile = new Pile();
         Board board;
+        setLevel(livello);
         //creating the board based on the level
-        if (livello == 2) {
+        if (level == 2) {
             board = new NormalBoard();
             //TODO create and setting the four deck
         } else {
@@ -290,7 +300,11 @@ public class GameModel {
      * @throws InvalidParameterException if the cabin cannot host this type of astronaut
      */
     public void addPieces(Player p) {
+        Ship s = p.getShip();
         p.getShip().initAstronauts();
+        if (level == 2) {
+            ((NormalShip) s).addBookedToWaste();
+        }
     }
 
     /**
@@ -309,6 +323,15 @@ public class GameModel {
      */
     public AdventureCard drawCard() {
         game.sortPlayerByPosition();
+        for (int i = 1; i<= game.getPlayers().size(); i++){
+            if (game.getPlayers().get(0).getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
+                game.getPlayers().get(i).setGameStatus(false);
+            }
+            if (game.getPlayers().get(i).getShip().getAstronauts()==0){
+                game.getPlayers().get(i).setGameStatus(false);
+            }
+        }
+
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
@@ -436,6 +459,9 @@ public class GameModel {
         AdventureCard c = getActiveCard();
         try {
             power = EnginePower(p, doubleEngines, energy);
+            if (power == 0) {
+                p.setGameStatus(false);
+            }
             ((OpenSpace) c).Effect(p, game, power);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Not enough energy");
@@ -450,7 +476,7 @@ public class GameModel {
      */
     public void UseShield(Player p, Energy e) {
         e.getBattery().useEnergy(e);
-        p.getShip().useEnergy();
+        p.getShip().useEnergy(e);
     }
 
     /**
@@ -476,9 +502,9 @@ public class GameModel {
     /**
      * method to calculate the score of the players
      *
-     * @param livello level of the game
+     *
      */
-    public void calculateScore(int livello) {
+    public Map<Player, Integer> calculateScore() {
         Map<Player, Integer> score = new HashMap();
         game.sortPlayerByPosition();
         int min = 0;
@@ -490,32 +516,140 @@ public class GameModel {
                 min = p.getShip().getAllExposed();
                 g = p;
             }
-            if (livello == 2) {
+            if (level == 2) {
                 score.put(p, points * 2);
             } else {
                 score.put(p, points);
             }
             waste = p.getShip().getWaste().size();
-            
+
             score.put(p, score.get(p) - waste);
-            // TODO metodo per calccolare punteggio dei cargo
+            for (Cargo c : p.getShip().getCargo()) {
+                score.put(p, score.get(p) + c.getColor().value());
+            }
         }
-        if (livello == 2) {
+        if (level == 2) {
             score.put(g, score.get(g) + 4);
         } else {
             score.put(g, score.get(g) + 2);
         }
+        return score;
+    }
+
+    public int getAstronauts(Player p) {
+        return p.getShip().getAstronauts();
+    }
+
+    public void CombatZoneLostDays (Player p){
+        AdventureCard c = getActiveCard();
+        ((CombatZone) c).EffectLostDays(p, game);
+    }
+
+    public void CombatZoneLostCrew (Player p, List<Crew> c){
+        AdventureCard card = getActiveCard();
+        ((CombatZone) card).EffectLostCrew(p, c);
+    }
+
+    public void combatZoneLostCargo (Player p, List <Cargo> c){
+        AdventureCard card = getActiveCard();
+        ((CombatZone) card).EffectLostCargo(p, c);
+    }
+
+    public List<Projectile> combatZoneGetFire(Player p){
+        AdventureCard card = getActiveCard();
+        return ((CombatZone) card).EffectCannonFire();
+    }
+
+    /** function to call when a projectile is fired and hit the ship
+     * @param p player who get hit
+     * @param diceResult result of the dice throw that indicates the row or column hit
+     * @throws Exception if the ship is invalid
+     * @APINote il controller mi passa il proeittile solamente se colpisce la nave
+     */
+    public void Fire (Player p, int diceResult, Projectile fire) throws Exception {
+        Component c = null;
+        if (fire.getType() == /*lightMeteor*/) {
+            c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
+            if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
+                return;
+            }
+        }
+        fire.Fire(p.getShip(), diceResult);
+    }
+
+    public List<Cannon> heavyMeteorCannon (Player p, int diceResult, Projectile fire) throws Exception {
+        List<Cannon> cannons;
+        Ship s = p.getShip();
+        Direction direction = fire.getDirection();
+        if (direction == Direction.UP) {
+            if (s instanceof NormalShip) {
+                return s.getCannons(direction, diceResult - 4);
+            } else {
+                return s.getCannons(direction, diceResult - 5);
+            }
+            } else if (direction == Direction.DOWN) {
+                if (s instanceof NormalShip) {
+                    cannons = s.getCannons(direction, diceResult - 4);
+                    cannons.addAll(s.getCannons(direction, diceResult - 5));
+                    cannons.addAll(s.getCannons(direction, diceResult - 3));
+                } else {
+                    cannons = s.getCannons(direction, diceResult - 5);
+                    cannons.addAll(s.getCannons(direction, diceResult - 6));
+                    cannons.addAll(s.getCannons(direction, diceResult - 4));
+                }
+                return cannons;
+            } else {
+                cannons = s.getCannons(direction, diceResult - 5);
+                cannons.addAll(s.getCannons(direction, diceResult - 6));
+                cannons.addAll(s.getCannons(direction, diceResult - 4));
+                return cannons;
+            }
     }
 
 
-    //TODO metodi per Combatzone, schiavisti, smugglers and pirates,
-    //TODO gestione rimozione crediti, rimozione cargo insufficienti
-    //TODO metodi per gestione casi in cui il player viene eliminato o sceglie di ritirarsi
-    //TODO gestione creazione dei deck
-    //TODO capire come gestire i giocatori quando non sono piu in partita
-    //TODO metodo per rimuovere componenti dalla ship in validazione e metterli nei wasted
-    //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
+    public void SlaversSuccess (Player p, Integer credits){
+        AdventureCard card = getActiveCard();
+        ((Slavers) card).EffectSuccess(p, game);
+    }
 
+    public void slaversFailure (Player p, List<Crew> l){
+        AdventureCard card = getActiveCard();
+        ((Slavers) card).EffectFailure(p, l);
+    }
+
+
+    public List<Cargo> smugglersSuccess (Player p, Game game){
+        AdventureCard card = getActiveCard();
+        return ((Smugglers) card).EffectSuccess(p, game);
+    }
+
+    public void smugglersFailure (Player p, List<Cargo> l){
+        AdventureCard card = getActiveCard();
+        ((Smugglers) card).EffectFailure(p, l);
+    }
+
+    public void piratesSuccess (Player p, Game game){
+        AdventureCard card = getActiveCard();
+        ((Pirates) card).EffectSuccess(p, game);
+    }
+
+    public List<Projectile> piratesFailure (){
+        AdventureCard card = getActiveCard();
+        return ((Pirates) card).EffectFailure();
+    }
+
+
+    public void removeEnergy (Player p, List<Energy> energy){
+        for (Energy e : energy){
+            p.getShip().useEnergy(e);
+        }
+    }
+
+    //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
+    //TODO metodi per gestione sceglie di ritirarsi (nel controller)
+    //TODO gestione creazione dei deck (da vedere con json)
+    //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
+    //TODO controller deve mandare cargo da scaricare in ordine di valore prendendo sempre quelli che valgono di più
 }
 
 
