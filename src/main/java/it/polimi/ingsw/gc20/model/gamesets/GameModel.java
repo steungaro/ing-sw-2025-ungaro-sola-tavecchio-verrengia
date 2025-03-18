@@ -526,7 +526,7 @@ public class GameModel {
 
     /**
      * method to calculate the score of the players
-     *
+     * TODO verify that the function is correct
      *
      */
     public Map<Player, Integer> calculateScore() {
@@ -535,16 +535,19 @@ public class GameModel {
         int min = 0;
         int waste = 0;
         Player g = null;
+        int points=4;
         for (Player p : game.getPlayers()) {
-            int points = game.getPlayers().size() - 1;
-            if (min > p.getShip().getAllExposed() || min == 0) {
-                min = p.getShip().getAllExposed();
-                g = p;
-            }
-            if (level == 2) {
-                score.put(p, points * 2);
-            } else {
-                score.put(p, points);
+            if (p.isInGame()) {
+                if (min > p.getShip().getAllExposed() || min == 0) {
+                    min = p.getShip().getAllExposed();
+                    g = p;
+                }
+                if (level == 2) {
+                    score.put(p, points * 2);
+                } else {
+                    score.put(p, points);
+                }
+                points --;
             }
             waste = p.getShip().getWaste().size();
 
@@ -553,18 +556,28 @@ public class GameModel {
                 score.put(p, score.get(p) + c.getColor().value());
             }
         }
-        if (level == 2) {
-            score.put(g, score.get(g) + 4);
-        } else {
-            score.put(g, score.get(g) + 2);
+        if (g.isInGame()) {
+            if (level == 2) {
+                score.put(g, score.get(g) + 4);
+            } else {
+                score.put(g, score.get(g) + 2);
+            }
         }
         return score;
     }
 
+    /** function that return the number of astronuts of one ship
+     *
+     * @param p
+     */
     public int getAstronauts(Player p) {
         return p.getShip().getAstronauts();
     }
 
+    /** function for the lost days effect of the combat zone card
+     *
+     * @param p player
+     */
     public void CombatZoneLostDays (Player p){
         AdventureCard c = getActiveCard();
         ((CombatZone) c).EffectLostDays(p, game);
