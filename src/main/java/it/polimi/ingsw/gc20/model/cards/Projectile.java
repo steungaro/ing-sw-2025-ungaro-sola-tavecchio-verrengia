@@ -2,11 +2,14 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import it.polimi.ingsw.gc20.model.ship.*;
 import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.exceptions.*;
 
 /**
  * @author GC20
  */
-public abstract class Projectile {
+public class Projectile {
+    private Direction direction;
+    private FireType fireType;
 
     /**
      * Default constructor
@@ -14,16 +17,33 @@ public abstract class Projectile {
     public Projectile() {
     }
 
-    /**
-     * 
-     */
-    protected Direction direction;
 
     /**
      * @param direction is the direction of the projectile
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
+    }
+
+    /**
+     * @param fireType is the type of the projectile
+     */
+    public void setFireType(FireType fireType) {
+        this.fireType = fireType;
+    }
+
+    /**
+     * @return the direction of the projectile
+     */
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /**
+     * @return the type of the projectile
+     */
+    public FireType getFireType() {
+        return fireType;
     }
 
     /**
@@ -37,20 +57,20 @@ public abstract class Projectile {
      * @apiNote Controller must activate Fire without any checks (for HeavyFire)
      * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship catch the exception and ask the player to validate the ship
      */
-    public void Fire(Ship s, int diceResult) throws Exception {
+    public void Fire(Ship s, int diceResult) throws InvalidShipException {
         if (direction == Direction.UP || direction == Direction.DOWN) {
             if (s instanceof NormalShip) {
                 if(!s.killComponent(s.getFirstComponent(direction, diceResult - 4))){
-                    throw new Exception("Invalid ship");
+                    throw new InvalidShipException("Invalid ship");
                 }
             } else {
                 if(!s.killComponent(s.getFirstComponent(direction, diceResult - 5))){
-                    throw new Exception("Invalid ship");
+                    throw new InvalidShipException("Invalid ship");
                 }
             }
         } else {
             if(!s.killComponent(s.getFirstComponent(direction, diceResult - 5))){
-                throw new Exception("Invalid ship");
+                throw new InvalidShipException("Invalid ship");
             }
         }
     }
