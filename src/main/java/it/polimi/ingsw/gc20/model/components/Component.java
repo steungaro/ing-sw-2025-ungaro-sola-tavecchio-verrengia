@@ -9,10 +9,7 @@ public abstract class Component {
     protected int IDComponent;
     private Tile tile;
 
-    public Component() {
-        connectors = new HashMap<>();
-        IDComponent = 0;
-    }
+    public Component() {}
 
     /**
     * This function rotates the component clockwise by 90 degrees

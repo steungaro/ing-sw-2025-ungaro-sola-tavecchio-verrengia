@@ -8,11 +8,7 @@ public class Battery extends Component {
     private List<Energy> energy;
     private Integer slots;
 
-    public Battery() {
-        super();
-        energy = new ArrayList<>();
-        slots = 0;
-    }
+    public Battery() {}
 
     /**
      * Function that creates a new battery with the given parameters.
@@ -62,7 +58,6 @@ public class Battery extends Component {
      * Function that fills the battery.
      */
     public void fillBattery() {
-
         Energy e = new Energy();
         energy.add(e);
         e.setBattery(this);

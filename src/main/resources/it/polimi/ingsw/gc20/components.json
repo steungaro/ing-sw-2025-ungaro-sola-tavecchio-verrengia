@@ -1,0 +1,17 @@
+{
+  "components": [
+    {
+      "type" : "Battery",
+      "ID" : "0",
+      "Tile" : "null",
+      "connectors" : {
+        "UP": "U",
+        "DOWN": "D",
+        "RIGHT": "S",
+        "LEFT": "ZERO"
+      },
+      "energy" : "null",
+      "slots"
+    }
+  ]
+}
