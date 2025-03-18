@@ -7,8 +7,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,19 +109,28 @@ class NormalShipTest {
     void epidemic() {
         Astronaut a = new Astronaut();
         Astronaut b = new Astronaut();
+        Cabin1.setAstronauts(List.of(a));
+        StartingCabin stCabin = (StartingCabin) ship.getComponentAt(2,3);
+        stCabin.setAstronauts(List.of(b));
 
         Map<Direction, ConnectorEnum> connectorsC1 = new HashMap<>();
         connectorsC1.put(Direction.LEFT, ConnectorEnum.S);
         Map<Direction, ConnectorEnum> connectorsStart = new HashMap<>();
         connectorsStart.put(Direction.RIGHT, ConnectorEnum.S);
-
         Cabin1.setConnectors(connectorsC1);
+        stCabin.setConnectors(connectorsStart);
 
-        ;
-        StartingCabin.setConnectors(connectorsStart);
+       ship.epidemic();
+       assertEquals(0, Cabin1.getAstronauts().size());
+       assertEquals(0, stCabin.getAstronauts().size());
+
     }
 
     @Test
     void firePower() {
+        Set<Cannon> cannons = new HashSet<>();
+        cannons.add(downCannon);
+
+        assertEquals(3, ship.firePower(cannons, 1));
     }
 }

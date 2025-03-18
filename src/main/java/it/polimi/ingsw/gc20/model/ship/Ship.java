@@ -437,7 +437,7 @@ public abstract class Ship {
                 singleEngines += add;
             }
         }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getEnergy().size();
+            totalEnergy += ((Battery) c).getEnergy().size()*add;
         } else if (c instanceof Cabin && add == -1) {
             //kill all the astronauts inside the cabin
             astronauts -= ((Cabin) c).getAstronauts().size();
