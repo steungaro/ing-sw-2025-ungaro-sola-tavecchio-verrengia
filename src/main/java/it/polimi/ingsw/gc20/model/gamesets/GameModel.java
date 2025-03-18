@@ -18,7 +18,7 @@ public class GameModel {
     /**
      * Default Constructor
      */
-    public void GameModel() {
+    public GameModel() {
         this.game = null;
         this.activeCard = null;
         this.level = 1;
@@ -27,7 +27,7 @@ public class GameModel {
     /**
      * set function for the level
      *
-     * @param level
+     * @param level level of the game to set
      */
     public void setLevel(int level) {
         this.level = level;
@@ -45,7 +45,8 @@ public class GameModel {
     /**
      * set function for the game
      *
-     * @param game
+     * @param game game to set
+     *
      */
     public void setGame(Game game) {
         this.game = game;
@@ -63,7 +64,7 @@ public class GameModel {
     /**
      * set function for the active card
      *
-     * @param activeCard
+     * @param activeCard card to set as active
      */
     public void setActiveCard(AdventureCard activeCard) {
         this.activeCard = activeCard;
@@ -78,6 +79,24 @@ public class GameModel {
         return this.activeCard;
     }
 
+    /** private function to init the player used to simplify the start game function
+     *
+     * @param username of the player
+     * @param index of the player to set the color
+     * @return the player initialized
+     */
+    private Player initPlayer (String username, int index){
+        Player player = new Player();
+        player.setUsername(username);
+        player.setGameStatus(true);
+        player.setColor(PlayerColor.values()[index]);
+        if (level ==2){
+            player.setShip(new NormalShip());
+        }else{
+            player.setShip(new LearnerShip());
+        }
+        return player;
+    }
     /**
      * function that starts the game
      * it creates the game, the pile, set the level of the game and create the decks (TODO implement with json)
@@ -103,21 +122,9 @@ public class GameModel {
             //TODO create and setting the deck
         }
 
-        //creating the players and setting the first player
+        //creating the players and initialazing the player
         for (int i = 0; i < usernames.size(); i++) {
-            Player player = new Player();
-            if (i == 0) {
-                //setting username and status of the first player
-                player.setUsername(usernames.get(i));
-                player.setGameStatus(true);
-            }
-            player.setColor(PlayerColor.values()[i]);
-            //setting the ship based on the level
-            if (livello == 2) {
-                player.setShip(new NormalShip());
-            } else {
-                player.setShip(new LearnerShip());
-            }
+            Player player = initPlayer(usernames.get(i), i);
             board.addPlayer(player);
             game.addPlayer(player);
         }
@@ -134,10 +141,9 @@ public class GameModel {
      * TODO capire se devo ritornare il componente al controller oppure no, teoricamente no
      *
      * @param c component to remove
-     * @param p player that takes the component
      * @throws NoSuchElementException if the component is not present in the unviewed list
      */
-    public void componentFromUnviewed(Component c, Player p) throws NoSuchElementException {
+    public void componentFromUnviewed(Component c) throws NoSuchElementException {
         game.getPile().removeUnviewed(c);
     }
 
@@ -146,16 +152,15 @@ public class GameModel {
      * it removes it from the viewed list
      *
      * @param c component to remove
-     * @param p player that takes the component
      * @throws NoSuchElementException if the component is not present in the viewed list
      */
-    public void componentFromViewed(Component c, Player p) throws NoSuchElementException {
+    public void componentFromViewed(Component c) throws NoSuchElementException {
         game.getPile().removeViewed(c);
     }
 
     /**
      * function when a component is taken from the booked list
-     * it remove the component from the booked list of the player
+     * remove the component from the booked list of the player
      *
      * @apiNote this method is called only in level 2 games, and the component in booked list cannot be moved in the viewed list
      * @param c component to remove
@@ -183,9 +188,8 @@ public class GameModel {
      * function that allows the player to rotate the component taken clockwise
      *
      * @param c component to rotate
-     * @param p player that rotates the component
      */
-    public void RotateClockwise(Component c, Player p) {
+    public void RotateClockwise(Component c) {
         c.rotateClockwise();
     }
 
@@ -193,9 +197,8 @@ public class GameModel {
      * function that allows the player to rotate the component taken counterclockwise
      *
      * @param c component to rotate
-     * @param p player that rotates the component
      */
-    public void RotateCounterclockwise(Component c, Player p) {
+    public void RotateCounterclockwise(Component c) {
         c.rotateCounterclockwise();
     }
 
@@ -215,9 +218,8 @@ public class GameModel {
      * function to add a component to the viewed list
      *
      * @param c component to add
-     * @param p player that adds the component
      */
-    public void componentToViewed(Component c, Player p) {
+    public void componentToViewed(Component c) {
         game.getPile().addViewed(c);
     }
 
@@ -236,9 +238,8 @@ public class GameModel {
 
     /** function to stop assembling the ship by a player
      * when is it called the player chose a position where they want to start
-     * if that posintion is already occupied the method throws an exception
+     * if that position is already occupied the method throws an exception
      *
-     * function when a player stop assembling
      * @apiNote catch the exception if the position isn't valid
      * @param p        player that stops assembling
      * @param position position chosen by the player (1-4)
@@ -287,8 +288,8 @@ public class GameModel {
      * function that sets the alien in the ship
      * it creates a new alien and call the method of the ship to add an alien to the ship
      *
-     * @apiNote capire condizione per smettere di aggiungere alieni
-     * @apiNote funzione da chiamare solo in game di livello 2
+     * @apiNote controller has to find a condition till the player can add alien to a ship (based on what it can host)
+     * @apiNote function to call only in level 2 games
      *
      * @param a color of the alien
      * @param c cabin for the alien
@@ -305,7 +306,7 @@ public class GameModel {
     }
 
     /**
-     * function that sets the astronaut in the ship and move the component frome the booked list to the waste
+     * function that sets the astronaut in the ship and move the component from the booked list to the waste
      *
      * @param p player that adds the astronaut
      * @throws IllegalArgumentException  if the component is not a cabin
@@ -338,7 +339,7 @@ public class GameModel {
     public AdventureCard drawCard() {
         game.sortPlayerByPosition();
         for (int i = 1; i<= game.getPlayers().size(); i++){
-            if (game.getPlayers().get(0).getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
+            if (game.getPlayers().getFirst().getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
                 game.getPlayers().get(i).setGameStatus(false);
             }
             if (game.getPlayers().get(i).getShip().getAstronauts()==0){
@@ -371,7 +372,6 @@ public class GameModel {
      *
      * @param p player whose chose to activate the effect of the card
      * @param a list of crew members to remove
-     * @return the list of cargo colors
      */
     public void AbbandonedShip(Player p, List<Crew> a) {
         AdventureCard c = getActiveCard();
@@ -395,7 +395,6 @@ public class GameModel {
      */
     public List<Cargo> AbbandonedStation(Player p) {
         AdventureCard c = getActiveCard();
-        Ship s = p.getShip();
         return ((AbandonedStation) c).Effect(p, game);
     }
 
@@ -408,7 +407,7 @@ public class GameModel {
      * @param energy  energy to use
      */
     public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
-        float power = 0;
+        float power;
         try {
             power = p.getShip().firePower(cannons, energy.size());
             for (Energy e : energy) {
@@ -427,10 +426,10 @@ public class GameModel {
      * @param doubleEngines number of double engines to activate
      * @param energy        list of energy to use
      * @return the engine power of the ship
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if the energy passed is not enough or the ship has not sufficient energy
      */
     public int EnginePower(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
-        int power = 0;
+        int power;
         if (doubleEngines < energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Energy e : energy) {
@@ -444,13 +443,11 @@ public class GameModel {
 
     /**
      * method to move or remove a cargo from the ship if the to cargoHold is null
-     *
-     * @param p    player whose chose to activate the effect of the card
      * @param c    cargo to move
      * @param from cargoHold from
      * @param to   cargoHold to
      */
-    public void MoveCargo(Player p, Cargo c, CargoHold from, CargoHold to) {
+    public void MoveCargo(Cargo c, CargoHold from, CargoHold to) {
         c.setCargoHold(to);
         from.unloadCargo(c);
         if (to != null) {
@@ -461,11 +458,10 @@ public class GameModel {
     /**
      * method to add a cargo to the cargoHold
      *
-     * @param p  player whose is adding the cargo
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
-    public void addCargo(Player p, Cargo c, CargoHold ch) {
+    public void addCargo(Cargo c, CargoHold ch) {
         ch.loadCargo(c);
         c.setCargoHold(ch);
     }
@@ -480,7 +476,7 @@ public class GameModel {
      * @throws IllegalArgumentException if there is not enough energy
      */
     public void OpenSpace(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
-        int power = 0;
+        int power;
         AdventureCard c = getActiveCard();
         try {
             power = EnginePower(p, doubleEngines, energy);
@@ -530,11 +526,11 @@ public class GameModel {
      *
      */
     public Map<Player, Integer> calculateScore() {
-        Map<Player, Integer> score = new HashMap();
+        Map<Player, Integer> score = new HashMap<>();
         game.sortPlayerByPosition();
         int min = 0;
-        int waste = 0;
-        Player g = null;
+        int waste;
+        Player g=game.getPlayers().getFirst();
         int points=4;
         for (Player p : game.getPlayers()) {
             if (p.isInGame()) {
@@ -566,9 +562,9 @@ public class GameModel {
         return score;
     }
 
-    /** function that return the number of astronuts of one ship
+    /** function that return the number of astronauts of one ship
      *
-     * @param p
+     * @param p player which number of astronauts need to be returned
      */
     public int getAstronauts(Player p) {
         return p.getShip().getAstronauts();
@@ -576,6 +572,7 @@ public class GameModel {
 
     /** function for the lost days effect of the combat zone card
      *
+     * @apiNote for the combat zone controller needs to calculate which player has which effect similar in pirates, smuggler and slavers
      * @param p player
      */
     public void CombatZoneLostDays (Player p){
@@ -583,17 +580,32 @@ public class GameModel {
         ((CombatZone) c).EffectLostDays(p, game);
     }
 
+    /** function for the lost crew effect of the combat zone card
+     *
+     * @param p player
+     * @param c list of crew to remove
+     */
     public void CombatZoneLostCrew (Player p, List<Crew> c){
         AdventureCard card = getActiveCard();
         ((CombatZone) card).EffectLostCrew(p, c);
     }
 
+    /** function for the lost cargo effect of the combat zone card
+     *
+     * @param p player
+     * @param c list of cargo to remove
+     */
     public void combatZoneLostCargo (Player p, List <Cargo> c){
         AdventureCard card = getActiveCard();
         ((CombatZone) card).EffectLostCargo(p, c);
     }
 
-    public List<Projectile> combatZoneGetFire(Player p){
+    /** function for the Fire effect of the combat zone card
+     *
+     * @return list of projectile to be shot at the player
+     * @apiNote the controller needs to verify if the projectile hit the ship, in case of hit the Fire method is called in gameModel
+     */
+    public List<Projectile> combatZoneGetFire(){
         AdventureCard card = getActiveCard();
         return ((CombatZone) card).EffectCannonFire();
     }
@@ -602,11 +614,11 @@ public class GameModel {
      * @param p player who get hit
      * @param diceResult result of the dice throw that indicates the row or column hit
      * @throws Exception if the ship is invalid
-     * @APINote il controller mi passa il proeittile solamente se colpisce la nave
+     * @apiNote controller utilize this methon only if the projectile hit the ship
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws Exception {
-        Component c = null;
-        if (fire.getFireType() == FireType.LIGHTMETEOR) {
+        Component c;
+        if (fire.getFireType() == FireType.LIGHT_METEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
             if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
                 return;
@@ -615,7 +627,14 @@ public class GameModel {
         fire.Fire(p.getShip(), diceResult);
     }
 
-    public List<Cannon> heavyMeteorCannon (Player p, int diceResult, Projectile fire) throws Exception {
+    /** function to find cannon that could be activated to protect the ship from a heavy meteor
+     *
+     * @param p player
+     * @param diceResult result of the dice throw
+     * @param fire projectile
+     * @return list of cannon which point the same direction of the meteor
+     */
+    public List<Cannon> heavyMeteorCannon (Player p, int diceResult, Projectile fire) {
         List<Cannon> cannons;
         Ship s = p.getShip();
         Direction direction = fire.getDirection();
@@ -645,38 +664,70 @@ public class GameModel {
     }
 
 
-    public void SlaversSuccess (Player p, Integer credits){
+    /**function to call in case of player winning against slavers and choosing to take the reward
+     * @apiNote controller need to verify which method in the model call (success or failure)
+     * @param p player that activate the effect
+     */
+    public void SlaversSuccess (Player p){
         AdventureCard card = getActiveCard();
         ((Slavers) card).EffectSuccess(p, game);
     }
 
+    /** function to call in case of player losing against slavers
+     *
+     * @param p player that activate the effect
+     * @param l list of crew member to remove
+     */
     public void slaversFailure (Player p, List<Crew> l){
         AdventureCard card = getActiveCard();
         ((Slavers) card).EffectFailure(p, l);
     }
 
 
-    public List<Cargo> smugglersSuccess (Player p, Game game){
+    /** function to call in case of player winning against smugglers, and it chose to take the reward
+     *
+     * @param p player that activate the effect
+     * @return list of cargo reward
+     */
+    public List<Cargo> smugglersSuccess (Player p){
         AdventureCard card = getActiveCard();
         return ((Smugglers) card).EffectSuccess(p, game);
     }
 
+    /** function to call in case of player losing against smugglers
+     *
+     * @param p player that activate the effect
+     * @param l list of cargo to remove
+     */
     public void smugglersFailure (Player p, List<Cargo> l){
         AdventureCard card = getActiveCard();
         ((Smugglers) card).EffectFailure(p, l);
     }
 
-    public void piratesSuccess (Player p, Game game){
+    /** function to call in case of player winning against pirates and chose to activate the effect
+     *
+     * @param p player that activate the effect
+     */
+    public void piratesSuccess (Player p){
         AdventureCard card = getActiveCard();
         ((Pirates) card).EffectSuccess(p, game);
     }
 
+    /** function to call in case of player losing against pirates
+     *
+     * @return list of projectile to fire at the ship of the player
+     * @apiNote controller needs to roll the dice and call the method fire when a projectile hits the ship
+     */
     public List<Projectile> piratesFailure (){
         AdventureCard card = getActiveCard();
         return ((Pirates) card).EffectFailure();
     }
 
-
+    /** function to removeEnergy to utilize in case of not having enough cargo
+     * @apiNote controller needs to verify how much energy the player has to remove, when cargo are insufficient
+     * @param p player that needs to remove the energy
+     * @param energy list of energy to remove from the ship
+     */
     public void removeEnergy (Player p, List<Energy> energy){
         for (Energy e : energy){
             p.getShip().useEnergy(e);
