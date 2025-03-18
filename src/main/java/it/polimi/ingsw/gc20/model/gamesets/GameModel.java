@@ -21,12 +21,23 @@ public class GameModel {
     public void GameModel() {
         this.game = null;
         this.activeCard = null;
+        this.level = 1;
     }
 
+    /**
+     * set function for the level
+     *
+     * @param level
+     */
     public void setLevel(int level) {
         this.level = level;
     }
 
+    /**
+     * get function for the level
+     *
+     * @return level
+     */
     public int getLevel() {
         return this.level;
     }
@@ -69,13 +80,17 @@ public class GameModel {
 
     /**
      * function that starts the game
-     *
-     * @param numberOfPlayers number of players
+     * it creates the game, the pile, set the level of the game and create the decks (TODO implement with json)
+     * and board based on the level
+     * it also creates the players set the usernames, status, color and ship based on the level
+     * and also add all component to the unviewed list TODO implement with the json
      * @param livello         level of the game
-     * @param username        username of the player
+     * @param usernames       list of the players' username
+     * @param gameID          id of the game
      */
-    public void startGame(int numberOfPlayers, int livello, String username) {
+    public void startGame(int livello, List<String> usernames, int gameID) {
         Game game = new Game();
+        game.setID(gameID);
         Pile pile = new Pile();
         Board board;
         setLevel(livello);
@@ -89,11 +104,11 @@ public class GameModel {
         }
 
         //creating the players and setting the first player
-        for (int i = 0; i < numberOfPlayers; i++) {
+        for (int i = 0; i < usernames.size(); i++) {
             Player player = new Player();
             if (i == 0) {
                 //setting username and status of the first player
-                player.setUsername(username);
+                player.setUsername(usernames.get(i));
                 player.setGameStatus(true);
             }
             player.setColor(PlayerColor.values()[i]);
@@ -114,23 +129,9 @@ public class GameModel {
     }
 
     /**
-     * function that allows the player to join the game
-     *
-     * @param username username of the player
-     */
-    public void joinGame(String username) {
-        //searching for the first player not in game
-        for (Player player : game.getPlayers()) {
-            if (!player.isInGame()) {
-                player.setUsername(username);
-                player.setGameStatus(true);
-                return;
-            }
-        }
-    }
-
-    /**
      * function when a component is taken from the unviewed list
+     * it removes the component from the unviewed list
+     * TODO capire se devo ritornare il componente al controller oppure no, teoricamente no
      *
      * @param c component to remove
      * @param p player that takes the component
@@ -142,6 +143,7 @@ public class GameModel {
 
     /**
      * function when a component is taken from the viewed list
+     * it removes it from the viewed list
      *
      * @param c component to remove
      * @param p player that takes the component
@@ -153,7 +155,9 @@ public class GameModel {
 
     /**
      * function when a component is taken from the booked list
+     * it remove the component from the booked list of the player
      *
+     * @apiNote this method is called only in level 2 games, and the component in booked list cannot be moved in the viewed list
      * @param c component to remove
      * @param p player that takes the component
      * @throws IllegalArgumentException if the component is not present in the booked list
@@ -164,8 +168,9 @@ public class GameModel {
     }
 
     /**
-     * method that allows the player to view the deck only called in level 2 games
+     * method that allows the player to view the deck
      *
+     * @apiNote this method is called only in level 2 games
      * @param numDeck the deck to view
      * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
      */
@@ -197,6 +202,7 @@ public class GameModel {
     /**
      * function to add a component to the booked list only called in level 2 games
      *
+     * @apiNote this method is called only in level 2 games
      * @param c component to add
      * @param p player that adds the component
      */
@@ -216,7 +222,7 @@ public class GameModel {
     }
 
     /**
-     * function to add a component to the ship
+     * function to add a component to the ship at the x, y coordinates
      *
      * @param c component to add
      * @param p player that adds the component
@@ -228,9 +234,12 @@ public class GameModel {
         s.addComponent(c, x, y);
     }
 
-    /**
-     * function when a player stop assembling
+    /** function to stop assembling the ship by a player
+     * when is it called the player chose a position where they want to start
+     * if that posintion is already occupied the method throws an exception
      *
+     * function when a player stop assembling
+     * @apiNote catch the exception if the position isn't valid
      * @param p        player that stops assembling
      * @param position position chosen by the player (1-4)
      * @throws IllegalArgumentException if the position is already occupied
@@ -249,7 +258,6 @@ public class GameModel {
                 }
             }
         }
-        //TODO metodo per mettere i pezzi booked nei wasted
 
     }
 
@@ -277,6 +285,10 @@ public class GameModel {
 
     /**
      * function that sets the alien in the ship
+     * it creates a new alien and call the method of the ship to add an alien to the ship
+     *
+     * @apiNote capire condizione per smettere di aggiungere alieni
+     * @apiNote funzione da chiamare solo in game di livello 2
      *
      * @param a color of the alien
      * @param c cabin for the alien
@@ -293,7 +305,7 @@ public class GameModel {
     }
 
     /**
-     * function that sets the astronaut in the ship
+     * function that sets the astronaut in the ship and move the component frome the booked list to the waste
      *
      * @param p player that adds the astronaut
      * @throws IllegalArgumentException  if the component is not a cabin
@@ -308,8 +320,8 @@ public class GameModel {
     }
 
     /**
-     * function that creates the deck for the game
-     * it is called only in second level games
+     * merge the four deck and create the deck to use in the game
+     * @apiNote only called in level 2 games
      */
     public void createDeck() {
         Board b = game.getBoard();
@@ -318,6 +330,8 @@ public class GameModel {
 
     /**
      * function that automatically draw the first card of the deck and set it as active
+     * it sort the player by position in the board and verify if the player is a lap behind or if the player don't have any astronaut
+     *  if so the player is set as not in game
      *
      * @return the card drawn
      */
@@ -338,6 +352,7 @@ public class GameModel {
 
     /**
      * function to call when the Planet card is active and the player select a planet to land
+     * it return the list of cargo reward for the player that land in a planet
      *
      * @param p     player that lands
      * @param index index of the planet
@@ -350,7 +365,9 @@ public class GameModel {
     }
 
     /**
-     * function to call when the Abandoned ship card is active and the player select the crew member to lose
+     * function to apply the effect of the abandoned ship card
+     *
+     * @apiNote the player as already chose the crew members to remove, controller need to pass the list of crew members to remove
      *
      * @param p player whose chose to activate the effect of the card
      * @param a list of crew members to remove
@@ -362,20 +379,29 @@ public class GameModel {
         ((AbandonedShip) c).Effect(p, game, a);
     }
 
+    /** function to get the number of astronauts and alien for certain condition of some cards
+     * @param p player whose chose to activate the effect of the card
+     * @return the number of astronauts and alien
+     */
+    public int getCrew (Player p) {
+        return p.getShip().crew();
+    }
     /**
-     * function to call when the Abandoned station card is active and the player chose to activate the effect
+     * function to apply the effect of the abandoned station card
      *
+     * @apiNote the controller needs to verify the number of crew member of the ship before calling this method, calling this only if the player activate the effect
      * @param p player whose chose to activate the effect of the card
      * @return the list of cargo colors
      */
     public List<Cargo> AbbandonedStation(Player p) {
         AdventureCard c = getActiveCard();
-        //TODO mancano i metodi per il conteggio della crew e per l'effetto
-        return null;
+        Ship s = p.getShip();
+        return ((AbandonedStation) c).Effect(p, game);
     }
 
     /**
      * function to call when is needed to calculate the firepower of the ship
+     * based on the base firepower of a ship and the double cannons that the player activate
      *
      * @param p       player whose chose to activate the effect of the card
      * @param cannons double cannons to activate
@@ -427,9 +453,7 @@ public class GameModel {
     public void MoveCargo(Player p, Cargo c, CargoHold from, CargoHold to) {
         c.setCargoHold(to);
         from.unloadCargo(c);
-        if (to == null) {
-            //aggiungere metodo per rimuovere il cargo dal conteggio dei cargo rimanenti
-        } else {
+        if (to != null) {
             to.loadCargo(c);
         }
     }
@@ -448,6 +472,7 @@ public class GameModel {
 
     /**
      * method for the openSpace card
+     * it verifies if the engine power is zero if so it set the player state to false
      *
      * @param p             player whose chose to activate the effect of the card
      * @param doubleEngines number of double engines to activate
@@ -568,7 +593,7 @@ public class GameModel {
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws Exception {
         Component c = null;
-        if (fire.getType() == /*lightMeteor*/) {
+        if (fire.getFireType() == FireType.LIGHTMETEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
             if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
                 return;

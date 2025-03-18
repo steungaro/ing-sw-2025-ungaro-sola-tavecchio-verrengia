@@ -14,7 +14,6 @@ public class Game {
     private Board board;
     private Integer gameID;
     private Pile pile;
-    private Map<CargoColor, Integer> cargoAvailable;
     private final Die[] dice;
 
     /**
@@ -25,7 +24,6 @@ public class Game {
         this.board = null;
         this.gameID = null;
         this.pile = null;
-        this.cargoAvailable = new HashMap<>();
         dice = new Die[2];
     }
     /** add function for players and add the player to the stallBox in the board
@@ -35,50 +33,6 @@ public class Game {
 
         players.add(p);
         board.addPlayer(p);
-    }
-
-    /** Getter method for cargoAvailable
-     * @return cargoAvailable
-     */
-    public Map<CargoColor, Integer> getCargoAvailable() {
-        return cargoAvailable;
-    }
-
-    /** Setter method for cargoAvailable
-     * @param cargoAvailable cargoAvailable
-     */
-    public void setCargoAvailable(Map<CargoColor, Integer> cargoAvailable) {
-        this.cargoAvailable = cargoAvailable;
-    }
-
-    /** Getter method for cargoAvailable
-     * @return number of cargo available for each color
-     */
-    public int getCargoAvailable(CargoColor c) {
-        return cargoAvailable.get(c);
-    }
-
-    /** Setter method for cargoAvailable
-     * @param c cargo color to set
-     * @param amount amount of cargo to set
-     */
-    public void setCargoAvailable(CargoColor c, int amount) {
-        this.cargoAvailable.put(c, amount);
-    }
-
-    /** Setter method for cargoAvailable
-     * @param c cargo color to set
-     * @param amount amount of cargo to set
-     */
-    public void removeCargoAvailable(CargoColor c, int amount) {
-        this.cargoAvailable.put(c, cargoAvailable.get(c) - amount);
-    }
-
-    /** Setter method for cargoAvailable
-     * @param c cargo color to set
-     */
-    public void removeCargoAvailable(CargoColor c) {
-        removeCargoAvailable(c, 1);
     }
 
     /** get function for players
@@ -189,15 +143,18 @@ public class Game {
 
         }
     }
-  
-    public void sortPlayerByPosition(){
+
+    /** function that sorts the players by position in the board
+     * first to last
+     */
+    public void sortPlayerByPosition() {
         players.sort(new Comparator<Player>() {
             @Override
             public int compare(Player p1, Player p2) {
-                return p1.getPosition() - p2.getPosition();
+                return p2.getPosition() - p1.getPosition();
             }
         });
-
+    }
     /** function that rolls the dice
      * @return int sum of the two dice
      */
