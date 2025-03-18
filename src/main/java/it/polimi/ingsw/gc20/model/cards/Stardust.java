@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import java.io.*;
-import java.util.*;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.ship.Ship;

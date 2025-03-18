@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.controller;
 
-import lobby.Lobby;
+import it.polimi.ingsw.gc20.model.lobby.Lobby;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -11,32 +10,39 @@ import java.util.*;
 public class MatchController {
 
     /**
+     * 
+     */
+    private List<GameController> games;
+    
+    private List<Lobby> lobbies;
+
+    /**
+     * 
+     */
+    private Map<String, Lobby> playersInLobbies;
+    
+    private Integer maxMatches; 
+    
+    private Integer maxLobbies;
+    
+    private static MatchController instance;
+
+    /**
      * Default constructor
      */
-    public MatchController() {
+    private MatchController() {
+        this.games = new ArrayList<>();
+        this.playersInLobbies = new HashMap<>();
     }
-
+    
     /**
-     * 
+     * @return this
      */
-    private List<GameController> games;
-
-    /**
-     * 
-     */
-    private List<String> usernames;
-
-    /**
-     * 
-     */
-    private List<GameController> games;
-
-    /**
-     * @return
-     */
-    public MatchController getInstance() {
-        // TODO implement here
-        return null;
+    public static MatchController getInstance() {
+        if(instance == null) {
+            instance = new MatchController();
+        }
+        return instance;
     }
 
     /**
@@ -44,9 +50,13 @@ public class MatchController {
      * @param maxLobbies 
      * @return
      */
-    public MatchController getInstance(Integer maxMatches, Integer maxLobbies) {
-        // TODO implement here
-        return null;
+    public static MatchController getInstance(Integer maxMatches, Integer maxLobbies) {
+        if(instance == null) {
+            instance = new MatchController();
+            instance.setMaxMatches(maxMatches);
+            instance.setMaxLobbies(maxLobbies);
+        }
+        return instance;
     }
 
     /**
@@ -54,8 +64,7 @@ public class MatchController {
      * @return
      */
     public void setMaxLobbies(Integer m) {
-        // TODO implement here
-        return null;
+        this.maxLobbies = m;
     }
 
     /**
@@ -63,33 +72,26 @@ public class MatchController {
      * @return
      */
     public void setMaxMatches(Integer m) {
-        // TODO implement here
-        return null;
+        this.maxMatches = m;
     }
 
     /**
      * @return
      */
     public List<Lobby> getLobbies() {
-        // TODO implement here
-        return null;
+        return lobbies;
     }
 
     /**
-     * @param id 
+     * @param id
      * @return
      */
     public Lobby getLobby(String id) {
-        // TODO implement here
-        return null;
-    }
-
-    /**
-     * @param player 
-     * @return
-     */
-    public Lobby getLobby(String player) {
-        // TODO implement here
+        for(Lobby l: lobbies){
+            if(l.getId().equals(id)){
+                return l;
+            }
+        }
         return null;
     }
 
@@ -98,21 +100,26 @@ public class MatchController {
      * @param user 
      * @return
      */
-    public LobbyInfo joinLobby(String lobby, String user) {
-        // TODO implement here
+    public Lobby joinLobby(String lobby, String user) {
+        for(Lobby l: lobbies){
+            if(l.getId().equals(lobby)){
+                l.addPlayer(user);
+                return l;
+            }
+        }
         return null;
     }
 
     /**
      * @param name 
      * @param maxPlayers 
-     * @param user 
-     * @param id 
+     * @param user
      * @return
      */
-    public LobbyInfo createLobby(String name, Integer maxPlayers, String user, String id) {
-        // TODO implement here
-        return null;
+    public Lobby createLobby(String name, Integer maxPlayers, String user) {
+        Lobby l = new Lobby(name, user, maxPlayers);
+        lobbies.add(l);
+        return l;
     }
 
     /**
@@ -120,8 +127,7 @@ public class MatchController {
      * @return
      */
     public void leaveLobby(String id) {
-        // TODO implement here
-        return null;
+        playersInLobbies.remove(id);
     }
 
     /**
@@ -129,8 +135,7 @@ public class MatchController {
      * @return
      */
     public void startLobby(String id) {
-        // TODO implement here
-        return null;
+        lobbies.get(lobbies.indexOf(id)).addPlayer(id);
     }
 
 }

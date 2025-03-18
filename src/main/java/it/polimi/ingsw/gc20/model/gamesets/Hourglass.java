@@ -9,6 +9,7 @@ public class Hourglass {
     private int period;
     private int turned;
     private int remainingTime;
+    private Timer timer;
 
     /**
      * Default constructor
@@ -17,6 +18,7 @@ public class Hourglass {
         this.period = period;
         this.turned = 0;
         this.remainingTime = period;
+        this.timer = new Timer();
     }
 
     public int getPeriod() {
@@ -46,7 +48,6 @@ public class Hourglass {
     }
 
     public void initCountdown() {
-        Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             public void run() {
                 if(remainingTime == 0) {
@@ -56,5 +57,9 @@ public class Hourglass {
                 }
             }
         }, 0, 1000);
+    }
+
+    public void stopCountdown() {
+        timer.cancel();
     }
 }

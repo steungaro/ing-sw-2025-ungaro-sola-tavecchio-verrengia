@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
 import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.bank.*;
 
 
 import java.util.*;
@@ -16,6 +15,7 @@ public class Game {
     private Integer gameID;
     private Pile pile;
     private Map<CargoColor, Integer> cargoAvailable;
+    private final Die[] dice;
 
     /**
      * Default constructor
@@ -25,7 +25,8 @@ public class Game {
         this.board = null;
         this.gameID = null;
         this.pile = null;
-        this.cargoAvailable = new HashMap<CargoColor, Integer>();
+        this.cargoAvailable = new HashMap<>();
+        dice = new Die[2];
     }
     /** add function for players and add the player to the stallBox in the board
      * @param p player to add
@@ -161,7 +162,6 @@ public class Game {
                 //if next space is not occupied
                 if (!isOccupied(p.getPosition() + 1)) {
                     p.setPosition(p.getPosition() + 1);
-                    spaceMoved++;
                 }// if next space occupied I go to the first free space
                 else {
                     int i = p.getPosition() + 1;
@@ -169,13 +169,11 @@ public class Game {
                         i++;
                     }
                     p.setPosition(i);
-                    spaceMoved++;
                 }
             } else { //moving backward
                 // If previous space is not occupied
                 if (!isOccupied(p.getPosition() - 1)) {
                     p.setPosition(p.getPosition() - 1);
-                    spaceMoved++;
                 }//if previous space occupied I go to the first free space
                 else {
                     int i = p.getPosition() - 1;
@@ -183,12 +181,13 @@ public class Game {
                         i--;
                     }
                     p.setPosition(i);
-                    spaceMoved++;
                 }
             }
+            spaceMoved++;
 
         }
     }
+  
     public void sortPlayerByPosition(){
         players.sort(new Comparator<Player>() {
             @Override
@@ -196,5 +195,18 @@ public class Game {
                 return p1.getPosition() - p2.getPosition();
             }
         });
+
+    /** function that rolls the dice
+     * @return int sum of the two dice
+     */
+    public int rollDice() {
+        return dice[0].rollDie() + dice[1].rollDie();
+    }
+
+    /** function that returns the last rolled value of the dice without rolling them
+     * @return int sum of the two dice
+     */
+    public int lastRolled() {
+        return dice[0].getLastRolled() + dice[1].getLastRolled();
     }
 }

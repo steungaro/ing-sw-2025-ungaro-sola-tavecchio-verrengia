@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.bank.*;
@@ -88,14 +87,7 @@ public class AbandonedShip extends AdventureCard {
      */
     public void Effect(Player p, Game g, List<Crew> l) {
         for (Crew i : l) {
-            if (i instanceof Alien) {
-                Component cabin = i.getCabin();
-                ((Cabin) cabin).unloadAliens((Alien)i);
-            } else if (i.getCabin() instanceof Cabin) {
-                ((Cabin) i.getCabin()).unloadAstronauts((Astronaut)i);
-            } else if (i.getCabin() instanceof StartingCabin) {
-                ((StartingCabin) i.getCabin()).unloadAstronauts((Astronaut)i);
-            }
+            p.getShip().unloadCrew(i);
         }
         p.addCredits(credits);
         g.move(p, -lostDays);

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import it.polimi.ingsw.gc20.model.bank.Astronaut;
+import it.polimi.ingsw.gc20.model.bank.Crew;
+import it.polimi.ingsw.gc20.model.bank.Energy;
 import it.polimi.ingsw.gc20.model.components.*;
 
 import java.util.*;
@@ -21,7 +23,7 @@ public abstract class Ship {
     protected Integer totalEnergy;
     protected List<Cargo> cargo;
     protected Integer astronauts;
-    List<Component> trash = new ArrayList<Component>();
+    List<Component> trash = new ArrayList<>();
     /**
      * Default constructor. Initializes default ship values.
      */
@@ -37,18 +39,7 @@ public abstract class Ship {
         astronauts = 0;
     }
 
-    /**
-     * Adds a component to the ship at the specified position and updates ship parameters
-     * @param c Component to add
-     * @param row Row position
-     * @param col Column position
-     */
-    public void addComponent(Component c, int row, int col){
-        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
-            setComponentAt( c, row, col);
-            updateParameters(c, 1);
-        }
-    }
+    public abstract void addComponent(Component c, int row, int col);
 
     /**
      * Gets the total number of rows in the ship grid
@@ -118,6 +109,14 @@ public abstract class Ship {
      * @return Crew count
      */
     public Integer crew() {
+        return astronauts;
+    }
+
+
+    /**
+     * @return the number of astronauts
+     */
+    public Integer getAstronauts() {
         return astronauts;
     }
 
@@ -387,6 +386,30 @@ public abstract class Ship {
     }
 
     /**
+     * @param cargo is the cargo to be loaded
+     */
+    public void loadCargo(Cargo cargo) {
+        CargoHold comp = cargo.getCargoHold();
+        if (comp.getAvailableSlots() < 1) {
+            throw new IllegalArgumentException("No available slots in cargo hold");
+        }
+        comp.loadCargo(cargo);
+        cargo.setCargoHold(comp);
+        this.cargo.add(cargo);
+    }
+
+    /**
+     * @param cargo is the cargo to be unloaded
+     */
+    public void unloadCargo(Cargo cargo) {
+        CargoHold comp = cargo.getCargoHold();
+        comp.unloadCargo(cargo);
+        cargo.setCargoHold(null);
+        this.cargo.remove(cargo);
+    }
+
+
+    /**
      * Updates ship parameters when components are added or removed
      * @param c Component being added/removed
      * @param add 1 if adding, -1 if removing
@@ -425,36 +448,26 @@ public abstract class Ship {
     }
 
     /**
-     * Adds a single astronaut to a cabin
-     * @param a Astronaut to add
-     * @param c Cabin component to place astronaut
-     */
-    public void addSingleAstronaut(Astronaut a, Component c){
-        astronauts++;
-        ((Cabin) c).getAstronauts().add(a);
-    }
-
-
-    /**
      * Function that fills the cabins at the beginning of the game
      */
-    public void addAllAstronauts(){
+    public void initAstronauts(){
         int row = getRows();
         int col = getCols();
         for(int i=0; i<row; row++){
             for(int j=0; j<col; j++){
                 Component c = getComponentAt(i, j);
-                if(c instanceof Cabin){
-                    for(int k=0; k< 2 - ((Cabin) c).getOccupants(); k++){
-                        addSingleAstronaut(new Astronaut(), c);
-                    }
+                if (c instanceof Cabin && ((Cabin) c).getAlien() == null){
+                    List<Astronaut> astronauts = new ArrayList<>();
+                    astronauts.add(new Astronaut());
+                    astronauts.add(new Astronaut());
+                    ((Cabin) c).setAstronauts(astronauts);
                 }
             }
         }
     }
 
     /**
-     * Function that there are 2 adjacent cabins that have aliens or astronauts inside them kill one beeing per cabin
+     * Function that there are 2 adjacent cabins that have aliens or astronauts inside them kill one being per cabin
      * if there are no astronauts or aliens in the cabin, nothing happens
      */
     public void epidemic() {
@@ -471,9 +484,9 @@ public abstract class Ship {
                             if(c1 instanceof Cabin){
                                 if(!((Cabin) c1).getAstronauts().isEmpty() || ((Cabin) c1).getAlien() != null){
                                     if(!((Cabin) c).getAstronauts().isEmpty()){
-                                        ((Cabin) c).getAstronauts().remove(0);
+                                        ((Cabin) c).getAstronauts().removeFirst();
                                     }else{
-                                        ((Cabin) c).setAliens(null);
+                                        ((Cabin) c).setAlien(null);
                                     }
                                 }
                             }
@@ -483,9 +496,9 @@ public abstract class Ship {
                             if(c2 instanceof Cabin){
                                 if(!((Cabin) c2).getAstronauts().isEmpty() || ((Cabin) c2).getAlien() != null){
                                     if(!((Cabin) c).getAstronauts().isEmpty()){
-                                        ((Cabin) c).getAstronauts().remove(0);
+                                        ((Cabin) c).getAstronauts().removeFirst();
                                     }else{
-                                        ((Cabin) c).setAliens(null);
+                                        ((Cabin) c).setAlien(null);
                                     }
                                 }
                             }
@@ -495,9 +508,9 @@ public abstract class Ship {
                             if(c3 instanceof Cabin){
                                 if(!((Cabin) c3).getAstronauts().isEmpty() || ((Cabin) c3).getAlien() != null){
                                     if(!((Cabin) c).getAstronauts().isEmpty()){
-                                        ((Cabin) c).getAstronauts().remove(0);
+                                        ((Cabin) c).getAstronauts().removeFirst();
                                     }else{
-                                        ((Cabin) c).setAliens(null);
+                                        ((Cabin) c).setAlien(null);
                                     }
                                 }
                             }
@@ -507,9 +520,9 @@ public abstract class Ship {
                             if (c4 instanceof Cabin) {
                                 if (!((Cabin) c4).getAstronauts().isEmpty() || ((Cabin) c4).getAlien() != null) {
                                     if (!((Cabin) c).getAstronauts().isEmpty()) {
-                                        ((Cabin) c).getAstronauts().remove(0);
+                                        ((Cabin) c).getAstronauts().removeFirst();
                                     } else {
-                                        ((Cabin) c).setAliens(null);
+                                        ((Cabin) c).setAlien(null);
                                     }
                                 }
                             }
@@ -520,17 +533,23 @@ public abstract class Ship {
         }
     }
 
-    /*
-    * Remove astronaut from the ship
+    /**
+     * @param e is the energy to be used
      */
-    public void removeAstronaut() {
-        astronauts--;
+    public void useEnergy(Energy e) {
+        e.getBattery().useEnergy(e);
+        totalEnergy--;
     }
 
-    /*
-    * Removes an energy from the ship
+    /**
+     * @param c is the crew member to be unloaded
      */
-    public void useEnergy() {
-        totalEnergy -= 1;
+    public abstract void unloadCrew(Crew c);
+
+    /**
+     * @return whether the ship has engines or not
+     */
+    public boolean hasEngines() {
+        return singleEngines > 0 || doubleEngines > 0;
     }
 }

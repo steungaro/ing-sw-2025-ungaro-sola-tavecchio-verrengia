@@ -12,17 +12,19 @@ public class NormalBoard extends Board {
     private List<AdventureCard> secondVisible;
     private List<AdventureCard> thirdVisible;
     private List<AdventureCard> invisible;
+    private final Hourglass hourglass;
 
     /**
      * Default constructor
      */
     public NormalBoard() {
         super();
-        this.firstVisible = new ArrayList<AdventureCard>();
-        this.secondVisible = new ArrayList<AdventureCard>();
-        this.thirdVisible = new ArrayList <AdventureCard>();
-        this.invisible = new ArrayList<AdventureCard>();
+        this.firstVisible = new ArrayList<>();
+        this.secondVisible = new ArrayList<>();
+        this.thirdVisible = new ArrayList<>();
+        this.invisible = new ArrayList<>();
         this.setSpaces(24);
+        this.hourglass = new Hourglass(90);
     }
 
     /** function that merges the decks and shuffles them
@@ -52,16 +54,12 @@ public class NormalBoard extends Board {
      * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
      */
     public List<AdventureCard> peekDeck(Integer numDeck) throws IllegalArgumentException {
-        switch (numDeck){
-            case 1:
-                return this.firstVisible;
-            case 2:
-                return this.secondVisible;
-            case 3:
-                return this.thirdVisible;
-            default:
-                throw new IllegalArgumentException("Invalid numDeck");
-        }
+        return switch (numDeck) {
+            case 1 -> this.firstVisible;
+            case 2 -> this.secondVisible;
+            case 3 -> this.thirdVisible;
+            default -> throw new IllegalArgumentException("Invalid numDeck");
+        };
     }
 
     /** function that creates the decks
@@ -71,4 +69,32 @@ public class NormalBoard extends Board {
         // TODO implement here
     }
 
+    /** Function that turns the hourglass
+     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     */
+    public void turnHourglass() {
+        if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 3) {
+            this.hourglass.turn();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    /** Function that returns the remaining time
+     * @return int is the number of seconds left of the current turn
+     */
+    public int getRemainingTime() {
+        return this.hourglass.getRemainingTime();
+    }
+
+    /** Function that returns the total remaining time
+     * @return int is the number of seconds left
+     */
+    public int getTotalRemainingTime() {
+        return 3 * this.hourglass.getPeriod() - this.hourglass.getTotalElapsed();
+    }
+
+    public void stopHourglass() {
+        this.hourglass.stopCountdown();
+    }
 }
