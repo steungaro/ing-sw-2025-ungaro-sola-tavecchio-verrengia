@@ -568,7 +568,7 @@ public class GameModel {
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws Exception {
         Component c = null;
-        if (fire.getType() == /*lightMeteor*/) {
+        if (fire.getFireType() == FireType.LIGHTMETEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
             if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
                 return;
