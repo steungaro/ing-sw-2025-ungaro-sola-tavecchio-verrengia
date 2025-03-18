@@ -9,6 +9,8 @@ import java.util.*;
  * 
  */
 public class GameController {
+    public GameModel model;
+    public State state;
 
     /**
      * Default constructor
@@ -17,13 +19,9 @@ public class GameController {
     }
 
     /**
-     * 
+     * Private function that moves the state forward
      */
-    public GameModel model;
-
-    /**
-     * 
-     */
-    public State state;
-
+    private void nextState() {
+        state = State.values()[(state.ordinal() + 1) % State.values().length];
+    }
 }
