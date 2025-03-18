@@ -498,6 +498,7 @@ public class GameModel {
                 score.put(p, points);
             }
             waste = p.getShip().getWaste().size();
+            
             score.put(p, score.get(p) - waste);
             // TODO metodo per calccolare punteggio dei cargo
         }
