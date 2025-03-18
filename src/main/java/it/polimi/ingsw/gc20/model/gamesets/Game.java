@@ -144,7 +144,9 @@ public class Game {
     public boolean isOccupied(int position) {
         for (Player p : players) {
             if (p.getPosition() == position) {
-                return true;
+                if (p.isInGame()) {
+                    return true;
+                }
             }
         }
         return false;
