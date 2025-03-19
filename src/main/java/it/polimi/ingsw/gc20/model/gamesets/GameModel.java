@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -7,7 +8,6 @@ import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
 import java.util.*;
-
 
 public class GameModel {
     private Game game;
@@ -122,7 +122,16 @@ public class GameModel {
             game.addPlayer(player);
         }
         game.addBoard(board);
-        pile.addUnviewed(/*all components*/);
+
+        List<Component> allComponents = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        pile.addUnviewed(allComponents);
         game.setPile(pile);
 
         this.setGame(game);

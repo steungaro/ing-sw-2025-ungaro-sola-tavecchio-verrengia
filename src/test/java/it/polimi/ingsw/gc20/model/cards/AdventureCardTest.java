@@ -1,8 +1,5 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.bank.Astronaut;
-import it.polimi.ingsw.gc20.model.bank.Cargo;
-import it.polimi.ingsw.gc20.model.bank.Energy;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
@@ -40,18 +37,16 @@ class AdventureCardTest {
         doubleEngine.setDoublePower(true);
 
         battery = new Battery();
-        battery.getEnergy().add(new Energy());
-        battery.getEnergy().add(new Energy());
+        battery.setSlots(2);
+        battery.fillBattery();
 
         Cabin1 = new Cabin();
         Cabin1.setColor(AlienColor.NONE);
-        Cabin1.getAstronauts().add(new Astronaut());
+        Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
-        Cargo c1 = new Cargo(CargoColor.BLUE);
-        Cargo c2 = new Cargo(CargoColor.GREEN);
-        cargoHold.loadCargo(c1);
-        cargoHold.loadCargo(c2);
+        cargoHold.loadCargo(CargoColor.BLUE);
+        cargoHold.loadCargo(CargoColor.GREEN);
 
         // Add components to ship at valid positions
         ship.addComponent(upCannon, 1, 3);
