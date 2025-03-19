@@ -196,6 +196,8 @@ public class NormalShip extends Ship {
      */
     private void updateLifeSupportRemoved(Component c) {
         int row, col, i, j;
+        i=0;
+        j=0;
         outer_loop:
         for(i = 0; i < getRows(); i++){
             for(j = 0; j < getCols(); j++){
@@ -208,8 +210,6 @@ public class NormalShip extends Ship {
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
             row = i;
             col = j;
-            i=0;
-            j=0;
             if (entry.getValue() == ConnectorEnum.ZERO || !(table[i][j].getComponent() instanceof  Cabin)) {
                 continue;
             }
