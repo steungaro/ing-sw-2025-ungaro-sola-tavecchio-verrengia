@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 /**
@@ -52,5 +53,15 @@ public class Planets extends AdventureCard {
             throw new IllegalArgumentException("The planet is not available");
         }
         return planet.land(player);
+    }
+
+    /*
+     * This method is called when a player loses days due to choosing to land on a planet
+     * @param player is the player that loses days
+     * @param game is the game where the player is playing
+     * @apiNote days are lost in inverse order of flight
+     */
+    public void effectLostDays(Player player, Game game) {
+        game.move(player, -lostDays);
     }
 }
