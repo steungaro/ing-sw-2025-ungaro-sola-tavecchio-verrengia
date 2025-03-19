@@ -722,6 +722,61 @@ public class GameModel {
         }
     }
 
+    /** function that verify if the cargo that the player want to remove are the most valued one
+     *
+     * @param p player that want to remove cargo
+     * @param l list of cargo to remove
+     * @return true if the list is valid, false if is not valid
+     */
+    public Boolean verifyCargo (Player p, List<CargoHold> l){
+        int redCounter = 0;
+        int blueCounter = 0;
+        int yellowCounter = 0;
+        int greenCounter = 0;
+
+        for (CargoHold cargohold : l){
+            int red = cargohold.getCargoHeld(CargoColor.RED);
+            int blue = cargohold.getCargoHeld(CargoColor.BLUE);
+            int yellow = cargohold.getCargoHeld(CargoColor.YELLOW);
+            int green = cargohold.getCargoHeld(CargoColor.GREEN);
+
+            if (red > 0) {
+                redCounter++;
+            } else if (blue > 0) {
+                blueCounter++;
+            } else if (yellow > 0) {
+                yellowCounter++;
+            } else if (green > 0) {
+                greenCounter++;
+            }
+        }
+        Map<CargoColor, Integer> totalCargo = p.getShip().getCargo();
+        int totalRed = totalCargo.getOrDefault(CargoColor.RED, 0);
+        int totalBlue = totalCargo.getOrDefault(CargoColor.BLUE, 0);
+        int totalYellow = totalCargo.getOrDefault(CargoColor.YELLOW, 0);
+        int totalGreen = totalCargo.getOrDefault(CargoColor.GREEN, 0);
+        for (int i=0; i<l.size(); i++){
+            if (totalRed>0){
+                totalRed--;
+                redCounter--;
+                if (redCounter<0) {return false;}
+            } else if (totalBlue>0) {
+                totalBlue--;
+                blueCounter--;
+                if (blueCounter<0) {return false;}
+            }else if (totalYellow>0){
+                totalYellow--;
+                yellowCounter--;
+                if (yellowCounter<0) {return false;}
+            } else if (totalGreen>0){
+                totalGreen--;
+                greenCounter--;
+                if (greenCounter<0) {return false;}
+            }
+        }
+        return true;
+    }
+
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
