@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import it.polimi.ingsw.gc20.model.bank.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,18 +39,16 @@ class NormalShipTest {
         doubleEngine.setDoublePower(true);
 
         battery = new Battery();
-        battery.getEnergy().add(new Energy());
-        battery.getEnergy().add(new Energy());
+        battery.setSlots(2);
+        battery.fillBattery();
 
         Cabin1 = new Cabin();
         Cabin1.setColor(AlienColor.NONE);
-        Cabin1.getAstronauts().add(new Astronaut());
+        Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
-        Cargo c1 = new Cargo(CargoColor.BLUE);
-        Cargo c2 = new Cargo(CargoColor.GREEN);
-        cargoHold.loadCargo(c1);
-        cargoHold.loadCargo(c2);
+        cargoHold.loadCargo(CargoColor.BLUE);
+        cargoHold.loadCargo(CargoColor.GREEN);
 
         // Add components to ship at valid positions
         ship.addComponent(upCannon, 1, 3);
@@ -113,13 +110,8 @@ class NormalShipTest {
 
     @Test
     void epidemic() {
-        Astronaut a = new Astronaut();
-        Astronaut b = new Astronaut();
-        List<Astronaut> listA = new ArrayList<>();
-        listA.add(a);
-        Cabin1.setAstronauts(listA);
         StartingCabin stCabin = (StartingCabin) ship.getComponentAt(2,3);
-        stCabin.setAstronauts(List.of(b));
+        stCabin.setAstronauts(2);
 
         Map<Direction, ConnectorEnum> connectorsC1 = new HashMap<>();
         connectorsC1.put(Direction.LEFT, ConnectorEnum.S);
@@ -129,8 +121,8 @@ class NormalShipTest {
         stCabin.setConnectors(connectorsStart);
 
        ship.epidemic();
-       assertEquals(0, Cabin1.getAstronauts().size());
-       assertEquals(0, stCabin.getAstronauts().size());
+       assertEquals(1, Cabin1.getAstronauts());
+       assertEquals(1, stCabin.getAstronauts());
 
     }
 
