@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 /**
@@ -9,6 +10,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
  */
 public class Planets extends AdventureCard {
     private List<Planet> planets;
+    private int lostDays;
 
     /**
      * Default constructor
@@ -16,6 +18,7 @@ public class Planets extends AdventureCard {
     public Planets() {
         super();
         planets = new ArrayList<>();
+        lostDays = 0;
     }
 
     public List<Planet> getPlanets() {
@@ -28,6 +31,14 @@ public class Planets extends AdventureCard {
 
     public Planet getPlanet(int index) {
         return planets.get(index);
+    }
+
+    public int getLostDays() {
+        return lostDays;
+    }
+
+    public void setLostDays(int lostDays) {
+        this.lostDays = lostDays;
     }
 
     /*
@@ -44,6 +55,13 @@ public class Planets extends AdventureCard {
         return planet.land(player);
     }
 
-
-
+    /*
+     * This method is called when a player loses days due to choosing to land on a planet
+     * @param player is the player that loses days
+     * @param game is the game where the player is playing
+     * @apiNote days are lost in inverse order of flight
+     */
+    public void effectLostDays(Player player, Game game) {
+        game.move(player, -lostDays);
+    }
 }

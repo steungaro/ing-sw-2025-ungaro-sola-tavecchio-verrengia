@@ -24,8 +24,7 @@ public class GameModel {
     }
 
     /**
-     * set function for the level
-     *
+     * setter function for the level
      * @param level level of the game to set
      */
     public void setLevel(int level) {
@@ -33,8 +32,7 @@ public class GameModel {
     }
 
     /**
-     * get function for the level
-     *
+     * getter function for the level
      * @return level
      */
     public int getLevel() {
@@ -42,8 +40,7 @@ public class GameModel {
     }
 
     /**
-     * set function for the game
-     *
+     * setter function for the game
      * @param game game to set
      *
      */
@@ -52,8 +49,7 @@ public class GameModel {
     }
 
     /**
-     * get function for the game
-     *
+     * getter function for the game
      * @return game
      */
     public Game getGame() {
@@ -61,8 +57,7 @@ public class GameModel {
     }
 
     /**
-     * set function for the active card
-     *
+     * setter function for the active card
      * @param activeCard card to set as active
      */
     public void setActiveCard(AdventureCard activeCard) {
@@ -70,8 +65,7 @@ public class GameModel {
     }
 
     /**
-     * get function for the active card
-     *
+     * getter function for the active card
      * @return activeCard
      */
     public AdventureCard getActiveCard() {
@@ -89,7 +83,7 @@ public class GameModel {
         player.setUsername(username);
         player.setGameStatus(true);
         player.setColor(PlayerColor.values()[index]);
-        if (level ==2){
+        if (level == 2){
             player.setShip(new NormalShip());
         }else{
             player.setShip(new LearnerShip());
@@ -102,16 +96,16 @@ public class GameModel {
      * and board based on the level
      * it also creates the players set the usernames, status, color and ship based on the level
      * and also add all component to the unviewed list TODO implement with the json
-     * @param livello         level of the game
+     * @param level           level of the game
      * @param usernames       list of the players' username
      * @param gameID          id of the game
      */
-    public void startGame(int livello, List<String> usernames, int gameID) {
+    public void startGame(int level, List<String> usernames, int gameID) {
         Game game = new Game();
         game.setID(gameID);
         Pile pile = new Pile();
         Board board;
-        setLevel(livello);
+        setLevel(level);
         //creating the board based on the level
         if (level == 2) {
             board = new NormalBoard();
@@ -121,7 +115,7 @@ public class GameModel {
             //TODO create and setting the deck
         }
 
-        //creating the players and initialazing the player
+        //creating the players and initializing the player
         for (int i = 0; i < usernames.size(); i++) {
             Player player = initPlayer(usernames.get(i), i);
             board.addPlayer(player);
@@ -137,7 +131,7 @@ public class GameModel {
     /**
      * function when a component is taken from the unviewed list
      * it removes the component from the unviewed list
-     * TODO capire se devo ritornare il componente al controller oppure no, teoricamente no
+     * TODO understand whether the chosen component should be returned to the controller
      *
      * @param c component to remove
      * @throws NoSuchElementException if the component is not present in the unviewed list
@@ -149,7 +143,6 @@ public class GameModel {
     /**
      * function when a component is taken from the viewed list
      * it removes it from the viewed list
-     *
      * @param c component to remove
      * @throws NoSuchElementException if the component is not present in the viewed list
      */
@@ -178,9 +171,9 @@ public class GameModel {
      * @param numDeck the deck to view
      * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
      */
-    public void viewDeck(int numDeck) throws IllegalArgumentException {
+    public List<AdventureCard> viewDeck(int numDeck) throws IllegalArgumentException {
         Board b = game.getBoard();
-        ((NormalBoard) b).peekDeck(numDeck);
+        return ((NormalBoard) b).peekDeck(numDeck);
     }
 
     /**
@@ -364,12 +357,12 @@ public class GameModel {
     /**
      * function to apply the effect of the abandoned ship card
      *
-     * @apiNote the player as already chose the crew members to remove, controller need to pass the list of crew members to remove
+     * @apiNote the player has already chosen the crew members to remove, controller need to pass the list of cabins
      *
      * @param p player whose chose to activate the effect of the card
-     * @param a list of crew members to remove
+     * @param a list of cabins to remove crew members from
      */
-    public void AbbandonedShip(Player p, List<Cabin> a) {
+    public void AbandonedShip(Player p, List<Cabin> a) {
         AdventureCard c = getActiveCard();
         setActiveCard(null);
         ((AbandonedShip) c).Effect(p, game, a);
@@ -389,7 +382,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @return the list of cargo colors
      */
-    public List<CargoColor> AbbandonedStation(Player p) {
+    public List<CargoColor> AbandonedStation(Player p) {
         AdventureCard c = getActiveCard();
         return ((AbandonedStation) c).Effect(p, game);
     }
