@@ -4,15 +4,14 @@ import it.polimi.ingsw.gc20.controller.event.Event;
 import it.polimi.ingsw.gc20.model.components.Component;
 import java.io.Serializable;
 
-// Event that is generated when a player places a component onto their ship
-public record PlaceComponentEvent(
+// Event that is generated when a player rotates a component
+public record RotateComponentEvent(
         String username,
         int componentID,
-        int column,
-        int row
+        int side // 0 = clockwise, 1 = counterclockwise
 ) implements Event, Serializable {
     @Override
     public String toString() {
-        return "PlaceComponentEvent {username = " + username + ", component = " + componentID + ", in column = " + column + ", in row = " + row + "}";
+        return "RotateComponentEvent {username = " + username + ", component = " + componentID + ", rotated" + "}";
     }
 }
