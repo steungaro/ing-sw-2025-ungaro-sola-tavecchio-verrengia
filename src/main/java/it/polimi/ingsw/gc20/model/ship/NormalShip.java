@@ -208,6 +208,8 @@ public class NormalShip extends Ship {
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
             row = i;
             col = j;
+            i=0;
+            j=0;
             if (entry.getValue() == ConnectorEnum.ZERO || !(table[i][j].getComponent() instanceof  Cabin)) {
                 continue;
             }
