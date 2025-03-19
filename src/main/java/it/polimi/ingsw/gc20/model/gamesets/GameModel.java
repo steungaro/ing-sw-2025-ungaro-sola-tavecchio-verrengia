@@ -160,9 +160,9 @@ public class GameModel {
      * @param numDeck the deck to view
      * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
      */
-    public void viewDeck(int numDeck) throws IllegalArgumentException {
+    public List<AdventureCard> viewDeck(int numDeck) throws IllegalArgumentException {
         Board b = game.getBoard();
-        ((NormalBoard) b).peekDeck(numDeck);
+        return ((NormalBoard) b).peekDeck(numDeck);
     }
 
     /**
