@@ -110,10 +110,8 @@ public class Smugglers extends AdventureCard {
      * @return the list of cargo that the player gains
      * @implNote The player loses lostDays
      */
-    public List<Cargo> EffectSuccess(Player p, Game g) {
+    public List<CargoColor> EffectSuccess(Player p, Game g) {
         g.move(p, -lostDays);
-        return reward.stream()
-                .map(Cargo::new)
-                .toList();
+        return reward;
     }
 }

@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.model.gamesets;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.bank.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
@@ -297,12 +296,9 @@ public class GameModel {
      * @throws IllegalArgumentException  if the component is not a cabin
      * @throws InvalidParameterException if the cabin cannot host this type of alien
      */
-    public void setAlien(AlienColor a, Component c, Player p) throws IllegalArgumentException, InvalidParameterException {
+    public void setAlien(AlienColor a, Cabin c, Player p) throws IllegalArgumentException, InvalidParameterException {
         Ship s = p.getShip();
-        Alien alien = new Alien();
-        alien.setColor(a);
-        alien.setCabin(((Cabin)c));
-        ((NormalShip) s).addAlien(alien, c);
+        ((NormalShip) s).addAlien(a, c);
     }
 
     /**
@@ -359,7 +355,7 @@ public class GameModel {
      * @param index index of the planet
      * @return the list of cargo colors
      */
-    public List<Cargo> PlanetLand(Player p, int index) {
+    public List<CargoColor> PlanetLand(Player p, int index) {
         AdventureCard c = getActiveCard();
         Planet planet = ((Planets) c).getPlanet(index);
         return ((Planets) c).land(p, planet);
@@ -373,7 +369,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @param a list of crew members to remove
      */
-    public void AbbandonedShip(Player p, List<Crew> a) {
+    public void AbbandonedShip(Player p, List<Cabin> a) {
         AdventureCard c = getActiveCard();
         setActiveCard(null);
         ((AbandonedShip) c).Effect(p, game, a);
@@ -393,7 +389,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @return the list of cargo colors
      */
-    public List<Cargo> AbbandonedStation(Player p) {
+    public List<CargoColor> AbbandonedStation(Player p) {
         AdventureCard c = getActiveCard();
         return ((AbandonedStation) c).Effect(p, game);
     }
@@ -406,11 +402,11 @@ public class GameModel {
      * @param cannons double cannons to activate
      * @param energy  energy to use
      */
-    public float FirePower(Player p, Set<Cannon> cannons, Set<Energy> energy) throws IllegalArgumentException {
+    public float FirePower(Player p, Set<Cannon> cannons, List<Battery> energy) throws IllegalArgumentException {
         float power;
         try {
             power = p.getShip().firePower(cannons, energy.size());
-            for (Energy e : energy) {
+            for (Battery e : energy) {
                 p.getShip().useEnergy(e);
             }
         } catch (IllegalArgumentException e) {
@@ -428,11 +424,11 @@ public class GameModel {
      * @return the engine power of the ship
      * @throws IllegalArgumentException if the energy passed is not enough or the ship has not sufficient energy
      */
-    public int EnginePower(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
+    public int EnginePower(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
         int power;
         if (doubleEngines < energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
-            for (Energy e : energy) {
+            for (Battery e : energy) {
                 p.getShip().useEnergy(e);
             }
         } else {
@@ -447,8 +443,7 @@ public class GameModel {
      * @param from cargoHold from
      * @param to   cargoHold to
      */
-    public void MoveCargo(Cargo c, CargoHold from, CargoHold to) {
-        c.setCargoHold(to);
+    public void MoveCargo(CargoColor c, CargoHold from, CargoHold to) {
         from.unloadCargo(c);
         if (to != null) {
             to.loadCargo(c);
@@ -461,9 +456,8 @@ public class GameModel {
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
-    public void addCargo(Cargo c, CargoHold ch) {
+    public void addCargo(CargoColor c, CargoHold ch) {
         ch.loadCargo(c);
-        c.setCargoHold(ch);
     }
 
     /**
@@ -475,7 +469,7 @@ public class GameModel {
      * @param energy        list of energy to use
      * @throws IllegalArgumentException if there is not enough energy
      */
-    public void OpenSpace(Player p, int doubleEngines, Set<Energy> energy) throws IllegalArgumentException {
+    public void OpenSpace(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
         int power;
         AdventureCard c = getActiveCard();
         try {
@@ -495,8 +489,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @param e energy to use
      */
-    public void UseShield(Player p, Energy e) {
-        e.getBattery().useEnergy(e);
+    public void UseShield(Player p, Battery e) {
         p.getShip().useEnergy(e);
     }
 
@@ -548,8 +541,10 @@ public class GameModel {
             waste = p.getShip().getWaste().size();
 
             score.put(p, score.get(p) - waste);
-            for (Cargo c : p.getShip().getCargo()) {
-                score.put(p, score.get(p) + c.getColor().value());
+            for (Map.Entry<CargoColor, Integer> e : p.getShip().getCargo().entrySet()) {
+                CargoColor color = e.getKey();
+                int quantity = e.getValue();
+                score.put (p, score.get(p) + color.value()*quantity);
             }
         }
         if (g.isInGame()) {
@@ -585,7 +580,7 @@ public class GameModel {
      * @param p player
      * @param c list of crew to remove
      */
-    public void CombatZoneLostCrew (Player p, List<Crew> c){
+    public void CombatZoneLostCrew (Player p, List<Cabin> c){
         AdventureCard card = getActiveCard();
         ((CombatZone) card).EffectLostCrew(p, c);
     }
@@ -595,7 +590,7 @@ public class GameModel {
      * @param p player
      * @param c list of cargo to remove
      */
-    public void combatZoneLostCargo (Player p, List <Cargo> c){
+    public void combatZoneLostCargo (Player p, List <CargoHold> c){
         AdventureCard card = getActiveCard();
         ((CombatZone) card).EffectLostCargo(p, c);
     }
@@ -678,7 +673,7 @@ public class GameModel {
      * @param p player that activate the effect
      * @param l list of crew member to remove
      */
-    public void slaversFailure (Player p, List<Crew> l){
+    public void slaversFailure (Player p, List<Cabin> l){
         AdventureCard card = getActiveCard();
         ((Slavers) card).EffectFailure(p, l);
     }
@@ -689,7 +684,7 @@ public class GameModel {
      * @param p player that activate the effect
      * @return list of cargo reward
      */
-    public List<Cargo> smugglersSuccess (Player p){
+    public List<CargoColor> smugglersSuccess (Player p){
         AdventureCard card = getActiveCard();
         return ((Smugglers) card).EffectSuccess(p, game);
     }
@@ -699,7 +694,7 @@ public class GameModel {
      * @param p player that activate the effect
      * @param l list of cargo to remove
      */
-    public void smugglersFailure (Player p, List<Cargo> l){
+    public void smugglersFailure (Player p, List<CargoHold> l){
         AdventureCard card = getActiveCard();
         ((Smugglers) card).EffectFailure(p, l);
     }
@@ -728,8 +723,8 @@ public class GameModel {
      * @param p player that needs to remove the energy
      * @param energy list of energy to remove from the ship
      */
-    public void removeEnergy (Player p, List<Energy> energy){
-        for (Energy e : energy){
+    public void removeEnergy (Player p, List<Battery> energy){
+        for (Battery e : energy){
             p.getShip().useEnergy(e);
         }
     }
