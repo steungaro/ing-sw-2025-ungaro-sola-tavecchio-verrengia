@@ -399,8 +399,8 @@
       "connectors": {
         "UP": "S",
         "DOWN": "D",
-        "RIGHT": "S",
-        "LEFT": "ZERO"
+        "RIGHT": "ZERO",
+        "LEFT": "S"
       },
       "slots": "3",
       "availableSlots": "3"
@@ -1519,9 +1519,9 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
-        "DOWN": "ZERO",
-        "RIGHT": "D",
-        "LEFT": "U"
+        "DOWN": "S",
+        "RIGHT": "ZERO",
+        "LEFT": "ZERO"
       },
       "power": "2"
     },
@@ -1639,7 +1639,7 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
-        "DOWN": "ZERO",
+        "DOWN": "S",
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
@@ -1649,22 +1649,10 @@
 
     {
       "type": "LifeSupport",
-      "ID": "131",
-      "Tile": "null",
-      "connectors": {
-        "UP": "S",
-        "DOWN": "ZERO",
-        "RIGHT": "S",
-        "LEFT": "S"
-      },
-      "color": "BROWN"
-    },
-    {
-      "type": "LifeSupport",
       "ID": "132",
       "Tile": "null",
       "connectors": {
-        "UP": "D",
+        "UP": "S",
         "DOWN": "ZERO",
         "RIGHT": "S",
         "LEFT": "S"
@@ -1676,10 +1664,10 @@
       "ID": "133",
       "Tile": "null",
       "connectors": {
-        "UP": "ZERO",
+        "UP": "D",
         "DOWN": "ZERO",
-        "RIGHT": "ZERO",
-        "LEFT": "U"
+        "RIGHT": "S",
+        "LEFT": "S"
       },
       "color": "BROWN"
     },
@@ -1689,7 +1677,7 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
-        "DOWN": "S",
+        "DOWN": "ZERO",
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
@@ -1701,8 +1689,8 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
-        "DOWN": "ZERO",
-        "RIGHT": "D",
+        "DOWN": "S",
+        "RIGHT": "ZERO",
         "LEFT": "U"
       },
       "color": "BROWN"
@@ -1712,9 +1700,9 @@
       "ID": "136",
       "Tile": "null",
       "connectors": {
-        "UP": "S",
+        "UP": "ZERO",
         "DOWN": "ZERO",
-        "RIGHT": "ZERO",
+        "RIGHT": "D",
         "LEFT": "U"
       },
       "color": "BROWN"
@@ -1726,17 +1714,17 @@
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
-        "RIGHT": "D",
-        "LEFT": "D"
+        "RIGHT": "ZERO",
+        "LEFT": "U"
       },
-      "color": "PURPLE"
+      "color": "BROWN"
     },
     {
       "type": "LifeSupport",
       "ID": "138",
       "Tile": "null",
       "connectors": {
-        "UP": "D",
+        "UP": "S",
         "DOWN": "ZERO",
         "RIGHT": "D",
         "LEFT": "D"
@@ -1748,10 +1736,10 @@
       "ID": "139",
       "Tile": "null",
       "connectors": {
-        "UP": "ZERO",
+        "UP": "D",
         "DOWN": "ZERO",
-        "RIGHT": "ZERO",
-        "LEFT": "U"
+        "RIGHT": "D",
+        "LEFT": "D"
       },
       "color": "PURPLE"
     },
@@ -1761,7 +1749,7 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
-        "DOWN": "D",
+        "DOWN": "ZERO",
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
@@ -1773,6 +1761,18 @@
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
+        "DOWN": "D",
+        "RIGHT": "ZERO",
+        "LEFT": "U"
+      },
+      "color": "PURPLE"
+    },
+    {
+      "type": "LifeSupport",
+      "ID": "142",
+      "Tile": "null",
+      "connectors": {
+        "UP": "ZERO",
         "DOWN": "ZERO",
         "RIGHT": "S",
         "LEFT": "U"
@@ -1781,7 +1781,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "142",
+      "ID": "143",
       "Tile": "null",
       "connectors": {
         "UP": "D",
@@ -1796,7 +1796,7 @@
 
     {
       "type": "Shield",
-      "ID": "143",
+      "ID": "144",
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
@@ -1808,7 +1808,7 @@
     },
     {
       "type": "Shield",
-      "ID": "144",
+      "ID": "145",
       "Tile": "null",
       "connectors": {
         "UP": "S",
@@ -1820,7 +1820,7 @@
     },
     {
       "type": "Shield",
-      "ID": "145",
+      "ID": "146",
       "Tile": "null",
       "connectors": {
         "UP": "D",
@@ -1832,7 +1832,7 @@
     },
     {
       "type": "Shield",
-      "ID": "146",
+      "ID": "147",
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
@@ -1844,7 +1844,7 @@
     },
     {
       "type": "Shield",
-      "ID": "147",
+      "ID": "148",
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
@@ -1856,7 +1856,7 @@
     },
     {
       "type": "Shield",
-      "ID": "148",
+      "ID": "149",
       "Tile": "null",
       "connectors": {
         "UP": "S",
@@ -1868,7 +1868,7 @@
     },
     {
       "type": "Shield",
-      "ID": "149",
+      "ID": "150",
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
@@ -1880,7 +1880,7 @@
     },
     {
       "type": "Shield",
-      "ID": "150",
+      "ID": "151",
       "Tile": "null",
       "connectors": {
         "UP": "ZERO",
