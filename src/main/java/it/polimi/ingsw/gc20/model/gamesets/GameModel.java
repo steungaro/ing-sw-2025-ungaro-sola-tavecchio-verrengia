@@ -13,7 +13,7 @@ public class GameModel {
     private Game game;
     private AdventureCard activeCard;
     private int level;
-
+    private List<Player> playersToMove;
     /**
      * Default Constructor
      */
@@ -21,6 +21,7 @@ public class GameModel {
         this.game = null;
         this.activeCard = null;
         this.level = 1;
+        this.playersToMove = new ArrayList<>();
     }
 
     /**
@@ -77,6 +78,43 @@ public class GameModel {
      * @param username of the player
      * @param index of the player to set the color
      * @return the player initialized
+     */
+
+    /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
+     *
+     * @return list ot the player that need to be moved
+     */
+    private List<Player> getPlayersToMove (){
+        return this.playersToMove;
+    }
+
+    /** setter function for the list of player to move
+     *
+     * @param playersToMove list of player to move
+     */
+    private void setPlayersToMove (List<Player> playersToMove) {
+        this.playersToMove = playersToMove;
+    }
+
+    /** function to add a player to the list of player to move
+     *
+     * @param player to add to the players to move list
+     */
+    private void addPlayersToMove (Player player) {
+        this.playersToMove.add(player);
+    }
+    /** function to sort the player to move based on their position, first element is the player with the lower position
+     *
+     */
+    private void sortPlayerByPosition() {
+        playersToMove.sort((p1, p2) -> p1.getPosition() - p2.getPosition());
+    }
+
+    /** private function for the init of one player used only in start game
+     *
+     * @param username of the player
+     * @param index of the player used to select the color
+     * @return player created
      */
     private Player initPlayer (String username, int index){
         Player player = new Player();
@@ -351,7 +389,19 @@ public class GameModel {
     public List<CargoColor> PlanetLand(Player p, int index) {
         AdventureCard c = getActiveCard();
         Planet planet = ((Planets) c).getPlanet(index);
+        addPlayersToMove(p);
         return ((Planets) c).land(p, planet);
+    }
+
+    /** function to call after a planet card is activated to move the player
+     */
+    public void movePlayerReverse (){
+            AdventureCard c = getActiveCard();
+            sortPlayerByPosition();
+            for (Player p : playersToMove){
+                ((Planets) c).effectLostDays(p, game);
+            }
+            playersToMove.clear();
     }
 
     /**
@@ -488,6 +538,7 @@ public class GameModel {
 
     /**
      * method for the stardust card
+     * TODO mayber all the stardust cald could be resolved in the gameModel
      *
      * @param p player victim of the effect of the card
      */
