@@ -122,11 +122,11 @@ public class MatchController {
     /**
      * @param id is the id of the lobby to start
      */
-    public void startLobby(String id) {
+    /*public void startLobby(String id) {
         games.add(lobbies.stream()
                 .filter(l -> l.getId().equals(id))
                 .findFirst()
                 .get()
                 .createGameController());
-    }
+    }*/
 }

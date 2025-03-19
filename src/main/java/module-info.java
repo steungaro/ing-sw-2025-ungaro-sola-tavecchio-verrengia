@@ -5,7 +5,8 @@ module it.polimi.ingsw.gc20 {
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
     requires jdk.jfr;
-    requires javatuples;
+    requires com.fasterxml.jackson.databind;
+
     opens it.polimi.ingsw.gc20 to javafx.fxml;
     exports it.polimi.ingsw.gc20;
 }

@@ -47,6 +47,7 @@ class NormalShipTest {
         Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
         cargoHold.loadCargo(CargoColor.BLUE);
         cargoHold.loadCargo(CargoColor.GREEN);
 
