@@ -538,7 +538,7 @@ public class GameModel {
 
     /**
      * method for the stardust card
-     * TODO mayber all the stardust cald could be resolved in the gameModel
+     * TODO maybe all the stardust card could be resolved in the gameModel
      *
      * @param p player victim of the effect of the card
      */
@@ -828,11 +828,19 @@ public class GameModel {
         return true;
     }
 
+    /** function called by the controller to get the meteor that will hit the players
+     *
+     * @return list of projectile that will aim for the ship of the player
+     */
+    public List<Projectile> MeteorSwarm (){
+        AdventureCard card = getActiveCard();
+        return ((MeteorSwarm) card).Effect();
+    }
+
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
-    //TODO controller deve mandare cargo da scaricare in ordine di valore prendendo sempre quelli che valgono di più
 }
 
 
