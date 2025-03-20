@@ -134,4 +134,43 @@ class NormalShipTest {
 
         assertEquals(3, ship.firePower(cannons, 1));
     }
+
+    @Test
+    void enginePower() {
+        assertEquals(3, ship.enginePower(1));
+    }
+
+    @Test
+    void unloadCrew(){
+        assertEquals(2, Cabin1.getAstronauts());
+        ship.unloadCrew(Cabin1);
+        assertEquals(1, Cabin1.getAstronauts());
+        ship.unloadCrew(Cabin1);
+        assertEquals(0, Cabin1.getAstronauts());
+    }
+
+    @Test
+    void updateLifeSupport(){
+        assertEquals(AlienColor.NONE,  Cabin1.getAlienColor());
+
+
+        //Change color to Cabin
+        LifeSupport lifeSupport = new LifeSupport();
+        lifeSupport.setColor(AlienColor.BROWN);
+
+        Map<Direction, ConnectorEnum> connectorsC1 = new HashMap<>();
+        connectorsC1.put(Direction.RIGHT, ConnectorEnum.S);
+        Cabin1.setConnectors(connectorsC1);
+
+        Map<Direction, ConnectorEnum> connectorsLife = new HashMap<>();
+        connectorsLife.put(Direction.LEFT, ConnectorEnum.S);
+        lifeSupport.setConnectors(connectorsLife);
+
+        ship.addComponent(lifeSupport, 2, 5);
+        assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
+
+        //Remove lifeSupport
+        ship.removeComponent(lifeSupport);
+
+    }
 }
