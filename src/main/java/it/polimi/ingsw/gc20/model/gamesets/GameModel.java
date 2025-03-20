@@ -559,7 +559,7 @@ public class GameModel {
 
     /**
      * method to calculate the score of the players
-     * TODO verify that the function is correct
+     * TODO add conditions if two player have the same number of connector exposed both get the reward
      *
      */
     public Map<Player, Integer> calculateScore() {
