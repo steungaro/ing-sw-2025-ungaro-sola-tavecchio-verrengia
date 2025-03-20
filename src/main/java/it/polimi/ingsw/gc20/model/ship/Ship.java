@@ -440,7 +440,7 @@ public abstract class Ship {
                 if(((Cannon) c).getPower() == 1) {
                     doubleCannons += 1;
                     doubleCannonsPower += 1;
-                }else{
+                }else if(((Cannon) c).getPower() == 0.5f){
                     singleCannonsPower += 0.5f;
                 }
             }
