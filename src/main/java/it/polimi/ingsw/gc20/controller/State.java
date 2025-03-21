@@ -6,6 +6,7 @@ package it.polimi.ingsw.gc20.controller;
 public enum State {
     CREATING,
     ASSEMBLING,
+    VALIDATING,
     FLIGHT,
     WAITING_ENGINES,
     WAITING_CANNONS,
