@@ -499,6 +499,7 @@ public class GameModel {
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
+    @Deprecated
     public void addCargo(CargoColor c, CargoHold ch) {
         ch.loadCargo(c);
     }
