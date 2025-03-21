@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.controller;
 
+import it.polimi.ingsw.gc20.controller.event.Event;
+import it.polimi.ingsw.gc20.controller.event.EventType;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
@@ -21,6 +23,7 @@ public class GameController {
     private String gameID;
     private List<String> connectedPlayers = new ArrayList<>();
     private List<String> disconnectedPlayers = new ArrayList<>();
+    private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
 
     /**
      * Default constructor
@@ -37,7 +40,7 @@ public class GameController {
         gameID = id;
         model = new GameModel();
         model.startGame(level, usernames, gameID);
-        state = State.CREATING;
+        state = State.ASSEMBLING;
         connectedPlayers.addAll(usernames);
     }
 
