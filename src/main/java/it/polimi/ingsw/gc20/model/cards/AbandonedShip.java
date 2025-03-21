@@ -87,9 +87,21 @@ public class AbandonedShip extends AdventureCard {
      * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
      */
     public void Effect(Player p, Game g, List<Cabin> l) {
-        for (Cabin i : l) {
-            p.getShip().unloadCrew(i);
+        int count = 0;
+        int f = 1;
+        Cabin i = l.getFirst();
+        while (count < lostCrew) {
+            while(count < lostCrew && i.getAstronauts() > 0) {
+                i.unloadAstronaut();
+                count++;
+            }
+            if(f == l.size()) {
+                break;
+            }
+            i = l.get(f);
+            f++;
         }
+
         p.addCredits(credits);
         g.move(p, -lostDays);
     }

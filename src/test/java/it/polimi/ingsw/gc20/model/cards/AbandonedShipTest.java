@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import org.junit.jupiter.api.Test;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
@@ -7,10 +8,13 @@ import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AdventureCardTest {
+class AbandonedShipTest{
+
     private NormalShip ship;
     private Cannon upCannon, downCannon;
     private Engine singleEngine, doubleEngine;
@@ -22,12 +26,6 @@ class AdventureCardTest {
 
     @BeforeEach
     void setUp(){
-        // Create Player 1
-        Player player1 = new Player();
-
-        // Create game
-        Game game = new Game();
-
         // Create a new NormalShip
         ship = new NormalShip();
 
@@ -55,6 +53,7 @@ class AdventureCardTest {
         Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
+        cargoHold.setSlots(2);
         cargoHold.loadCargo(CargoColor.BLUE);
         cargoHold.loadCargo(CargoColor.GREEN);
 
@@ -68,4 +67,29 @@ class AdventureCardTest {
         ship.addComponent(cargoHold, 1, 2);
     }
 
+    @Test
+    void effect() {
+        Player player1 = new Player();
+        player1.setPosition(4);
+
+        // Create game
+        Game game = new Game();
+
+        player1.setShip(ship);
+
+        AbandonedShip abandonedShip = new AbandonedShip();
+        abandonedShip.setCredits(3);
+        abandonedShip.setLostCrew(3);
+        abandonedShip.setLostDays(1);
+        List<Cabin> cabins = new ArrayList<>();
+        cabins.add(Cabin1);
+        StartingCabin startingCabin = (StartingCabin) ship.getComponentAt(2, 3);
+        startingCabin.setAstronauts(2);
+        cabins.add(startingCabin);
+
+        abandonedShip.Effect(player1, game, cabins);
+        assertEquals(3, player1.getCredits());
+        assertEquals(3, player1.getPosition());
+        assertEquals(1, startingCabin.getAstronauts());
+    }
 }

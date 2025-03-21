@@ -124,7 +124,7 @@ public class NormalShip extends Ship {
      * @return the component at the given position
      */
     @Override
-    protected Component getComponentAt(int row, int col) {
+    public Component getComponentAt(int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             return table[row][col].getComponent();
         }
