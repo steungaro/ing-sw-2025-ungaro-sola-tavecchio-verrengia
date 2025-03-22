@@ -10,7 +10,7 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 public class Planet {
     private List<CargoColor> reward;
     private Boolean available;
-    private Player player;
+    private Player player = null;
 
     /**
      * Default constructor

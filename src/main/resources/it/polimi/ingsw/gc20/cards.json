@@ -1,0 +1,249 @@
+{
+  "cards": [
+    {
+      "name": "Slavers",
+      "firePower": "6",
+      "lostMembers": "3",
+      "reward": "5",
+      "lostDays": "1",
+      "IDCard": "1",
+      "level": "1"
+    },
+    {
+      "name": "Smugglers",
+      "lostCargo": "2",
+      "firePower": "4",
+      "lostDays": "1",
+      "reward": ["YELLOW", "GREEN", "BLUE"],
+      "IDCard": "2",
+      "Level": "1"
+    },
+    {
+      "name": "Pirates",
+      "firePower": "5",
+      "cannonFire": [
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "LIGHT_FIRE"
+          }
+        },
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "HEAVY_FIRE"
+          }
+        },
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "LIGHT_FIRE"
+          }
+        }
+      ],
+      "reward": "4",
+      "lostDays": "1",
+      "IDCard": "3",
+      "Level": "1"
+    },
+    {
+      "name": "Stardust",
+      "IDCard": "4",
+      "Level": "1"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "5",
+      "Level": "1"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "6",
+      "Level": "1"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "7",
+      "Level": "1"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "8",
+      "Level": "1"
+    },
+    {
+      "name": "MeteorSwarm",
+      "meteors": [
+        {
+          "direction": "DOWN",
+          "fireType": "HEAVY_METEOR"
+        },
+        {
+          "direction": "LEFT",
+          "fireType": "LIGHT_FIRE"
+        },
+        {
+          "direction": "RIGHT",
+          "fireType": "LIGHT_METEOR"
+        }
+      ],
+      "IDCard": "9",
+      "Level": "1"
+    },
+    {
+      "name": "MeteorSwarm",
+      "meteors": [
+            {
+              "direction": "DOWN",
+              "fireType": "LIGHT_METEOR"
+            },
+            {
+              "direction": "DOWN",
+              "fireType": "LIGHT_METEOR"
+            },
+            {
+              "direction": "LEFT",
+              "fireType": "LIGHT_FIRE"
+            },
+            {
+              "direction": "RIGHT",
+              "fireType": "LIGHT_METEOR"
+            },
+            {
+              "direction": "UP",
+              "fireType": "LIGHT_METEOR"
+            }
+        ],
+        "IDCard": "10",
+        "Level": "1"
+    },
+    {
+      "name": "MeteorSwarm",
+        "meteors": [
+            {
+            "direction": "DOWN",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "DOWN",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "DOWN",
+            "fireType": "HEAVY_FIRE"
+            }
+        ],
+        "IDCard": "11",
+        "Level": "1"
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "RED",
+            "GREEN",
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "RED",
+            "YELLOW",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet3": {
+          "reward": [
+            "RED",
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet4": {
+          "reward": [
+            "RED",
+            "GREEN"
+          ],
+          "available": "true"
+        },
+        "IDCard": "12",
+        "Level": "1"
+      }
+    },
+    {
+      "name": "Planets",
+        "planets": {
+            "planet1": {
+            "reward": [
+                "RED",
+                "RED"
+            ],
+            "available": "true"
+            },
+            "planet2": {
+            "reward": [
+                "RED",
+                "BLUE",
+                "BLUE"
+            ],
+            "available": "true"
+            },
+            "planet3": {
+            "reward": [
+                "YELLOW",
+            ],
+            "available": "true"
+            },
+            "IDCard": "13",
+            "Level": "1"
+        }
+    },
+    {
+      "name": "Planets",
+        "planets": {
+            "planet1": {
+            "reward": [
+                "YELLOW",
+                "GREEN",
+                "BLUE",
+                "BLUE"
+            ],
+            "available": "true"
+            },
+            "planet2": {
+            "reward": [
+                "RED",
+                "YELLOW",
+                "BLUE"
+            ],
+            "available": "true"
+            },
+            "planet3": {
+            "reward": [
+                "RED",
+                "BLUE",
+                "BLUE",
+                "BLUE"
+            ],
+            "available": "true"
+            },
+            "planet4": {
+            "reward": [
+                "RED",
+                "GREEN"
+            ],
+            "available": "true"
+            },
+            "IDCard": "14",
+            "Level": "1"
+        }
+    }
+  ]
+}
