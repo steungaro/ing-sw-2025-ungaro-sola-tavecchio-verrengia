@@ -97,4 +97,8 @@ public class NormalBoard extends Board {
     public void stopHourglass() {
         this.hourglass.stopCountdown();
     }
+
+    public void initCountdown (){
+        this.hourglass.initCountdown();
+    }
 }
