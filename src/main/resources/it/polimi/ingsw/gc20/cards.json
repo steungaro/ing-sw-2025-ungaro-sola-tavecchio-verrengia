@@ -197,7 +197,7 @@
             },
             "planet3": {
             "reward": [
-                "YELLOW",
+                "YELLOW"
             ],
             "available": "true"
             },
@@ -207,43 +207,518 @@
     },
     {
       "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "YELLOW",
+            "GREEN",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "YELLOW",
+            "YELLOW"
+          ]
+        }
+      },
+      "IDCard": "14",
+      "Level": "1"
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "GREEN",
+            "GREEN"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "YELLOW"
+          ],
+          "available": "true"
+        },
+        "planet3": {
+          "reward": [
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        }
+      },
+      "IDCard": "15",
+      "Level": "1"
+    },
+    {
+      "name": "CombatZone",
+      "lostDays": "3",
+      "lostCargo": "0",
+      "cannonFire": {
+        "Projectile1": {
+          "Direction": "UP",
+          "fireType": "LIGHT_FIRE"
+        },
+        "Projectile2": {
+          "Direction": "UP",
+          "fireType": "HEAVY_FIRE"
+        }
+      },
+        "lostCrew": "2",
+        "IDCard": "16",
+        "Level": "1"
+    },
+    {
+      "name": "AbandonedShip",
+      "lostCrew": "2",
+      "credits": "3",
+      "lostDays": "1",
+      "IDCard": "17",
+      "Level": "1"
+    },
+    {
+      "name": "AbandonedShip",
+      "lostCrew": "3",
+      "credits": "4",
+      "lostDays": "1",
+      "IDCard": "18",
+      "Level": "1"
+    },
+    {
+      "name": "AbandonedStation",
+      "crewNeeded": "5",
+      "reward": [
+        "YELLOW",
+        "GREEN"
+      ],
+      "lostDays": "1",
+      "IDCard": "19",
+      "Level": "1"
+    },
+    {
+      "name": "AbandonedStation",
+      "crewNeeded": "6",
+      "reward": [
+          "RED",
+          "RED"
+      ],
+      "lostDays": "1",
+      "IDCard": "20",
+      "Level": "1"
+    },
+    {
+      "name": "Slavers",
+      "firePower": "7",
+      "lostMembers": "4",
+      "reward": "8",
+      "lostDays": "2",
+      "IDCard": "21",
+      "Level": "2"
+    },
+    {
+      "name": "Smugglers",
+      "firePower": "8",
+      "lostCargo": "3",
+      "lostDays": "2",
+      "reward": [
+        "RED",
+        "YELLOW",
+        "YELLOW"
+      ],
+      "IDCard": "22",
+      "Level": "2"
+    },
+    {
+      "name": "Pirates",
+      "firePower": "6",
+      "cannonFire": [
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "HEAVY_FIRE"
+          }
+        },
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "LIGHT_FIRE"
+          }
+        },
+        {
+          "Projectile": {
+            "Direction": "DOWN",
+            "fireType": "HEAVY_FIRE"
+          }
+        }
+      ],
+      "reward": "7",
+      "lostDays": "2",
+      "IDCard": "23",
+      "Level": "2"
+    },
+    {
+      "name": "Stardust",
+      "IDCard": "24",
+      "Level": "2"
+    },
+    {
+      "name": "Epidemic",
+      "IDCard": "25",
+      "Level": "2"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "26",
+      "Level": "2"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "27",
+      "Level": "2"
+    },
+    {
+      "name": "OpenSpace",
+      "IDCard": "28",
+      "Level": "2"
+    },
+    {
+      "name": "MeteorSwarm",
+        "meteors": [
+            {
+            "direction": "DOWN",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+              "direction": "DOWN",
+                "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "LIGHT_METEOR"
+            }
+        ],
+        "IDCard": "29",
+        "Level": "2"
+    },
+    {
+      "name": "MeteorSwarm",
+        "meteors": [
+            {
+            "direction": "DOWN",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "DOWN",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "UP",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "UP",
+            "fireType": "LIGHT_METEOR"
+            }
+        ],
+        "IDCard": "30",
+        "Level": "2"
+    },
+    {
+      "name": "MeteorSwarm",
+        "meteors": [
+            {
+            "direction": "DOWN",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "DOWN",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "LIGHT_METEOR"
+            },
+            {
+            "direction": "LEFT",
+            "fireType": "LIGHT_METEOR"
+            }
+        ],
+        "IDCard": "31",
+        "Level": "2"
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "RED",
+            "GREEN",
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "RED",
+            "YELLOW",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet3": {
+          "reward": [
+            "RED",
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet4": {
+          "reward": [
+            "RED",
+            "GREEN"
+          ],
+          "available": "true"
+        },
+        "IDCard": "32",
+        "Level": "2"
+      }
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "RED",
+            "RED"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "RED",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        },
+        "planet3": {
+          "reward": [
+            "YELLOW"
+          ],
+          "available": "true"
+        },
+        "IDCard": "33",
+        "Level": "2"
+      }
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "RED",
+            "RED",
+            "RED",
+            "YELLOW"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "RED",
+            "RED",
+            "GREEN",
+            "GREEN"
+          ],
+          "available": "true"
+        },
+        "planet3": {
+          "reward": [
+            "RED",
+            "BLUE",
+            "BLUE",
+            "BLUE",
+            "BLUE"
+          ],
+          "available": "true"
+        }
+      },
+      "IDCard": "34",
+      "Level": "2"
+    },
+    {
+      "name": "Planets",
+      "planets": {
+        "planet1": {
+          "reward": [
+            "RED",
+            "RED"
+          ],
+          "available": "true"
+        },
+        "planet2": {
+          "reward": [
+            "GREEN",
+            "GREEN",
+            "GREEN",
+            "GREEN"
+          ],
+          "available": "true"
+        }
+      },
+      "IDCard": "35",
+      "Level": "2"
+    },
+    {
+      "name": "Planets",
         "planets": {
             "planet1": {
             "reward": [
-                "YELLOW",
-                "GREEN",
-                "BLUE",
-                "BLUE"
+                "RED",
+                "YELLOW"
             ],
             "available": "true"
             },
             "planet2": {
             "reward": [
-                "RED",
                 "YELLOW",
+                "GREEN",
                 "BLUE"
             ],
             "available": "true"
             },
             "planet3": {
+              "reward": [
+                "GREEN",
+                "GREEN"
+            ],
+            "available": "true"
+            },
+            "planet4": {
+              "reward": [
+                "YELLOW"
+            ],
+            "available": "true"
+            }
+        },
+        "IDCard": "36",
+        "Level": "2"
+    },
+    {
+      "name": "Planets",
+        "planets": {
+            "planet1": {
             "reward": [
-                "RED",
+              "GREEN",
+              "GREEN",
+              "GREEN"
+            ],
+            "available": "true"
+            },
+            "planet2": {
+            "reward": [
+                "YELLOW",
+                "YELLOW"
+            ],
+            "available": "true"
+            },
+            "planet3": {
+            "reward": [
                 "BLUE",
                 "BLUE",
                 "BLUE"
             ],
             "available": "true"
+            }
+        },
+        "IDCard": "37",
+        "Level": "2"
+    },
+    {
+      "name": "CombatZone",
+        "lostDays": "4",
+        "lostCargo": "3",
+        "cannonFire": {
+            "Projectile1": {
+              "Direction": "DOWN",
+              "fireType": "LIGHT_FIRE"
             },
-            "planet4": {
-            "reward": [
-                "RED",
-                "GREEN"
-            ],
-            "available": "true"
+            "Projectile2": {
+              "Direction": "LEFT",
+              "fireType": "LIGHT_FIRE"
             },
-            "IDCard": "14",
-            "Level": "1"
-        }
+            "Projectile3": {
+              "Direction": "RIGHT",
+              "fireType": "LIGHT_FIRE"
+            },
+            "Projectile4": {
+              "Direction": "UP",
+              "fireType": "HEAVY_FIRE"
+            }
+        },
+        "lostCrew": "0",
+        "IDCard": "38",
+        "Level": "2"
+        },
+        {
+        "name": "AbandonedShip",
+        "lostCrew": "4",
+        "credits": "6",
+        "lostDays": "1",
+        "IDCard": "39",
+        "Level": "2"
+        },
+        {
+        "name": "AbandonedShip",
+        "lostCrew": "5",
+        "credits": "8",
+        "lostDays": "2",
+        "IDCard": "40",
+        "Level": "2"
+        },
+        {
+        "name": "AbandonedStation",
+        "crewNeeded": "7",
+        "reward": [
+            "RED",
+            "YELLOW"
+        ],
+        "lostDays": "1",
+        "IDCard": "41",
+        "Level": "2"
+        },
+        {
+        "name": "AbandonedStation",
+        "crewNeeded": "8",
+        "reward": [
+            "YELLOW",
+            "YELLOW",
+            "GREEN"
+        ],
+        "lostDays": "2",
+        "IDCard": "42",
+        "Level": "2"
     }
   ]
 }
