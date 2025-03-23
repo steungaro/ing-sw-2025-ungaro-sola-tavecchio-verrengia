@@ -6,9 +6,9 @@ import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
-
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -81,10 +81,14 @@ public class GameController {
         if (card instanceof Planets) {
             state = State.WAITING_PLANET;
             //TODO: notify players of state change
-            currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
+
         } else if (card instanceof AbandonedShip) {
+            state = State.WAITING_CREW;
+            //TODO: notify players of state change
 
         } else if (card instanceof AbandonedStation) {
+            state = State.WAITING_LANDING;
+            //TODO: notify players of state change
 
         } else if (card instanceof CombatZone) {
 
@@ -103,6 +107,7 @@ public class GameController {
         } else if (card instanceof Stardust) {
 
         }
+        currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
 
     }
 
@@ -149,6 +154,26 @@ public class GameController {
         } else {
             model.MoveCargo(cargo, (CargoHold) getComponentByID(componentfrom), (CargoHold) getComponentByID(componentto)); //TODO modificare
         }
+    }
+
+    public void abandonedShip(String username, List<Integer> components) {
+        if (state != State.WAITING_CREW) {
+            throw new IllegalStateException("Cannot abandon ship outside the crew phase");
+        }
+        Player player = getPlayerByID(username);
+        List<Cabin> cabins =  components.stream().map(id -> (Cabin) getComponentByID(id)).toList();
+        model.AbandonedShip(getPlayerByID(username), cabins);
+    }
+
+    public List<CargoColor> abandonedStation(String username) {
+        AbandonedStation card = (AbandonedStation) model.getActiveCard();
+        if(state != State.WAITING_LANDING){
+            throw new IllegalStateException("Cannot abandon station outside the crew phase");
+        } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
+            throw new IllegalStateException("Cannot invade station with insufficient crew");
+        }
+        endMove(username);
+        return model.AbandonedStation(getPlayerByID(username));
     }
 
     public void endMove(String username) {
