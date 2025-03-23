@@ -34,18 +34,29 @@ public class NormalBoardTest {
     }
 
     @Test
-    void testHourglass () throws InterruptedException {
+    void testHourglass1 () throws InterruptedException {
         board.initCountdown();
-        assertEquals(board.getRemainingTime(), 5);
-        Thread.sleep(3000);
-        assertTrue(board.getRemainingTime()<=2);
-        assertTrue(board.getTotalRemainingTime()<=17);
+        assertEquals(5, board.getRemainingTime());
+        Thread.sleep(2900);
+        assertEquals(2, board.getRemainingTime());
+        assertEquals(12, board.getTotalRemainingTime());
         Thread.sleep(2000);
         board.turnHourglass();
-        assertTrue(board.getRemainingTime()<=5);
-
-
+        assertEquals(5, board.getRemainingTime());
+        board.stopHourglass();
     }
 
-
+    @Test
+    void testHourglass2 () throws InterruptedException {
+        board.initCountdown();
+        assertThrows(IllegalArgumentException.class, () -> board.turnHourglass());
+        Thread.sleep(5100);
+        board.turnHourglass();
+        Thread.sleep(5100);
+        board.turnHourglass();
+        Thread.sleep(5100);
+        assertEquals(0, board.getRemainingTime());
+        assertEquals(2, board.getTurnedHourglass());
+        assertThrows(IllegalArgumentException.class, () -> board.turnHourglass());
+    }
 }

@@ -24,7 +24,7 @@ public class NormalBoard extends Board {
         this.thirdVisible = new ArrayList<>();
         this.invisible = new ArrayList<>();
         this.setSpaces(24);
-        this.hourglass = new Hourglass(90);
+        this.hourglass = new Hourglass(5);
     }
 
     /** function that merges the decks and shuffles them
@@ -69,19 +69,19 @@ public class NormalBoard extends Board {
         // TODO implement here
     }
 
-    /** Function that turns the hourglass
+    /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
      * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
      */
     public void turnHourglass() {
-        if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 3) {
+        if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 2) {
             this.hourglass.turn();
         } else {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cannot turn the hourglass when the remaining time is not 0 or when it has already been turned 2 times.");
         }
     }
 
     /** Function that returns the remaining time
-     * @return int is the number of seconds left of the current turn
+     * @return The number of seconds left of the current turn
      */
     public int getRemainingTime() {
         return this.hourglass.getRemainingTime();
@@ -94,11 +94,21 @@ public class NormalBoard extends Board {
         return 3 * this.hourglass.getPeriod() - this.hourglass.getTotalElapsed();
     }
 
+    /**
+     * Function that stops the hourglass
+     */
     public void stopHourglass() {
         this.hourglass.stopCountdown();
     }
 
+    /**
+     * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
+     */
     public void initCountdown (){
         this.hourglass.initCountdown();
+    }
+
+    public int getTurnedHourglass() {
+        return this.hourglass.getTurned();
     }
 }

@@ -9,7 +9,8 @@ public class Hourglass {
     private int period;
     private int turned;
     private int remainingTime;
-    private Timer timer;
+    private final Timer timer;
+    private TimerTask currentTask;
 
     /**
      * Default constructor
@@ -18,7 +19,8 @@ public class Hourglass {
         this.period = period;
         this.turned = 0;
         this.remainingTime = period;
-        this.timer = new Timer();
+        this.timer = new Timer(true);  // To run the countdown in a separate thread
+        this.currentTask = null;
     }
 
     public int getPeriod() {
@@ -36,7 +38,6 @@ public class Hourglass {
     public void turn() {
         this.turned++;
         this.remainingTime = this.period;
-        this.timer = new Timer();
         this.initCountdown();
     }
 
@@ -45,22 +46,34 @@ public class Hourglass {
     }
 
     public int getTotalElapsed() {
-        return period * turned - remainingTime;
+        return period * (turned + 1) - remainingTime;
     }
 
     public void initCountdown() {
-        timer.schedule(new TimerTask() {
+        // If there is a task running, cancel it
+        if (currentTask != null) {
+            currentTask.cancel();
+        }
+        this.remainingTime = this.period;
+        currentTask = new TimerTask() {
+            @Override
             public void run() {
-                if(remainingTime == 0) {
-                    timer.cancel();
+                if (remainingTime == 0) {
+                    cancel();  // Stop the task
                 } else {
                     remainingTime--;
                 }
             }
-        }, 0, 1000);
+        };
+
+        // Schedule the task to run every second
+        timer.scheduleAtFixedRate(currentTask, 0, 1000);
     }
 
     public void stopCountdown() {
-        timer.cancel();
+        if (currentTask != null) {
+            currentTask.cancel();
+            currentTask = null;
+        }
     }
 }

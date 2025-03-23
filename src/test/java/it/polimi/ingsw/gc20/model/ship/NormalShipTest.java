@@ -170,7 +170,7 @@ class NormalShipTest {
         assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
 
         //Remove lifeSupport
-        ship.removeComponent(lifeSupport);
+        ship.killComponent(lifeSupport);
 
     }
 }
