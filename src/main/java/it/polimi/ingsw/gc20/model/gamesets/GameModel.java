@@ -1,11 +1,14 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
+import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -114,19 +117,54 @@ public class GameModel {
             board = new LearnerBoard();
             //TODO create and setting the deck
         }
+        game.addBoard(board);
 
         //creating the players and initializing the player
         for (int i = 0; i < usernames.size(); i++) {
             Player player = initPlayer(usernames.get(i), i);
-            board.addPlayer(player);
             game.addPlayer(player);
         }
-        game.addBoard(board);
 
         List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+
         try {
-            allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
+            InputStream is = getClass().getResourceAsStream("/components.json");
+            if (is == null) {
+                System.err.println("Cannot find components.json file in resources");
+            }
+            else {
+                Component[] components = mapper.readValue(is, Component[].class);
+                if (components != null && components.length > 0) {
+                    allComponents = Arrays.asList(components);
+                } else {
+                    System.err.println("No components found in components.json");
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        List<AdventureCard> allCards = new ArrayList<>();
+        ObjectMapper mapper2 = new ObjectMapper();
+        mapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper2.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+
+        try {
+            InputStream is = getClass().getResourceAsStream("/cards.json");
+            if (is == null) {
+                System.err.println("Cannot find cards.json file in resources");
+            }
+            else {
+                AdventureCard[] cards = mapper2.readValue(is, AdventureCard[].class);
+                if (cards != null && cards.length > 0) {
+                    allCards = Arrays.asList(cards);
+                } else {
+                    System.err.println("No cards found in cards.json");
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,13 +1,33 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import java.util.*;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import it.polimi.ingsw.gc20.model.ship.Tile;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Battery.class, name = "Battery"),
+        @JsonSubTypes.Type(value = Cannon.class, name = "Cannon"),
+        @JsonSubTypes.Type(value = Cabin.class, name = "Cabin"),
+        @JsonSubTypes.Type(value = Engine.class, name = "Engine"),
+        @JsonSubTypes.Type(value = CargoHold.class, name = "CargoHold"),
+        @JsonSubTypes.Type(value = Pipes.class, name = "Pipes"),
+        @JsonSubTypes.Type(value = SpecialCargoHold.class, name = "SpecialCargoHold"),
+        @JsonSubTypes.Type(value = LifeSupport.class, name = "LifeSupport"),
+        @JsonSubTypes.Type(value = Shield.class, name = "Shield")
+        // Add other component types as needed
+})
 
 public abstract class Component {
 
     protected Map<Direction, ConnectorEnum> connectors = new HashMap<>();
-    protected int IDComponent;
-    private Tile tile;
+    protected int ID;
+    private Tile tile = null;
 
     public Component() {}
 
@@ -38,7 +58,7 @@ public abstract class Component {
      * @return the ID of the component
      */
     public int getIDComponent() {
-        return IDComponent;
+        return ID;
     }
 
     /**
@@ -46,7 +66,7 @@ public abstract class Component {
      * @param IDComponent the ID of the component
      */
     public void setIDComponent(int IDComponent) {
-        this.IDComponent = IDComponent;
+        this.ID = IDComponent;
     }
 
     /**

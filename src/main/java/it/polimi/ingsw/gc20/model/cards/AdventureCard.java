@@ -1,5 +1,24 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "name")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Planets.class, name = "Planets"),
+        @JsonSubTypes.Type(value = OpenSpace.class, name = "OpenSpace"),
+        @JsonSubTypes.Type(value = AbandonedShip.class, name = "AbandonedShip"),
+        @JsonSubTypes.Type(value = AbandonedStation.class, name = "AbandonedStation"),
+        @JsonSubTypes.Type(value = Stardust.class, name = "Stardust"),
+        @JsonSubTypes.Type(value = Epidemic.class, name = "Epidemic"),
+        @JsonSubTypes.Type(value = CombatZone.class, name = "CombatZone"),
+        @JsonSubTypes.Type(value = Slavers.class, name = "Slavers"),
+        @JsonSubTypes.Type(value = Smugglers.class, name = "Smugglers"),
+        @JsonSubTypes.Type(value = Pirates.class, name = "Pirates"),
+        @JsonSubTypes.Type(value = MeteorSwarm.class, name = "MeteorSwarm")
+        // Add all other concrete implementations here
+})
+
 /**
  * @author GC20
  */

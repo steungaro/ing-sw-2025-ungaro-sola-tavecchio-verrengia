@@ -1,9 +1,7 @@
-{
-  "components": [
+[
     {
       "type": "Battery",
       "ID": "0",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -16,7 +14,6 @@
     {
       "type": "Battery",
       "ID": "1",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -29,7 +26,6 @@
     {
       "type": "Battery",
       "ID": "2",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "S",
@@ -42,7 +38,6 @@
     {
       "type": "Battery",
       "ID": "3",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -55,7 +50,6 @@
     {
       "type": "Battery",
       "ID": "4",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -68,7 +62,6 @@
     {
       "type": "Battery",
       "ID": "5",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "S",
@@ -81,7 +74,6 @@
     {
       "type": "Battery",
       "ID": "6",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -94,7 +86,6 @@
     {
       "type": "Battery",
       "ID": "7",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -107,7 +98,6 @@
     {
       "type": "Battery",
       "ID": "8",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -120,7 +110,6 @@
     {
       "type": "Battery",
       "ID": "9",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -133,7 +122,6 @@
     {
       "type": "Battery",
       "ID": "10",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -146,7 +134,6 @@
     {
       "type": "Battery",
       "ID": "11",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -159,7 +146,6 @@
     {
       "type": "Battery",
       "ID": "12",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -172,7 +158,6 @@
     {
       "type": "Battery",
       "ID": "13",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -185,7 +170,6 @@
     {
       "type": "Battery",
       "ID": "14",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -198,7 +182,6 @@
     {
       "type": "Battery",
       "ID": "15",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "S",
@@ -211,7 +194,6 @@
     {
       "type": "Battery",
       "ID": "16",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -226,7 +208,6 @@
     {
       "type": "CargoHold",
       "ID": "17",
-      "Tile": "null",
       "connectors": {
         "UP" : "D",
         "DOWN" : "U",
@@ -239,7 +220,6 @@
     {
       "type": "CargoHold",
       "ID": "18",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "U",
@@ -252,7 +232,6 @@
     {
       "type": "CargoHold",
       "ID": "19",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -265,7 +244,6 @@
     {
       "type": "CargoHold",
       "ID": "20",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -278,7 +256,6 @@
     {
       "type": "CargoHold",
       "ID": "21",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -291,7 +268,6 @@
     {
       "type": "CargoHold",
       "ID": "22",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -304,7 +280,6 @@
     {
       "type": "CargoHold",
       "ID": "23",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -317,7 +292,6 @@
     {
       "type": "CargoHold",
       "ID": "24",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -330,7 +304,6 @@
     {
       "type": "CargoHold",
       "ID": "25",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -343,7 +316,6 @@
     {
       "type": "CargoHold",
       "ID": "26",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -356,7 +328,6 @@
     {
       "type": "CargoHold",
       "ID": "27",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -369,7 +340,6 @@
     {
       "type": "CargoHold",
       "ID": "28",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -382,7 +352,6 @@
     {
       "type": "CargoHold",
       "ID": "29",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -395,7 +364,6 @@
     {
       "type": "CargoHold",
       "ID": "30",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -408,7 +376,6 @@
     {
       "type": "CargoHold",
       "ID": "31",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "S",
@@ -423,7 +390,6 @@
     {
       "type": "Cabin",
       "ID": "32",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -434,7 +400,6 @@
     {
       "type": "Cabin",
       "ID": "33",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -445,7 +410,6 @@
     {
       "type": "Cabin",
       "ID": "34",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -456,7 +420,6 @@
     {
       "type": "Cabin",
       "ID": "35",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -467,7 +430,6 @@
     {
       "type": "Cabin",
       "ID": "36",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -478,7 +440,6 @@
     {
       "type": "Cabin",
       "ID": "37",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -489,7 +450,6 @@
     {
       "type": "Cabin",
       "ID": "38",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -500,7 +460,6 @@
     {
       "type": "Cabin",
       "ID": "39",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -511,7 +470,6 @@
     {
       "type": "Cabin",
       "ID": "40",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -522,7 +480,6 @@
     {
       "type": "Cabin",
       "ID": "41",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -533,7 +490,6 @@
     {
       "type": "Cabin",
       "ID": "42",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -544,7 +500,6 @@
     {
       "type": "Cabin",
       "ID": "43",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -555,7 +510,6 @@
     {
       "type": "Cabin",
       "ID": "44",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -566,7 +520,6 @@
     {
       "type": "Cabin",
       "ID": "45",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -577,7 +530,6 @@
     {
       "type": "Cabin",
       "ID": "46",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -588,7 +540,6 @@
     {
       "type": "Cabin",
       "ID": "47",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -599,7 +550,6 @@
     {
       "type": "Cabin",
       "ID": "48",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -612,8 +562,7 @@
     {
       "type": "Pipes",
         "ID": "49",
-      "Tile": "null",
-        "connectors": {
+      "connectors": {
             "UP": "U",
             "DOWN": "ZERO",
             "RIGHT": "U",
@@ -623,7 +572,6 @@
     {
       "type": "Pipes",
       "ID": "50",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -634,7 +582,6 @@
     {
       "type": "Pipes",
       "ID": "51",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -645,7 +592,6 @@
     {
       "type": "Pipes",
       "ID": "52",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -656,7 +602,6 @@
     {
       "type": "Pipes",
       "ID": "53",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -667,7 +612,6 @@
     {
       "type": "Pipes",
       "ID": "54",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -678,7 +622,6 @@
     {
       "type": "Pipes",
       "ID": "55",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -689,7 +632,6 @@
     {
       "type": "Pipes",
       "ID": "56",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -702,7 +644,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "57",
-      "Tile": "null",
       "connectors": {
           "UP": "ZERO",
           "DOWN": "S",
@@ -715,7 +656,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "58",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -728,7 +668,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "59",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -741,7 +680,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "60",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -754,7 +692,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "61",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -767,7 +704,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "62",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -780,7 +716,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "63",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -793,7 +728,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "64",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -806,7 +740,6 @@
     {
       "type": "SpecialCargoHold",
       "ID": "65",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -821,8 +754,7 @@
     {
       "type": "Engine",
         "ID": "66",
-        "Tile": "null",
-        "connectors": {
+      "connectors": {
             "UP": "ZERO",
             "DOWN": "ZERO",
             "RIGHT": "U",
@@ -834,7 +766,6 @@
     {
       "type": "Engine",
       "ID": "67",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -847,7 +778,6 @@
     {
       "type": "Engine",
       "ID": "68",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -860,7 +790,6 @@
     {
       "type": "Engine",
       "ID": "69",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -873,7 +802,6 @@
     {
       "type": "Engine",
       "ID": "70",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -886,7 +814,6 @@
     {
       "type": "Engine",
       "ID": "71",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -899,7 +826,6 @@
     {
       "type": "Engine",
       "ID": "72",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -912,7 +838,6 @@
     {
       "type": "Engine",
       "ID": "73",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -925,7 +850,6 @@
     {
       "type": "Engine",
       "ID": "74",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -938,7 +862,6 @@
     {
       "type": "Engine",
       "ID": "75",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -951,7 +874,6 @@
     {
       "type": "Engine",
       "ID": "76",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -964,7 +886,6 @@
     {
       "type": "Engine",
       "ID": "77",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -977,7 +898,6 @@
     {
       "type": "Engine",
       "ID": "78",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -990,7 +910,6 @@
     {
       "type": "Engine",
       "ID": "79",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1003,7 +922,6 @@
     {
       "type": "Engine",
       "ID": "80",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1016,7 +934,6 @@
     {
       "type": "Engine",
       "ID": "81",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1029,7 +946,6 @@
     {
       "type": "Engine",
       "ID": "82",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -1042,7 +958,6 @@
     {
       "type": "Engine",
       "ID": "83",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1055,7 +970,6 @@
     {
       "type": "Engine",
       "ID": "84",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1068,7 +982,6 @@
     {
       "type": "Engine",
       "ID": "85",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1081,7 +994,6 @@
     {
       "type": "Engine",
       "ID": "86",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1094,7 +1006,6 @@
     {
       "type": "Engine",
       "ID": "87",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1107,7 +1018,6 @@
     {
       "type": "Engine",
       "ID": "88",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1120,7 +1030,6 @@
     {
       "type": "Engine",
       "ID": "89",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1133,7 +1042,6 @@
     {
       "type": "Engine",
       "ID": "90",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -1146,7 +1054,6 @@
     {
       "type": "Engine",
       "ID": "91",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1159,7 +1066,6 @@
     {
       "type": "Engine",
       "ID": "92",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1172,7 +1078,6 @@
     {
       "type": "Engine",
       "ID": "93",
-      "Tile": "null",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -1185,7 +1090,6 @@
     {
       "type": "Engine",
       "ID": "94",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1198,7 +1102,6 @@
     {
       "type": "Engine",
       "ID": "95",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1213,7 +1116,6 @@
     {
       "type": "Cannon",
       "ID": "96",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1225,7 +1127,6 @@
     {
       "type": "Cannon",
       "ID": "97",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1237,7 +1138,6 @@
     {
       "type": "Cannon",
       "ID": "98",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1249,7 +1149,6 @@
     {
       "type": "Cannon",
       "ID": "99",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1261,7 +1160,6 @@
     {
       "type": "Cannon",
       "ID": "100",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1273,7 +1171,6 @@
     {
       "type": "Cannon",
       "ID": "101",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1285,7 +1182,6 @@
     {
       "type": "Cannon",
       "ID": "102",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1297,7 +1193,6 @@
     {
       "type": "Cannon",
       "ID": "103",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1309,7 +1204,6 @@
     {
       "type": "Cannon",
       "ID": "104",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1321,7 +1215,6 @@
     {
       "type": "Cannon",
       "ID": "105",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1333,7 +1226,6 @@
     {
       "type": "Cannon",
       "ID": "106",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1345,7 +1237,6 @@
     {
       "type": "Cannon",
       "ID": "107",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1357,7 +1248,6 @@
     {
       "type": "Cannon",
       "ID": "108",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1369,7 +1259,6 @@
     {
       "type": "Cannon",
       "ID": "109",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1381,7 +1270,6 @@
     {
       "type": "Cannon",
       "ID": "110",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1393,7 +1281,6 @@
     {
       "type": "Cannon",
       "ID": "111",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1405,7 +1292,6 @@
     {
       "type": "Cannon",
       "ID": "112",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1417,7 +1303,6 @@
     {
       "type": "Cannon",
       "ID": "113",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1429,7 +1314,6 @@
     {
       "type": "Cannon",
       "ID": "114",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1441,7 +1325,6 @@
     {
       "type": "Cannon",
       "ID": "115",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1453,7 +1336,6 @@
     {
       "type": "Cannon",
       "ID": "116",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1465,7 +1347,6 @@
     {
       "type": "Cannon",
       "ID": "117",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1477,7 +1358,6 @@
     {
       "type": "Cannon",
       "ID": "118",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1489,7 +1369,6 @@
     {
       "type": "Cannon",
       "ID": "119",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1501,7 +1380,6 @@
     {
       "type": "Cannon",
       "ID": "120",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1516,7 +1394,6 @@
     {
       "type": "Cannon",
       "ID": "121",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1528,7 +1405,6 @@
     {
       "type": "Cannon",
       "ID": "122",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1540,7 +1416,6 @@
     {
       "type": "Cannon",
       "ID": "123",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1552,7 +1427,6 @@
     {
       "type": "Cannon",
       "ID": "124",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1564,7 +1438,6 @@
     {
       "type": "Cannon",
       "ID": "125",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1576,7 +1449,6 @@
     {
       "type": "Cannon",
       "ID": "126",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1588,7 +1460,6 @@
     {
       "type": "Cannon",
       "ID": "127",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1600,7 +1471,6 @@
     {
       "type": "Cannon",
       "ID": "128",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1612,7 +1482,6 @@
     {
       "type": "Cannon",
       "ID": "129",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1624,7 +1493,6 @@
     {
       "type": "Cannon",
       "ID": "130",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1636,7 +1504,6 @@
     {
       "type": "Cannon",
       "ID": "131",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1650,7 +1517,6 @@
     {
       "type": "LifeSupport",
       "ID": "132",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1662,7 +1528,6 @@
     {
       "type": "LifeSupport",
       "ID": "133",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1674,7 +1539,6 @@
     {
       "type": "LifeSupport",
       "ID": "134",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1686,7 +1550,6 @@
     {
       "type": "LifeSupport",
       "ID": "135",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1698,7 +1561,6 @@
     {
       "type": "LifeSupport",
       "ID": "136",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1710,7 +1572,6 @@
     {
       "type": "LifeSupport",
       "ID": "137",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1722,7 +1583,6 @@
     {
       "type": "LifeSupport",
       "ID": "138",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1734,7 +1594,6 @@
     {
       "type": "LifeSupport",
       "ID": "139",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1746,7 +1605,6 @@
     {
       "type": "LifeSupport",
       "ID": "140",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1758,7 +1616,6 @@
     {
       "type": "LifeSupport",
       "ID": "141",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1770,7 +1627,6 @@
     {
       "type": "LifeSupport",
       "ID": "142",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1782,7 +1638,6 @@
     {
       "type": "LifeSupport",
       "ID": "143",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1797,7 +1652,6 @@
     {
       "type": "Shield",
       "ID": "144",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1809,7 +1663,6 @@
     {
       "type": "Shield",
       "ID": "145",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -1821,7 +1674,6 @@
     {
       "type": "Shield",
       "ID": "146",
-      "Tile": "null",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -1833,7 +1685,6 @@
     {
       "type": "Shield",
       "ID": "147",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1845,7 +1696,6 @@
     {
       "type": "Shield",
       "ID": "148",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1857,7 +1707,6 @@
     {
       "type": "Shield",
       "ID": "149",
-      "Tile": "null",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -1869,7 +1718,6 @@
     {
       "type": "Shield",
       "ID": "150",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1881,7 +1729,6 @@
     {
       "type": "Shield",
       "ID": "151",
-      "Tile": "null",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1891,4 +1738,3 @@
       "coveredSides": ["UP", "RIGHT"]
     }
   ]
-}

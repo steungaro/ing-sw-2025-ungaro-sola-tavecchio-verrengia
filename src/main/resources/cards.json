@@ -1,5 +1,4 @@
-{
-  "cards": [
+[
     {
       "name": "Slavers",
       "firePower": "6",
@@ -23,22 +22,16 @@
       "firePower": "5",
       "cannonFire": [
         {
-          "Projectile": {
             "Direction": "DOWN",
             "fireType": "LIGHT_FIRE"
-          }
         },
         {
-          "Projectile": {
             "Direction": "DOWN",
             "fireType": "HEAVY_FIRE"
-          }
         },
         {
-          "Projectile": {
             "Direction": "DOWN",
             "fireType": "LIGHT_FIRE"
-          }
         }
       ],
       "reward": "4",
@@ -138,76 +131,79 @@
     },
     {
       "name": "Planets",
-      "planets": {
-        "planet1": {
-          "reward": [
-            "RED",
-            "GREEN",
-            "BLUE",
-            "BLUE",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet2": {
-          "reward": [
-            "RED",
-            "YELLOW",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet3": {
-          "reward": [
-            "RED",
-            "BLUE",
-            "BLUE",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet4": {
-          "reward": [
-            "RED",
-            "GREEN"
-          ],
-          "available": "true"
-        },
+      "planets": [
+        {
+          "planet1": {
+            "reward": [
+              "RED",
+              "GREEN",
+              "BLUE",
+              "BLUE",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet2": {
+            "reward": [
+              "RED",
+              "YELLOW",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet3": {
+            "reward": [
+              "RED",
+              "BLUE",
+              "BLUE",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet4": {
+            "reward": [
+              "RED",
+              "GREEN"
+            ],
+            "available": "true"
+          }
+        }],
         "IDCard": "12",
         "Level": "1"
       }
-    },
+    ,
     {
       "name": "Planets",
-        "planets": {
+        "planets": [
+          {
             "planet1": {
-            "reward": [
+              "reward": [
                 "RED",
                 "RED"
-            ],
-            "available": "true"
+              ],
+              "available": "true"
             },
             "planet2": {
-            "reward": [
+              "reward": [
                 "RED",
                 "BLUE",
                 "BLUE"
-            ],
-            "available": "true"
+              ],
+              "available": "true"
             },
             "planet3": {
-            "reward": [
+              "reward": [
                 "YELLOW"
-            ],
-            "available": "true"
-            },
+              ],
+              "available": "true"
+            }
+          }],
             "IDCard": "13",
             "Level": "1"
-        }
-    },
+        },
     {
       "name": "Planets",
-      "planets": {
+      "planets": [{
         "planet1": {
           "reward": [
             "YELLOW",
@@ -223,13 +219,13 @@
             "YELLOW"
           ]
         }
-      },
+      }],
       "IDCard": "14",
       "Level": "1"
     },
     {
       "name": "Planets",
-      "planets": {
+      "planets": [{
         "planet1": {
           "reward": [
             "GREEN",
@@ -251,7 +247,7 @@
           ],
           "available": "true"
         }
-      },
+      }],
       "IDCard": "15",
       "Level": "1"
     },
@@ -259,16 +255,14 @@
       "name": "CombatZone",
       "lostDays": "3",
       "lostCargo": "0",
-      "cannonFire": {
-        "Projectile1": {
+      "cannonFire": [{
           "Direction": "UP",
           "fireType": "LIGHT_FIRE"
         },
-        "Projectile2": {
+        {
           "Direction": "UP",
           "fireType": "HEAVY_FIRE"
-        }
-      },
+      }],
         "lostCrew": "2",
         "IDCard": "16",
         "Level": "1"
@@ -338,16 +332,12 @@
       "firePower": "6",
       "cannonFire": [
         {
-          "Projectile": {
             "Direction": "DOWN",
             "fireType": "HEAVY_FIRE"
-          }
         },
         {
-          "Projectile": {
             "Direction": "DOWN",
             "fireType": "LIGHT_FIRE"
-          }
         },
         {
           "Projectile": {
@@ -465,76 +455,78 @@
     },
     {
       "name": "Planets",
-      "planets": {
-        "planet1": {
-          "reward": [
-            "RED",
-            "GREEN",
-            "BLUE",
-            "BLUE",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet2": {
-          "reward": [
-            "RED",
-            "YELLOW",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet3": {
-          "reward": [
-            "RED",
-            "BLUE",
-            "BLUE",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet4": {
-          "reward": [
-            "RED",
-            "GREEN"
-          ],
-          "available": "true"
-        },
+      "planets": [
+        {
+          "planet1": {
+            "reward": [
+              "RED",
+              "GREEN",
+              "BLUE",
+              "BLUE",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet2": {
+            "reward": [
+              "RED",
+              "YELLOW",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet3": {
+            "reward": [
+              "RED",
+              "BLUE",
+              "BLUE",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet4": {
+            "reward": [
+              "RED",
+              "GREEN"
+            ],
+            "available": "true"
+          }
+        }],
         "IDCard": "32",
         "Level": "2"
-      }
     },
     {
       "name": "Planets",
-      "planets": {
-        "planet1": {
-          "reward": [
-            "RED",
-            "RED"
-          ],
-          "available": "true"
-        },
-        "planet2": {
-          "reward": [
-            "RED",
-            "BLUE",
-            "BLUE"
-          ],
-          "available": "true"
-        },
-        "planet3": {
-          "reward": [
-            "YELLOW"
-          ],
-          "available": "true"
-        },
+      "planets": [
+        {
+          "planet1": {
+            "reward": [
+              "RED",
+              "RED"
+            ],
+            "available": "true"
+          },
+          "planet2": {
+            "reward": [
+              "RED",
+              "BLUE",
+              "BLUE"
+            ],
+            "available": "true"
+          },
+          "planet3": {
+            "reward": [
+              "YELLOW"
+            ],
+            "available": "true"
+          }
+        }],
         "IDCard": "33",
         "Level": "2"
-      }
     },
     {
       "name": "Planets",
-      "planets": {
+      "planets": [{
         "planet1": {
           "reward": [
             "RED",
@@ -563,13 +555,13 @@
           ],
           "available": "true"
         }
-      },
+      }],
       "IDCard": "34",
       "Level": "2"
     },
     {
       "name": "Planets",
-      "planets": {
+      "planets": [{
         "planet1": {
           "reward": [
             "RED",
@@ -586,13 +578,13 @@
           ],
           "available": "true"
         }
-      },
+      }],
       "IDCard": "35",
       "Level": "2"
     },
     {
       "name": "Planets",
-        "planets": {
+        "planets": [{
             "planet1": {
             "reward": [
                 "RED",
@@ -621,13 +613,13 @@
             ],
             "available": "true"
             }
-        },
+        }],
         "IDCard": "36",
         "Level": "2"
     },
     {
       "name": "Planets",
-        "planets": {
+        "planets": [{
             "planet1": {
             "reward": [
               "GREEN",
@@ -651,7 +643,7 @@
             ],
             "available": "true"
             }
-        },
+        }],
         "IDCard": "37",
         "Level": "2"
     },
@@ -659,24 +651,24 @@
       "name": "CombatZone",
         "lostDays": "4",
         "lostCargo": "3",
-        "cannonFire": {
-            "Projectile1": {
-              "Direction": "DOWN",
-              "fireType": "LIGHT_FIRE"
-            },
-            "Projectile2": {
+        "cannonFire": [
+          {
+            "Direction": "DOWN",
+            "fireType": "LIGHT_FIRE"
+          },
+          {
               "Direction": "LEFT",
               "fireType": "LIGHT_FIRE"
-            },
-            "Projectile3": {
+          },
+          {
               "Direction": "RIGHT",
               "fireType": "LIGHT_FIRE"
-            },
-            "Projectile4": {
+          },
+          {
               "Direction": "UP",
               "fireType": "HEAVY_FIRE"
-            }
-        },
+          }
+        ],
         "lostCrew": "0",
         "IDCard": "38",
         "Level": "2"
@@ -720,5 +712,4 @@
         "IDCard": "42",
         "Level": "2"
     }
-  ]
-}
+]

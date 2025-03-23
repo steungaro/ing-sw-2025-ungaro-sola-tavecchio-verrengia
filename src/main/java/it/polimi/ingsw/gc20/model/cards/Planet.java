@@ -35,11 +35,7 @@ public class Planet {
     public void setAvailable(Boolean available) {
         this.available = available;
     }
-    
-    public void setReward(CargoColor reward) {
-        this.reward.add(reward);
-    }
-    
+
     public void setUnavailable() {
         this.available = false;
     }
