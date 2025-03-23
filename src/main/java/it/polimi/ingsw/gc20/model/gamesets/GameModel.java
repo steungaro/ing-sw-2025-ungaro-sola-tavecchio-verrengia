@@ -849,10 +849,10 @@ public class GameModel {
         board.stopHourglass();
     }
 
-    public void initCountdown (){
-        NormalBoard board = ((NormalBoard)game.getBoard());
+    public void initCountdown () {
+        NormalBoard board = ((NormalBoard) game.getBoard());
         board.initCountdown();
-
+    }
     /** function that verify if the cargo that the player want to remove are the most valued one
      *
      * @param p player that want to remove cargo
