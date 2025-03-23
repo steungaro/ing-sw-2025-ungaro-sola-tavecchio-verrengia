@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -7,7 +8,6 @@ import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
 import java.util.*;
-
 
 public class GameModel {
     private Game game;
@@ -160,7 +160,16 @@ public class GameModel {
             game.addPlayer(player);
         }
         game.addBoard(board);
-        pile.addUnviewed(/*all components*/);
+
+        List<Component> allComponents = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        pile.addUnviewed(allComponents);
         game.setPile(pile);
 
         this.setGame(game);
@@ -486,22 +495,22 @@ public class GameModel {
      * @param from cargoHold from
      * @param to   cargoHold to
      */
-    public void MoveCargo(CargoColor c, CargoHold from, CargoHold to) {
-        from.unloadCargo(c);
+    public void MoveCargo(Player p, CargoColor c, CargoHold from, CargoHold to) {
+        p.getShip().unloadCargo(c, from);
         if (to != null) {
-            to.loadCargo(c);
+            p.getShip().loadCargo(c, to);
         }
     }
 
     /**
      * method to add a cargo to the cargoHold
      *
+     * @param p player that is adding the cargo
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
-    @Deprecated
-    public void addCargo(CargoColor c, CargoHold ch) {
-        ch.loadCargo(c);
+    public void addCargo(Player p, CargoColor c, CargoHold ch) {
+        p.getShip().loadCargo(c, ch);
     }
 
     /**
@@ -539,7 +548,6 @@ public class GameModel {
 
     /**
      * method for the stardust card
-     * TODO maybe all the stardust card could be resolved in the gameModel
      *
      * @param p player victim of the effect of the card
      */
