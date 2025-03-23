@@ -445,21 +445,22 @@ public class GameModel {
      * @param from cargoHold from
      * @param to   cargoHold to
      */
-    public void MoveCargo(CargoColor c, CargoHold from, CargoHold to) {
-        from.unloadCargo(c);
+    public void MoveCargo(Player p, CargoColor c, CargoHold from, CargoHold to) {
+        p.getShip().unloadCargo(c, from);
         if (to != null) {
-            to.loadCargo(c);
+            p.getShip().loadCargo(c, to);
         }
     }
 
     /**
      * method to add a cargo to the cargoHold
      *
+     * @param p player that is adding the cargo
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
      */
-    public void addCargo(CargoColor c, CargoHold ch) {
-        ch.loadCargo(c);
+    public void addCargo(Player p, CargoColor c, CargoHold ch) {
+        p.getShip().loadCargo(c, ch);
     }
 
     /**
@@ -729,6 +730,40 @@ public class GameModel {
         for (Battery e : energy){
             p.getShip().useEnergy(e);
         }
+    }
+
+    /** Function that turns the hourglass
+     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     */
+    public void turnHourglass() {
+        NormalBoard board = ((NormalBoard)game.getBoard());
+        board.turnHourglass();
+    }
+
+    /** Function that returns the remaining time
+     * @return int is the number of seconds left of the current turn
+     */
+    public int getRemainingTime() {
+        NormalBoard board = ((NormalBoard)game.getBoard());
+        return board.getRemainingTime();
+    }
+
+    /** Function that returns the total remaining time
+     * @return int is the number of seconds left
+     */
+    public int getTotalRemainingTime() {
+        NormalBoard board = ((NormalBoard)game.getBoard());
+        return board.getTotalRemainingTime();
+    }
+
+    public void stopHourglass() {
+        NormalBoard board = ((NormalBoard)game.getBoard());
+        board.stopHourglass();
+    }
+
+    public void initCountdown (){
+        NormalBoard board = ((NormalBoard)game.getBoard());
+        board.initCountdown();
     }
 
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
