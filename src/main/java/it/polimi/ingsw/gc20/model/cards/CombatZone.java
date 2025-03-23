@@ -106,12 +106,23 @@ public class CombatZone extends AdventureCard {
     /**
      * applies the effect of the card to the player
      * @param p player
-     * @param c is the list of cabins that lost crew
+     * @param l is the list of cabins that lost crew
      * @implNote the player loses days
      */
-    public void EffectLostCrew(Player p, List<Cabin> c) {
-        for(Cabin i : c) {
-            p.getShip().unloadCrew(i);
+    public void EffectLostCrew(Player p, List<Cabin> l) {
+        int count = 0;
+        int f = 1;
+        Cabin i = l.getFirst();
+        while (count < lostCrew) {
+            while(count < lostCrew && i.getAstronauts() > 0) {
+                i.unloadAstronaut();
+                count++;
+            }
+            if(f == l.size()) {
+                break;
+            }
+            i = l.get(f);
+            f++;
         }
     }
 
