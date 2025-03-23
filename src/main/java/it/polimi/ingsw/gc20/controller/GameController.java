@@ -43,8 +43,8 @@ public class GameController {
         state = State.ASSEMBLING;
         currentPlayer = "";
         connectedPlayers.addAll(usernames);
-        usernames.forEach(username -> {assemblingComplete.put(username, false);});
-        usernames.forEach(username -> {readyToFly.put(username, false);});
+        usernames.forEach(username -> assemblingComplete.put(username, false));
+        usernames.forEach(username -> readyToFly.put(username, false));
         //TODO: notify players of game start
     }
 
@@ -130,7 +130,7 @@ public class GameController {
         if (getComponentByID(component) == null) {
             throw new IllegalArgumentException("Component not found");
         } else {
-            player.getShip().loadCargo(cargo, (CargoHold) getComponentByID(component)); //TODO modificare
+            model.addCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(component));
         }
     }
 
@@ -142,19 +142,19 @@ public class GameController {
         if (getComponentByID(component) == null) {
             throw new IllegalArgumentException("Component not found");
         } else {
-            player.getShip().unloadCargo(cargo, (CargoHold) getComponentByID(component)); //TODO modificare
+            model.MoveCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(component), null);
         }
     }
 
-    public void moveCargo(String username, CargoColor cargo, int componentfrom, int componentto) {
+    public void moveCargo(String username, CargoColor cargo, int from, int to) {
         if (state != State.WAITING_CARGO) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
-        if (getComponentByID(componentfrom) == null || getComponentByID(componentto) == null) {
+        if (getComponentByID(from) == null || getComponentByID(to) == null) {
             throw new IllegalArgumentException("Component not found");
         } else {
-            model.MoveCargo(cargo, (CargoHold) getComponentByID(componentfrom), (CargoHold) getComponentByID(componentto)); //TODO modificare
+            model.MoveCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(from), (CargoHold) getComponentByID(to));
         }
     }
 
@@ -280,8 +280,7 @@ public class GameController {
      * @return Map associating each player with their score
      */
     public Map<Player, Integer> getPlayerScores(){
-        Map<Player, Integer> score = model.calculateScore();
-        return score;
+        return model.calculateScore();
     }
 
     /**
