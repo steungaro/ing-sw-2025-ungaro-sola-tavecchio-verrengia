@@ -7,9 +7,6 @@ import it.polimi.ingsw.gc20.model.components.*;
  */
 public class NormalShip extends Ship {
 
-    /**
-     * Default constructor
-     */
     public NormalShip() {
         super();
         brownAlien = false;
@@ -30,6 +27,7 @@ public class NormalShip extends Ship {
         table[0][5].setAvailability(false);
         table[1][6].setAvailability(false);
         table[4][3].setAvailability(false);
+
         Component sc = new StartingCabin();
         addComponent(sc, 2, 3);
         table[2][3].setAvailability(false);
@@ -126,7 +124,7 @@ public class NormalShip extends Ship {
      * @return the component at the given position
      */
     @Override
-    protected Component getComponentAt(int row, int col) {
+    public Component getComponentAt(int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             return table[row][col].getComponent();
         }
@@ -195,22 +193,24 @@ public class NormalShip extends Ship {
      * @param c: the component that was added or removed from the ship
      */
     private void updateLifeSupportRemoved(Component c) {
+        //Find if is there a Cabin connceted to the LifeSupport
         int row, col, i, j;
+        i = 0;
+        j = 0;
         outer_loop:
-        for(i = 0; i < getRows(); i++){
-            for(j = 0; j < getCols(); j++){
-                if(table[i][j].getComponent()== c){
+        for (i = 0; i < getRows(); i++) {
+            for (j = 0; j < getCols(); j++) {
+                if (table[i][j].getComponent() == c) {
                     break outer_loop;
                 }
             }
         }
+        //Finded the lifeSupport
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
             row = i;
             col = j;
-            if (entry.getValue() == ConnectorEnum.ZERO || !(table[i][j].getComponent() instanceof  Cabin)) {
-                continue;
-            }
+
             switch (entry.getKey()) {
                 case UP:
                     row--;
@@ -225,12 +225,67 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-            if(c.isValid(table[row][col].getComponent(), entry.getKey())){
-                Cabin comp = (Cabin)table[row][col].getComponent();
+
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof Cabin)) {
+                continue;
+            }
+
+            if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
+                Cabin comp = (Cabin) table[row][col].getComponent();
                 try {
                     comp.removeSupport((LifeSupport) c);
                 } catch (Exception e) {
                     updateParametersRemove(c);
+                }
+            }
+        }
+    }
+
+    // For
+    private void updateLifeSupportAdded(Component c) {
+        //Find if is there a Cabin connceted to the LifeSupport
+        int row, col, i, j;
+        i = 0;
+        j = 0;
+        outer_loop:
+        for (i = 0; i < getRows(); i++) {
+            for (j = 0; j < getCols(); j++) {
+                if (table[i][j].getComponent() == c) {
+                    break outer_loop;
+                }
+            }
+        }
+        //Finded the lifeSupport
+        Map<Direction, ConnectorEnum> connectors = c.getConnectors();
+        for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+            row = i;
+            col = j;
+
+            switch (entry.getKey()) {
+                case UP:
+                    row--;
+                    break;
+                case DOWN:
+                    row++;
+                    break;
+                case LEFT:
+                    col--;
+                    break;
+                case RIGHT:
+                    col++;
+                    break;
+            }
+
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof Cabin)) {
+                continue;
+            }
+
+            if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
+                Cabin comp = (Cabin) table[row][col].getComponent();
+                try {
+                    comp.addSupport((LifeSupport) c);
+                } catch (Exception e) {
+                    updateParametersSet(c);
                 }
             }
         }
@@ -295,7 +350,7 @@ public class NormalShip extends Ship {
                 if(((Cannon) c).getPower() == 1) {
                     doubleCannons--;
                     doubleCannonsPower--;
-                }else{
+                }else if(((Cannon) c).getPower() == 0.5f){
                     singleCannonsPower -= 0.5f;
                 }
             }
@@ -324,5 +379,84 @@ public class NormalShip extends Ship {
         } else if (c instanceof LifeSupport) {
             updateLifeSupportRemoved(c);
         }
+    }
+
+    @Override
+    protected void updateParametersSet(Component c){
+        if(c instanceof Cannon){
+            if(((Cannon) c).getOrientation()==Direction.UP){
+                if(((Cannon) c).getPower() == 1){
+                    singleCannonsPower += 1;
+                }else{
+                    doubleCannonsPower += 2;
+                }
+            }else{
+                if(((Cannon) c).getPower() == 1) {
+                    doubleCannons += 1;
+                    doubleCannonsPower += 1;
+                }else if(((Cannon) c).getPower() == 0.5f){
+                    singleCannonsPower += 0.5f;
+                }
+            }
+        }else if(c instanceof Engine){
+            if(((Engine) c).getDoublePower()){
+                doubleEngines += 1;
+            }else{
+                singleEngines += 1;
+            }
+        }else if(c instanceof Battery) {
+            ((Battery) c).fillBattery();
+            totalEnergy += ((Battery) c).getSlots();
+        }else if(c instanceof Cabin) {
+            //Find if is there a LifeSupport connceted to the Cabin
+            int row, col, i, j;
+            i = 0;
+            j = 0;
+            outer_loop:
+            for (i = 0; i < getRows(); i++) {
+                for (j = 0; j < getCols(); j++) {
+                    if (table[i][j].getComponent() == c) {
+                        break outer_loop;
+                    }
+                }
+            }
+            //Finded the Cabin
+            Map<Direction, ConnectorEnum> connectors = c.getConnectors();
+            for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+                row = i;
+                col = j;
+
+                switch (entry.getKey()) {
+                    case UP:
+                        row--;
+                        break;
+                    case DOWN:
+                        row++;
+                        break;
+                    case LEFT:
+                        col--;
+                        break;
+                    case RIGHT:
+                        col++;
+                        break;
+                }
+
+                if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof LifeSupport)) {
+                    continue;
+                }
+
+                if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
+                    Cabin comp = (Cabin) table[i][j].getComponent();
+                    try {
+                        comp.addSupport((LifeSupport) c);
+                    } catch (Exception e) {
+                        updateParametersSet(c);
+                    }
+                }
+            }
+        } else if (c instanceof LifeSupport) {
+            updateLifeSupportAdded(c);
+        }
+        // cargoHolds and shields are not counted in the updateParametersSet
     }
 }

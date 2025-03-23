@@ -6,16 +6,27 @@ import it.polimi.ingsw.gc20.model.components.*;
  */
 public class LearnerShip extends Ship {
 
-    /**
-     * Matrix of tiles representing the ship
-     */
     private Tile[][] table = new Tile[5][5];
 
-    /**
-     * Default constructor
-     */
+
     public LearnerShip() {
         super();
+
+        // Init table
+        for (int i=0; i<5; i++) {
+            for (int j=0; j<5; j++) {
+                table[i][j] = new Tile();
+            }
+        }
+
+        table[0][0].setAvailability(false);
+        table[0][1].setAvailability(false);
+        table[0][3].setAvailability(false);
+        table[0][4].setAvailability(false);
+        table[1][0].setAvailability(false);
+        table[1][4].setAvailability(false);
+        table[4][2].setAvailability(false);
+
         table[2][2].setAvailability(false);
         Component sc = new StartingCabin();
         table[2][2].addComponent(sc);
@@ -103,7 +114,7 @@ public class LearnerShip extends Ship {
                 if(((Cannon) c).getPower() == 1) {
                     doubleCannons--;
                     doubleCannonsPower--;
-                }else{
+                }else if(((Cannon) c).getPower() == 0.5f){
                     singleCannonsPower -= 0.5f;
                 }
             }

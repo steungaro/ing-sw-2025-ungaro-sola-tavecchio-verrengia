@@ -26,7 +26,7 @@ public abstract class Board {
      * @return AdventureCard
      */
     public AdventureCard drawCard() throws NoSuchElementException{
-        if (this.deck.isEmpty()) {
+        if (!this.deck.isEmpty()) {
             return this.deck.removeFirst();
         } else { // deck is empty
             throw new NoSuchElementException("Deck is empty");

@@ -5,12 +5,15 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AdventureCardTest {
+class AbandonedStationTest {
+
     private NormalShip ship;
     private Cannon upCannon, downCannon;
     private Engine singleEngine, doubleEngine;
@@ -22,12 +25,6 @@ class AdventureCardTest {
 
     @BeforeEach
     void setUp(){
-        // Create Player 1
-        Player player1 = new Player();
-
-        // Create game
-        Game game = new Game();
-
         // Create a new NormalShip
         ship = new NormalShip();
 
@@ -55,6 +52,7 @@ class AdventureCardTest {
         Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
+        cargoHold.setSlots(2);
         cargoHold.loadCargo(CargoColor.BLUE);
         cargoHold.loadCargo(CargoColor.GREEN);
 
@@ -68,4 +66,15 @@ class AdventureCardTest {
         ship.addComponent(cargoHold, 1, 2);
     }
 
+    @Test
+    void effect() {
+        Player player1 = new Player();
+        player1.setShip(ship);
+
+        // Create game
+        Game game = new Game();
+        AbandonedStation abandonedStation = new AbandonedStation();
+        List<CargoColor> cargo = new ArrayList<>();
+        cargo = abandonedStation.Effect(player1, game);
+    }
 }

@@ -97,7 +97,7 @@ public class Player {
      * @param c number of credits to remove
      * @return Integer debit (the difference between the credits to remove and the credits of the player)
      */
-    public Integer removeCredits(Integer c) throws IllegalArgumentException {
+    public Integer removeCredits(Integer c){
         Integer debit = 0;
         this.credits -= c;
 

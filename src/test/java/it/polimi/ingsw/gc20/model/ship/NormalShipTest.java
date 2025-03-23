@@ -47,6 +47,7 @@ class NormalShipTest {
         Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
         cargoHold.loadCargo(CargoColor.BLUE);
         cargoHold.loadCargo(CargoColor.GREEN);
 
@@ -58,6 +59,65 @@ class NormalShipTest {
         ship.addComponent(battery, 2, 2);
         ship.addComponent(Cabin1, 2, 4);
         ship.addComponent(cargoHold, 1, 2);
+
+        // Setting the connectors
+        Map<Direction, ConnectorEnum> connectorsCargoHold = new HashMap<>();
+        connectorsCargoHold.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsCargoHold.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsCargoHold.put(Direction.UP, ConnectorEnum.ZERO);
+        connectorsCargoHold.put(Direction.DOWN, ConnectorEnum.D);
+        cargoHold.setConnectors(connectorsCargoHold);
+
+        Map<Direction, ConnectorEnum> connectorsBattery = new HashMap<>();
+        connectorsBattery.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsBattery.put(Direction.LEFT, ConnectorEnum.ZERO);
+        connectorsBattery.put(Direction.UP, ConnectorEnum.D);
+        connectorsBattery.put(Direction.DOWN, ConnectorEnum.S);
+        battery.setConnectors(connectorsBattery);
+
+        Map<Direction, ConnectorEnum> connectorsSingleEngine = new HashMap<>();
+        connectorsSingleEngine.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsSingleEngine.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsSingleEngine.put(Direction.UP, ConnectorEnum.S);
+        connectorsSingleEngine.put(Direction.DOWN, ConnectorEnum.ZERO);
+        singleEngine.setConnectors(connectorsSingleEngine);
+
+        Map<Direction, ConnectorEnum> connectorsDoubleEngine = new HashMap<>();
+        connectorsDoubleEngine.put(Direction.RIGHT, ConnectorEnum.D);
+        connectorsDoubleEngine.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsDoubleEngine.put(Direction.UP, ConnectorEnum.U);
+        connectorsDoubleEngine.put(Direction.DOWN, ConnectorEnum.S);
+        doubleEngine.setConnectors(connectorsDoubleEngine);
+
+        Map<Direction, ConnectorEnum> connectorsCabin1 = new HashMap<>();
+        connectorsCabin1.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsCabin1.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsCabin1.put(Direction.UP, ConnectorEnum.S);
+        connectorsCabin1.put(Direction.DOWN, ConnectorEnum.S);
+        Cabin1.setConnectors(connectorsCabin1);
+
+        Map<Direction, ConnectorEnum> connectorsDownCannon = new HashMap<>();
+        connectorsDownCannon.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsDownCannon.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsDownCannon.put(Direction.UP, ConnectorEnum.D);
+        connectorsDownCannon.put(Direction.DOWN, ConnectorEnum.ZERO);
+        downCannon.setConnectors(connectorsDownCannon);
+
+        Map<Direction, ConnectorEnum> connectorsUpCannon = new HashMap<>();
+        connectorsUpCannon.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsUpCannon.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsUpCannon.put(Direction.UP, ConnectorEnum.ZERO);
+        connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.U);
+        upCannon.setConnectors(connectorsUpCannon);
+
+        Map<Direction, ConnectorEnum> connectorsStartingCabin = new HashMap<>();
+        connectorsStartingCabin.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsStartingCabin.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsStartingCabin.put(Direction.UP, ConnectorEnum.S);
+        connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.D);
+        StartingCabin start = (StartingCabin) ship.getComponentAt(2,3);
+        start.setConnectors(connectorsStartingCabin);
+
     }
 
     @Test
@@ -88,10 +148,36 @@ class NormalShipTest {
 
     @Test
     void getAllExposed() {
+        assertEquals(7, ship.getAllExposed());
     }
 
     @Test
     void isValid() {
+        assertTrue(ship.isValid());
+
+        Map<Direction, ConnectorEnum> connectorsCargo = new HashMap<>();
+        connectorsCargo.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsCargo.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsCargo.put(Direction.UP, ConnectorEnum.ZERO);
+        connectorsCargo.put(Direction.DOWN, ConnectorEnum.ZERO);
+        cargoHold.setConnectors(connectorsCargo);
+
+        assertTrue(!ship.isValid());
+
+        connectorsCargo.put(Direction.DOWN, ConnectorEnum.D);
+        cargoHold.setConnectors(connectorsCargo);
+
+        assertTrue(ship.isValid());
+
+        StartingCabin start = (StartingCabin) ship.getComponentAt(2,3);
+        Map<Direction, ConnectorEnum> connectorsStartingCabin = new HashMap<>();
+        connectorsStartingCabin.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorsStartingCabin.put(Direction.LEFT, ConnectorEnum.S);
+        connectorsStartingCabin.put(Direction.UP, ConnectorEnum.ZERO);
+        connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.D);
+
+        assertTrue(ship.isValid());
+
     }
 
     @Test
@@ -132,5 +218,49 @@ class NormalShipTest {
         cannons.add(downCannon);
 
         assertEquals(3, ship.firePower(cannons, 1));
+    }
+
+    @Test
+    void enginePower() {
+        assertEquals(3, ship.enginePower(1));
+        ship.killComponent(singleEngine);
+        assertEquals(2, ship.enginePower(1));
+        ship.killComponent(doubleEngine);
+        assertEquals(0, ship.enginePower(0));
+    }
+
+    @Test
+    void unloadCrew(){
+        assertEquals(2, Cabin1.getAstronauts());
+        ship.unloadCrew(Cabin1);
+        assertEquals(1, Cabin1.getAstronauts());
+        ship.unloadCrew(Cabin1);
+        assertEquals(0, Cabin1.getAstronauts());
+    }
+
+    @Test
+    void updateLifeSupport(){
+        assertEquals(AlienColor.NONE,  Cabin1.getAlienColor());
+
+
+        //Change color to Cabin
+        LifeSupport lifeSupport = new LifeSupport();
+        lifeSupport.setColor(AlienColor.BROWN);
+
+        Map<Direction, ConnectorEnum> connectorsC1 = new HashMap<>();
+        connectorsC1.put(Direction.RIGHT, ConnectorEnum.S);
+        Cabin1.setConnectors(connectorsC1);
+
+        Map<Direction, ConnectorEnum> connectorsLife = new HashMap<>();
+        connectorsLife.put(Direction.LEFT, ConnectorEnum.S);
+        lifeSupport.setConnectors(connectorsLife);
+
+        ship.addComponent(lifeSupport, 2, 5);
+        assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
+
+        //Remove lifeSupport
+        ship.killComponent(lifeSupport);
+        assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
+
     }
 }

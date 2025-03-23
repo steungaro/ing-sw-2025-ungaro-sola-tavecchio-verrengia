@@ -103,8 +103,8 @@ public class Lobby {
      * @see GameController
      * @TODO implement the creation of the game controller
      */
-    public GameController createGameController() {
+    /*public GameController createGameController() {
         return new GameController(id, users, level);
-    }
+    }*/
 
 }
