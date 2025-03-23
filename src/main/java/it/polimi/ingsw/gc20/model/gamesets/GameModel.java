@@ -16,7 +16,7 @@ public class GameModel {
     private Game game;
     private AdventureCard activeCard;
     private int level;
-
+    private List<Player> playersToMove;
     /**
      * Default Constructor
      */
@@ -24,6 +24,7 @@ public class GameModel {
         this.game = null;
         this.activeCard = null;
         this.level = 1;
+        this.playersToMove = new ArrayList<>();
     }
 
     /**
@@ -80,6 +81,43 @@ public class GameModel {
      * @param username of the player
      * @param index of the player to set the color
      * @return the player initialized
+     */
+
+    /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
+     *
+     * @return list ot the player that need to be moved
+     */
+    private List<Player> getPlayersToMove (){
+        return this.playersToMove;
+    }
+
+    /** setter function for the list of player to move
+     *
+     * @param playersToMove list of player to move
+     */
+    private void setPlayersToMove (List<Player> playersToMove) {
+        this.playersToMove = playersToMove;
+    }
+
+    /** function to add a player to the list of player to move
+     *
+     * @param player to add to the players to move list
+     */
+    private void addPlayersToMove (Player player) {
+        this.playersToMove.add(player);
+    }
+    /** function to sort the player to move based on their position, first element is the player with the lower position
+     *
+     */
+    private void sortPlayerByPosition() {
+        playersToMove.sort((p1, p2) -> p1.getPosition() - p2.getPosition());
+    }
+
+    /** private function for the init of one player used only in start game
+     *
+     * @param username of the player
+     * @param index of the player used to select the color
+     * @return player created
      */
     private Player initPlayer (String username, int index){
         Player player = new Player();
@@ -398,7 +436,19 @@ public class GameModel {
     public List<CargoColor> PlanetLand(Player p, int index) {
         AdventureCard c = getActiveCard();
         Planet planet = ((Planets) c).getPlanet(index);
+        addPlayersToMove(p);
         return ((Planets) c).land(p, planet);
+    }
+
+    /** function to call after a planet card is activated to move the player
+     */
+    public void movePlayerReverse (){
+            AdventureCard c = getActiveCard();
+            sortPlayerByPosition();
+            for (Player p : playersToMove){
+                ((Planets) c).effectLostDays(p, game);
+            }
+            playersToMove.clear();
     }
 
     /**
@@ -536,6 +586,7 @@ public class GameModel {
 
     /**
      * method for the stardust card
+     * TODO maybe all the stardust card could be resolved in the gameModel
      *
      * @param p player victim of the effect of the card
      */
@@ -769,7 +820,6 @@ public class GameModel {
             p.getShip().useEnergy(e);
         }
     }
-
     /** Function that turns the hourglass
      * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
      */
@@ -802,13 +852,75 @@ public class GameModel {
     public void initCountdown (){
         NormalBoard board = ((NormalBoard)game.getBoard());
         board.initCountdown();
+
+    /** function that verify if the cargo that the player want to remove are the most valued one
+     *
+     * @param p player that want to remove cargo
+     * @param l list of cargo to remove
+     * @return true if the list is valid, false if is not valid
+     */
+    public Boolean verifyCargo (Player p, List<CargoHold> l){
+        int redCounter = 0;
+        int blueCounter = 0;
+        int yellowCounter = 0;
+        int greenCounter = 0;
+
+        for (CargoHold cargohold : l){
+            int red = cargohold.getCargoHeld(CargoColor.RED);
+            int blue = cargohold.getCargoHeld(CargoColor.BLUE);
+            int yellow = cargohold.getCargoHeld(CargoColor.YELLOW);
+            int green = cargohold.getCargoHeld(CargoColor.GREEN);
+
+            if (red > 0) {
+                redCounter++;
+            } else if (blue > 0) {
+                blueCounter++;
+            } else if (yellow > 0) {
+                yellowCounter++;
+            } else if (green > 0) {
+                greenCounter++;
+            }
+        }
+        Map<CargoColor, Integer> totalCargo = p.getShip().getCargo();
+        int totalRed = totalCargo.getOrDefault(CargoColor.RED, 0);
+        int totalBlue = totalCargo.getOrDefault(CargoColor.BLUE, 0);
+        int totalYellow = totalCargo.getOrDefault(CargoColor.YELLOW, 0);
+        int totalGreen = totalCargo.getOrDefault(CargoColor.GREEN, 0);
+        for (int i=0; i<l.size(); i++){
+            if (totalRed>0){
+                totalRed--;
+                redCounter--;
+                if (redCounter<0) {return false;}
+            } else if (totalBlue>0) {
+                totalBlue--;
+                blueCounter--;
+                if (blueCounter<0) {return false;}
+            }else if (totalYellow>0){
+                totalYellow--;
+                yellowCounter--;
+                if (yellowCounter<0) {return false;}
+            } else if (totalGreen>0){
+                totalGreen--;
+                greenCounter--;
+                if (greenCounter<0) {return false;}
+            }
+        }
+        return true;
+    }
+
+    /** function called by the controller to get the meteor that will hit the players
+     *
+     * @return list of projectile that will aim for the ship of the player
+     */
+    public List<Projectile> MeteorSwarm (){
+        AdventureCard card = getActiveCard();
+        return ((MeteorSwarm) card).Effect();
     }
 
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
-    //TODO controller deve mandare cargo da scaricare in ordine di valore prendendo sempre quelli che valgono di più
 }
 
 
