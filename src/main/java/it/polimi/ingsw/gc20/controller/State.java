@@ -18,5 +18,6 @@ public enum State {
     WAITING_PLANET, // planets
     WAITING_SHIELDS, // meteroswarm, combatzone, pirates
     WAITING_SMUGGLERS,
+    FIRING,
     ENDGAME
 }
