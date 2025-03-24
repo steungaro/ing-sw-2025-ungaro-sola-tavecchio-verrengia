@@ -25,6 +25,7 @@ public class GameController {
     private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;
     private List<CargoColor> cargo;
+    private List<Projectile> projectiles;
 
     /**
      * Default constructor
@@ -94,24 +95,32 @@ public class GameController {
         } else if (card instanceof CombatZone) {
 
         } else if (card instanceof Epidemic) {
+            for (Player p : model.getGame().getPlayers()) {
+                ((Epidemic) card).Effect(p);
+            }
+            //TODO: notify players of state change
+            drawCard();
 
         } else if (card instanceof MeteorSwarm) {
+            state = State.FIRING;
+            projectiles = ((MeteorSwarm) card).getMeteors();
+            //TODO: notify players of state change
 
         } else if (card instanceof OpenSpace) {
+            state = State.WAITING_ENGINES;
+            //TODO: notify players of state change
 
-        } else if (card instanceof Pirates) {
-
-        } else if (card instanceof Slavers) {
-
-        } else if (card instanceof Smugglers) {
+        } else if (card instanceof Enemy) {
             state = State.WAITING_CANNONS;
             //TODO: notify players of state change
 
         } else if (card instanceof Stardust) {
-
+            for (Player p : model.getGame().getPlayers()) {
+                model.Stardust(p);
+            }
+            //TODO: notify players of state change
         }
         currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
-
     }
 
     public List<CargoColor> landOnPlanet(String username, int planetIndex) {
@@ -170,8 +179,14 @@ public class GameController {
     }
 
     public void abandonedShip(String username, List<Integer> components) {
-        if (state != State.WAITING_CREW) {
-            throw new IllegalStateException("Cannot abandon ship outside the crew phase");
+        if (state != State.WAITING_CREW && model.getActiveCard() instanceof AbandonedShip) {
+            throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
+        if (model.getCrew(getPlayerByID(username)) < ((AbandonedShip)model.getActiveCard()).getLostCrew()) {
+            throw new IllegalStateException("Cannot abandon ship with insufficient crew");
         }
         Player player = getPlayerByID(username);
         List<Cabin> cabins =  components.stream().map(id -> (Cabin) getComponentByID(id)).toList();
@@ -204,7 +219,13 @@ public class GameController {
             endMove(username);
             return 0;
         } else {
-            state = State.WAITING_CARGO_LOST;
+            if (model.getActiveCard() instanceof Pirates) {
+                state = State.FIRING;
+            } else if (model.getActiveCard() instanceof Slavers) {
+                state = State.WAITING_CREW;
+            } else if (model.getActiveCard() instanceof Smugglers) {
+                state = State.WAITING_CARGO_LOST;
+            }
             return -1;
         }
     }
@@ -219,6 +240,71 @@ public class GameController {
         state = State.WAITING_CARGO_GAIN;
         return model.smugglersSuccess(getPlayerByID(username));
     }
+
+    public void acceptPirates(String username) {
+        if (state != State.WAITING_ACCEPTANCE) {
+            throw new IllegalStateException("Cannot accept pirates now");
+        }
+        if (!model.getActiveCard().isPlayed()) {
+            throw new IllegalStateException("Card not defeated");
+        }
+        model.piratesSuccess(getPlayerByID(username));
+    }
+
+    public void acceptSlavers(String username) {
+        if (state != State.WAITING_ACCEPTANCE) {
+            throw new IllegalStateException("Cannot accept slavers now");
+        }
+        if (!model.getActiveCard().isPlayed()) {
+            throw new IllegalStateException("Card not defeated");
+        }
+        model.slaversSuccess(getPlayerByID(username));
+    }
+
+    private void nextFire() {
+        projectiles.removeFirst();
+        if (projectiles.isEmpty()) {
+            return;
+        } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
+            state = State.WAITING_SHIELDS;
+        } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
+            state = State.WAITING_CANNONS;
+        } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
+            //TODO: fire heavy fire (not parabile)
+        } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
+            state = State.WAITING_SHIELDS;
+        }
+    }
+
+    public void activateShield(String username, int shieldComp, int energyComp) {
+        //TODO: maybe if shield is 0/0 fire without shield
+        if (state != State.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR)) {
+            throw new IllegalStateException("Cannot activate shields now");
+        }
+        Player player = getPlayerByID(username);
+        Shield shield = (Shield) getComponentByID(shieldComp);
+        //TODO: verify shield is valid (activate fire or discard it)
+        if (projectiles.size() > 1) {
+            nextFire();
+        } else {
+            endMove(username);
+        }
+    }
+
+    public void activateCannons(String username, int cannonComp, int energy) {
+        if (state != State.WAITING_CANNONS) {
+            throw new IllegalStateException("Cannot activate cannons now");
+        }
+        Player player = getPlayerByID(username);
+        Set<Cannon> components = componentIDs.stream().map(id -> (Cannon) getComponentByID(Integer.parseInt(id))).collect(Collectors.toSet());
+        if (player.getShip().firePower(components, energy) >= projectiles.getFirst().getFirePower()) {
+            nextFire();
+        } else {
+            endMove(username);
+        }
+    }
+
+
 
     public void endMove(String username) {
         if (state != State.WAITING_CARGO && state != State.WAITING_CREW && state != State.WAITING_ENGINES && state != State.WAITING_CANNONS && state != State.WAITING_SHIELDS && state != State.WAITING_PLANET) {
