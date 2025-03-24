@@ -24,6 +24,7 @@ public class GameController {
     private final Map<String, Boolean> assemblingComplete = new HashMap<>();
     private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;
+    private List<CargoColor> cargo;
 
     /**
      * Default constructor
@@ -87,7 +88,7 @@ public class GameController {
             //TODO: notify players of state change
 
         } else if (card instanceof AbandonedStation) {
-            state = State.WAITING_LANDING;
+            state = State.WAITING_ACCEPTANCE;
             //TODO: notify players of state change
 
         } else if (card instanceof CombatZone) {
@@ -118,36 +119,46 @@ public class GameController {
             throw new IllegalStateException("Cannot land on a planet outside the planet phase");
         }
         Player player = getPlayerByID(username);
-        state = State.WAITING_CARGO;
+        state = State.WAITING_CARGO_GAIN;
         return model.PlanetLand(player, planetIndex);
     }
 
-    public void loadCargo(String username, CargoColor cargo, int component) {
-        if (state != State.WAITING_CARGO) {
+    public void loadCargo(String username, CargoColor loaded, int component) {
+        if (state != State.WAITING_CARGO_GAIN) {
             throw new IllegalStateException("Cannot load cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
+        //TODO check if cargo is valid
         if (getComponentByID(component) == null) {
             throw new IllegalArgumentException("Component not found");
         } else {
-            model.addCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(component));
+            if (!cargo.contains(loaded)) {
+                throw new IllegalArgumentException("Cargo does not contain the loaded component");
+            }
+            cargo.remove(loaded);
+            model.addCargo(getPlayerByID(username), loaded, (CargoHold) getComponentByID(component));
         }
     }
 
-    public void unloadCargo(String username, CargoColor cargo, int component) {
-        if (state != State.WAITING_CARGO) {
+    public void unloadCargo(String username, CargoColor lost, int component) {
+        if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot unload cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
         if (getComponentByID(component) == null) {
             throw new IllegalArgumentException("Component not found");
         } else {
-            model.MoveCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(component), null);
+            if (!cargo.isEmpty() && cargo.contains(lost)) {
+                throw new IllegalArgumentException("Cargo does not contain the lost component");
+            } else if (!cargo.isEmpty()) {
+                cargo.remove(lost);
+            }
+            model.MoveCargo(getPlayerByID(username), lost, (CargoHold) getComponentByID(component), null);
         }
     }
 
     public void moveCargo(String username, CargoColor cargo, int from, int to) {
-        if (state != State.WAITING_CARGO) {
+        if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
@@ -169,28 +180,46 @@ public class GameController {
 
     public List<CargoColor> abandonedStation(String username) {
         AbandonedStation card = (AbandonedStation) model.getActiveCard();
-        if(state != State.WAITING_LANDING){
+        if(state != State.WAITING_ACCEPTANCE){
             throw new IllegalStateException("Cannot land on station outside the abandoned station phase");
         } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
-        state = State.WAITING_CARGO;
+        state = State.WAITING_CARGO_GAIN;
         return model.AbandonedStation(getPlayerByID(username));
     }
 
-    public Boolean cannons(String username, List<String> componentIDs, int energy){
+    public int shootEnemy(String username, List<String> componentIDs, int energy){
         if (state != State.WAITING_CANNONS) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
 
         Player player = getPlayerByID(username);
         Set<Cannon> components = componentIDs.stream().map(id -> (Cannon) getComponentByID(Integer.parseInt(id))).collect(Collectors.toSet());
-        if(player.getShip().firePower(components, energy)>((Smugglers) model.getActiveCard()).getFirePower()){
-            state = State.
-        } else if (player.getShip().firePower(components, energy)<((Smugglers) model.getActiveCard()).getFirePower()) {
-            model.smugglersFailure(player);
+        if(player.getShip().firePower(components, energy) > ((Enemy) model.getActiveCard()).getFirePower()){
+            model.getActiveCard().playCard();
+            state = State.WAITING_ACCEPTANCE;
+            return 1;
+        } else if (player.getShip().firePower(components, energy) == ((Enemy) model.getActiveCard()).getFirePower()){
+            endMove(username);
+            return 0;
+        } else {
+            state = State.WAITING_CARGO_LOST;
+            return -1;
         }
     }
+
+    public List<CargoColor> acceptSmugglers(String username) {
+        if (state != State.WAITING_ACCEPTANCE) {
+            throw new IllegalStateException("Cannot accept smugglers now");
+        }
+        if (!model.getActiveCard().isPlayed()) {
+            throw new IllegalStateException("Card not defeated");
+        }
+        state = State.WAITING_CARGO_GAIN;
+        return model.smugglersSuccess(getPlayerByID(username));
+    }
+
     public void endMove(String username) {
         if (state != State.WAITING_CARGO && state != State.WAITING_CREW && state != State.WAITING_ENGINES && state != State.WAITING_CANNONS && state != State.WAITING_SHIELDS && state != State.WAITING_PLANET) {
             throw new IllegalStateException("Cannot end move outside the card phase");

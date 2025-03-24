@@ -80,6 +80,7 @@ public class AbandonedStation extends AdventureCard {
      */
     public List<CargoColor> Effect(Player p, Game g) {
         g.move(p, -lostDays);
+        playCard();
         return reward;
     }
 }

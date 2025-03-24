@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * @author GC20
  */
-public class Slavers extends AdventureCard {
+public class Slavers extends AdventureCard implements Enemy{
     private int firePower;
     private int lostMembers;
     private int reward;

@@ -7,6 +7,7 @@ public abstract class AdventureCard {
 
     private int level;
     private int IDCard;
+    private boolean played;
 
     /**
      * Default constructor
@@ -15,6 +16,7 @@ public abstract class AdventureCard {
     public AdventureCard() {
         this.level = 0;
         this.IDCard = 0;
+        this.played = false;
     }
 
     /**
@@ -43,6 +45,21 @@ public abstract class AdventureCard {
             throw new IllegalArgumentException("Invalid level");
         }
         this.level = level;
+    }
+
+    /**
+     * Public getter for the played attribute
+     * @return played
+     */
+    public boolean isPlayed() {
+        return played;
+    }
+
+    /**
+     * Play the card
+     */
+    public void playCard() {
+        this.played = true;
     }
 
     /**

@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * @author GC20
  */
-public class Smugglers extends AdventureCard {
+public class Smugglers extends AdventureCard implements Enemy {
     private int lostCargo;
     private int firePower;
     private int lostDays;
