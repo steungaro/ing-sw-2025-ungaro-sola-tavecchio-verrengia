@@ -19,9 +19,9 @@ public class GameController {
         if(usernames.size() > 4 || usernames.size() < 2) {
             throw new IllegalArgumentException("The number of players must be between 2 and 4");
         }
-        int gameID = new Random().nextInt();
+        //int gameID = new Random().nextInt();
         model = new GameModel();
-        model.startGame(level, usernames, gameID);
+        //model.startGame(level, usernames, gameID);
 
 
     }

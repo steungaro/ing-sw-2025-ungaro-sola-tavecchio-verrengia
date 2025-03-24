@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameModelTest {
     int level = 2;
     List<String> players = new ArrayList<>();
-    int gameId = 1;
+    String gameId = "1";
     GameModel gameModel = new GameModel();
 
     @BeforeEach
