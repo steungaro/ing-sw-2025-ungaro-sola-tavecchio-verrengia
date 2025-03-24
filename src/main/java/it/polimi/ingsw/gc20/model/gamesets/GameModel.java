@@ -76,13 +76,6 @@ public class GameModel {
         return this.activeCard;
     }
 
-    /** private function to init the player used to simplify the start game function
-     *
-     * @param username of the player
-     * @param index of the player to set the color
-     * @return the player initialized
-     */
-
     /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
      *
      * @return list ot the player that need to be moved
@@ -141,7 +134,7 @@ public class GameModel {
      * @param usernames       list of the players' username
      * @param gameID          id of the game
      */
-    public void startGame(int level, List<String> usernames, int gameID) {
+    public void startGame(int level, List<String> usernames, String gameID) {
         Game game = new Game();
         game.setID(gameID);
         Pile pile = new Pile();
@@ -163,7 +156,7 @@ public class GameModel {
             game.addPlayer(player);
         }
 
-        List<Component> allComponents = new ArrayList<>();
+        /*List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
@@ -185,7 +178,7 @@ public class GameModel {
             e.printStackTrace();
         }
 
-        List<AdventureCard> allCards = new ArrayList<>();
+        /*List<AdventureCard> allCards = new ArrayList<>();
         ObjectMapper mapper2 = new ObjectMapper();
         mapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper2.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
@@ -209,7 +202,7 @@ public class GameModel {
 
         pile.addUnviewed(allComponents);
         game.setPile(pile);
-
+        */
         this.setGame(game);
     }
 
