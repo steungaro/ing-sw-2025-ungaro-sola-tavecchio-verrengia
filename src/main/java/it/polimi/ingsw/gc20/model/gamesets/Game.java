@@ -12,7 +12,7 @@ public class Game {
 
     private List<Player> players;
     private Board board;
-    private Integer gameID;
+    private String gameID;
     private Pile pile;
     private final Die[] dice;
 
@@ -66,14 +66,14 @@ public class Game {
     /** get function for gameID
      * @return Integer
      */
-    public Integer getID() {
+    public String getID() {
         return this.gameID;
     }
 
     /** set function for gameID
      * @param id gameId to set
      */
-    public void setID(Integer id) {
+    public void setID(String id) {
         this.gameID = id;
     }
 
