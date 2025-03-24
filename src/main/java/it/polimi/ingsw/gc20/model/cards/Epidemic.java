@@ -19,6 +19,7 @@ public class Epidemic extends AdventureCard {
      */
     public void Effect(Player p) {
         p.getShip().epidemic();
+        playCard();
     }
 
 }
