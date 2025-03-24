@@ -156,7 +156,7 @@ public class GameModel {
             game.addPlayer(player);
         }
 
-        /*List<Component> allComponents = new ArrayList<>();
+        List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
@@ -178,7 +178,7 @@ public class GameModel {
             e.printStackTrace();
         }
 
-        /*List<AdventureCard> allCards = new ArrayList<>();
+        List<AdventureCard> allCards = new ArrayList<>();
         ObjectMapper mapper2 = new ObjectMapper();
         mapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         mapper2.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
@@ -202,7 +202,6 @@ public class GameModel {
 
         pile.addUnviewed(allComponents);
         game.setPile(pile);
-        */
         this.setGame(game);
     }
 
