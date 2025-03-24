@@ -103,6 +103,8 @@ public class GameController {
         } else if (card instanceof Slavers) {
 
         } else if (card instanceof Smugglers) {
+            state = State.WAITING_CANNONS;
+            //TODO: notify players of state change
 
         } else if (card instanceof Stardust) {
 
@@ -168,14 +170,27 @@ public class GameController {
     public List<CargoColor> abandonedStation(String username) {
         AbandonedStation card = (AbandonedStation) model.getActiveCard();
         if(state != State.WAITING_LANDING){
-            throw new IllegalStateException("Cannot abandon station outside the crew phase");
+            throw new IllegalStateException("Cannot land on station outside the abandoned station phase");
         } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
-        endMove(username);
+        state = State.WAITING_CARGO;
         return model.AbandonedStation(getPlayerByID(username));
     }
 
+    public Boolean cannons(String username, List<String> componentIDs, int energy){
+        if (state != State.WAITING_CANNONS) {
+            throw new IllegalStateException("Cannot activate cannons now");
+        }
+
+        Player player = getPlayerByID(username);
+        Set<Cannon> components = componentIDs.stream().map(id -> (Cannon) getComponentByID(Integer.parseInt(id))).collect(Collectors.toSet());
+        if(player.getShip().firePower(components, energy)>((Smugglers) model.getActiveCard()).getFirePower()){
+            state = State.
+        } else if (player.getShip().firePower(components, energy)<((Smugglers) model.getActiveCard()).getFirePower()) {
+            model.smugglersFailure(player);
+        }
+    }
     public void endMove(String username) {
         if (state != State.WAITING_CARGO && state != State.WAITING_CREW && state != State.WAITING_ENGINES && state != State.WAITING_CANNONS && state != State.WAITING_SHIELDS && state != State.WAITING_PLANET) {
             throw new IllegalStateException("Cannot end move outside the card phase");

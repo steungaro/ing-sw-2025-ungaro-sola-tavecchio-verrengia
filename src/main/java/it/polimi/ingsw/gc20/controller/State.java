@@ -15,5 +15,6 @@ public enum State {
     WAITING_CREW,
     WAITING_PLANET,
     WAITING_SHIELDS,
+    WAITING_SMUGGLERS,
     ENDGAME
 }
