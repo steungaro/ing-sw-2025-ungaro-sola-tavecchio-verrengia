@@ -7,7 +7,7 @@ import it.polimi.ingsw.gc20.model.player.*;
 /**
  * @author GC20
  */
-public class Pirates extends AdventureCard {
+public class Pirates extends AdventureCard implements Enemy {
     private List<Projectile> cannonFire;
     private int firePower;
     private int credits;

@@ -24,5 +24,6 @@ public class Stardust extends AdventureCard {
      */
     public void Effect(Player p, Game g) {
         g.move(p, -p.getShip().getAllExposed());
+        playCard();
     }
 }
