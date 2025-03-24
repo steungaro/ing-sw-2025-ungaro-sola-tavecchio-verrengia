@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.model.components.Battery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
@@ -22,5 +23,7 @@ class GameModelTest {
     @Test
     void startGame() {
         gameModel.startGame(level, players, gameId);
+
+        assertTrue(gameModel.getGame().getPile().getUnviewed().getFirst() instanceof Battery);
     }
 }
