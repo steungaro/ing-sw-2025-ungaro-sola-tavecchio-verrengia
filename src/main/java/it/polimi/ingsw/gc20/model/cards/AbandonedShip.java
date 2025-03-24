@@ -104,5 +104,6 @@ public class AbandonedShip extends AdventureCard {
 
         p.addCredits(credits);
         g.move(p, -lostDays);
+        playCard();
     }
 }
