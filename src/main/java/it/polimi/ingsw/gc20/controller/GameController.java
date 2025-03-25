@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import java.security.InvalidParameterException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -136,9 +135,20 @@ public class GameController {
         currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
     }
 
+    /**
+     * Accepts a planet card and lands on the planet
+     * @param username is the username of the player that wants to land on the planet
+     * @param planetIndex is the index of the planet card in the player's hand
+     * @return the list of cargo that the player can take from the planet
+     * @throws IllegalStateException if the game is not in the planet phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     */
     public List<CargoColor> landOnPlanet(String username, int planetIndex) {
         if (state != State.WAITING_PLANET) {
             throw new IllegalStateException("Cannot land on a planet outside the planet phase");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
         }
         Player player = getPlayerByID(username);
         state = State.WAITING_CARGO_GAIN;
@@ -146,9 +156,22 @@ public class GameController {
         return cargo;
     }
 
+    /**
+     * Loads cargo onto the player's ship
+     * @param username is the username of the player that wants to load the cargo
+     * @param loaded is the cargo that the player wants to load
+     * @param ch is the cargo hold where the player wants to load the cargo
+     * @throws IllegalStateException if the game is not in the cargo loading phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the array of cargo provided by the current card does not contain the loaded component
+     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
+     */
     public void loadCargo(String username, CargoColor loaded, CargoHold ch) {
         if (state != State.WAITING_CARGO_GAIN) {
             throw new IllegalStateException("Cannot load cargo outside the cargo phase");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
         }
         Player player = getPlayerByID(username);
         if (!cargo.contains(loaded)) {
@@ -158,27 +181,66 @@ public class GameController {
         model.addCargo(getPlayerByID(username), loaded, ch);
     }
 
+    /**
+     * Unloads cargo from the player's ship
+     * @param username is the username of the player that wants to unload the cargo
+     * @param lost is the cargo that the player wants to unload
+     * @param ch is the cargo hold where the player wants to unload the cargo
+     * @throws IllegalStateException if the game is not in the cargo unloading phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the player is not unloading the most valuable cargo (only in LOST CARGO PHASE)
+     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combatzone (to remove most valuable one)
+     */
     public void unloadCargo(String username, CargoColor lost, CargoHold ch) {
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
         if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot unload cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
-        if (state != State.WAITING_CARGO_GAIN && !cargo.contains(lost)) {
-            throw new IllegalArgumentException("Cargo does not contain the lost component");
-        } else if (state != State.WAITING_CARGO_GAIN) {
-            cargo.remove(lost);
+
+        if (state == State.WAITING_CARGO_LOST) {
+            Map<CargoColor, Integer> playerCargo = player.getShip().getCargo();
+            for (CargoColor c : playerCargo.keySet()) {
+                if (c.ordinal() < lost.ordinal() && playerCargo.get(c) > 0) {
+                    throw new IllegalArgumentException("Not unloading the most valuable cargo.");
+                }
+            }
         }
         model.MoveCargo(getPlayerByID(username), lost, ch, null);
     }
 
+    /**
+     * Moves cargo from one cargo hold to another
+     * @param username is the username of the player that wants to move the cargo
+     * @param cargo is the cargo that the player wants to move
+     * @param from is the cargo hold where the player wants to move the cargo from
+     * @param to is the cargo hold where the player wants to move the cargo to
+     * @throws IllegalStateException if the game is not in the cargo moving phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @apiNote To be used in losing/gaining cargo
+     */
     public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) {
         if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
         }
         Player player = getPlayerByID(username);
         model.MoveCargo(getPlayerByID(username), cargo, from, to);
     }
 
+    /**
+     * Unloads crew from the player's ship to activate the card -> player gains credits and loses days
+     * @param username is the username of the player that wants to activate abandoned ship card
+     * @param cabins is the list of cabins that the player wants to unload crew from (make it double if removing two asstronauts)
+     * @throws IllegalStateException if the game is not in the abandoned ship phase
+     * @throws IllegalArgumentException if the player does not have enough crew to abandon the ship
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @apiNote To be used after accepting an abandoned ship
+     */
     public void abandonedShip(String username, List<Cabin> cabins) {
         if (state != State.WAITING_CREW && model.getActiveCard() instanceof AbandonedShip) {
             throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
@@ -193,8 +255,19 @@ public class GameController {
         model.AbandonedShip(getPlayerByID(username), cabins);
     }
 
+    /**
+     * Activates abandoned station card, returns the list of cargo provided by the card and enters the cargo phase
+     * @param username is the username of the player that wants to activate abandoned station card
+     * @return the list of cargo that the player can take from the abandoned station
+     * @throws IllegalStateException if the game is not in the abandoned station phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the player does not have enough crew to invade the station
+     */
     public List<CargoColor> abandonedStation(String username) {
         AbandonedStation card = (AbandonedStation) model.getActiveCard();
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
         if(state != State.WAITING_ACCEPTANCE){
             throw new IllegalStateException("Cannot land on station outside the abandoned station phase");
         } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
@@ -204,9 +277,21 @@ public class GameController {
         return model.AbandonedStation(getPlayerByID(username));
     }
 
+    /**
+     * To be called when an enemy card is active, used to declare firepower and activate cannons. If the player wins the fight, the card is considered defeated and the player can take its rewards
+     * @param username is the username of the player that wants to shoot the enemy
+     * @param cannons is the list of cannons that the player wants to activate
+     * @param batteries is the list of batteries that the player wants to use to activate the cannons
+     * @throws IllegalStateException if the game is not in the enemy phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @return 1 if the player wins the fight, 0 if the fight is a draw, -1 if the player loses the fight
+     */
     public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries){
         if (state != State.WAITING_CANNONS) {
             throw new IllegalStateException("Cannot activate cannons now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
         }
         Player player = getPlayerByID(username);
         float firePower =  model.FirePower(player, new HashSet<>(cannons), batteries);
@@ -214,35 +299,55 @@ public class GameController {
         if(firePower > ((Enemy) model.getActiveCard()).getFirePower()){
             model.getActiveCard().playCard();
             state = State.WAITING_ACCEPTANCE;
+            //TODO notify player of state change
             return 1;
         } else if (firePower == ((Enemy) model.getActiveCard()).getFirePower()){
-            endMove(username);
+            endMove(username); //nextPlayer
             return 0;
         } else {
             if (model.getActiveCard() instanceof Pirates) {
                 state = State.FIRING;
+                //TODO: notify player of state change
             } else if (model.getActiveCard() instanceof Slavers) {
                 state = State.WAITING_CREW;
+                //TODO: notify player of state change
             } else if (model.getActiveCard() instanceof Smugglers) {
                 state = State.WAITING_CARGO_LOST;
+                //TODO: notify player of state change
             }
             return -1;
         }
     }
 
+    /**
+     * To be called when a smugglers card has been defeated, used to accept the smugglers' offer and take the rewards
+     * @param username is the username of the player that wants to accept the smugglers' offer
+     * @return the list of cargo that the player can take from the smugglers
+     * @throws IllegalStateException if the game is not in the smugglers phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the smugglers card has not been defeated
+     */
     public List<CargoColor> acceptSmugglers(String username) {
-        if (state != State.WAITING_ACCEPTANCE) {
+        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Smugglers) {
             throw new IllegalStateException("Cannot accept smugglers now");
         }
         if (!model.getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         state = State.WAITING_CARGO_GAIN;
+        //TODO: notify player of state change
         return model.smugglersSuccess(getPlayerByID(username));
     }
 
+    /**
+     * To be called when a pirates card has been defeated, used to accept the pirates' offer and take the rewards
+     * @param username is the username of the player that wants to accept the pirates' offer
+     * @throws IllegalStateException if the game is not in the pirates phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the pirates card has not been defeated
+     */
     public void acceptPirates(String username) {
-        if (state != State.WAITING_ACCEPTANCE) {
+        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Pirates) {
             throw new IllegalStateException("Cannot accept pirates now");
         }
         if (!model.getActiveCard().isPlayed()) {
@@ -251,8 +356,15 @@ public class GameController {
         model.piratesSuccess(getPlayerByID(username));
     }
 
+    /**
+     * To be called when a slavers card has been defeated, used to accept the reward
+     * @param username is the username of the player that wants
+     * @throws IllegalStateException if the game is not in the slavers phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws IllegalArgumentException if the slavers card has not been defeated
+     */
     public void acceptSlavers(String username) {
-        if (state != State.WAITING_ACCEPTANCE) {
+        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Slavers) {
             throw new IllegalStateException("Cannot accept slavers now");
         }
         if (!model.getActiveCard().isPlayed()) {
@@ -261,6 +373,10 @@ public class GameController {
         model.slaversSuccess(getPlayerByID(username));
     }
 
+    /**
+     * To be called when a meteor swarm card or a pirates card or a combatzone card is firing the player
+     * @implSpec gets in the correct state by looking at the first projectile in the list
+     */
     private void nextFire() {
         if (state != State.FIRING) {
             throw new IllegalStateException("Cannot fire outside the firing phase");
@@ -269,63 +385,123 @@ public class GameController {
             return;
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
             state = State.WAITING_SHIELDS;
+            //TODO: notify player of state change
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
             state = State.WAITING_CANNONS;
+            //TODO: notify player of state change
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
             model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
             //TODO: catch exception
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
             state = State.WAITING_SHIELDS;
+            //TODO: notify player of state change
         }
     }
 
-    public void activateShield(String username, int shieldComp, int energyComp) {
-        //TODO: maybe if shield is 0/0 fire without shield
+    /**
+     * To be called when a light_fire/meteor is firing the player
+     * @param username is the username of the player that wants to activate the shield
+     * @param shieldComp is the shield component that the player wants to activate
+     * @param batteryComp is the energy component that the player wants to use to activate the shield
+     * @throws IllegalStateException if the game is not in the meteor swarm phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @apiNote Ship may need to be validated
+     */
+    public void activateShield(String username, Shield shieldComp, Battery batteryComp) {
         if (state != State.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_FIRE)) {
             throw new IllegalStateException("Cannot activate shields now");
         }
+        if (shieldComp == null) {
+            try {
+                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+            } catch (InvalidShipException e) {
+                state = State.VALIDATING;
+                //TODO: notify player to validate ship
+            }
+        }
         Player player = getPlayerByID(username);
-        Shield shield = (Shield) getComponentByID(shieldComp);
-        //TODO: verify shield is valid (activate fire or discard it)
+        model.UseShield(player, batteryComp);
+        if (shieldComp != null && !projectiles.isEmpty() && !Arrays.stream(shieldComp.getCoveredSides()).toList().contains(projectiles.getFirst().getFireType())) {
+            model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+        }
         if (projectiles.size() > 1) {
             projectiles.removeFirst();
             nextFire();
         } else {
-            //TODO: new projectiles
+            if (model.getActiveCard() instanceof Pirates) {
+                projectiles = model.piratesFailure();
+            } else if (model.getActiveCard() instanceof MeteorSwarm) {
+                projectiles = ((MeteorSwarm) model.getActiveCard()).getMeteors();
+            }
             endMove(username);
         }
     }
 
+    /**
+     * To be called when a heavy_meteor is firing the player
+     * @param username is the username of the player that wants to activate the cannon
+     * @param cannon is the cannon that the player wants to activate
+     * @param battery is the energy component that the player wants to use to activate the cannon
+     * @throws IllegalStateException if the game is not in the meteor swarm phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     * @apiNote Ship may need to be validated
+     */
     public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
+        if (state != State.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
+            throw new IllegalStateException("Cannot activate cannons now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
         List<Cannon> valid = model.heavyMeteorCannon(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
         List <Battery> batteryList = new ArrayList<>();
         batteryList.add(battery);
         model.removeEnergy(getPlayerByID(username), batteryList);
-        if (valid.contains(cannon)) {
-            nextFire();
-        } else {
+        if (!valid.contains(cannon)) {
             try {
                 model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
             } catch (InvalidShipException e) {
                 state = State.VALIDATING;
                 // TODO: notify player to validate ship
             }
+        }
+
+        projectiles.removeFirst();
+        if (projectiles.isEmpty()) {
+            projectiles = ((MeteorSwarm)model.getActiveCard()).getMeteors();
             endMove(username);
+        } else {
+            nextFire();
         }
     }
 
-
+    /**
+     * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
+     * @param username is the username of the player that wants to terminate their turn
+     * @throws IllegalStateException if the game is not in the card phase
+     * @throws IllegalArgumentException if it is not the player's turn
+     */
     public void endMove(String username) {
-        if (state != State.WAITING_CARGO && state != State.WAITING_CREW && state != State.WAITING_ENGINES && state != State.WAITING_CANNONS && state != State.WAITING_SHIELDS && state != State.WAITING_PLANET) {
+        if (state == State.VALIDATING || state == State.ENDGAME || state == State.ASSEMBLING || state == State.CREATING || state == State.FLIGHT) {
             throw new IllegalStateException("Cannot end move outside the card phase");
         }
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
-        // TODO select only active players
+        // TODO select only active players (or any player and call a thread to manage the inactive ones?)
         currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
         if (model.getActiveCard() instanceof Planets) {
             state = State.WAITING_PLANET;
+        } else if (model.getActiveCard() instanceof AbandonedShip && !model.getActiveCard().isPlayed()) {
+            state = State.WAITING_CREW;
+        } else if (model.getActiveCard() instanceof AbandonedStation && !model.getActiveCard().isPlayed()) {
+            state = State.WAITING_ACCEPTANCE;
+        } else if (model.getActiveCard() instanceof CombatZone) {
+            //TODO
+        } else if (model.getActiveCard() instanceof MeteorSwarm) {
+            state = State.FIRING;
+        } else if (model.getActiveCard() instanceof Enemy && !model.getActiveCard().isPlayed()) {
+            state = State.WAITING_CANNONS;
         }
 
 
