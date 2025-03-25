@@ -25,6 +25,8 @@ public class Game {
         this.gameID = null;
         this.pile = null;
         dice = new Die[2];
+        this.dice[0]= new Die();
+        this.dice[1] = new Die();
     }
     /** add function for players and add the player to the stallBox in the board
      * @param p player to add
