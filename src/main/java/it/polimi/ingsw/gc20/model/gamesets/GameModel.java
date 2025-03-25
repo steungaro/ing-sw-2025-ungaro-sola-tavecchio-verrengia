@@ -139,7 +139,7 @@ public class GameModel {
      * @param usernames       list of the players' username
      * @param gameID          id of the game
      */
-    public void startGame(int level, List<String> usernames, int gameID) {
+    public void startGame(int level, List<String> usernames, String gameID) {
         Game game = new Game();
         game.setID(gameID);
         Pile pile = new Pile();
@@ -569,7 +569,7 @@ public class GameModel {
 
     /**
      * method to calculate the score of the players
-     * TODO verify that the function is correct
+     * TODO add conditions if two player have the same number of connector exposed both get the reward
      *
      */
     public Map<Player, Integer> calculateScore() {
