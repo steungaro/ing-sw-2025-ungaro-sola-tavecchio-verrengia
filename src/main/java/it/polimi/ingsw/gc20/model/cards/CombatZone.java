@@ -115,7 +115,7 @@ public class CombatZone extends AdventureCard {
         Cabin i = l.getFirst();
         while (count < lostCrew) {
             while(count < lostCrew && i.getAstronauts() > 0) {
-                i.unloadAstronaut();
+                p.getShip().unloadCrew(i);
                 count++;
             }
             if(f == l.size()) {

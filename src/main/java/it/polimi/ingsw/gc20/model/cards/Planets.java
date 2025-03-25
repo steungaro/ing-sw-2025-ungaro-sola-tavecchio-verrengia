@@ -41,8 +41,7 @@ public class Planets extends AdventureCard {
         this.lostDays = lostDays;
     }
 
-    /*
-     * @param g is the game where the player is playing
+    /**
      * @param player is the player that wants to land on a planet
      * @param planet is the planet where the player wants to land
      * @return the list of cargo that the player can take from the planet, cargo is removed from bank, if not enough cargo is available in bank, it will not be created
@@ -55,7 +54,7 @@ public class Planets extends AdventureCard {
         return planet.land(player);
     }
 
-    /*
+    /**
      * This method is called when a player loses days due to choosing to land on a planet
      * @param player is the player that loses days
      * @param game is the game where the player is playing

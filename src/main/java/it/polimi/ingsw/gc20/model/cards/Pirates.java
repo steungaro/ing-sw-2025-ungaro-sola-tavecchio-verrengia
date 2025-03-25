@@ -21,6 +21,7 @@ public class Pirates extends AdventureCard {
         firePower = 0;
         credits = 0;
         lostDays = 0;
+        cannonFire = new ArrayList<>();
     }
 
     public void setCannonFire(List<Projectile> cannonFire) {
