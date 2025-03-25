@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller;
 
 import it.polimi.ingsw.gc20.controller.event.Event;
 import it.polimi.ingsw.gc20.controller.event.EventType;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
@@ -65,6 +66,18 @@ public class GameController {
         return false;
     }
 
+    private Player nextOnlinePlayer (String username) {
+        List<Player> players = model.getGame().getPlayers();
+        int index = players.indexOf(getPlayerByID(username));
+        for (int i = 1; i < players.size(); i++) {
+            Player p = players.get((index + i) % players.size());
+            if (connectedPlayers.contains(p.getUsername())) {
+                return p;
+            }
+        }
+        return null;
+    }
+
     /**
      * Handles the card drawing phase of the game
      * Processes the card based on its type
@@ -100,7 +113,7 @@ public class GameController {
             }
             //TODO: notify players of state change
             drawCard();
-
+            return;
         } else if (card instanceof MeteorSwarm) {
             state = State.FIRING;
             projectiles = ((MeteorSwarm) card).getMeteors();
@@ -129,56 +142,44 @@ public class GameController {
         }
         Player player = getPlayerByID(username);
         state = State.WAITING_CARGO_GAIN;
-        return model.PlanetLand(player, planetIndex);
+        cargo = model.PlanetLand(player, planetIndex);
+        return cargo;
     }
 
-    public void loadCargo(String username, CargoColor loaded, int component) {
+    public void loadCargo(String username, CargoColor loaded, CargoHold ch) {
         if (state != State.WAITING_CARGO_GAIN) {
             throw new IllegalStateException("Cannot load cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
-        //TODO check if cargo is valid
-        if (getComponentByID(component) == null) {
-            throw new IllegalArgumentException("Component not found");
-        } else {
-            if (!cargo.contains(loaded)) {
-                throw new IllegalArgumentException("Cargo does not contain the loaded component");
-            }
-            cargo.remove(loaded);
-            model.addCargo(getPlayerByID(username), loaded, (CargoHold) getComponentByID(component));
+        if (!cargo.contains(loaded)) {
+            throw new IllegalArgumentException("Cargo does not contain the loaded component");
         }
+        cargo.remove(loaded);
+        model.addCargo(getPlayerByID(username), loaded, ch);
     }
 
-    public void unloadCargo(String username, CargoColor lost, int component) {
+    public void unloadCargo(String username, CargoColor lost, CargoHold ch) {
         if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot unload cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
-        if (getComponentByID(component) == null) {
-            throw new IllegalArgumentException("Component not found");
-        } else {
-            if (!cargo.isEmpty() && cargo.contains(lost)) {
-                throw new IllegalArgumentException("Cargo does not contain the lost component");
-            } else if (!cargo.isEmpty()) {
-                cargo.remove(lost);
-            }
-            model.MoveCargo(getPlayerByID(username), lost, (CargoHold) getComponentByID(component), null);
+        if (state != State.WAITING_CARGO_GAIN && !cargo.contains(lost)) {
+            throw new IllegalArgumentException("Cargo does not contain the lost component");
+        } else if (state != State.WAITING_CARGO_GAIN) {
+            cargo.remove(lost);
         }
+        model.MoveCargo(getPlayerByID(username), lost, ch, null);
     }
 
-    public void moveCargo(String username, CargoColor cargo, int from, int to) {
+    public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) {
         if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
-        if (getComponentByID(from) == null || getComponentByID(to) == null) {
-            throw new IllegalArgumentException("Component not found");
-        } else {
-            model.MoveCargo(getPlayerByID(username), cargo, (CargoHold) getComponentByID(from), (CargoHold) getComponentByID(to));
-        }
+        model.MoveCargo(getPlayerByID(username), cargo, from, to);
     }
 
-    public void abandonedShip(String username, List<Integer> components) {
+    public void abandonedShip(String username, List<Cabin> cabins) {
         if (state != State.WAITING_CREW && model.getActiveCard() instanceof AbandonedShip) {
             throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
         }
@@ -189,7 +190,6 @@ public class GameController {
             throw new IllegalStateException("Cannot abandon ship with insufficient crew");
         }
         Player player = getPlayerByID(username);
-        List<Cabin> cabins =  components.stream().map(id -> (Cabin) getComponentByID(id)).toList();
         model.AbandonedShip(getPlayerByID(username), cabins);
     }
 
@@ -204,18 +204,18 @@ public class GameController {
         return model.AbandonedStation(getPlayerByID(username));
     }
 
-    public int shootEnemy(String username, List<String> componentIDs, int energy){
+    public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries){
         if (state != State.WAITING_CANNONS) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
-
         Player player = getPlayerByID(username);
-        Set<Cannon> components = componentIDs.stream().map(id -> (Cannon) getComponentByID(Integer.parseInt(id))).collect(Collectors.toSet());
-        if(player.getShip().firePower(components, energy) > ((Enemy) model.getActiveCard()).getFirePower()){
+        float firePower =  model.FirePower(player, new HashSet<>(cannons), batteries);
+
+        if(firePower > ((Enemy) model.getActiveCard()).getFirePower()){
             model.getActiveCard().playCard();
             state = State.WAITING_ACCEPTANCE;
             return 1;
-        } else if (player.getShip().firePower(components, energy) == ((Enemy) model.getActiveCard()).getFirePower()){
+        } else if (firePower == ((Enemy) model.getActiveCard()).getFirePower()){
             endMove(username);
             return 0;
         } else {
@@ -262,7 +262,9 @@ public class GameController {
     }
 
     private void nextFire() {
-        projectiles.removeFirst();
+        if (state != State.FIRING) {
+            throw new IllegalStateException("Cannot fire outside the firing phase");
+        }
         if (projectiles.isEmpty()) {
             return;
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
@@ -270,7 +272,8 @@ public class GameController {
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
             state = State.WAITING_CANNONS;
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
-            //TODO: fire heavy fire (not parabile)
+            model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
+            //TODO: catch exception
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
             state = State.WAITING_SHIELDS;
         }
@@ -278,32 +281,38 @@ public class GameController {
 
     public void activateShield(String username, int shieldComp, int energyComp) {
         //TODO: maybe if shield is 0/0 fire without shield
-        if (state != State.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR)) {
+        if (state != State.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_FIRE)) {
             throw new IllegalStateException("Cannot activate shields now");
         }
         Player player = getPlayerByID(username);
         Shield shield = (Shield) getComponentByID(shieldComp);
         //TODO: verify shield is valid (activate fire or discard it)
         if (projectiles.size() > 1) {
+            projectiles.removeFirst();
             nextFire();
         } else {
+            //TODO: new projectiles
             endMove(username);
         }
     }
 
-    public void activateCannons(String username, int cannonComp, int energy) {
-        if (state != State.WAITING_CANNONS) {
-            throw new IllegalStateException("Cannot activate cannons now");
-        }
-        Player player = getPlayerByID(username);
-        Set<Cannon> components = componentIDs.stream().map(id -> (Cannon) getComponentByID(Integer.parseInt(id))).collect(Collectors.toSet());
-        if (player.getShip().firePower(components, energy) >= projectiles.getFirst().getFirePower()) {
+    public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
+        List<Cannon> valid = model.heavyMeteorCannon(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+        List <Battery> batteryList = new ArrayList<>();
+        batteryList.add(battery);
+        model.removeEnergy(getPlayerByID(username), batteryList);
+        if (valid.contains(cannon)) {
             nextFire();
         } else {
+            try {
+                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+            } catch (InvalidShipException e) {
+                state = State.VALIDATING;
+                // TODO: notify player to validate ship
+            }
             endMove(username);
         }
     }
-
 
 
     public void endMove(String username) {

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -664,7 +665,7 @@ public class GameModel {
      * @throws Exception if the ship is invalid
      * @apiNote controller utilize this methon only if the projectile hit the ship
      */
-    public void Fire (Player p, int diceResult, Projectile fire) throws Exception {
+    public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
         Component c;
         if (fire.getFireType() == FireType.LIGHT_METEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
@@ -716,7 +717,7 @@ public class GameModel {
      * @apiNote controller need to verify which method in the model call (success or failure)
      * @param p player that activate the effect
      */
-    public void SlaversSuccess (Player p){
+    public void slaversSuccess (Player p){
         AdventureCard card = getActiveCard();
         ((Slavers) card).EffectSuccess(p, game);
     }
