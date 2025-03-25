@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.player.*;
@@ -9,7 +7,6 @@ import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
-import java.io.InputStream;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -77,6 +74,13 @@ public class GameModel {
         return this.activeCard;
     }
 
+    /** private function to init the player used to simplify the start game function
+     *
+     * @param username of the player
+     * @param index of the player to set the color
+     * @return the player initialized
+     */
+
     /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
      *
      * @return list ot the player that need to be moved
@@ -135,7 +139,7 @@ public class GameModel {
      * @param usernames       list of the players' username
      * @param gameID          id of the game
      */
-    public void startGame(int level, List<String> usernames, String gameID) {
+    public void startGame(int level, List<String> usernames, int gameID) {
         Game game = new Game();
         game.setID(gameID);
         Pile pile = new Pile();
@@ -149,60 +153,26 @@ public class GameModel {
             board = new LearnerBoard();
             //TODO create and setting the deck
         }
-        game.addBoard(board);
 
         //creating the players and initializing the player
         for (int i = 0; i < usernames.size(); i++) {
             Player player = initPlayer(usernames.get(i), i);
+            board.addPlayer(player);
             game.addPlayer(player);
         }
+        game.addBoard(board);
 
         List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
-
         try {
-            InputStream is = getClass().getResourceAsStream("/components.json");
-            if (is == null) {
-                System.err.println("Cannot find components.json file in resources");
-            }
-            else {
-                Component[] components = mapper.readValue(is, Component[].class);
-                if (components != null && components.length > 0) {
-                    allComponents = Arrays.asList(components);
-                } else {
-                    System.err.println("No components found in components.json");
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<AdventureCard> allCards = new ArrayList<>();
-        ObjectMapper mapper2 = new ObjectMapper();
-        mapper2.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper2.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
-
-        try {
-            InputStream is = getClass().getResourceAsStream("/cards.json");
-            if (is == null) {
-                System.err.println("Cannot find cards.json file in resources");
-            }
-            else {
-                AdventureCard[] cards = mapper2.readValue(is, AdventureCard[].class);
-                if (cards != null && cards.length > 0) {
-                    allCards = Arrays.asList(cards);
-                } else {
-                    System.err.println("No cards found in cards.json");
-                }
-            }
+            allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         pile.addUnviewed(allComponents);
         game.setPile(pile);
+
         this.setGame(game);
     }
 
@@ -579,7 +549,6 @@ public class GameModel {
 
     /**
      * method for the stardust card
-     * TODO maybe all the stardust card could be resolved in the gameModel
      *
      * @param p player victim of the effect of the card
      */
@@ -813,39 +782,7 @@ public class GameModel {
             p.getShip().useEnergy(e);
         }
     }
-    /** Function that turns the hourglass
-     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
-     */
-    public void turnHourglass() {
-        NormalBoard board = ((NormalBoard)game.getBoard());
-        board.turnHourglass();
-    }
 
-    /** Function that returns the remaining time
-     * @return int is the number of seconds left of the current turn
-     */
-    public int getRemainingTime() {
-        NormalBoard board = ((NormalBoard)game.getBoard());
-        return board.getRemainingTime();
-    }
-
-    /** Function that returns the total remaining time
-     * @return int is the number of seconds left
-     */
-    public int getTotalRemainingTime() {
-        NormalBoard board = ((NormalBoard)game.getBoard());
-        return board.getTotalRemainingTime();
-    }
-
-    public void stopHourglass() {
-        NormalBoard board = ((NormalBoard)game.getBoard());
-        board.stopHourglass();
-    }
-
-    public void initCountdown () {
-        NormalBoard board = ((NormalBoard) game.getBoard());
-        board.initCountdown();
-    }
     /** function that verify if the cargo that the player want to remove are the most valued one
      *
      * @param p player that want to remove cargo
