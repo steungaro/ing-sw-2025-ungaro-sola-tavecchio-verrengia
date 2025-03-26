@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller;
 
 import it.polimi.ingsw.gc20.controller.event.Event;
+import it.polimi.ingsw.gc20.controller.event.EventHandler;
 import it.polimi.ingsw.gc20.controller.event.EventType;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.cards.*;
