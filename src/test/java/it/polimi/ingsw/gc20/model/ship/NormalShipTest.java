@@ -263,4 +263,69 @@ class NormalShipTest {
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
 
     }
+
+
+    @Test
+    void getColorHostable() {
+    }
+
+    @Test
+    void setColorHostable() {
+    }
+
+    @Test
+    void addBookedToWaste() {
+    }
+
+    @Test
+    void removeBooked() {
+    }
+
+    @Test
+    void getBooked() {
+    }
+
+    @Test
+    void addBooked() {
+    }
+
+    @Test
+    void getRows() {
+    }
+
+    @Test
+    void getCols() {
+    }
+
+    @Test
+    void getComponentAt() {
+    }
+
+    @Test
+    void setComponentAt() {
+    }
+
+    @Test
+    void testFirePower() {
+    }
+
+    @Test
+    void testUnloadCrew() {
+    }
+
+    @Test
+    void addAlien() {
+    }
+
+    @Test
+    void addComponent() {
+    }
+
+    @Test
+    void removeAlien() {
+    }
+
+    @Test
+    void updateParametersRemove() {
+    }
 }

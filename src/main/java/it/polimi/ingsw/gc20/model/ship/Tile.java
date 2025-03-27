@@ -44,6 +44,7 @@ public class Tile {
         if(availability) {
             this.component = c;
             c.setTile(this);
+            this.availability = false;
         } else {
             throw new IllegalArgumentException("Tile is not available");
         }

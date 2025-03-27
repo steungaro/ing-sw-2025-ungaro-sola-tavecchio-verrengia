@@ -27,9 +27,9 @@ public class LearnerShip extends Ship {
         table[1][4].setAvailability(false);
         table[4][2].setAvailability(false);
 
-        table[2][2].setAvailability(false);
         Component sc = new StartingCabin();
         table[2][2].addComponent(sc);
+        table[2][2].setAvailability(false);
     }
 
     /**

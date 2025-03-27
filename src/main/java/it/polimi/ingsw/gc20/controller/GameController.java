@@ -20,7 +20,7 @@ public class GameController {
     private final String gameID;
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-    private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
+    //private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
     private final Map<String, Boolean> assemblingComplete = new HashMap<>();
     private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;

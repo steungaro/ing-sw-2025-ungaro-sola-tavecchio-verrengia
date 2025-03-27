@@ -23,7 +23,7 @@ public class CargoHoldTest {
     @Test
     void testSetAndGetCargoHeld(){
         cargoHold.setSlots(5);
-        cargoHold.setCargoHeld();
+        //cargoHold.setCargoHeld();
     }
 
 }
