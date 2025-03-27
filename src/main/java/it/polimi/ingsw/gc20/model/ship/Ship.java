@@ -468,6 +468,7 @@ public abstract class Ship {
                 Component c = getComponentAt(i, j);
                 if (c instanceof Cabin && !((Cabin) c).getAlien()){
                     ((Cabin) c).setAstronauts(2);
+                    astronauts += 2;
                 }
             }
         }

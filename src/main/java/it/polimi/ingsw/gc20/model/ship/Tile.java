@@ -40,10 +40,12 @@ public class Tile {
     /**
      * @param c Component
      */
-    public void addComponent(Component c) {
+    public void addComponent(Component c) throws IllegalArgumentException {
         if(availability) {
             this.component = c;
             c.setTile(this);
+        } else {
+            throw new IllegalArgumentException("Tile is not available");
         }
     }
 
