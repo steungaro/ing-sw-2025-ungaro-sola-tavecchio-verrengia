@@ -325,7 +325,6 @@ public class NormalShip extends Ship {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             updateParametersSet(c);
-            c.setTile(table[row][col]);
         }
     }
 
