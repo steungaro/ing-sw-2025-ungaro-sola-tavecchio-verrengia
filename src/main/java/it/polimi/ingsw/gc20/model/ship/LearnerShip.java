@@ -111,10 +111,10 @@ public class LearnerShip extends Ship {
                     doubleCannonsPower -= 2;
                 }
             }else{
-                if(((Cannon) c).getPower() == 1) {
+                if(((Cannon) c).getPower() == 2) {
                     doubleCannons--;
                     doubleCannonsPower--;
-                }else if(((Cannon) c).getPower() == 0.5f){
+                }else if(((Cannon) c).getPower() == 1){
                     singleCannonsPower -= 0.5f;
                 }
             }

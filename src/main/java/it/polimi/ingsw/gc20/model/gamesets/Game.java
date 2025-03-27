@@ -99,7 +99,7 @@ public class Game {
      */
     public boolean isOccupied(int position) {
         for (Player p : players) {
-            if (p.getPosition() == position) {
+            if ((p.getPosition()%this.board.getSpaces()) == (position%this.board.getSpaces())) {
                 if (p.isInGame()) {
                     return true;
                 }

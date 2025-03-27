@@ -86,7 +86,7 @@ public class AbandonedShip extends AdventureCard {
      * @param l list of cabins to remove crew from
      * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
      */
-    public void Effect(Player p, Game g, List<Cabin> l) {
+    public void Effect(Player p, Game g, List<Cabin> l) throws IllegalArgumentException {
         if (lostCrew > p.getShip().crew() || lostCrew > l.size()) {
             throw new IllegalArgumentException("Not enough crew members to accept the card");
         } else {
