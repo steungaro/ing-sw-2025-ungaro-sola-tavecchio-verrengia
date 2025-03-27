@@ -53,6 +53,7 @@ public class Cabin extends Component {
             throw new IllegalArgumentException("Cannot have " + color + " alien in " + cabinColor + "cabin.");
         }
         alien = true;
+        alienColor = color;
     }
 
     /**
