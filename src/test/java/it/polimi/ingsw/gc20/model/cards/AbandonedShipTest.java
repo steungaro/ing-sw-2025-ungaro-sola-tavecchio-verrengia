@@ -50,7 +50,7 @@ class AbandonedShipTest{
 
         Cabin1 = new Cabin();
         Cabin1.setColor(AlienColor.NONE);
-        Cabin1.setAstronauts(2);
+        Cabin1.setAstronauts(1);
 
         cargoHold = new CargoHold();
         cargoHold.setSlots(2);
@@ -90,6 +90,6 @@ class AbandonedShipTest{
         abandonedShip.Effect(player1, game, cabins);
         assertEquals(3, player1.getCredits());
         assertEquals(3, player1.getPosition());
-        assertEquals(1, startingCabin.getAstronauts());
+        assertEquals(0, startingCabin.getAstronauts());
     }
 }
