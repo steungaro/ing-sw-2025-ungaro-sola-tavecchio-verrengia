@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -66,16 +67,16 @@ public class GameController {
         return false;
     }
 
-    private Player nextOnlinePlayer (String username) {
-        List<Player> players = model.getGame().getPlayers();
-        int index = players.indexOf(getPlayerByID(username));
-        for (int i = 1; i < players.size(); i++) {
-            Player p = players.get((index + i) % players.size());
-            if (connectedPlayers.contains(p.getUsername())) {
-                return p;
-            }
-        }
-        return null;
+    private String getFirstOnlinePlayer() {
+        return model.getGame().getPlayers().stream().map(Player::getUsername).filter(connectedPlayers::contains).findFirst().orElseThrow();
+    }
+
+    private void declareNullValues() {
+
+    }
+
+    private String getFirstPlayer() {
+        return model.getGame().getPlayers().getFirst().getUsername();
     }
 
     /**
@@ -89,23 +90,55 @@ public class GameController {
         AdventureCard card = model.drawCard();
         if (card == null) {
             state = State.ENDGAME;
+            currentPlayer = "";
             //TODO: notify players of state change
             //TODO: calculate final scores
         }
 
         if (card instanceof Planets) {
+            currentPlayer = getFirstOnlinePlayer();
             state = State.WAITING_PLANET;
             //TODO: notify players of state change
 
         } else if (card instanceof AbandonedShip) {
+            currentPlayer = getFirstOnlinePlayer();
             state = State.WAITING_CREW;
             //TODO: notify players of state change
 
         } else if (card instanceof AbandonedStation) {
+            currentPlayer = getFirstOnlinePlayer();
             state = State.WAITING_ACCEPTANCE;
             //TODO: notify players of state change
 
-        } else if (card instanceof CombatZone) {
+        } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 0) {
+            //Applying first automatic effect
+            model   .getGame()
+                    .getPlayers()
+                    .stream()
+                    .sorted(Comparator.comparing(model::getCrew))
+                    .findFirst()
+                    .ifPresent(p -> {((CombatZone)model.getActiveCard()).EffectLostDays(p, model.getGame());});
+
+            //Applying second non-automatic effect
+            currentPlayer = getFirstPlayer();
+            state = State.WAITING_ENGINES;
+            //Null values for the first disconnected players
+            while (disconnectedPlayers.contains(currentPlayer)) {
+                activateEnginesCombatZone(currentPlayer, null, null);
+                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
+            }
+            //TODO: notify players of state change
+
+        } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
+            //Applying first non-automatic effect
+            currentPlayer = getFirstPlayer();
+            state = State.WAITING_CANNONS;
+            //Null values for the first disconnected players
+            while (disconnectedPlayers.contains(currentPlayer)) {
+                activateCannonsCombatZone(currentPlayer, null, null);
+                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
+            }
+            //TODO: notify players of state change
 
         } else if (card instanceof Epidemic) {
             for (Player p : model.getGame().getPlayers()) {
@@ -117,6 +150,13 @@ public class GameController {
         } else if (card instanceof MeteorSwarm) {
             state = State.FIRING;
             projectiles = ((MeteorSwarm) card).getMeteors();
+
+            currentPlayer = getFirstPlayer();;
+            //automatic fires for the first disconnected players
+            while (disconnectedPlayers.contains(currentPlayer)) {
+                projectiles.forEach(p -> {model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), p);});
+                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
+            }
             //TODO: notify players of state change
 
         } else if (card instanceof OpenSpace) {
@@ -132,6 +172,8 @@ public class GameController {
                 model.Stardust(p);
             }
             //TODO: notify players of state change
+            drawCard();
+            return;
         }
         currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
     }
