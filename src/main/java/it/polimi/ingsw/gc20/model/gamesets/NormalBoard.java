@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.gc20.model.components.Component;
 
 import java.util.*;
 
@@ -63,10 +67,53 @@ public class NormalBoard extends Board {
     }
 
     /** function that creates the decks
-     * @param n number of deck to create
+     *
      */
-    public void createDeck(Integer n) {
-        // TODO implement here
+    public void createDeck() {
+        List<AdventureCard> level1Cards = new ArrayList<>();
+        List<AdventureCard> level2Cards = new ArrayList<>();
+        List<AdventureCard> cards = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+
+            cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (AdventureCard card : cards) {
+            if (card.getLevel() == 1 || card.getLevel() == 0) {
+                level1Cards.add(card);
+            } else {
+                level2Cards.add(card);
+            }
+        }
+        Collections.shuffle(level1Cards);
+        Collections.shuffle(level2Cards);
+
+        //First deck
+        for (int i = 0; i < 3; i++) {
+            this.firstVisible.add(level1Cards.removeFirst());
+        }
+        this.firstVisible.add(level2Cards.removeFirst());
+
+        //Second deck
+        for (int i = 0; i < 3; i++) {
+            this.secondVisible.add(level1Cards.removeFirst());
+        }
+        this.secondVisible.add(level2Cards.removeFirst());
+
+        //Third deck
+        for (int i = 0; i < 3; i++) {
+            this.thirdVisible.add(level1Cards.removeFirst());
+        }
+        this.thirdVisible.add(level2Cards.removeFirst());
+
+        //Invisible deck
+        for (int i = 0; i < 3; i++) {
+            this.invisible.add(level1Cards.removeFirst());
+        }
+        this.invisible.add(level2Cards.removeFirst());
+
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)

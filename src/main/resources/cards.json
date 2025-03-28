@@ -15,22 +15,22 @@
       "lostDays": "1",
       "reward": ["YELLOW", "GREEN", "BLUE"],
       "IDCard": "2",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "Pirates",
       "firePower": "5",
       "cannonFire": [
         {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "LIGHT_FIRE"
         },
         {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "HEAVY_FIRE"
         },
         {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "LIGHT_FIRE"
         }
       ],
@@ -42,12 +42,12 @@
     {
       "name": "Stardust",
       "IDCard": "4",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "OpenSpace",
       "IDCard": "5",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "OpenSpace",
@@ -68,12 +68,12 @@
       "name": "MeteorSwarm",
       "meteors": [
         {
-          "direction": "DOWN",
+          "direction": "UP",
           "fireType": "HEAVY_METEOR"
         },
         {
           "direction": "LEFT",
-          "fireType": "LIGHT_FIRE"
+          "fireType": "LIGHT_METEOR"
         },
         {
           "direction": "RIGHT",
@@ -81,29 +81,29 @@
         }
       ],
       "IDCard": "9",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "MeteorSwarm",
       "meteors": [
             {
-              "direction": "DOWN",
+              "direction": "UP",
               "fireType": "LIGHT_METEOR"
             },
             {
-              "direction": "DOWN",
+              "direction": "UP",
               "fireType": "LIGHT_METEOR"
             },
             {
               "direction": "LEFT",
-              "fireType": "LIGHT_FIRE"
+              "fireType": "LIGHT_METEOR"
             },
             {
               "direction": "RIGHT",
               "fireType": "LIGHT_METEOR"
             },
             {
-              "direction": "UP",
+              "direction": "DOWN",
               "fireType": "LIGHT_METEOR"
             }
         ],
@@ -114,15 +114,15 @@
       "name": "MeteorSwarm",
         "meteors": [
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "HEAVY_METEOR"
             },
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "LIGHT_METEOR"
             },
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "HEAVY_FIRE"
             }
         ],
@@ -199,7 +199,7 @@
             }
           }],
             "IDCard": "13",
-            "Level": "1"
+            "Level": "0"
         },
     {
       "name": "Planets",
@@ -256,16 +256,16 @@
       "lostDays": "3",
       "lostCargo": "0",
       "cannonFire": [{
-          "Direction": "UP",
+          "Direction": "DOWN",
           "fireType": "LIGHT_FIRE"
         },
         {
-          "Direction": "UP",
+          "Direction": "DOWN",
           "fireType": "HEAVY_FIRE"
       }],
         "lostCrew": "2",
         "IDCard": "16",
-        "Level": "1"
+        "Level": "0"
     },
     {
       "name": "AbandonedShip",
@@ -281,7 +281,7 @@
       "credits": "4",
       "lostDays": "1",
       "IDCard": "18",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "AbandonedStation",
@@ -292,7 +292,7 @@
       ],
       "lostDays": "1",
       "IDCard": "19",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "AbandonedStation",
@@ -332,16 +332,16 @@
       "firePower": "6",
       "cannonFire": [
         {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "HEAVY_FIRE"
         },
         {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "LIGHT_FIRE"
         },
         {
           "Projectile": {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "HEAVY_FIRE"
           }
         }
@@ -380,11 +380,11 @@
       "name": "MeteorSwarm",
         "meteors": [
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "LIGHT_METEOR"
             },
             {
-              "direction": "DOWN",
+              "direction": "UP",
                 "fireType": "LIGHT_METEOR"
             },
             {
@@ -407,19 +407,19 @@
       "name": "MeteorSwarm",
         "meteors": [
             {
-            "direction": "DOWN",
-            "fireType": "HEAVY_METEOR"
-            },
-            {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "HEAVY_METEOR"
             },
             {
             "direction": "UP",
+            "fireType": "HEAVY_METEOR"
+            },
+            {
+            "direction": "DOWN",
             "fireType": "LIGHT_METEOR"
             },
             {
-            "direction": "UP",
+            "direction": "DOWN",
             "fireType": "LIGHT_METEOR"
             }
         ],
@@ -430,23 +430,23 @@
       "name": "MeteorSwarm",
         "meteors": [
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "LIGHT_METEOR"
             },
             {
-            "direction": "DOWN",
+            "direction": "UP",
             "fireType": "LIGHT_METEOR"
             },
             {
-            "direction": "LEFT",
+            "direction": "RIGHT",
             "fireType": "HEAVY_METEOR"
             },
             {
-            "direction": "LEFT",
+            "direction": "RIGHT",
             "fireType": "LIGHT_METEOR"
             },
             {
-            "direction": "LEFT",
+            "direction": "RIGHT",
             "fireType": "LIGHT_METEOR"
             }
         ],
@@ -653,7 +653,7 @@
         "lostCargo": "3",
         "cannonFire": [
           {
-            "Direction": "DOWN",
+            "Direction": "UP",
             "fireType": "LIGHT_FIRE"
           },
           {
@@ -665,7 +665,7 @@
               "fireType": "LIGHT_FIRE"
           },
           {
-              "Direction": "UP",
+              "Direction": "DOWN",
               "fireType": "HEAVY_FIRE"
           }
         ],
