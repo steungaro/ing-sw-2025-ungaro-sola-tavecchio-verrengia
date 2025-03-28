@@ -42,9 +42,7 @@ public abstract class Board {
 
     /** function that creates the deck
      */
-    public void createDeck() {
-        // TODO implement here
-    }
+    public abstract void createDeck();
 
     /** get function for spaces
      * @return Integer

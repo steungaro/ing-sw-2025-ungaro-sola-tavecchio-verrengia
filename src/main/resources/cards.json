@@ -15,7 +15,7 @@
       "lostDays": "1",
       "reward": ["YELLOW", "GREEN", "BLUE"],
       "IDCard": "2",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "Pirates",
@@ -42,12 +42,12 @@
     {
       "name": "Stardust",
       "IDCard": "4",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "OpenSpace",
       "IDCard": "5",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "OpenSpace",
@@ -81,7 +81,7 @@
         }
       ],
       "IDCard": "9",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "MeteorSwarm",
@@ -199,7 +199,7 @@
             }
           }],
             "IDCard": "13",
-            "Level": "1"
+            "Level": "0"
         },
     {
       "name": "Planets",
@@ -265,7 +265,7 @@
       }],
         "lostCrew": "2",
         "IDCard": "16",
-        "Level": "1"
+        "Level": "0"
     },
     {
       "name": "AbandonedShip",
@@ -281,7 +281,7 @@
       "credits": "4",
       "lostDays": "1",
       "IDCard": "18",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "AbandonedStation",
@@ -292,7 +292,7 @@
       ],
       "lostDays": "1",
       "IDCard": "19",
-      "Level": "1"
+      "Level": "0"
     },
     {
       "name": "AbandonedStation",
