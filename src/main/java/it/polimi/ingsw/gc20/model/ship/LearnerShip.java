@@ -129,7 +129,10 @@ public class LearnerShip extends Ship {
         } else if (c instanceof Cabin) {
             astronauts -= ((Cabin) c).getOccupants();
         } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> cargos.put(k, cargos.get(k) - v));
+            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
+                Integer current = cargos.getOrDefault(k, 0);
+                cargos.put(k, current - v);
+            });
         }
     }
 }

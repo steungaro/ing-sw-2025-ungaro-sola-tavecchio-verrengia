@@ -5,10 +5,7 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -166,8 +163,18 @@ class LearnerShipTest {
         Set<Cannon> cannons = new HashSet<>();
         cannons.add(downCannon);
 
-        assertEquals(3, ship.firePower(cannons, 2));
-        // ?????
+        assertEquals(2, ship.firePower(cannons, 1));
+
+        // Test with no cannons
+        Set<Cannon> noCannons = new HashSet<>();
+        assertEquals(0, ship.firePower(noCannons, 0));
+
+        // Test with multiple cannons
+        Cannon extraCannon = new Cannon();
+        extraCannon.setPower(2);
+        cannons.add(extraCannon);
+
+        assertEquals(5, ship.firePower(cannons, 2));
     }
 
     @Test
@@ -203,9 +210,25 @@ class LearnerShipTest {
     @Test
     void shield(){
         assertEquals(false, ship.getShield(Direction.LEFT));
-        assertEquals(true, ship.getShield(Direction.UP));
+        assertEquals(false, ship.getShield(Direction.UP));
 
-        // TO DO
+        Shield shield = new Shield();
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.S);
+        connectors.put(Direction.UP, ConnectorEnum.S);
+        connectors.put(Direction.DOWN, ConnectorEnum.S);
+
+        Direction[] coveredSides = {Direction.UP, Direction.RIGHT};
+
+        shield.setConnectors(connectors);
+        shield.setCoveredSides(coveredSides);
+        ship.addComponent(shield, 1, 3);
+
+        assertEquals(true, ship.getShield(Direction.RIGHT));
+        assertEquals(true, ship.getShield(Direction.UP));
+        assertEquals(false, ship.getShield(Direction.DOWN));
+
     }
 
     @Test
@@ -216,8 +239,25 @@ class LearnerShipTest {
 
         float doublePowerCannon = ship.doubleCannonsPower;
         ship.updateParametersRemove(downCannon);
-        assertEquals(doublePowerCannon-2, ship.doubleCannonsPower,0.0001f);
+        assertEquals(doublePowerCannon-1, ship.doubleCannonsPower,0.0001f);
 
-        // TO DO
+        float doubleEngines = ship.doubleEngines;
+        ship.updateParametersRemove(doubleEngine);
+        assertEquals(doubleEngines-1, ship.doubleEngines, 0.0001f);
+
+        float singleEngines = ship.singleEngines;
+        ship.updateParametersRemove(singleEngine);
+        assertEquals(singleEngines-1, ship.singleEngines, 0.0001f);
+
+        int totalEnergy = ship.getTotalEnergy();
+        ship.updateParametersRemove(battery);
+        assertEquals(totalEnergy-2, ship.getTotalEnergy());
+
+        int astronauts = ship.astronauts;
+        ship.updateParametersRemove(Cabin1);
+        assertEquals(astronauts-2, ship.astronauts);
+
+        Map<CargoColor, Integer> cargosBefore = new HashMap<>(ship.cargos);
+        ship.updateParametersRemove(cargoHold);
     }
 }

@@ -364,7 +364,7 @@ class NormalShipTest {
         Set<Cannon> cannons = new HashSet<>();
         cannons.add(downCannon);
 
-        assertEquals(3, ship.firePower(cannons, 1));
+        assertEquals(2, ship.firePower(cannons, 1));
 
         // Test with no cannons
         Set<Cannon> noCannons = new HashSet<>();
@@ -375,7 +375,7 @@ class NormalShipTest {
         extraCannon.setPower(2);
         cannons.add(extraCannon);
 
-        assertEquals(5, ship.firePower(cannons, 2));
+        assertEquals(4, ship.firePower(cannons, 2));
 
     }
 

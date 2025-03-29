@@ -155,7 +155,11 @@ public class NormalShip extends Ship {
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
-            power += cannon.getPower();
+            if (cannon.getOrientation() == Direction.UP)
+                power += cannon.getPower();
+            else {
+                power += cannon.getPower() / 2;
+            }
         }
         return power + (purpleAlien ? 2 : 0);
     }
@@ -379,7 +383,10 @@ public class NormalShip extends Ship {
                 ((Cabin) c).setAstronauts(0);
             }
         } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> cargos.put(k, cargos.get(k) - v));
+            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
+                Integer current = cargos.getOrDefault(k, 0);
+                cargos.put(k, current - v);
+            });
         } else if (c instanceof LifeSupport) {
             updateLifeSupportRemoved(c);
         }
