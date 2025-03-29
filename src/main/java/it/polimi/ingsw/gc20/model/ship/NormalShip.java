@@ -47,11 +47,11 @@ public class NormalShip extends Ship {
     /**
      * if a brown/purple alien is present in the ship
      */
-    private Boolean brownAlien;
+    private Boolean brownAlien = false;
 
-    private Boolean purpleAlien;
+    private Boolean purpleAlien = false;
 
-    private AlienColor colorHostable;
+    private AlienColor colorHostable = AlienColor.NONE;
 
     public AlienColor getColorHostable() {
         return colorHostable;
@@ -326,9 +326,14 @@ public class NormalShip extends Ship {
             setComponentAt( c, row, col);
             updateParametersSet(c);
         }
+        else
+            throw new IllegalArgumentException("Invalid position");
     }
 
     public void removeAlien(Cabin c) {
+        if(!c.getAlien()) {
+            throw new IllegalArgumentException("No alien in the cabin");
+        }
         unloadCrew(c);
     }
 
