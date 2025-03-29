@@ -34,7 +34,7 @@
             "fireType": "LIGHT_FIRE"
         }
       ],
-      "reward": "4",
+      "credits": "4",
       "lostDays": "1",
       "IDCard": "3",
       "Level": "1"
@@ -346,7 +346,7 @@
           }
         }
       ],
-      "reward": "7",
+      "credits": "7",
       "lostDays": "2",
       "IDCard": "23",
       "Level": "2"

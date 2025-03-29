@@ -69,10 +69,17 @@ public class PlayerTest {
     }
 
     @Test
-    public void testAddAndRemoveCredits () {
+    public void testAddAndRemoveCredits1 () {
         player.addCredits(10);
         player.removeCredits(5);
         assertEquals(5, player.getCredits());
+    }
+
+    @Test
+    public void testAddAndRemoveCredits2 () {
+        player.addCredits(10);
+        assertEquals(5, player.removeCredits(15));
+        assertEquals(0, player.getCredits());
     }
 
     @Test

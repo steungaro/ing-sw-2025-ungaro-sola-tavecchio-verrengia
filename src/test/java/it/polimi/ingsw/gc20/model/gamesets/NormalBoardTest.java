@@ -28,6 +28,7 @@ public class NormalBoardTest {
         assertEquals (board.getRemainingTime(), 5);
     }
 
+    
     @Test
     //not testable until we have the method to create the four deck
     void testMergeDecks (){
