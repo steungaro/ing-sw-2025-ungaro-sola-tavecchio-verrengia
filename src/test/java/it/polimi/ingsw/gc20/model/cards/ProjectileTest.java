@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
@@ -66,5 +67,40 @@ class ProjectileTest {
 
     @Test
     void fire() {
+        // Create a new Projectile
+        Projectile projectile = new Projectile();
+
+        // Set the direction and fire type
+        projectile.setDirection(Direction.UP);
+        projectile.setFireType(FireType.HEAVY_FIRE);
+
+        // Fire the projectile at the ship
+        try {
+            projectile.Fire(ship, 5);
+        } catch (InvalidShipException e) {
+            fail("Exception should not be thrown");
+        }
+
+        // Check if the ship's components are damaged correctly
+    }
+
+    @Test
+    void setDirection() {
+    }
+
+    @Test
+    void setFireType() {
+    }
+
+    @Test
+    void getDirection() {
+    }
+
+    @Test
+    void getFireType() {
+    }
+
+    @Test
+    void fireTest() {
     }
 }
