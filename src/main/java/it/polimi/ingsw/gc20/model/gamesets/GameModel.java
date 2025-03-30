@@ -131,10 +131,10 @@ public class GameModel {
     }
     /**
      * function that starts the game
-     * it creates the game, the pile, set the level of the game and create the decks (TODO implement with json)
+     * it creates the game, the pile, set the level of the game and create the decks
      * and board based on the level
      * it also creates the players set the usernames, status, color and ship based on the level
-     * and also add all component to the unviewed list TODO implement with the json
+     * and also add all component to the unviewed list
      * @param level           level of the game
      * @param usernames       list of the players' username
      * @param gameID          id of the game
@@ -148,10 +148,10 @@ public class GameModel {
         //creating the board based on the level
         if (level == 2) {
             board = new NormalBoard();
-            //TODO create and setting the four deck
+            board.createDeck();
         } else {
             board = new LearnerBoard();
-            //TODO create and setting the deck
+            board.createDeck();
         }
 
         //creating the players and initializing the player
@@ -662,7 +662,7 @@ public class GameModel {
     /** function to call when a projectile is fired and hit the ship
      * @param p player who get hit
      * @param diceResult result of the dice throw that indicates the row or column hit
-     * @throws Exception if the ship is invalid
+     * @throws InvalidShipException if the ship is invalid
      * @apiNote controller utilize this methon only if the projectile hit the ship
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
