@@ -27,9 +27,6 @@ public class Tile {
         component = null;
     }
 
-    public void killComponent() {
-    }
-
     /**
      * @return component
      */
