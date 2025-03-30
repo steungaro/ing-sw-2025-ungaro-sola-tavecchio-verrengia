@@ -28,7 +28,13 @@ public class NormalShip extends Ship {
         table[1][6].setAvailability(false);
         table[4][3].setAvailability(false);
 
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
+        sc.setConnectors(connectors);
         addComponent(sc, 2, 3);
         table[2][3].setAvailability(false);
     }
