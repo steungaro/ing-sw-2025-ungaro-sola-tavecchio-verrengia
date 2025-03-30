@@ -98,9 +98,10 @@ public class Game {
      * @return boolean
      */
     public boolean isOccupied(int position) {
+        int normalizedPosition = position % this.board.getSpaces();
         for (Player p : players) {
-            if (p.getPosition() == position) {
-                if (p.isInGame()) {
+            if (p.isInGame()){
+                if ((p.getPosition() % this.board.getSpaces()) == normalizedPosition) {
                     return true;
                 }
             }
