@@ -77,4 +77,50 @@ class AbandonedStationTest {
         List<CargoColor> cargo = new ArrayList<>();
         cargo = abandonedStation.Effect(player1, game);
     }
+
+    @Test
+    void setCrewNeeded() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        abandonedStation.setCrewNeeded(3);
+        assertEquals(3, abandonedStation.getCrewNeeded());
+    }
+
+    @Test
+    void getCrewNeeded() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        abandonedStation.setCrewNeeded(3);
+        assertEquals(3, abandonedStation.getCrewNeeded());
+    }
+
+    @Test
+    void setReward() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        abandonedStation.setReward(reward);
+        assertEquals(reward, abandonedStation.getReward());
+    }
+
+    @Test
+    void getReward() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        abandonedStation.setReward(reward);
+        assertEquals(reward, abandonedStation.getReward());
+    }
+
+    @Test
+    void setLostDays() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        abandonedStation.setLostDays(3);
+        assertEquals(3, abandonedStation.getLostDays());
+    }
+
+    @Test
+    void getLostDays() {
+        AbandonedStation abandonedStation = new AbandonedStation();
+        abandonedStation.setLostDays(3);
+        assertEquals(3, abandonedStation.getLostDays());
+    }
 }
