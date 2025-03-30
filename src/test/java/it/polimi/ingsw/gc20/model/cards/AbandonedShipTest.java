@@ -66,4 +66,93 @@ class AbandonedShipTest{
         assertEquals(3, player1.getCredits());
         assertEquals(3, player1.getPosition());
     }
+
+    @Test
+    void getLevel() {
+        assertEquals(0, card.getLevel());
+        card.setLevel(1);
+        assertEquals(1, card.getLevel());
+        assertThrows(IllegalArgumentException.class, () -> {
+            card.setLevel(3);
+        });
+    }
+
+    @Test
+    void getIDCard() {
+        assertEquals(0, card.getIDCard());
+        card.setIDCard(1);
+        assertEquals(1, card.getIDCard());
+    }
+
+    @Test
+    void setLevel() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            card.setLevel(3);
+        });
+        card.setLevel(1);
+        assertEquals(1, card.getLevel());
+    }
+
+    @Test
+    void isPlayed() {
+        assertFalse(card.isPlayed());
+        card.playCard();
+        assertTrue(card.isPlayed());
+    }
+
+    @Test
+    void playCard() {
+        assertFalse(card.isPlayed());
+        card.playCard();
+        assertTrue(card.isPlayed());
+    }
+
+    @Test
+    void setIDCard() {
+        assertEquals(0, card.getIDCard());
+        card.setIDCard(1);
+        assertEquals(1, card.getIDCard());
+    }
+
+    @Test
+    void setLostCrew() {
+        assertEquals(3, card.getLostCrew());
+        card.setLostCrew(2);
+        assertEquals(2, card.getLostCrew());
+    }
+
+    @Test
+    void getLostCrew() {
+        assertEquals(3, card.getLostCrew());
+        card.setLostCrew(2);
+        assertEquals(2, card.getLostCrew());
+    }
+
+    @Test
+    void setCredits() {
+        assertEquals(3, card.getCredits());
+        card.setCredits(2);
+        assertEquals(2, card.getCredits());
+    }
+
+    @Test
+    void getCredits() {
+        assertEquals(3, card.getCredits());
+        card.setCredits(2);
+        assertEquals(2, card.getCredits());
+    }
+
+    @Test
+    void setLostDays() {
+        assertEquals(1, card.getLostDays());
+        card.setLostDays(2);
+        assertEquals(2, card.getLostDays());
+    }
+
+    @Test
+    void getLostDays() {
+        assertEquals(1, card.getLostDays());
+        card.setLostDays(2);
+        assertEquals(2, card.getLostDays());
+    }
 }
