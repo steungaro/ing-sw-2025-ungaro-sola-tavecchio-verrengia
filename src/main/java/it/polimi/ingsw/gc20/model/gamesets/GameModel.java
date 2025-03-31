@@ -847,6 +847,48 @@ public class GameModel {
         return ((MeteorSwarm) card).Effect();
     }
 
+
+    /**
+     * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
+     */
+    public void initCountdown (){
+        Board board = this.game.getBoard();
+        ((NormalBoard) board).initCountdown();
+    }
+
+    /** function that return the number of time the hourglass has been turned
+     *
+     * @return the number of time the hourglass has been turned
+     */
+    public int getTurnedHourglass() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getTurnedHourglass();
+    }
+
+    /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
+     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     */
+    public void turnHourglass() throws IllegalArgumentException {
+        Board board = this.game.getBoard();
+        ((NormalBoard) board).turnHourglass();
+    }
+
+    /** Function that returns the remaining time
+     * @return The number of seconds left of the current turn
+     */
+    public int getRemainingTime() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getRemainingTime();
+    }
+
+    /** Function that returns the total remaining time
+     * @return int is the number of seconds left
+     */
+    public int getTotalRemainingTime() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getTotalRemainingTime();
+    }
+
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
