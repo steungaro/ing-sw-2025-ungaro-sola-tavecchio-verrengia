@@ -1,12 +1,11 @@
-package it.polimi.ingsw.gc20.network.rmi;
+package it.polimi.ingsw.gc20.network.ServerHandlers;
 
 import it.polimi.ingsw.gc20.exceptions.ServerCriticalError;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
-import java.rmi.ServerError;
-import java.rmi.RemoteException;
-import java.rmi.ServerException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -71,5 +70,16 @@ public class RMIServerHandler {
         }
     }
 
-    
+    /**
+     *
+     *
+     */
+    public void exportObject (Remote obj, String name) throws RemoteException, MalformedURLException {
+        if (!registryCreated) {
+            throw new RemoteException("Registry not created");
+        }
+
+        Remote stub = UnicastRemoteObject.exportObject(obj, 0);
+        Naming.rebind("rmi://localhost:" + usedPort + "/" + name, obj);
+    }
 }
