@@ -889,6 +889,20 @@ public class GameModel {
         return ((NormalBoard) board).getTotalRemainingTime();
     }
 
+    /** Function that returns a list of the player that are actually in the game
+     * @return List of the player that are in the game
+     */
+    public List<Player> getInGamePlayers () {
+        List<Player> inGamePlayers = new ArrayList<>();
+        game.sortPlayerByPosition();
+        for (Player p : game.getPlayers()) {
+            if (p.isInGame()) {
+                inGamePlayers.add(p);
+            }
+        }
+        return inGamePlayers;
+    }
+
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
