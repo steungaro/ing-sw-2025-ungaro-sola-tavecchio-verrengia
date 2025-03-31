@@ -9,15 +9,15 @@ import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
+import it.polimi.ingsw.gc20.interfaces.*;
 import java.security.InvalidParameterException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
  * Controller class for managing the game flow and player interactions
  */
-public class GameController {
+public class GameController implements GameControllerInterface {
     private final GameModel model;
     private State state;
     private final String gameID;
@@ -120,7 +120,7 @@ public class GameController {
             state = State.WAITING_ENGINES;
             //Null values for the first disconnected players
             while (disconnectedPlayers.contains(currentPlayer)) {
-                activateEnginesCombatZone(currentPlayer, null, null);
+                activateEngines(currentPlayer, null, null);
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
@@ -132,7 +132,7 @@ public class GameController {
             state = State.WAITING_CANNONS;
             //Null values for the first disconnected players
             while (disconnectedPlayers.contains(currentPlayer)) {
-                activateCannonsCombatZone(currentPlayer, null, null);
+                activateCannons(currentPlayer, null, null);
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
@@ -192,11 +192,10 @@ public class GameController {
      * Accepts a planet card and lands on the planet
      * @param username is the username of the player that wants to land on the planet
      * @param planetIndex is the index of the planet card in the player's hand
-     * @return the list of cargo that the player can take from the planet
      * @throws IllegalStateException if the game is not in the planet phase
      * @throws IllegalArgumentException if it is not the player's turn
      */
-    public List<CargoColor> landOnPlanet(String username, int planetIndex) {
+    public void landOnPlanet(String username, int planetIndex) {
         if (state != State.WAITING_PLANET) {
             throw new IllegalStateException("Cannot land on a planet outside the planet phase");
         }
@@ -206,7 +205,6 @@ public class GameController {
         Player player = getPlayerByID(username);
         state = State.WAITING_CARGO_GAIN;
         cargo = model.PlanetLand(player, planetIndex);
-        return cargo;
     }
 
     /**
@@ -294,7 +292,7 @@ public class GameController {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote To be used after accepting an abandoned ship
      */
-    public void abandonedShip(String username, List<Cabin> cabins) {
+    private void abandonedShip(String username, List<Cabin> cabins) {
         if (state != State.WAITING_CREW && model.getActiveCard() instanceof AbandonedShip) {
             throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
         }
@@ -311,12 +309,11 @@ public class GameController {
     /**
      * Activates abandoned station card, returns the list of cargo provided by the card and enters the cargo phase
      * @param username is the username of the player that wants to activate abandoned station card
-     * @return the list of cargo that the player can take from the abandoned station
      * @throws IllegalStateException if the game is not in the abandoned station phase
      * @throws IllegalArgumentException if it is not the player's turn
      * @throws IllegalArgumentException if the player does not have enough crew to invade the station
      */
-    public List<CargoColor> abandonedStation(String username) {
+    private void abandonedStation(String username) {
         AbandonedStation card = (AbandonedStation) model.getActiveCard();
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
@@ -327,7 +324,7 @@ public class GameController {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
         state = State.WAITING_CARGO_GAIN;
-        return model.AbandonedStation(getPlayerByID(username));
+        cargo = model.AbandonedStation(getPlayerByID(username));
     }
 
     /**
@@ -375,12 +372,11 @@ public class GameController {
     /**
      * To be called when a smugglers card has been defeated, used to accept the smugglers' offer and take the rewards
      * @param username is the username of the player that wants to accept the smugglers' offer
-     * @return the list of cargo that the player can take from the smugglers
      * @throws IllegalStateException if the game is not in the smugglers phase
      * @throws IllegalArgumentException if it is not the player's turn
      * @throws IllegalArgumentException if the smugglers card has not been defeated
      */
-    public List<CargoColor> acceptSmugglers(String username) {
+    private void acceptSmugglers(String username) {
         if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Smugglers) {
             throw new IllegalStateException("Cannot accept smugglers now");
         }
@@ -389,7 +385,7 @@ public class GameController {
         }
         state = State.WAITING_CARGO_GAIN;
         //TODO: notify player of state change
-        return model.smugglersSuccess(getPlayerByID(username));
+        cargo = model.smugglersSuccess(getPlayerByID(username));
     }
 
     /**
@@ -399,7 +395,7 @@ public class GameController {
      * @throws IllegalArgumentException if it is not the player's turn
      * @throws IllegalArgumentException if the pirates card has not been defeated
      */
-    public void acceptPirates(String username) {
+    private void acceptPirates(String username) {
         if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Pirates) {
             throw new IllegalStateException("Cannot accept pirates now");
         }
@@ -416,7 +412,7 @@ public class GameController {
      * @throws IllegalArgumentException if it is not the player's turn
      * @throws IllegalArgumentException if the slavers card has not been defeated
      */
-    public void acceptSlavers(String username) {
+    private void acceptSlavers(String username) {
         if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Slavers) {
             throw new IllegalStateException("Cannot accept slavers now");
         }
@@ -424,6 +420,10 @@ public class GameController {
             throw new IllegalStateException("Card not defeated");
         }
         model.slaversSuccess(getPlayerByID(username));
+    }
+
+    public void acceptCard(String username) {
+        //TODO: This method switches between private methods based on the card type
     }
 
     /**
@@ -490,6 +490,7 @@ public class GameController {
         }
     }
 
+
     /**
      * To be called when a heavy_meteor is firing the player
      * @param username is the username of the player that wants to activate the cannon
@@ -499,7 +500,7 @@ public class GameController {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
+    private void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
         if (state != State.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
@@ -526,6 +527,18 @@ public class GameController {
         } else {
             nextFire();
         }
+    }
+
+    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) {
+        //TODO
+    }
+
+    /**
+     * Returns the active adventure card
+     * @return the active adventure card
+     */
+    public AdventureCard getActiveCard() {
+        return model.getActiveCard();
     }
 
     /**
@@ -570,6 +583,16 @@ public class GameController {
     }
 
     /**
+     * @param username
+     * @param engines
+     * @param batteries
+     */
+    @Override
+    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) {
+        //TODO
+    }
+
+    /**
      * Gets a list of player colors that aren't currently assigned to any player
      *
      * @return List of available player colors
@@ -582,15 +605,6 @@ public class GameController {
             availableColors.remove(color);
         }
         return availableColors;
-    }
-
-    public void initPlayersShip(){
-        for (Player p: model.getGame().getPlayers()){
-            if(!model.shipValidating(p)){
-                //TODO: ship loop until bro gives us a valid ship
-            }
-        }
-
     }
 
     /**
@@ -624,9 +638,6 @@ public class GameController {
         targetPlayer.setColor(color);
     }
 
-    public List<AdventureCard> peekDeck(int num){
-        return model.viewDeck(num);
-    }
     /**
      * Calculates and returns the final scores for all players
      *
@@ -640,29 +651,17 @@ public class GameController {
      * Handles a player leaving the game mid-session
      *
      * @param username Username of the exiting player
-     * @throws IllegalArgumentException if player with given username is not found
+     * @throws IllegalArgumentException if player was not in game or not connected
      */
     public void disconnectPlayer(String username) {
         // Find player with matching username
-        Player exitingPlayer = null;
-        for (Player p : model.getGame().getPlayers()) {
-            if (p.getUsername().equals(username)) {
-                exitingPlayer = p;
-                connectedPlayers.remove(username);
-                break;
-            }
-        }
-
-        if (exitingPlayer == null) {
-            throw new IllegalArgumentException("Player not found in game");
-        }
-
-        // Add player to disconnected list if not already there
-        if (!disconnectedPlayers.contains(username)) {
+        if (connectedPlayers.contains(username)) {
+            connectedPlayers.remove(username);
             disconnectedPlayers.add(username);
+        } else {
+            throw new IllegalArgumentException("Player not found in game, not connected or never joined");
         }
-
-        // Player remains in the game model but is marked as disconnected
+        // Player remains in the game model
     }
 
     /**
@@ -674,7 +673,7 @@ public class GameController {
      */
     public boolean reconnectPlayer(String username) {
         // Check if player was originally in this game
-        if (!connectedPlayers.contains(username)) {
+        if (getPlayerByID(username) != null) {
             throw new IllegalArgumentException("Player was never part of this game");
         }
 
@@ -685,6 +684,7 @@ public class GameController {
 
         // Remove player from disconnected list
         disconnectedPlayers.remove(username);
+        connectedPlayers.add(username);
 
         // Player data is still in the model, so no need to recreate
         return true;
@@ -698,7 +698,11 @@ public class GameController {
      * @throws IllegalArgumentException if the player is not found
      */
     private Player getPlayerByID(String username){
-        return model.getGame().getPlayers().stream().filter(player -> player.getUsername().equals(username)).findFirst().orElseThrow(() -> new IllegalArgumentException("Player not found"));
+        return model.getGame().getPlayers()
+                .stream()
+                .filter(player -> player.getUsername().equals(username))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Player not found"));
     }
 
 
@@ -823,6 +827,7 @@ public class GameController {
      * @param username Username of the player booking the component
      * @param component Component to book
      * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
+     * @throws IllegalArgumentException if there aren't enough available spaces in the player's booked list
      */
     public void addComponentToBooked(String username, Component component) {
         if (state != State.ASSEMBLING) {
@@ -847,7 +852,6 @@ public class GameController {
         if (state != State.ASSEMBLING) {
             throw new IllegalStateException("Cannot manipulate components outside the assembling phase");
         }
-
         model.componentToViewed(component);
     }
 
@@ -868,6 +872,7 @@ public class GameController {
 
         Player player = getPlayerByID(username);
 
+        //TODO: addToShip does not throw any exception
         try {
             model.addToShip(component, player, x, y);
         } catch (Exception e) {
@@ -876,38 +881,40 @@ public class GameController {
         }
     }
 
-    private Component getComponentByID(int id){
-        return null; //TODO TAVE
-    }
-
     /**
      * Rotates a component clockwise
      *
      * @param component Component to rotate
+     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
-    public Component rotateComponentClockwise(int component) {
-        Component c = getComponentByID(component);
-        model.RotateClockwise(c);
-        return c;
+    public void rotateComponentClockwise(Component component) {
+        if (state != State.ASSEMBLING) {
+            throw new IllegalStateException("Cannot rotate components outside the assembling phase");
+        }
+        model.RotateClockwise(component);
     }
 
     /**
      * Rotates a component counterclockwise
      *
      * @param component Component to rotate
+     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
-    public Component rotateComponentCounterclockwise(int component) {
-        Component c = getComponentByID(component);
-        model.RotateCounterclockwise(c);
-        return c;
+    public void rotateComponentCounterclockwise(Component component) {
+        if (state != State.ASSEMBLING) {
+            throw new IllegalStateException("Cannot rotate components outside the assembling phase");
+        }
+        model.RotateCounterclockwise(component);
     }
 
     /**
-     * Removes a component from the player's ship (only during assembling phase if the ship is not valid)
+     * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
      * @param component Component to remove
-     * @throws IllegalStateException if game is not in ASSEMBLING state
+     * @throws IllegalStateException if game is not in VALIDATING state
+     * @apiNote view must call this function until the ship is valid
+     * @see #validateShip(String username)
      */
     public void removeComponentFromShip(String username, Component component) {
         if (state != State.VALIDATING) {
@@ -968,13 +975,14 @@ public class GameController {
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-        if (model. && !assemblingComplete.get(username)) {
-            throw new HourglassException("Cannot turn hourglass for a player that has not completed assembling yet");
+        if (model.getTurnedHourglass() == 1 && !assemblingComplete.get(username)) {
+            throw new HourglassException("Cannot turn hourglass for the last time for a player that has not completed assembling yet");
         }
-        if (/*hourglass time not 0*/) {
+        if (model.getRemainingTime() != 0) {
             throw new HourglassException("Cannot turn hourglass if time is not 0");
         }
-        //TODO hourglass turning
+        model.turnHourglass();
+        //TODO: notify players of hourglass turn?
     }
 
     /**
@@ -992,8 +1000,7 @@ public class GameController {
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-
-        return 0; //return remaining time
+        return model.getRemainingTime();
     }
 
     /**
