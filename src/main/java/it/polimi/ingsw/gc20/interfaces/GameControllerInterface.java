@@ -13,6 +13,7 @@ import java.util.Map;
 public interface GameControllerInterface {
 
     // Player management
+    void giveUp(String username);
     void disconnectPlayer(String username);
     boolean reconnectPlayer(String username);
     List<String> getAllUsernames();
@@ -34,6 +35,7 @@ public interface GameControllerInterface {
     void addComponentToViewed(Component component);
     void placeComponent(String username, Component component, int x, int y);
 
+    //TODO: maybe group rotate methods into generic ones with a type parameter
     void rotateComponentClockwise(Component component);
     void rotateComponentCounterclockwise(Component component);
 
@@ -55,6 +57,7 @@ public interface GameControllerInterface {
     void unloadCargo(String username, CargoColor lost, CargoHold ch);
     void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to);
     void acceptCard(String username);
+    void loseCrew(String username, List<Cabin> cabins);
     void endMove(String username);
 
     // Activate ship components

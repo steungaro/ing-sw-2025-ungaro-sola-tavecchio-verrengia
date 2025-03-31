@@ -21,13 +21,17 @@ public class GameController implements GameControllerInterface {
     private final GameModel model;
     private State state;
     private final String gameID;
+
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-    private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
     private final Map<String, Boolean> assemblingComplete = new HashMap<>();
     private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;
-    private List<CargoColor> cargo;
+
+    private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
+
+    private List<CargoColor> cargoGained;
+    private int cargoLost;
     private List<Projectile> projectiles;
 
     /**
@@ -55,6 +59,7 @@ public class GameController implements GameControllerInterface {
 
     /**
      * Tells whether each player has completed their ship assembly
+     * @return true if all players have completed their ship assembly, false otherwise
      */
     public boolean assemblingStateComplete(){
         return assemblingComplete.values().stream().allMatch(Boolean::booleanValue);
@@ -64,15 +69,18 @@ public class GameController implements GameControllerInterface {
      * @return the first player in the list of players that is online
      */
     private String getFirstOnlinePlayer() {
-        return model.getGame().getPlayers().stream().map(Player::getUsername).filter(connectedPlayers::contains).findFirst().orElseThrow();
+        return model.getInGamePlayers().stream()
+                .map(Player::getUsername)
+                .filter(connectedPlayers::contains)
+                .findFirst()
+                .orElse(null);
     }
 
-    private void declareNullValues() {
-
-    }
-
+    /**
+     * @return the first player in the list of players without regarding their online status
+     */
     private String getFirstPlayer() {
-        return model.getGame().getPlayers().getFirst().getUsername();
+        return model.getInGamePlayers().getFirst().getUsername();
     }
 
     /**
@@ -92,65 +100,63 @@ public class GameController implements GameControllerInterface {
         }
 
         if (card instanceof Planets) {
-            currentPlayer = getFirstOnlinePlayer();
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_PLANET;
             //TODO: notify players of state change
 
         } else if (card instanceof AbandonedShip) {
-            currentPlayer = getFirstOnlinePlayer();
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_CREW;
             //TODO: notify players of state change
 
         } else if (card instanceof AbandonedStation) {
-            currentPlayer = getFirstOnlinePlayer();
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_ACCEPTANCE;
             //TODO: notify players of state change
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 0) {
             //Applying first automatic effect
-            model   .getGame()
+            model.getGame()
                     .getPlayers()
                     .stream()
-                    .sorted(Comparator.comparing(model::getCrew))
-                    .findFirst()
+                    .min(Comparator.comparing(model::getCrew))
                     .ifPresent(p -> {((CombatZone)model.getActiveCard()).EffectLostDays(p, model.getGame());});
 
             //Applying second non-automatic effect
             currentPlayer = getFirstPlayer();
             state = State.WAITING_ENGINES;
             //Null values for the first disconnected players
+            // TODO: check whether this is correct with Cugola
             while (disconnectedPlayers.contains(currentPlayer)) {
                 activateEngines(currentPlayer, null, null);
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
-            //TODO: offline players must skip the card?
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
             //Applying first non-automatic effect
             currentPlayer = getFirstPlayer();
             state = State.WAITING_CANNONS;
             //Null values for the first disconnected players
+            // TODO: check whether this is correct with Cugola
             while (disconnectedPlayers.contains(currentPlayer)) {
                 activateCannons(currentPlayer, null, null);
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
-            //TODO: offline players must skip the card?
 
         } else if (card instanceof Epidemic) {
-            for (Player p : model.getGame().getPlayers()) {
-                ((Epidemic) card).Effect(p);
-            }
+            model.getInGamePlayers().forEach(player -> {((Epidemic) card).Effect(player);});
             //TODO: notify players of state change
             drawCard();
             return;
         } else if (card instanceof MeteorSwarm) {
             state = State.FIRING;
-            projectiles = ((MeteorSwarm) card).getMeteors();
+            projectiles = new ArrayList<>(((MeteorSwarm) card).getMeteors());
 
             currentPlayer = getFirstPlayer();;
             //automatic fires for the first disconnected players
+            //TODO: check whether this is correct with Cugola
             while (disconnectedPlayers.contains(currentPlayer)) {
                 if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
                     if (model.heavyMeteorCannon(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst())
@@ -158,6 +164,7 @@ public class GameController implements GameControllerInterface {
                             .noneMatch(cannon -> cannon.getPower() == 1)) {
                         model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
                         projectiles.removeFirst();
+                        //TODO: ship validation?
                     }
                 } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
                     model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
@@ -178,14 +185,10 @@ public class GameController implements GameControllerInterface {
             //TODO: notify players of state change
 
         } else if (card instanceof Stardust) {
-            for (Player p : model.getGame().getPlayers()) {
-                model.Stardust(p);
-            }
+            model.getInGamePlayers().forEach(player -> {((Stardust) card).Effect(player, model.getGame());});
             //TODO: notify players of state change
             drawCard();
-            return;
         }
-        currentPlayer = model.getGame().getPlayers().stream().filter(p -> connectedPlayers.contains(p.getUsername())).findFirst().get().getUsername();
     }
 
     /**
@@ -195,6 +198,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if the game is not in the planet phase
      * @throws IllegalArgumentException if it is not the player's turn
      */
+    @Override
     public void landOnPlanet(String username, int planetIndex) {
         if (state != State.WAITING_PLANET) {
             throw new IllegalStateException("Cannot land on a planet outside the planet phase");
@@ -204,7 +208,7 @@ public class GameController implements GameControllerInterface {
         }
         Player player = getPlayerByID(username);
         state = State.WAITING_CARGO_GAIN;
-        cargo = model.PlanetLand(player, planetIndex);
+        cargoGained = new ArrayList<>(model.PlanetLand(player, planetIndex));
     }
 
     /**
@@ -217,6 +221,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the array of cargo provided by the current card does not contain the loaded component
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
      */
+    @Override
     public void loadCargo(String username, CargoColor loaded, CargoHold ch) {
         if (state != State.WAITING_CARGO_GAIN) {
             throw new IllegalStateException("Cannot load cargo outside the cargo phase");
@@ -225,10 +230,10 @@ public class GameController implements GameControllerInterface {
             throw new IllegalArgumentException("Not your turn");
         }
         Player player = getPlayerByID(username);
-        if (!cargo.contains(loaded)) {
-            throw new IllegalArgumentException("Cargo does not contain the loaded component");
+        if (!cargoGained.contains(loaded)) {
+            throw new IllegalArgumentException("Cargo gained does not contain the loaded cargo");
         }
-        cargo.remove(loaded);
+        cargoGained.remove(loaded);
         model.addCargo(getPlayerByID(username), loaded, ch);
     }
 
@@ -242,6 +247,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the player is not unloading the most valuable cargo (only in LOST CARGO PHASE)
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combatzone (to remove most valuable one)
      */
+    @Override
     public void unloadCargo(String username, CargoColor lost, CargoHold ch) {
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
@@ -258,6 +264,7 @@ public class GameController implements GameControllerInterface {
                     throw new IllegalArgumentException("Not unloading the most valuable cargo.");
                 }
             }
+        cargoLost--;
         }
         model.MoveCargo(getPlayerByID(username), lost, ch, null);
     }
@@ -272,6 +279,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote To be used in losing/gaining cargo
      */
+    @Override
     public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) {
         if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
@@ -324,7 +332,7 @@ public class GameController implements GameControllerInterface {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
         state = State.WAITING_CARGO_GAIN;
-        cargo = model.AbandonedStation(getPlayerByID(username));
+        cargoGained = model.AbandonedStation(getPlayerByID(username));
     }
 
     /**
@@ -385,7 +393,7 @@ public class GameController implements GameControllerInterface {
         }
         state = State.WAITING_CARGO_GAIN;
         //TODO: notify player of state change
-        cargo = model.smugglersSuccess(getPlayerByID(username));
+        cargoGained = model.smugglersSuccess(getPlayerByID(username));
     }
 
     /**
@@ -424,6 +432,15 @@ public class GameController implements GameControllerInterface {
 
     public void acceptCard(String username) {
         //TODO: This method switches between private methods based on the card type
+    }
+
+    /**
+     * @param username
+     * @param cabins
+     */
+    @Override
+    public void loseCrew(String username, List<Cabin> cabins) {
+        //TODO
     }
 
     /**
@@ -645,6 +662,14 @@ public class GameController implements GameControllerInterface {
      */
     public Map<Player, Integer> getPlayerScores(){
         return model.calculateScore();
+    }
+
+    /**
+     * @param username
+     */
+    @Override
+    public void giveUp(String username) {
+
     }
 
     /**
