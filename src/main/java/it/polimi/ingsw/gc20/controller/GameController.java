@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller;
 import it.polimi.ingsw.gc20.controller.event.Event;
 import it.polimi.ingsw.gc20.controller.event.EventHandler;
 import it.polimi.ingsw.gc20.controller.event.EventType;
+import it.polimi.ingsw.gc20.exceptions.HourglassException;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -19,7 +20,6 @@ import java.util.stream.Collectors;
 public class GameController {
     private final GameModel model;
     private State state;
-    private State pausedState;
     private final String gameID;
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
@@ -54,20 +54,15 @@ public class GameController {
     }
 
     /**
-     * Private function that moves the state forward to the next state in sequence
+     * Tells whether each player has completed their ship assembly
      */
-    private void nextState() {
-        state = State.values()[(state.ordinal() + 1) % State.values().length];
+    public boolean assemblingStateComplete(){
+        return assemblingComplete.values().stream().allMatch(Boolean::booleanValue);
     }
 
     /**
-     * Sets the game state to assembling phase
+     * @return the first player in the list of players that is online
      */
-    public boolean assemblingStateComplete(){
-        //TODO: Implement assembling phase
-        return false;
-    }
-
     private String getFirstOnlinePlayer() {
         return model.getGame().getPlayers().stream().map(Player::getUsername).filter(connectedPlayers::contains).findFirst().orElseThrow();
     }
@@ -129,6 +124,7 @@ public class GameController {
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
+            //TODO: offline players must skip the card?
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
             //Applying first non-automatic effect
@@ -140,6 +136,7 @@ public class GameController {
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
             //TODO: notify players of state change
+            //TODO: offline players must skip the card?
 
         } else if (card instanceof Epidemic) {
             for (Player p : model.getGame().getPlayers()) {
@@ -155,6 +152,16 @@ public class GameController {
             currentPlayer = getFirstPlayer();;
             //automatic fires for the first disconnected players
             while (disconnectedPlayers.contains(currentPlayer)) {
+                if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
+                    if (model.heavyMeteorCannon(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst())
+                            .stream()
+                            .noneMatch(cannon -> cannon.getPower() == 1)) {
+                        model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
+                        projectiles.removeFirst();
+                    }
+                } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
+                    model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
+                }
                 projectiles.forEach(p -> {model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), p);});
                 currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
             }
@@ -162,6 +169,8 @@ public class GameController {
 
         } else if (card instanceof OpenSpace) {
             state = State.WAITING_ENGINES;
+            currentPlayer = getFirstPlayer();
+            //TODO: Null values for the first disconnected players?
             //TODO: notify players of state change
 
         } else if (card instanceof Enemy) {
@@ -634,23 +643,26 @@ public class GameController {
      * @throws IllegalArgumentException if player with given username is not found
      */
     public void disconnectPlayer(String username) {
-        if(!connectedPlayers.contains(username)) {
+        // Find player with matching username
+        Player exitingPlayer = null;
+        for (Player p : model.getGame().getPlayers()) {
+            if (p.getUsername().equals(username)) {
+                exitingPlayer = p;
+                connectedPlayers.remove(username);
+                break;
+            }
+        }
+
+        if (exitingPlayer == null) {
             throw new IllegalArgumentException("Player not found in game");
         }
-        connectedPlayers.remove(username);
-        disconnectedPlayers.add(username);
-        if(!isGameValid()){
-            pauseGame();
+
+        // Add player to disconnected list if not already there
+        if (!disconnectedPlayers.contains(username)) {
+            disconnectedPlayers.add(username);
         }
-    }
 
-    public boolean isGameValid() {
-        return connectedPlayers.size() > 1;
-    }
-
-    public void pauseGame() {
-        pausedState = state;
-        state = State.PAUSED;
+        // Player remains in the game model but is marked as disconnected
     }
 
     /**
@@ -662,24 +674,20 @@ public class GameController {
      */
     public boolean reconnectPlayer(String username) {
         // Check if player was originally in this game
-        if (!disconnectedPlayers.contains(username)) {
+        if (!connectedPlayers.contains(username)) {
             throw new IllegalArgumentException("Player was never part of this game");
         }
-        if(connectedPlayers.size() == 1){
-            state = pausedState;
+
+        // Check if player is in the disconnected list
+        if (!disconnectedPlayers.contains(username)) {
+            return false; // Player isn't disconnected, nothing to do
         }
+
         // Remove player from disconnected list
         disconnectedPlayers.remove(username);
-        connectedPlayers.add(username);
-        return true;
-    }
 
-    public void forfeitGame(String username){
-        if(!connectedPlayers.contains(username)) {
-            throw new IllegalArgumentException("Player not found in game");
-        }
-        connectedPlayers.remove(username);
-        //TODO: calculate player score?
+        // Player data is still in the model, so no need to recreate
+        return true;
     }
 
     /**
@@ -909,6 +917,14 @@ public class GameController {
         model.removeComponent(component, player);
     }
 
+    /**
+     * Validates the player's ship
+     *
+     * @param username Username of the player that wants to validate the ship
+     * @return true if ship is valid, false otherwise
+     * @throws IllegalStateException if game is not in VALIDATING state
+     * @apiNote this function must be called from the view until the ship is valid
+     */
     public boolean validateShip(String username) {
         if (state != State.VALIDATING) {
             throw new IllegalStateException("Cannot validate ship outside the assembling phase");
@@ -916,6 +932,11 @@ public class GameController {
         return model.shipValidating(getPlayerByID(username));
     }
 
+    /**
+     * Stops the assembling phase for a player
+     * @param username is the username of the player that wants to stop assembling
+     * @param position is the relative position on board where the player wants to put their rocket
+     */
     public void stopAssembling(String username, int position) {
         if (state != State.ASSEMBLING) {
             throw new IllegalStateException("Cannot validate ship outside the assembling phase");
@@ -923,12 +944,21 @@ public class GameController {
         assemblingComplete.put(username, true);
         model.stopAssembling(getPlayerByID(username), position);
         if(assemblingComplete.values().stream().allMatch(Boolean::booleanValue)){
-            nextState();
+            state = State.VALIDATING;
             //TODO: notify players of state change
         }
     }
-    
-    public void turnHourglass(String username) {
+
+    /**
+     * Turns the hourglass for a player
+     *
+     * @param username Username of the player turning the hourglass
+     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
+     * @throws IllegalArgumentException if the player is not connected
+     * @throws HourglassException if the hourglass time is not 0
+     * @throws HourglassException if the player has not completed assembling yet when turning last time
+     */
+    public void turnHourglass(String username) throws HourglassException {
         if (state != State.ASSEMBLING) {
             throw new IllegalStateException("Cannot validate ship outside the assembling phase");
         }
@@ -938,20 +968,44 @@ public class GameController {
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-        //TODO tave: hourglass management in gamemodel
+        if (model. && !assemblingComplete.get(username)) {
+            throw new HourglassException("Cannot turn hourglass for a player that has not completed assembling yet");
+        }
+        if (/*hourglass time not 0*/) {
+            throw new HourglassException("Cannot turn hourglass if time is not 0");
+        }
+        //TODO hourglass turning
     }
-    
+
+    /**
+     * Gets the remaining time for the hourglass
+     *
+     * @param username Username of the player checking the hourglass
+     * @return Remaining time in seconds
+     * @throws IllegalStateException if game is not in ASSEMBLING state
+     * @throws IllegalArgumentException if the game is not in level 2
+     */
     public int getHourglassTime(String username) {
         if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot validate ship outside the assembling phase");
+            throw new IllegalStateException("Cannot use hourglass outside the assembling phase");
         }
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-        //TODO tave: hourglass management in gamemodel
+
         return 0; //return remaining time
     }
 
+    /**
+     * Peeks at the selected deck
+     *
+     * @param username Username of the player peeking at the deck
+     * @param num number of the deck to peek at
+     * @return List of AdventureCard from the selected deck
+     * @throws IllegalStateException if game is not in ASSEMBLING state
+     * @throws IllegalArgumentException if player is not connected or has already completed assembling
+     * @throws IllegalArgumentException if the game is not in level 2
+     */
     public List<AdventureCard> peekDeck(String username, int num){
         if (state != State.ASSEMBLING) {
             throw new IllegalStateException("Cannot view a deck outside the assembling phase");
@@ -966,24 +1020,43 @@ public class GameController {
             throw new IllegalArgumentException("Cannot view deck after ship is done assembling");
         }
         return model.viewDeck(num);
+        // TODO: maybe synchronized on deck?
     }
 
-    public void addAlien(String username, AlienColor color, int component) {
+    /**
+     * Adds an alien to the player's ship
+     *
+     * @param username Username of the player adding the alien
+     * @param color Color of the alien
+     * @param cabin Cabin where the alien will be placed
+     * @throws IllegalStateException if game is not in VALIDATING state
+     * @throws IllegalArgumentException if ship is invalid or component is not a cabin
+     * @throws IllegalArgumentException if the game is not in level 2
+     * @throws IllegalArgumentException if the cabin provided is a StartingCabin
+     */
+    public void addAlien(String username, AlienColor color, Cabin cabin) {
         if (state != State.VALIDATING) {
             throw new IllegalStateException("Cannot add aliens outside the validating phase");
         }
         if (!model.shipValidating(getPlayerByID(username))) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }
-        if (!(getComponentByID(component) instanceof Cabin) && (getComponentByID(component) instanceof StartingCabin)) {
+        if (cabin instanceof StartingCabin) {
             throw new IllegalArgumentException("Aliens can only be placed in cabins");
         }
         if(model.getLevel() != 2){
             throw new IllegalArgumentException("Aliens are only available in level 2 games");
         }
-        model.setAlien(color, (Cabin)getComponentByID(component), getPlayerByID(username));
+        model.setAlien(color, cabin, getPlayerByID(username));
     }
 
+    /**
+     * Initializes the ship for a player
+     * @param username is the username of the player that wants to initialize the ship
+     * @throws IllegalStateException if the game is not in the validating phase
+     * @apiNote To be used after ship validation
+     * @implNote username ship must be valid
+     */
     public void initShip(String username) {
         if (state != State.VALIDATING) {
             throw new IllegalStateException("Cannot initiate ship outside the validating phase");
@@ -991,12 +1064,10 @@ public class GameController {
         model.getGame().getPlayers().forEach(p -> {if(p.equals(getPlayerByID(username))) p.getShip().initAstronauts();});
         readyToFly.put(username, true);
         if(readyToFly.values().stream().allMatch(Boolean::booleanValue)) {
-            nextState();
+            state = State.FLIGHT;
             model.createDeck();
             //TODO: notify players of state change
             drawCard();
         }
     }
-
-
 }
