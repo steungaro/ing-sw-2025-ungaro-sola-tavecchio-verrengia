@@ -64,6 +64,7 @@ public interface GameControllerInterface {
     // Activate ship components
     void activateEngines(String username, List<Engine> engines, List<Battery> batteries);
     void activateShield(String username, Shield shield, Battery battery);
-    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries);
+    void activateCannonForProjectile(String username, Cannon cannon, Battery battery);
     int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries);
+    void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries);
 }
