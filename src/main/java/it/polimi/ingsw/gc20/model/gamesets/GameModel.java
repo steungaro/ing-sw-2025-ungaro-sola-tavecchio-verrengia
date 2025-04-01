@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.player.*;
@@ -153,7 +155,7 @@ public class GameModel {
             board = new LearnerBoard();
             board.createDeck();
         }
-
+        game.addBoard(board);
         //creating the players and initializing the player
         for (int i = 0; i < usernames.size(); i++) {
             Player player = initPlayer(usernames.get(i), i);
@@ -164,6 +166,8 @@ public class GameModel {
 
         List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
         } catch (Exception e) {

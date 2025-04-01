@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
 import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -140,7 +141,16 @@ class GameModelTest {
         StartingCabin start = (StartingCabin) ship.getComponentAt(2, 3);
         start.setConnectors(connectorsStartingCabin);
 
-        Map<Direction, ConnectorEnum> connectorsStartingCabin2 = new HashMap<>();
+        Map<Direction, ConnectorEnum> connectorBattery2 = new HashMap<>();
+        connectorBattery2.put(Direction.RIGHT, ConnectorEnum.S);
+        connectorBattery2.put(Direction.LEFT, ConnectorEnum.ZERO);
+        connectorBattery2.put(Direction.UP, ConnectorEnum.ZERO);
+        connectorBattery2.put(Direction.DOWN, ConnectorEnum.ZERO);
+        Battery battery2 = new Battery();
+        battery2.setConnectors(connectorBattery2);
+        ship2.addComponent(battery2, 1,1);
+        StartingCabin start2 = (StartingCabin) ship2.getComponentAt(2, 3);
+        start2.setConnectors(connectorsStartingCabin);
     }
 
     @Test
@@ -170,8 +180,11 @@ class GameModelTest {
             }
         });
 
-        gameModel.calculateScore();
-        assertEquals(, gameModel.getGame().getPlayers().get(0).getScore());
-        assertEquals(, gameModel.getGame().getPlayers().get(1).getScore());
+        Map<Player, Integer> score = gameModel.calculateScore();
+        assertEquals(6, score.get(gameModel.getGame().getPlayers().get(1)));
+        assertEquals(8+4, score.get(gameModel.getGame().getPlayers().get(0)));
+
+        Battery bat = (Battery) ship2.getComponentAt(1,1);
+        ship2.killComponent(bat);
     }
 }
