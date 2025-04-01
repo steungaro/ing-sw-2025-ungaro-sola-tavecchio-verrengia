@@ -10,12 +10,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class RMIServerHandler {
-    private final int port = 1099;
-    boolean registryCreated = false;
-    private int usedPort = 0;
+public class RMIServerHandler extends ServerHandler {
+    private final String ip;
+    private final int port;
 
-
+    public RMIServerHandler(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
     /**
      *  Method to create a registry on a specific port
      * @param port the port on which the registry will be created
