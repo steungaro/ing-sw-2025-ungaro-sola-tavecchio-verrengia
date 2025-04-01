@@ -84,6 +84,19 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
+     * @param username is the username of the player
+     * @return the next player in the list of players that is online
+     * @implNote do not call this method if the player is the last one in the list
+     */
+    private String getNextOnlinePlayer(String username) {
+        return model.getInGamePlayers()
+                .stream()
+                .map(Player::getUsername)
+                .filter(connectedPlayers::contains)
+                .toList()
+                .get(model.getInGamePlayers().indexOf(getPlayerByID(username)) + 1);
+    }
+    /**
      * Handles the card drawing phase of the game
      * Processes the card based on its type
      */
@@ -115,77 +128,54 @@ public class GameController implements GameControllerInterface {
             //TODO: notify players of state change
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 0) {
-            //Applying first automatic effect
-            model.getGame()
-                    .getPlayers()
+            //Applying first automatic effect - offline players are skipped
+            model.getInGamePlayers()
                     .stream()
                     .min(Comparator.comparing(model::getCrew))
                     .ifPresent(p -> {((CombatZone)model.getActiveCard()).EffectLostDays(p, model.getGame());});
 
             //Applying second non-automatic effect
-            currentPlayer = getFirstPlayer();
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_ENGINES;
-            //Null values for the first disconnected players
-            // TODO: check whether this is correct with Cugola
-            while (disconnectedPlayers.contains(currentPlayer)) {
-                activateEngines(currentPlayer, null, null);
-                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
-            }
             //TODO: notify players of state change
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
             //Applying first non-automatic effect
-            currentPlayer = getFirstPlayer();
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_CANNONS;
-            //Null values for the first disconnected players
-            // TODO: check whether this is correct with Cugola
-            while (disconnectedPlayers.contains(currentPlayer)) {
-                activateCannons(currentPlayer, null, null);
-                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
-            }
             //TODO: notify players of state change
 
         } else if (card instanceof Epidemic) {
-            model.getInGamePlayers().forEach(player -> {((Epidemic) card).Effect(player);});
+            model.getInGamePlayers()
+                    .stream()
+                    .filter(player -> !isPlayerDisconnected(player.getUsername()))
+                    .forEach(player -> {((Epidemic) card).Effect(player);});
+            // apply the effect to all online players
             //TODO: notify players of state change
             drawCard();
-            return;
         } else if (card instanceof MeteorSwarm) {
             state = State.FIRING;
             projectiles = new ArrayList<>(((MeteorSwarm) card).getMeteors());
 
-            currentPlayer = getFirstPlayer();;
-            //automatic fires for the first disconnected players
-            //TODO: check whether this is correct with Cugola
-            while (disconnectedPlayers.contains(currentPlayer)) {
-                if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
-                    if (model.heavyMeteorCannon(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst())
-                            .stream()
-                            .noneMatch(cannon -> cannon.getPower() == 1)) {
-                        model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
-                        projectiles.removeFirst();
-                        //TODO: ship validation?
-                    }
-                } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
-                    model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
-                }
-                projectiles.forEach(p -> {model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), p);});
-                currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
-            }
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             //TODO: notify players of state change
 
         } else if (card instanceof OpenSpace) {
             state = State.WAITING_ENGINES;
-            currentPlayer = getFirstPlayer();
-            //TODO: Null values for the first disconnected players?
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             //TODO: notify players of state change
 
         } else if (card instanceof Enemy) {
             state = State.WAITING_CANNONS;
+            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             //TODO: notify players of state change
 
         } else if (card instanceof Stardust) {
-            model.getInGamePlayers().forEach(player -> {((Stardust) card).Effect(player, model.getGame());});
+            model.getInGamePlayers()
+                    .stream()
+                    .filter(player -> !isPlayerDisconnected(player.getUsername()))
+                    .forEach(player -> {((Stardust) card).Effect(player, model.getGame());});
+            // apply the effect to all online players
             //TODO: notify players of state change
             drawCard();
         }
@@ -460,8 +450,12 @@ public class GameController implements GameControllerInterface {
             state = State.WAITING_CANNONS;
             //TODO: notify player of state change
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
-            model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
-            //TODO: catch exception
+            try {
+                model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
+            } catch (InvalidShipException e) {
+                state = State.VALIDATING;
+                //TODO: notify player to validate ship
+            }
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
             state = State.WAITING_SHIELDS;
             //TODO: notify player of state change
@@ -492,7 +486,12 @@ public class GameController implements GameControllerInterface {
         Player player = getPlayerByID(username);
         model.UseShield(player, batteryComp);
         if (shieldComp != null && !projectiles.isEmpty() && !Arrays.stream(shieldComp.getCoveredSides()).toList().contains(projectiles.getFirst().getFireType())) {
-            model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+            try {
+                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
+            } catch (InvalidShipException e) {
+                state = State.VALIDATING;
+                //TODO: notify player to validate ship
+            }
         }
         if (projectiles.size() > 1) {
             projectiles.removeFirst();
@@ -625,12 +624,27 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
+     * @param asker is the username of the player asking for data
+     * @param asked is the username of the player being asked for data
+     * @return player data
+     */
+    @Override
+    public Player getPlayerData(String asker, String asked) {
+        if (asker.equals(asked)) {
+            return getPlayerByID(asker);
+        } else {
+            return getPlayerByID(asked).getPublicData();
+        }
+    }
+
+    /**
      * Sets the color for a specific player
      *
      * @param username Username of the player to update
      * @param color Color to assign to the player
      * @throws IllegalArgumentException if player is not found or color is already taken
      */
+    @Override
     public void setPlayerColor(String username, PlayerColor color) {
         // Check if color is available
         List<PlayerColor> availableColors = getAvailableColors();

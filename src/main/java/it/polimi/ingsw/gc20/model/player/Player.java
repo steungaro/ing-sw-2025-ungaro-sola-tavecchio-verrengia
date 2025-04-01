@@ -28,7 +28,21 @@ public class Player {
         this.inGame = false;
     }
 
-
+    /**
+     * Returns a copy of the player with only public data
+     * @return Player p
+     */
+    public Player getPublicData() {
+        Player p = new Player();
+        p.setColor(this.color);
+        p.setUsername(this.username);
+        p.setShip(this.ship);
+        p.leader = this.leader;
+        p.credits = 0;
+        p.posInBoard = this.posInBoard;
+        p.inGame = this.inGame;
+        return p;
+    }
 
     /** Function that return true if the player is the leader
      * @return Boolean leader
