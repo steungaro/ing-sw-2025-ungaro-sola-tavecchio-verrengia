@@ -74,13 +74,6 @@ public class GameModel {
         return this.activeCard;
     }
 
-    /** private function to init the player used to simplify the start game function
-     *
-     * @param username of the player
-     * @param index of the player to set the color
-     * @return the player initialized
-     */
-
     /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
      *
      * @return list ot the player that need to be moved
@@ -129,6 +122,7 @@ public class GameModel {
         }
         return player;
     }
+
     /**
      * function that starts the game
      * it creates the game, the pile, set the level of the game and create the decks
@@ -910,6 +904,12 @@ public class GameModel {
         p.setGameStatus(false);
     }
 
+    /** Function that auto validate the ship if the player is disconnected
+     * @param p player that is disconnected
+     */
+    public void  autoValidation (Player p){
+        p.getShip().findValid();
+    }
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
 }
