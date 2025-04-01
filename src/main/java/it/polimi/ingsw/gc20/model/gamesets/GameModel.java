@@ -131,10 +131,10 @@ public class GameModel {
     }
     /**
      * function that starts the game
-     * it creates the game, the pile, set the level of the game and create the decks (TODO implement with json)
+     * it creates the game, the pile, set the level of the game and create the decks
      * and board based on the level
      * it also creates the players set the usernames, status, color and ship based on the level
-     * and also add all component to the unviewed list TODO implement with the json
+     * and also add all component to the unviewed list
      * @param level           level of the game
      * @param usernames       list of the players' username
      * @param gameID          id of the game
@@ -148,10 +148,10 @@ public class GameModel {
         //creating the board based on the level
         if (level == 2) {
             board = new NormalBoard();
-            //TODO create and setting the four deck
+            board.createDeck();
         } else {
             board = new LearnerBoard();
-            //TODO create and setting the deck
+            board.createDeck();
         }
 
         //creating the players and initializing the player
@@ -662,7 +662,7 @@ public class GameModel {
     /** function to call when a projectile is fired and hit the ship
      * @param p player who get hit
      * @param diceResult result of the dice throw that indicates the row or column hit
-     * @throws Exception if the ship is invalid
+     * @throws InvalidShipException if the ship is invalid
      * @apiNote controller utilize this methon only if the projectile hit the ship
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
@@ -845,6 +845,62 @@ public class GameModel {
     public List<Projectile> MeteorSwarm (){
         AdventureCard card = getActiveCard();
         return ((MeteorSwarm) card).Effect();
+    }
+
+
+    /**
+     * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
+     */
+    public void initCountdown (){
+        Board board = this.game.getBoard();
+        ((NormalBoard) board).initCountdown();
+    }
+
+    /** function that return the number of time the hourglass has been turned
+     *
+     * @return the number of time the hourglass has been turned
+     */
+    public int getTurnedHourglass() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getTurnedHourglass();
+    }
+
+    /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
+     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     */
+    public void turnHourglass() throws IllegalArgumentException {
+        Board board = this.game.getBoard();
+        ((NormalBoard) board).turnHourglass();
+    }
+
+    /** Function that returns the remaining time
+     * @return The number of seconds left of the current turn
+     */
+    public int getRemainingTime() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getRemainingTime();
+    }
+
+    /** Function that returns the total remaining time
+     * @return int is the number of seconds left
+     */
+    public int getTotalRemainingTime() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getTotalRemainingTime();
+    }
+
+    /** Function that returns a list of the player that are actually in the game
+     * @return List of the player that are in the game
+     */
+    public List<Player> getInGamePlayers () {
+        List<Player> inGamePlayers = new ArrayList<>();
+        game.sortPlayerByPosition();
+        for (Player p : game.getPlayers()) {
+            if (p.isInGame()) {
+                inGamePlayers.add(p);
+            }
+        }
+        return inGamePlayers;
     }
 
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)

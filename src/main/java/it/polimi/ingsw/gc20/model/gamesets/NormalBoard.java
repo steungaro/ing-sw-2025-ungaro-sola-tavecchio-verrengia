@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.gc20.model.components.Component;
 
 import java.util.*;
 
@@ -31,7 +35,7 @@ public class NormalBoard extends Board {
      */
     public void mergeDecks() {
         // deck merging
-        List <AdventureCard> deck = this.getDeck();
+        List <AdventureCard> deck = new ArrayList<>();
         deck.addAll(this.firstVisible);
         deck.addAll(this.secondVisible);
         deck.addAll(this.thirdVisible);
@@ -46,6 +50,7 @@ public class NormalBoard extends Board {
                 break;
             }
         }
+        this.setDeck(deck);
     }
 
     /** function that peek the numDeck deck and returns it
@@ -63,10 +68,70 @@ public class NormalBoard extends Board {
     }
 
     /** function that creates the decks
-     * @param n number of deck to create
+     *
      */
-    public void createDeck(Integer n) {
-        // TODO implement here
+    public void createDeck() {
+        List<AdventureCard> level1Cards = new ArrayList<>();
+        List<AdventureCard> level2Cards = new ArrayList<>();
+        List<AdventureCard> cards = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        try {
+
+            cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (AdventureCard card : cards) {
+            if (card.getLevel() == 1 || card.getLevel() == 0) {
+                level1Cards.add(card);
+            } else {
+                level2Cards.add(card);
+            }
+        }
+        Collections.shuffle(level1Cards);
+        Collections.shuffle(level2Cards);
+
+        //First deck
+        for (int i = 0; i < 2; i++) {
+            this.firstVisible.add(level2Cards.removeFirst());
+        }
+        this.firstVisible.add(level1Cards.removeFirst());
+
+        //Second deck
+        for (int i = 0; i < 2; i++) {
+            this.secondVisible.add(level2Cards.removeFirst());
+        }
+        this.secondVisible.add(level1Cards.removeFirst());
+
+        //Third deck
+        for (int i = 0; i < 2; i++) {
+            this.thirdVisible.add(level2Cards.removeFirst());
+        }
+        this.thirdVisible.add(level1Cards.removeFirst());
+
+        //Invisible deck
+        for (int i = 0; i < 2; i++) {
+            this.invisible.add(level2Cards.removeFirst());
+        }
+        this.invisible.add(level1Cards.removeFirst());
+
+    }
+
+    /** getter funcion for one of the four decks
+     * @param numDeck the deck to get
+     * @return List<AdventureCard>
+     * @throws IllegalArgumentException if numDeck is not 1, 2, 3 or 4
+     */
+    public List<AdventureCard> getDeck(Integer numDeck) {
+        return switch (numDeck) {
+            case 1 -> this.firstVisible;
+            case 2 -> this.secondVisible;
+            case 3 -> this.thirdVisible;
+            case 4 -> this.invisible;
+            default -> throw new IllegalArgumentException("Invalid numDeck");
+        };
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)

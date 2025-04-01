@@ -19,5 +19,6 @@ public enum State {
     WAITING_SHIELDS, // meteroswarm, combatzone, pirates
     WAITING_SMUGGLERS,
     FIRING,
+    PAUSED,
     ENDGAME
 }

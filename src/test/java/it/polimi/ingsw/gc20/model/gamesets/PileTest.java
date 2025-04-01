@@ -45,7 +45,7 @@ public class PileTest {
     }
 
     @Test
-    void testGetAndAddAndRemoveUnviewed(){
+    void testGetAndAddAndRemoveViewed(){
         pile.addViewed(component3);
         pile.addViewed(component1);
         assertTrue(pile.getViewed().contains(component1));

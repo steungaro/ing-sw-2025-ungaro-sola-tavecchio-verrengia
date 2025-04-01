@@ -144,6 +144,9 @@ class NormalShipTest {
         // Test getting cannons in a direction with no cannons
         List<Cannon> leftCannons = ship.getCannons(Direction.LEFT, 3);
         assertTrue(leftCannons.isEmpty(), "The list should be empty");
+
+        List<Cannon> nonecannons = ship.getCannons(Direction.RIGHT, 3);
+        assertFalse(nonecannons.isEmpty(), "The list should not contain cannons");
     }
 
     @Test

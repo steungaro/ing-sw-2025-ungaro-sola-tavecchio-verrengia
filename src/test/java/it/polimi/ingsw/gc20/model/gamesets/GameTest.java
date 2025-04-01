@@ -89,8 +89,30 @@ public class GameTest {
         assertEquals(game.getPlayers(), players);
     }
 
+
     @Test
-    void testMove (){
+    void isOccupied (){
+        player1.setPosition(10);
+        player2.setPosition(0);
+        player3.setPosition(8);
+        player4.setPosition(7);
+        player4.setGameStatus(true);
+        player1.setGameStatus(true);
+        player2.setGameStatus(true);
+        player3.setGameStatus(true);
+        game.addPlayer(player4);
+        game.addPlayer(player3);
+        game.addPlayer(player2);
+        game.addPlayer(player1);
+
+        assertTrue (game.isOccupied(24));
+        assertTrue (game.isOccupied(10));
+        assertTrue (game.isOccupied(8));
+        assertTrue (game.isOccupied(7));
+        assertFalse (game.isOccupied(6));
+    }
+    @Test
+    void testMove1 (){
         player1.setPosition(10);
         player2.setPosition(9);
         player3.setPosition(8);
@@ -104,11 +126,25 @@ public class GameTest {
         game.addPlayer(player2);
         game.addPlayer(player1);
 
+
         assertTrue (game.isOccupied(8));
         game.move(player4, 2);
         assertEquals(player4.getPosition(), 11);
         game.sortPlayerByPosition();
         assertEquals(game.getPlayers().get(0), player4);
+    }
+
+    @Test
+    void testMove2 (){
+        player1.setPosition(22);
+        player2.setPosition(0);
+        player1.setGameStatus(true);
+        player2.setGameStatus(true);
+
+        game.addPlayer(player2);
+        game.addPlayer(player1);
+        game.move(player1, 2);
+        assertEquals(player1.getPosition(), 25);
     }
 
     @Test

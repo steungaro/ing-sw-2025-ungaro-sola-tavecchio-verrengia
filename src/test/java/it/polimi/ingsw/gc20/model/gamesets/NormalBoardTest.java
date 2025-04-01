@@ -29,8 +29,21 @@ public class NormalBoardTest {
     }
 
     @Test
+    void testDeck (){
+        board.createDeck();
+        for (int i = 0; i< 3; i++){
+            assertNotNull (board.getDeck(1).get(i));
+            assertNotNull (board.getDeck(2).get(i));
+            assertNotNull (board.getDeck(3).get(i));
+            assertNotNull (board.getDeck(4).get(i));
+        }
+    }
+    @Test
     //not testable until we have the method to create the four deck
     void testMergeDecks (){
+        board.createDeck();
+        board.mergeDecks();
+        assertEquals(12, board.getDeck().size());
     }
 
     @Test

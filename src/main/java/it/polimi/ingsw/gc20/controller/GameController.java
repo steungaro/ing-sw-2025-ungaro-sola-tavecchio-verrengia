@@ -17,6 +17,7 @@ import java.util.*;
 public class GameController {
     private final GameModel model;
     private State state;
+    private State pausedState;
     private final String gameID;
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
@@ -590,26 +591,23 @@ public class GameController {
      * @throws IllegalArgumentException if player with given username is not found
      */
     public void disconnectPlayer(String username) {
-        // Find player with matching username
-        Player exitingPlayer = null;
-        for (Player p : model.getGame().getPlayers()) {
-            if (p.getUsername().equals(username)) {
-                exitingPlayer = p;
-                connectedPlayers.remove(username);
-                break;
-            }
-        }
-
-        if (exitingPlayer == null) {
+        if(!connectedPlayers.contains(username)) {
             throw new IllegalArgumentException("Player not found in game");
         }
-
-        // Add player to disconnected list if not already there
-        if (!disconnectedPlayers.contains(username)) {
-            disconnectedPlayers.add(username);
+        connectedPlayers.remove(username);
+        disconnectedPlayers.add(username);
+        if(!isGameValid()){
+            pauseGame();
         }
+    }
 
-        // Player remains in the game model but is marked as disconnected
+    public boolean isGameValid() {
+        return connectedPlayers.size() > 1;
+    }
+
+    public void pauseGame() {
+        pausedState = state;
+        state = State.PAUSED;
     }
 
     /**
@@ -621,20 +619,24 @@ public class GameController {
      */
     public boolean reconnectPlayer(String username) {
         // Check if player was originally in this game
-        if (!connectedPlayers.contains(username)) {
+        if (!disconnectedPlayers.contains(username)) {
             throw new IllegalArgumentException("Player was never part of this game");
         }
-
-        // Check if player is in the disconnected list
-        if (!disconnectedPlayers.contains(username)) {
-            return false; // Player isn't disconnected, nothing to do
+        if(connectedPlayers.size() == 1){
+            state = pausedState;
         }
-
         // Remove player from disconnected list
         disconnectedPlayers.remove(username);
-
-        // Player data is still in the model, so no need to recreate
+        connectedPlayers.add(username);
         return true;
+    }
+
+    public void forfeitGame(String username){
+        if(!connectedPlayers.contains(username)) {
+            throw new IllegalArgumentException("Player not found in game");
+        }
+        connectedPlayers.remove(username);
+        //TODO: calculate player score?
     }
 
     /**
@@ -952,5 +954,6 @@ public class GameController {
             drawCard();
         }
     }
-        
+
+
 }

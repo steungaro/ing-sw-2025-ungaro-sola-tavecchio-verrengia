@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc20.model.gamesets;
 
 import it.polimi.ingsw.gc20.model.cards.AbandonedShip;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.model.cards.Planet;
+import it.polimi.ingsw.gc20.model.cards.Planets;
 import it.polimi.ingsw.gc20.model.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,24 @@ public class LearnerBoardTest {
         assertNotNull (board.getStallBox());
     }
 
+    @Test
+    void testDeck (){
+        board.createDeck();
+        assertNotNull(board.getDeck());
+        assertEquals (8, board.getDeck().size());
+        for (AdventureCard card : board.getDeck()){
+            assertNotNull(card);
+            if (card instanceof Planets){
+                assertNotNull(((Planets) card).getPlanets());
+                for (Planet planet : ((Planets) card).getPlanets()){
+                    assertNotNull(planet);
+                    assertNotNull(planet.getReward());
+                    assertTrue (planet.getAvailable());
+                }
+            }
+            assertEquals(0, card.getLevel());
+        }
+    }
     @Test
     void testDrawCardAndSetAndGetDeck (){
         card = new AbandonedShip();
