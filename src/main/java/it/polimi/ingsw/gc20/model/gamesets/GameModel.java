@@ -569,21 +569,19 @@ public class GameModel {
 
     /**
      * method to calculate the score of the players
-     * TODO add conditions if two player have the same number of connector exposed both get the reward
      *
+     * @return map of the player and the score
      */
     public Map<Player, Integer> calculateScore() {
         Map<Player, Integer> score = new HashMap<>();
         game.sortPlayerByPosition();
         int min = 0;
         int waste;
-        Player g=game.getPlayers().getFirst();
         int points=4;
         for (Player p : game.getPlayers()) {
             if (p.isInGame()) {
                 if (min > p.getShip().getAllExposed() || min == 0) {
                     min = p.getShip().getAllExposed();
-                    g = p;
                 }
                 if (level == 2) {
                     score.put(p, points * 2);
@@ -601,11 +599,13 @@ public class GameModel {
                 score.put (p, score.get(p) + color.value()*quantity);
             }
         }
-        if (g.isInGame()) {
-            if (level == 2) {
-                score.put(g, score.get(g) + 4);
-            } else {
-                score.put(g, score.get(g) + 2);
+        for (Player g : game.getPlayers()) {
+            if (g.getShip().getAllExposed() == min && g.isInGame()) {
+                if (level == 2) {
+                    score.put(g, score.get(g) + 4);
+                } else {
+                    score.put(g, score.get(g) + 2);
+                }
             }
         }
         return score;
@@ -911,8 +911,6 @@ public class GameModel {
     }
 
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
-    //TODO metodi per gestione sceglie di ritirarsi (nel controller)
-    //TODO gestione creazione dei deck (da vedere con json)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
 }
 
