@@ -102,31 +102,96 @@ class CombatZoneTest {
     @Test
     void effectLostCargo() {
         CombatZone combatZone = new CombatZone();
-        combatZone.setLostCargo(2);
+        combatZone.setLostCargo(1);
 
         Player player1 = new Player();
         player1.setShip(ship);
 
         List<CargoHold> cargoHolds = new ArrayList<>();
 
-        CargoHold cargoHold2 = new CargoHold();
-        cargoHolds.add(cargoHold);
-        cargoHold2.setSlots(3);
+        //cargoHolds.add(cargoHold);
 
-        List<CargoColor> cargo = new ArrayList<>();
-        cargo.add(CargoColor.BLUE);
-        cargo.add(CargoColor.GREEN);
-        cargo.add(CargoColor.YELLOW);
-        cargoHold2.setCargoHeld(cargo);
+        CargoHold cargoHold2 = new CargoHold();
+        cargoHold2.setSlots(3);
+        ship.loadCargo(CargoColor.BLUE, cargoHold2);
+        ship.loadCargo(CargoColor.GREEN, cargoHold2);
 
         cargoHolds.add(cargoHold2);
 
         combatZone.EffectLostCargo(player1, cargoHolds);
 
-        assertEquals(1, cargoHold2.getCargoHeld().size());
+        assertEquals(0, cargoHold2.getCargoHeld().get(CargoColor.BLUE));
     }
 
     @Test
     void effectCannonFire() {
+        CombatZone combatZone = new CombatZone();
+        List<Projectile> cannonFire = new ArrayList<>();
+        cannonFire.add(new Projectile());
+        combatZone.setCannonFire(cannonFire);
+        assertEquals(cannonFire, combatZone.getCannonFire());
+    }
+
+    @Test
+    void setLostDays() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostDays(2);
+        assertEquals(2, combatZone.getLostDays());
+    }
+
+    @Test
+    void getLostDays() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostDays(2);
+        assertEquals(2, combatZone.getLostDays());
+    }
+
+    @Test
+    void getLostCargo() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostCargo(2);
+        assertEquals(2, combatZone.getLostCargo());
+    }
+
+    @Test
+    void setLostCargo() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostCargo(2);
+        assertEquals(2, combatZone.getLostCargo());
+    }
+
+    @Test
+    void setCannonFire() {
+        CombatZone combatZone = new CombatZone();
+        List<Projectile> cannonFire = new ArrayList<>();
+        cannonFire.add(new Projectile());
+        combatZone.setCannonFire(cannonFire);
+        assertEquals(cannonFire, combatZone.getCannonFire());
+    }
+
+    @Test
+    void getCannonFire() {
+        CombatZone combatZone = new CombatZone();
+        List<Projectile> cannonFire = new ArrayList<>();
+        cannonFire.add(new Projectile());
+        combatZone.setCannonFire(cannonFire);
+        assertEquals(cannonFire, combatZone.getCannonFire());
+    }
+
+    @Test
+    void setLostCrew() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostCrew(2);
+        assertEquals(2, combatZone.getLostCrew());
+    }
+
+    @Test
+    void combatType() {
+        CombatZone combatZone = new CombatZone();
+        combatZone.setLostCrew(2);
+        assertEquals(1, combatZone.combatType());
+
+        combatZone.setLostCrew(0);
+        assertEquals(0, combatZone.combatType());
     }
 }

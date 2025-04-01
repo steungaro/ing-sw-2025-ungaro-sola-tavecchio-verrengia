@@ -80,7 +80,11 @@ public abstract class Ship {
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
-            power += cannon.getPower();
+            if (cannon.getOrientation() == Direction.UP)
+                power += cannon.getPower();
+            else {
+                power += cannon.getPower() / 2;
+            }
         }
         return power;
     }
@@ -468,6 +472,7 @@ public abstract class Ship {
                 Component c = getComponentAt(i, j);
                 if (c instanceof Cabin && !((Cabin) c).getAlien()){
                     ((Cabin) c).setAstronauts(2);
+                    astronauts += 2;
                 }
             }
         }

@@ -27,9 +27,6 @@ public class Tile {
         component = null;
     }
 
-    public void killComponent() {
-    }
-
     /**
      * @return component
      */
@@ -40,10 +37,13 @@ public class Tile {
     /**
      * @param c Component
      */
-    public void addComponent(Component c) {
+    public void addComponent(Component c) throws IllegalArgumentException {
         if(availability) {
             this.component = c;
             c.setTile(this);
+            this.availability = false;
+        } else {
+            throw new IllegalArgumentException("Tile is not available");
         }
     }
 

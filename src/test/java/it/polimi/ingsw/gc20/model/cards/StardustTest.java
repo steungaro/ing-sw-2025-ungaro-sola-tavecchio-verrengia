@@ -1,12 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -14,7 +12,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProjectileTest {
+class StardustTest {
 
     private NormalShip ship;
     private Cannon upCannon, downCannon;
@@ -25,8 +23,8 @@ class ProjectileTest {
     private Player player1;
     private Game game;
 
-    @BeforeEach
-    void setUp(){
+    @Test
+    void effect() {
         // Create a new NormalShip
         ship = new NormalShip();
 
@@ -126,67 +124,16 @@ class ProjectileTest {
         start.setConnectors(connectorsStartingCabin);
 
         ship.initAstronauts();
-    }
 
-    @Test
-    void fire() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
+        Stardust stardust = new Stardust();
+        Player player = new Player();
+        player.setShip(ship);
+        Game game = new Game();
+        player.setPosition(10);
 
-        // Set the direction and fire type
-        projectile.setDirection(Direction.UP);
-        projectile.setFireType(FireType.HEAVY_FIRE);
+        int allExposed = ship.getAllExposed();
 
-        // Fire the projectile at the ship
-        projectile.Fire(ship, 6);
-
-    }
-
-    @Test
-    void setDirection() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the direction
-        projectile.setDirection(Direction.UP);
-
-        // Assert that the direction is set correctly
-        assertEquals(Direction.UP, projectile.getDirection());
-    }
-
-    @Test
-    void setFireType() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the fire type
-        projectile.setFireType(FireType.HEAVY_FIRE);
-
-        // Assert that the fire type is set correctly
-        assertEquals(FireType.HEAVY_FIRE, projectile.getFireType());
-    }
-
-    @Test
-    void getDirection() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the direction
-        projectile.setDirection(Direction.UP);
-
-        // Assert that the direction is set correctly
-        assertEquals(Direction.UP, projectile.getDirection());
-    }
-
-    @Test
-    void getFireType() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the fire type
-        projectile.setFireType(FireType.HEAVY_FIRE);
-
-        // Assert that the fire type is set correctly
-        assertEquals(FireType.HEAVY_FIRE, projectile.getFireType());
+        stardust.Effect(player, game);
+        assertEquals(10-allExposed, player.getPosition());
     }
 }

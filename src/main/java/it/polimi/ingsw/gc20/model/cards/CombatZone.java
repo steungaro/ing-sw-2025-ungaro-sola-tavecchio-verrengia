@@ -81,6 +81,10 @@ public class CombatZone extends AdventureCard {
         this.lostCrew = lostCrew;
     }
 
+    public int getLostCrew() {
+        return lostCrew;
+    }
+
     /**
      * @return the type of combat
      * @implNote if the card has lostCrew > 0, the method returns 1, else 0

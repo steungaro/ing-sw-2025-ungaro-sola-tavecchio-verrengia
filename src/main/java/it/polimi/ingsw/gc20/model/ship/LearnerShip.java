@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import it.polimi.ingsw.gc20.model.components.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author GC20
  */
@@ -27,9 +31,15 @@ public class LearnerShip extends Ship {
         table[1][4].setAvailability(false);
         table[4][2].setAvailability(false);
 
-        table[2][2].setAvailability(false);
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
+        sc.setConnectors(connectors);
         table[2][2].addComponent(sc);
+        table[2][2].setAvailability(false);
     }
 
     /**
@@ -111,10 +121,10 @@ public class LearnerShip extends Ship {
                     doubleCannonsPower -= 2;
                 }
             }else{
-                if(((Cannon) c).getPower() == 1) {
+                if(((Cannon) c).getPower() == 2) {
                     doubleCannons--;
                     doubleCannonsPower--;
-                }else if(((Cannon) c).getPower() == 0.5f){
+                }else if(((Cannon) c).getPower() == 1){
                     singleCannonsPower -= 0.5f;
                 }
             }
@@ -129,7 +139,10 @@ public class LearnerShip extends Ship {
         } else if (c instanceof Cabin) {
             astronauts -= ((Cabin) c).getOccupants();
         } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> cargos.put(k, cargos.get(k) - v));
+            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
+                Integer current = cargos.getOrDefault(k, 0);
+                cargos.put(k, current - v);
+            });
         }
     }
 }

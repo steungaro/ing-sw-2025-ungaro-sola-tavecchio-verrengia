@@ -28,7 +28,13 @@ public class NormalShip extends Ship {
         table[1][6].setAvailability(false);
         table[4][3].setAvailability(false);
 
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
+        sc.setConnectors(connectors);
         addComponent(sc, 2, 3);
         table[2][3].setAvailability(false);
     }
@@ -47,11 +53,11 @@ public class NormalShip extends Ship {
     /**
      * if a brown/purple alien is present in the ship
      */
-    private Boolean brownAlien;
+    private Boolean brownAlien = false;
 
-    private Boolean purpleAlien;
+    private Boolean purpleAlien = false;
 
-    private AlienColor colorHostable;
+    private AlienColor colorHostable = AlienColor.NONE;
 
     public AlienColor getColorHostable() {
         return colorHostable;
@@ -155,7 +161,11 @@ public class NormalShip extends Ship {
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
-            power += cannon.getPower();
+            if (cannon.getOrientation() == Direction.UP)
+                power += cannon.getPower();
+            else {
+                power += cannon.getPower() / 2;
+            }
         }
         return power + (purpleAlien ? 2 : 0);
     }
@@ -325,11 +335,15 @@ public class NormalShip extends Ship {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             updateParametersSet(c);
-            c.setTile(table[row][col]);
         }
+        else
+            throw new IllegalArgumentException("Invalid position");
     }
 
     public void removeAlien(Cabin c) {
+        if(!c.getAlien()) {
+            throw new IllegalArgumentException("No alien in the cabin");
+        }
         unloadCrew(c);
     }
 
@@ -375,7 +389,10 @@ public class NormalShip extends Ship {
                 ((Cabin) c).setAstronauts(0);
             }
         } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> cargos.put(k, cargos.get(k) - v));
+            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
+                Integer current = cargos.getOrDefault(k, 0);
+                cargos.put(k, current - v);
+            });
         } else if (c instanceof LifeSupport) {
             updateLifeSupportRemoved(c);
         }

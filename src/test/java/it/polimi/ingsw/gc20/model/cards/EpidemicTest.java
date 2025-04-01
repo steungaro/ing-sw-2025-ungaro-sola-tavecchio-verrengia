@@ -1,32 +1,28 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
-import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
+import it.polimi.ingsw.gc20.model.ship.Ship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProjectileTest {
-
+class EpidemicTest {
     private NormalShip ship;
     private Cannon upCannon, downCannon;
     private Engine singleEngine, doubleEngine;
     private Battery battery;
     private Cabin Cabin1;
     private CargoHold cargoHold;
-    private Player player1;
-    private Game game;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         // Create a new NormalShip
         ship = new NormalShip();
 
@@ -51,10 +47,9 @@ class ProjectileTest {
 
         Cabin1 = new Cabin();
         Cabin1.setColor(AlienColor.NONE);
-        Cabin1.setAstronauts(2);
 
         cargoHold = new CargoHold();
-        cargoHold.setSlots(2);
+        cargoHold.setSlots(3);
         cargoHold.loadCargo(CargoColor.BLUE);
         cargoHold.loadCargo(CargoColor.GREEN);
 
@@ -129,64 +124,15 @@ class ProjectileTest {
     }
 
     @Test
-    void fire() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
+    void effect() {
+        Epidemic card = new Epidemic();
+        Player player = new Player();
+        player.setShip(ship);
+        int startingCabinAstro = ((Cabin) ship.getComponentAt(2,3)).getAstronauts();
+        int cabin1Astro = Cabin1.getAstronauts();
 
-        // Set the direction and fire type
-        projectile.setDirection(Direction.UP);
-        projectile.setFireType(FireType.HEAVY_FIRE);
-
-        // Fire the projectile at the ship
-        projectile.Fire(ship, 6);
-
-    }
-
-    @Test
-    void setDirection() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the direction
-        projectile.setDirection(Direction.UP);
-
-        // Assert that the direction is set correctly
-        assertEquals(Direction.UP, projectile.getDirection());
-    }
-
-    @Test
-    void setFireType() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the fire type
-        projectile.setFireType(FireType.HEAVY_FIRE);
-
-        // Assert that the fire type is set correctly
-        assertEquals(FireType.HEAVY_FIRE, projectile.getFireType());
-    }
-
-    @Test
-    void getDirection() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the direction
-        projectile.setDirection(Direction.UP);
-
-        // Assert that the direction is set correctly
-        assertEquals(Direction.UP, projectile.getDirection());
-    }
-
-    @Test
-    void getFireType() {
-        // Create a new Projectile
-        Projectile projectile = new Projectile();
-
-        // Set the fire type
-        projectile.setFireType(FireType.HEAVY_FIRE);
-
-        // Assert that the fire type is set correctly
-        assertEquals(FireType.HEAVY_FIRE, projectile.getFireType());
+        card.Effect(player);
+        assertEquals(startingCabinAstro-1, ((Cabin) ship.getComponentAt(2,3)).getAstronauts());
+        assertEquals(cabin1Astro-1, Cabin1.getAstronauts());
     }
 }
