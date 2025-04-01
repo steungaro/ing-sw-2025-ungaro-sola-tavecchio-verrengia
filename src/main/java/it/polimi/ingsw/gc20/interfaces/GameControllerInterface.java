@@ -21,6 +21,7 @@ public interface GameControllerInterface {
     boolean isPlayerDisconnected(String username);
     void setPlayerColor(String username, PlayerColor color);
     List<PlayerColor> getAvailableColors();
+    Player getPlayerData(String username);
 
     // Game state
     State getState();
