@@ -903,6 +903,13 @@ public class GameModel {
         return inGamePlayers;
     }
 
+    /** Function that set the player status to false if the choose to give up
+     * @param p player that choose to give up
+     */
+    public void giveUp (Player p) {
+        p.setGameStatus(false);
+    }
+
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO metodi per gestione sceglie di ritirarsi (nel controller)
     //TODO gestione creazione dei deck (da vedere con json)
