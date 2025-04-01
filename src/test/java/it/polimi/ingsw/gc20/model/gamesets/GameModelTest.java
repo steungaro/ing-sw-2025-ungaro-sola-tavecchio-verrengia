@@ -23,7 +23,7 @@ class GameModelTest {
         players.add("player2");
     }
 
-    private NormalShip ship;
+    private NormalShip ship, ship2;
     private Cannon upCannon, downCannon;
     private Engine singleEngine, doubleEngine;
     private Battery battery;
@@ -34,6 +34,7 @@ class GameModelTest {
     void setUp2() {
         // Create a new NormalShip
         ship = new NormalShip();
+        ship2 = new NormalShip();
 
         // Create components
         upCannon = new Cannon();
@@ -71,6 +72,15 @@ class GameModelTest {
         ship.addComponent(battery, 2, 2);
         ship.addComponent(Cabin1, 2, 4);
         ship.addComponent(cargoHold, 1, 2);
+
+        ship2.addComponent(upCannon, 1, 3);
+        ship2.addComponent(downCannon, 3, 3);
+        ship2.addComponent(singleEngine, 3, 2);
+        ship2.addComponent(doubleEngine, 3, 4);
+        ship2.addComponent(battery, 2, 2);
+        ship2.addComponent(Cabin1, 2, 4);
+        ship2.addComponent(cargoHold, 1, 2);
+
 
         // Setting the connectors
         Map<Direction, ConnectorEnum> connectorsCargoHold = new HashMap<>();
@@ -129,6 +139,8 @@ class GameModelTest {
         connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.D);
         StartingCabin start = (StartingCabin) ship.getComponentAt(2, 3);
         start.setConnectors(connectorsStartingCabin);
+
+        Map<Direction, ConnectorEnum> connectorsStartingCabin2 = new HashMap<>();
     }
 
     @Test
@@ -141,15 +153,25 @@ class GameModelTest {
     @Test
     void calculateScore() {
         gameModel.startGame(level, players, gameId);
-        player1
+
 
         gameModel.getGame().getPlayers().forEach(player -> {
-
-        })
+            if(player.getUsername().equals("player1")) {
+                player.setShip(ship);
+                player.setPosition(10);
+                int expConn = ship.getAllExposed();
+                int waste = ship.getWaste().size();
+            }
+            if(player.getUsername().equals("player2")) {
+                player.setShip(ship2);
+                player.setPosition(20);
+                int expConn2 = ship2.getAllExposed();
+                int waste2 = ship2.getWaste().size();
+            }
+        });
 
         gameModel.calculateScore();
-
-        assertEquals(10, gameModel.getGame().getPlayer("player1").getCredits());
-        assertEquals(20, gameModel.getGame().getPlayer("player2").getCredits());
+        assertEquals(, gameModel.getGame().getPlayers().get(0).getScore());
+        assertEquals(, gameModel.getGame().getPlayers().get(1).getScore());
     }
 }
