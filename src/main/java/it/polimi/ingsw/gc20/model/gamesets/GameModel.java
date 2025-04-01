@@ -134,7 +134,7 @@ public class GameModel {
      * it creates the game, the pile, set the level of the game and create the decks
      * and board based on the level
      * it also creates the players set the usernames, status, color and ship based on the level
-     * and also add all component to the unviewed list
+     * and also add all component to the unViewed list
      * @param level           level of the game
      * @param usernames       list of the players' username
      * @param gameID          id of the game
@@ -177,12 +177,12 @@ public class GameModel {
     }
 
     /**
-     * function when a component is taken from the unviewed list
-     * it removes the component from the unviewed list
-     * TODO understand whether the chosen component should be returned to the controller
+     * function when a component is taken from the unViewed list
+     * it removes the component from the unViewed list
+     *
      *
      * @param c component to remove
-     * @throws NoSuchElementException if the component is not present in the unviewed list
+     * @throws NoSuchElementException if the component is not present in the unViewed list
      */
     public void componentFromUnviewed(Component c) throws NoSuchElementException {
         game.getPile().removeUnviewed(c);
@@ -491,7 +491,7 @@ public class GameModel {
     }
 
     /**
-     * method to move or remove a cargo from the ship if the to cargoHold is null
+     * method to move or remove a cargo from the ship if the cargoHold to is null
      * @param c    cargo to move
      * @param from cargoHold from
      * @param to   cargoHold to
@@ -663,7 +663,7 @@ public class GameModel {
      * @param p player who get hit
      * @param diceResult result of the dice throw that indicates the row or column hit
      * @throws InvalidShipException if the ship is invalid
-     * @apiNote controller utilize this methon only if the projectile hit the ship
+     * @apiNote controller utilize this method only if the projectile hit the ship
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
         Component c;
