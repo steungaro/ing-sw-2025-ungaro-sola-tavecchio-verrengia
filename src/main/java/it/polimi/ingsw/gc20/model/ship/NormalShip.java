@@ -107,6 +107,8 @@ public class NormalShip extends Ship {
             booked[0]=c;
         } else if (booked[1] == null) {
             booked[1]=c;
+        } else {
+            throw new IllegalArgumentException("Already 2 booked components");
         }
     }
 

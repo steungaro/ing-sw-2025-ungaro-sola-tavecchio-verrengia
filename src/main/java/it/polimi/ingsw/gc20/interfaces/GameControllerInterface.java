@@ -1,0 +1,69 @@
+package it.polimi.ingsw.gc20.interfaces;
+
+import it.polimi.ingsw.gc20.controller.*;
+import it.polimi.ingsw.gc20.exceptions.*;
+import it.polimi.ingsw.gc20.model.cards.*;
+import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.model.player.*;
+import it.polimi.ingsw.gc20.model.gamesets.*;
+
+import java.util.List;
+import java.util.Map;
+
+public interface GameControllerInterface {
+
+    // Player management
+    void giveUp(String username);
+    void disconnectPlayer(String username);
+    boolean reconnectPlayer(String username);
+    List<String> getAllUsernames();
+    List<String> getDisconnectedPlayers();
+    boolean isPlayerDisconnected(String username);
+    void setPlayerColor(String username, PlayerColor color);
+    List<PlayerColor> getAvailableColors();
+    Player getPlayerData(String asker, String asked);
+
+    // Game state
+    State getState();
+    Map<Player, Integer> getPlayerScores();
+
+    // Ship assembly
+    //TODO: maybe group take/place methods into generic ones with a type parameter
+    Component takeComponentFromUnviewed(String username, Component component);
+    Component takeComponentFromViewed(String username, Component component);
+    Component takeComponentFromBooked(String username, Component component);
+    void addComponentToBooked(String username, Component component);
+    void addComponentToViewed(Component component);
+    void placeComponent(String username, Component component, int x, int y);
+
+    //TODO: maybe group rotate methods into generic ones with a type parameter
+    void rotateComponentClockwise(Component component);
+    void rotateComponentCounterclockwise(Component component);
+
+    void stopAssembling(String username, int position);
+    List<AdventureCard> peekDeck(String username, int num);
+    int getHourglassTime(String username);
+    void turnHourglass(String username) throws HourglassException;
+
+    // Ship validating
+    boolean validateShip(String username);
+    void removeComponentFromShip(String username, Component component);
+    void addAlien(String username, AlienColor color, Cabin cabin);
+    void initShip(String username);
+
+    // Gameplay
+    AdventureCard getActiveCard();
+    void landOnPlanet(String username, int planetIndex);
+    void loadCargo(String username, CargoColor loaded, CargoHold ch);
+    void unloadCargo(String username, CargoColor lost, CargoHold ch);
+    void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to);
+    void acceptCard(String username);
+    void loseCrew(String username, List<Cabin> cabins);
+    void endMove(String username);
+
+    // Activate ship components
+    void activateEngines(String username, List<Engine> engines, List<Battery> batteries);
+    void activateShield(String username, Shield shield, Battery battery);
+    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries);
+    int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries);
+}
