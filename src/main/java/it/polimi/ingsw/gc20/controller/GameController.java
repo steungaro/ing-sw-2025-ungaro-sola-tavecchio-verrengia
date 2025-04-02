@@ -32,6 +32,7 @@ public class GameController implements GameControllerInterface {
 
     private List<CargoColor> cargoGained;
     private int cargoLost;
+    private Map<String, Float> declaredForFight;
     private List<Projectile> projectiles;
 
     /**
@@ -89,6 +90,9 @@ public class GameController implements GameControllerInterface {
      * @implNote do not call this method if the player is the last one in the list
      */
     private String getNextOnlinePlayer(String username) {
+        if (model.getInGamePlayers().getLast().getUsername().equals(username)) {
+            return null;
+        }
         return model.getInGamePlayers()
                 .stream()
                 .map(Player::getUsername)
@@ -96,6 +100,7 @@ public class GameController implements GameControllerInterface {
                 .toList()
                 .get(model.getInGamePlayers().indexOf(getPlayerByID(username)) + 1);
     }
+
     /**
      * Handles the card drawing phase of the game
      * Processes the card based on its type
@@ -132,17 +137,19 @@ public class GameController implements GameControllerInterface {
             model.getInGamePlayers()
                     .stream()
                     .min(Comparator.comparing(model::getCrew))
-                    .ifPresent(p -> {((CombatZone)model.getActiveCard()).EffectLostDays(p, model.getGame());});
+                    .ifPresent(p -> {((CombatZone)getActiveCard()).EffectLostDays(p, model.getGame());});
 
             //Applying second non-automatic effect
             currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_ENGINES;
+            declaredForFight = new HashMap<>();
             //TODO: notify players of state change
 
         } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
             //Applying first non-automatic effect
             currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
             state = State.WAITING_CANNONS;
+            declaredForFight = new HashMap<>();
             //TODO: notify players of state change
 
         } else if (card instanceof Epidemic) {
@@ -291,13 +298,13 @@ public class GameController implements GameControllerInterface {
      * @apiNote To be used after accepting an abandoned ship
      */
     private void abandonedShip(String username, List<Cabin> cabins) {
-        if (state != State.WAITING_CREW && model.getActiveCard() instanceof AbandonedShip) {
+        if (state != State.WAITING_CREW && getActiveCard() instanceof AbandonedShip) {
             throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
         }
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
-        if (model.getCrew(getPlayerByID(username)) < ((AbandonedShip)model.getActiveCard()).getLostCrew()) {
+        if (model.getCrew(getPlayerByID(username)) < ((AbandonedShip)getActiveCard()).getLostCrew()) {
             throw new IllegalStateException("Cannot abandon ship with insufficient crew");
         }
         Player player = getPlayerByID(username);
@@ -312,7 +319,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the player does not have enough crew to invade the station
      */
     private void abandonedStation(String username) {
-        AbandonedStation card = (AbandonedStation) model.getActiveCard();
+        AbandonedStation card = (AbandonedStation) getActiveCard();
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
@@ -322,6 +329,7 @@ public class GameController implements GameControllerInterface {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
         state = State.WAITING_CARGO_GAIN;
+        getActiveCard().playCard();
         cargoGained = model.AbandonedStation(getPlayerByID(username));
     }
 
@@ -344,26 +352,54 @@ public class GameController implements GameControllerInterface {
         Player player = getPlayerByID(username);
         float firePower =  model.FirePower(player, new HashSet<>(cannons), batteries);
 
-        if(firePower > ((Enemy) model.getActiveCard()).getFirePower()){
-            model.getActiveCard().playCard();
+        if(firePower > ((Enemy) getActiveCard()).getFirePower()){
+            getActiveCard().playCard();
             state = State.WAITING_ACCEPTANCE;
             //TODO notify player of state change
             return 1;
-        } else if (firePower == ((Enemy) model.getActiveCard()).getFirePower()){
+        } else if (firePower == ((Enemy) getActiveCard()).getFirePower()){
             endMove(username); //nextPlayer
             return 0;
         } else {
-            if (model.getActiveCard() instanceof Pirates) {
+            if (getActiveCard() instanceof Pirates) {
                 state = State.FIRING;
                 //TODO: notify player of state change
-            } else if (model.getActiveCard() instanceof Slavers) {
+            } else if (getActiveCard() instanceof Slavers) {
                 state = State.WAITING_CREW;
                 //TODO: notify player of state change
-            } else if (model.getActiveCard() instanceof Smugglers) {
+            } else if (getActiveCard() instanceof Smugglers) {
                 state = State.WAITING_CARGO_LOST;
                 //TODO: notify player of state change
             }
             return -1;
+        }
+    }
+
+    /**
+     * @param username
+     * @param cannons
+     * @param batteries
+     */
+    @Override
+    public void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries) {
+        if (state != State.WAITING_CANNONS) {
+            throw new IllegalStateException("Cannot activate cannons now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
+        declaredForFight.putIfAbsent(username, model.FirePower(getPlayerByID(username), new HashSet<>(cannons), batteries));
+        if (declaredForFight.size() >= model.getInGamePlayers().stream().filter(p -> !isPlayerDisconnected(p.getUsername())).count()) {
+            if (((CombatZone)getActiveCard()).combatType() == 0) {
+                state = State.FIRING;
+                currentPlayer = declaredForFight.entrySet().stream()
+                        .min(Map.Entry.comparingByValue())
+                        .map(Map.Entry::getKey)
+                        .orElse(null);
+                nextFire();
+            } else {
+
+            }
         }
     }
 
@@ -375,10 +411,10 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the smugglers card has not been defeated
      */
     private void acceptSmugglers(String username) {
-        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Smugglers) {
+        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Smugglers) {
             throw new IllegalStateException("Cannot accept smugglers now");
         }
-        if (!model.getActiveCard().isPlayed()) {
+        if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         state = State.WAITING_CARGO_GAIN;
@@ -394,13 +430,15 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the pirates card has not been defeated
      */
     private void acceptPirates(String username) {
-        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Pirates) {
+        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Pirates) {
             throw new IllegalStateException("Cannot accept pirates now");
         }
-        if (!model.getActiveCard().isPlayed()) {
+        if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         model.piratesSuccess(getPlayerByID(username));
+        state = State.FLIGHT;
+        drawCard();
     }
 
     /**
@@ -411,17 +449,33 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the slavers card has not been defeated
      */
     private void acceptSlavers(String username) {
-        if (state != State.WAITING_ACCEPTANCE && model.getActiveCard() instanceof Slavers) {
+        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Slavers) {
             throw new IllegalStateException("Cannot accept slavers now");
         }
-        if (!model.getActiveCard().isPlayed()) {
+        if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         model.slaversSuccess(getPlayerByID(username));
+        state = State.FLIGHT;
+        drawCard();
     }
 
     public void acceptCard(String username) {
-        //TODO: This method switches between private methods based on the card type
+        if (state != State.WAITING_ACCEPTANCE) {
+            throw new IllegalStateException("Cannot accept card now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
+        if (getActiveCard() instanceof AbandonedStation) {
+            abandonedStation(username);
+        } else if (getActiveCard() instanceof Smugglers) {
+            acceptSmugglers(username);
+        } else if (getActiveCard() instanceof Pirates) {
+            acceptPirates(username);
+        } else if (getActiveCard() instanceof Slavers) {
+            acceptSlavers(username);
+        }
     }
 
     /**
@@ -430,7 +484,27 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void loseCrew(String username, List<Cabin> cabins) {
-        //TODO
+        if (state != State.WAITING_CREW) {
+            throw new IllegalStateException("Cannot lose crew now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
+        if (getActiveCard() instanceof AbandonedShip) {
+            abandonedShip(username, cabins);
+            state = State.FLIGHT;
+            drawCard();
+        } else if (getActiveCard() instanceof Slavers) {
+            model.slaversFailure(getPlayerByID(username), cabins);
+            state = State.FLIGHT;
+            drawCard();
+        } else if (getActiveCard() instanceof CombatZone) {
+            model.CombatZoneLostCrew(getPlayerByID(username), cabins);
+            state = State.WAITING_CANNONS;
+            currentPlayer = getFirstOnlinePlayer();
+            declaredForFight = new HashMap<>();
+            // TODO: notify player of state change
+        }
     }
 
     /**
@@ -495,12 +569,13 @@ public class GameController implements GameControllerInterface {
         }
         if (projectiles.size() > 1) {
             projectiles.removeFirst();
+            state = State.FIRING;
             nextFire();
         } else {
-            if (model.getActiveCard() instanceof Pirates) {
+            if (getActiveCard() instanceof Pirates) {
                 projectiles = model.piratesFailure();
-            } else if (model.getActiveCard() instanceof MeteorSwarm) {
-                projectiles = ((MeteorSwarm) model.getActiveCard()).getMeteors();
+            } else if (getActiveCard() instanceof MeteorSwarm) {
+                projectiles = ((MeteorSwarm) getActiveCard()).getMeteors();
             }
             endMove(username);
         }
@@ -516,7 +591,8 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    private void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
+    @Override
+    public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
         if (state != State.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
@@ -538,21 +614,19 @@ public class GameController implements GameControllerInterface {
 
         projectiles.removeFirst();
         if (projectiles.isEmpty()) {
-            projectiles = ((MeteorSwarm)model.getActiveCard()).getMeteors();
+            projectiles = ((MeteorSwarm)getActiveCard()).getMeteors();
             endMove(username);
         } else {
+            state = State.FIRING;
             nextFire();
         }
-    }
-
-    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) {
-        //TODO
     }
 
     /**
      * Returns the active adventure card
      * @return the active adventure card
      */
+    @Override
     public AdventureCard getActiveCard() {
         return model.getActiveCard();
     }
@@ -570,19 +644,33 @@ public class GameController implements GameControllerInterface {
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
+        if (getActiveCard().isPlayed()) {
+            drawCard();
+            return;
+        }
         // TODO select only active players (or any player and call a thread to manage the inactive ones?)
         currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
-        if (model.getActiveCard() instanceof Planets) {
+        if (getActiveCard() instanceof Planets) {
             state = State.WAITING_PLANET;
-        } else if (model.getActiveCard() instanceof AbandonedShip && !model.getActiveCard().isPlayed()) {
+        } else if (getActiveCard() instanceof AbandonedShip) {
             state = State.WAITING_CREW;
-        } else if (model.getActiveCard() instanceof AbandonedStation && !model.getActiveCard().isPlayed()) {
+            currentPlayer = getNextOnlinePlayer(currentPlayer);
+            if (currentPlayer == null) {
+                drawCard();
+                return;
+            }
+        } else if (getActiveCard() instanceof AbandonedStation) {
             state = State.WAITING_ACCEPTANCE;
-        } else if (model.getActiveCard() instanceof CombatZone) {
+            currentPlayer = getNextOnlinePlayer(currentPlayer);
+            if (currentPlayer == null) {
+                drawCard();
+                return;
+            }
+        } else if (getActiveCard() instanceof CombatZone) {
             //TODO
-        } else if (model.getActiveCard() instanceof MeteorSwarm) {
+        } else if (getActiveCard() instanceof MeteorSwarm) {
             state = State.FIRING;
-        } else if (model.getActiveCard() instanceof Enemy && !model.getActiveCard().isPlayed()) {
+        } else if (getActiveCard() instanceof Enemy && !getActiveCard().isPlayed()) {
             state = State.WAITING_CANNONS;
         }
 
@@ -590,7 +678,7 @@ public class GameController implements GameControllerInterface {
 
 
         if (Objects.equals(currentPlayer, model.getGame().getPlayers().getFirst().getUsername())) { //last player played their turn
-            if (model.getActiveCard() instanceof Planets) {
+            if (getActiveCard() instanceof Planets) {
                 model.movePlayerReverse();
             }
             state = State.FLIGHT;
@@ -605,7 +693,26 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) {
-        //TODO
+        if (state != State.WAITING_ENGINES) {
+            throw new IllegalStateException("Cannot activate engines now");
+        }
+        if (!username.equals(currentPlayer)) {
+            throw new IllegalArgumentException("Not your turn");
+        }
+        if (getActiveCard() instanceof CombatZone) {
+            declaredForFight.put(username, (float) model.EnginePower(getPlayerByID(username), engines.size(), batteries));
+            if (declaredForFight.size() >= model.getInGamePlayers()
+                    .stream()
+                    .filter(p -> !isPlayerDisconnected(p.getUsername()))
+                    .toList()
+                    .size()) {
+                declaredForFight.entrySet().stream().min(Map.Entry.comparingByValue()).ifPresent(entry -> currentPlayer = entry.getKey());
+                state = State.WAITING_CREW;
+                //TODO: notify players of state change
+            }
+        } else if (getActiveCard() instanceof OpenSpace) {
+
+        }
     }
 
     /**
