@@ -912,7 +912,18 @@ public class GameModel {
      * @param p player that is disconnected
      */
     public void  autoValidation (Player p){
-        p.getShip().findValid();
+        int row;
+        int column;
+        if(level==2){
+            row = 2;
+            column = 3;
+        }
+        else{
+            row = 2;
+            column = 2;
+        }
+
+        p.getShip().findValid(row, column);
     }
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla

@@ -186,5 +186,19 @@ class GameModelTest {
 
         Battery bat = (Battery) ship2.getComponentAt(1,1);
         ship2.killComponent(bat);
+
+        Player player1 = gameModel.getGame().getPlayers().get(0);
+        Player player2;
+        if(player1.getUsername().equals("player1")) {
+            player2 = gameModel.getGame().getPlayers().get(1);
+        }
+        else{
+            player2 = gameModel.getGame().getPlayers().get(0);
+            player1=gameModel.getGame().getPlayers().get(1);
+        }
+
+        score = gameModel.calculateScore();
+        assertEquals(6+4, score.get(player1));
+        assertEquals(8+4-1, score.get(player2));
     }
 }
