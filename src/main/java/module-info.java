@@ -9,6 +9,7 @@ module it.polimi.ingsw.gc20 {
     requires javatuples;
     requires java.smartcardio;
     requires java.rmi;
+    requires java.logging;
     opens it.polimi.ingsw.gc20 to javafx.fxml;
     exports it.polimi.ingsw.gc20;
     opens it.polimi.ingsw.gc20.model.components to com.fasterxml.jackson.databind;
