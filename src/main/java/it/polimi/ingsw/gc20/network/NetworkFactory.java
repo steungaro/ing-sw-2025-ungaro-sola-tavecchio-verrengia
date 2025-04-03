@@ -1,14 +1,48 @@
 package it.polimi.ingsw.gc20.network;
 
 import it.polimi.ingsw.gc20.network.RMI.RMIServer;
+import it.polimi.ingsw.gc20.network.common.Server;
 import it.polimi.ingsw.gc20.network.socket.SocketServer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class NetworkFactory {
+    private List<Server> servers = new ArrayList<>();
+
     public void initialize() {
-        // Inizializza le componenti di rete
+        NetworkManager.getInstance(); // Ensure singleton is created
     }
 
-    public void initServer(RMIServer rmiServer) {}
+    public Server createServer(ServerType type) {
+        Server server;
+        switch (type) {
+            case RMI:
+                server = new RMIServer();
+                break;
+            case SOCKET:
+                server = new SocketServer();
+                break;
+            default:
+                throw new IllegalArgumentException("Tipo di server non supportato");
+        }
+        servers.add(server);
+        return server;
+    }
 
-    public void initServer(SocketServer socketServer) {}
+    public void startAllServers() {
+        for (Server server : servers) {
+            server.start();
+        }
+    }
+
+    public void stopAllServers() {
+        for (Server server : servers) {
+            server.stop();
+        }
+    }
+
+    public enum ServerType {
+        RMI, SOCKET
+    }
 }
