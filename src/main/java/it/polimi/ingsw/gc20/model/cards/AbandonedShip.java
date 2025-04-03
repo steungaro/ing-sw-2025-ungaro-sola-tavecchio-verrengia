@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
 
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.*;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
@@ -23,6 +25,11 @@ public class AbandonedShip extends AdventureCard {
         lostCrew = 0;
         credits = 0;
         lostDays = 0;
+    }
+
+    @Override
+    public void setState(State gameState) {
+        gameState = new AbandonedShipState(lostCrew, credits, lostDays);
     }
 
     /**

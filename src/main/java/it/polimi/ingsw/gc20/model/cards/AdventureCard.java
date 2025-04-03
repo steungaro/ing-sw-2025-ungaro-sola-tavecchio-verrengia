@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import it.polimi.ingsw.gc20.controller.states.*;
+
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "name")
 @JsonSubTypes({
@@ -16,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
         @JsonSubTypes.Type(value = Smugglers.class, name = "Smugglers"),
         @JsonSubTypes.Type(value = Pirates.class, name = "Pirates"),
         @JsonSubTypes.Type(value = MeteorSwarm.class, name = "MeteorSwarm")
-        // Add all other concrete implementations here
 })
 
 /**
@@ -65,6 +66,8 @@ public abstract class AdventureCard {
         }
         this.level = level;
     }
+
+    public abstract void setState(State gameState);
 
     /**
      * Public getter for the played attribute
