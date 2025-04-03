@@ -21,7 +21,7 @@ public class RMIAuthService implements RMIAuthInterface {
         this.server = server;
     }
 
-    /**Funcion to login a user
+    /**Function to log in a user
      * @param username The username of the user.
      * @return The session token for the user.
      * @throws IllegalArgumentException if the username is invalid or already in use.
@@ -45,16 +45,20 @@ public class RMIAuthService implements RMIAuthInterface {
 
     /**
      * Function to log out a user.
+     *
      * @param token The session token of the user.
+     * @return
      * @throws RemoteException if the token is invalid.
      */
-    public void logout(String token) throws RemoteException {
+    public boolean logout(String token) throws RemoteException {
         String username = tokenToUsername.remove(token);
         if (username != null) {
             LOGGER.info(String.format("Utente disconnesso: " + username));
             NetworkManager.getInstance().removeClient(username);
+            return true;
         } else {
             LOGGER.warning("Token non valido");
+            return false;
         }
     }
 

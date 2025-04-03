@@ -43,13 +43,14 @@ public class RMIServer implements Server {
 
             // creation of the gameService
             //RMIGAmeInterface will be the interface that the controller will expose
-            RMIGameInterface gameService = new RMIGameService(this);
-            // Export the gameService object
-            rmiServerHandler.exportObject(gameService, "GameService");
 
             // creating the authService
             RMIAuthInterface authService = new RMIAuthService(this);
             rmiServerHandler.exportObject(authService, "AuthService");
+
+            RMIGameInterface gameService = new TestRMIGameService(authService);
+            // Export the gameService object
+            rmiServerHandler.exportObject(gameService, "GameService");
 
             LOGGER.info(String.format("RMI Server started at port %d", DEFAULT_PORT));
         } catch (ServerCriticalError e) {
@@ -75,7 +76,7 @@ public class RMIServer implements Server {
             client.disconnect();
         }
         executor.shutdown();
-        LOGGER.info(String.format("RMI Server stopped"));
+        LOGGER.info("RMI Server stopped");
     }
 
     /** Function to register a new client in the server and in the network Manager
