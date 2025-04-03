@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.network.RMI;
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
 import java.util.logging.Logger;
 
-public class RMIClientHandler extends ClientHandler {
+public class RMIClientHandler implements ClientHandler {
     private final Logger LOGGER = Logger.getLogger(RMIClientHandler.class.getName());
     private String username;
     private boolean connected;
