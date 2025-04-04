@@ -28,8 +28,8 @@ public class AbandonedShip extends AdventureCard {
     }
 
     @Override
-    public void setState(State gameState) {
-        gameState = new AbandonedShipState(lostCrew, credits, lostDays);
+    public void setState(GameController gc) {
+        gc.setState(new AbandonedShipState(lostCrew, credits, lostDays));
     }
 
     /**

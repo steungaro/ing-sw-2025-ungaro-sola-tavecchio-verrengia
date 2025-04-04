@@ -1,10 +1,8 @@
 package it.polimi.ingsw.gc20.controller;
 
-import it.polimi.ingsw.gc20.controller.event.Event;
-import it.polimi.ingsw.gc20.controller.event.EventHandler;
-import it.polimi.ingsw.gc20.controller.event.EventType;
-import it.polimi.ingsw.gc20.exceptions.HourglassException;
-import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
+import it.polimi.ingsw.gc20.controller.event.*;
+import it.polimi.ingsw.gc20.controller.states.*;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
@@ -24,16 +22,16 @@ public class GameController implements GameControllerInterface {
 
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-    private final Map<String, Boolean> assemblingComplete = new HashMap<>();
-    private final Map<String, Boolean> readyToFly = new HashMap<>();
+//    private final Map<String, Boolean> assemblingComplete = new HashMap<>();
+//    private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;
 
     private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
 
-    private List<CargoColor> cargoGained;
-    private int cargoLost;
-    private Map<String, Float> declaredForFight;
-    private List<Projectile> projectiles;
+//    private List<CargoColor> cargoGained;
+//    private int cargoLost;
+//    private Map<String, Float> declaredForFight;
+//    private List<Projectile> projectiles;
 
     /**
      * Default constructor
@@ -50,20 +48,14 @@ public class GameController implements GameControllerInterface {
         gameID = id;
         model = new GameModel();
         model.startGame(level, usernames, gameID);
-        state = State.ASSEMBLING;
+        state = new AssemblingState(model);
         currentPlayer = "";
         connectedPlayers.addAll(usernames);
-        usernames.forEach(username -> assemblingComplete.put(username, false));
-        usernames.forEach(username -> readyToFly.put(username, false));
         //TODO: notify players of game start
     }
 
-    /**
-     * Tells whether each player has completed their ship assembly
-     * @return true if all players have completed their ship assembly, false otherwise
-     */
-    public boolean assemblingStateComplete(){
-        return assemblingComplete.values().stream().allMatch(Boolean::booleanValue);
+    public void setState(State state) {
+        this.state = state;
     }
 
     /**
@@ -106,86 +98,20 @@ public class GameController implements GameControllerInterface {
      * Processes the card based on its type
      */
     private void drawCard(){
-        if (state != State.FLIGHT) {
-            throw new IllegalStateException("Cannot draw cards outside the flying phase");
-        }
         AdventureCard card = model.drawCard();
         if (card == null) {
-            state = State.ENDGAME;
-            currentPlayer = "";
-            //TODO: notify players of state change
-            //TODO: calculate final scores
+            state = new EndgameState();
+        } else {
+            card.setState(this);
         }
+    }
 
-        if (card instanceof Planets) {
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            state = State.WAITING_PLANET;
-            //TODO: notify players of state change
-
-        } else if (card instanceof AbandonedShip) {
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            state = State.WAITING_CREW;
-            //TODO: notify players of state change
-
-        } else if (card instanceof AbandonedStation) {
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            state = State.WAITING_ACCEPTANCE;
-            //TODO: notify players of state change
-
-        } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 0) {
-            //Applying first automatic effect - offline players are skipped
-            model.getInGamePlayers()
-                    .stream()
-                    .min(Comparator.comparing(model::getCrew))
-                    .ifPresent(p -> {((CombatZone)getActiveCard()).EffectLostDays(p, model.getGame());});
-
-            //Applying second non-automatic effect
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            state = State.WAITING_ENGINES;
-            declaredForFight = new HashMap<>();
-            //TODO: notify players of state change
-
-        } else if (card instanceof CombatZone && ((CombatZone) card).combatType() == 1) {
-            //Applying first non-automatic effect
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            state = State.WAITING_CANNONS;
-            declaredForFight = new HashMap<>();
-            //TODO: notify players of state change
-
-        } else if (card instanceof Epidemic) {
-            model.getInGamePlayers()
-                    .stream()
-                    .filter(player -> !isPlayerDisconnected(player.getUsername()))
-                    .forEach(player -> {((Epidemic) card).Effect(player);});
-            // apply the effect to all online players
-            //TODO: notify players of state change
-            drawCard();
-        } else if (card instanceof MeteorSwarm) {
-            state = State.FIRING;
-            projectiles = new ArrayList<>(((MeteorSwarm) card).getMeteors());
-
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            //TODO: notify players of state change
-
-        } else if (card instanceof OpenSpace) {
-            state = State.WAITING_ENGINES;
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            //TODO: notify players of state change
-
-        } else if (card instanceof Enemy) {
-            state = State.WAITING_CANNONS;
-            currentPlayer = getFirstOnlinePlayer(); // offline players are skipped
-            //TODO: notify players of state change
-
-        } else if (card instanceof Stardust) {
-            model.getInGamePlayers()
-                    .stream()
-                    .filter(player -> !isPlayerDisconnected(player.getUsername()))
-                    .forEach(player -> {((Stardust) card).Effect(player, model.getGame());});
-            // apply the effect to all online players
-            //TODO: notify players of state change
-            drawCard();
-        }
+    /**
+     * Returns the current game state
+     * @return the current game state
+     */
+    public String getState() {
+        return state.toString();
     }
 
     /**
@@ -193,19 +119,14 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to land on the planet
      * @param planetIndex is the index of the planet card in the player's hand
      * @throws IllegalStateException if the game is not in the planet phase
-     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(String username, int planetIndex) {
-        if (state != State.WAITING_PLANET) {
-            throw new IllegalStateException("Cannot land on a planet outside the planet phase");
+    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException {
+        if (!currentPlayer.equals(username)) {
+            throw new InvalidTurnException("Not your turn");
         }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        Player player = getPlayerByID(username);
-        state = State.WAITING_CARGO_GAIN;
-        cargoGained = new ArrayList<>(model.PlanetLand(player, planetIndex));
+        state.landOnPlanet(username, planetIndex);
     }
 
     /**
@@ -220,7 +141,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void loadCargo(String username, CargoColor loaded, CargoHold ch) {
-        if (state != State.WAITING_CARGO_GAIN) {
+        if (stateEnum != StateEnum.WAITING_CARGO_GAIN) {
             throw new IllegalStateException("Cannot load cargo outside the cargo phase");
         }
         if (!username.equals(currentPlayer)) {
@@ -249,12 +170,12 @@ public class GameController implements GameControllerInterface {
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
-        if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
+        if (stateEnum != StateEnum.WAITING_CARGO_GAIN && stateEnum != StateEnum.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot unload cargo outside the cargo phase");
         }
         Player player = getPlayerByID(username);
 
-        if (state == State.WAITING_CARGO_LOST) {
+        if (stateEnum == StateEnum.WAITING_CARGO_LOST) {
             Map<CargoColor, Integer> playerCargo = player.getShip().getCargo();
             for (CargoColor c : playerCargo.keySet()) {
                 if (c.ordinal() < lost.ordinal() && playerCargo.get(c) > 0) {
@@ -278,7 +199,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) {
-        if (state != State.WAITING_CARGO_GAIN && state != State.WAITING_CARGO_LOST) {
+        if (stateEnum != StateEnum.WAITING_CARGO_GAIN && stateEnum != StateEnum.WAITING_CARGO_LOST) {
             throw new IllegalStateException("Cannot move cargo outside the cargo phase");
         }
         if (!username.equals(currentPlayer)) {
@@ -298,7 +219,7 @@ public class GameController implements GameControllerInterface {
      * @apiNote To be used after accepting an abandoned ship
      */
     private void abandonedShip(String username, List<Cabin> cabins) {
-        if (state != State.WAITING_CREW && getActiveCard() instanceof AbandonedShip) {
+        if (stateEnum != StateEnum.WAITING_CREW && getActiveCard() instanceof AbandonedShip) {
             throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
         }
         if (!username.equals(currentPlayer)) {
@@ -323,12 +244,12 @@ public class GameController implements GameControllerInterface {
         if (!username.equals(currentPlayer)) {
             throw new IllegalArgumentException("Not your turn");
         }
-        if(state != State.WAITING_ACCEPTANCE){
+        if(stateEnum != StateEnum.WAITING_ACCEPTANCE){
             throw new IllegalStateException("Cannot land on station outside the abandoned station phase");
         } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
             throw new IllegalStateException("Cannot invade station with insufficient crew");
         }
-        state = State.WAITING_CARGO_GAIN;
+        stateEnum = StateEnum.WAITING_CARGO_GAIN;
         getActiveCard().playCard();
         cargoGained = model.AbandonedStation(getPlayerByID(username));
     }
@@ -343,7 +264,7 @@ public class GameController implements GameControllerInterface {
      * @return 1 if the player wins the fight, 0 if the fight is a draw, -1 if the player loses the fight
      */
     public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries){
-        if (state != State.WAITING_CANNONS) {
+        if (stateEnum != StateEnum.WAITING_CANNONS) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
         if (!username.equals(currentPlayer)) {
@@ -354,7 +275,7 @@ public class GameController implements GameControllerInterface {
 
         if(firePower > ((Enemy) getActiveCard()).getFirePower()){
             getActiveCard().playCard();
-            state = State.WAITING_ACCEPTANCE;
+            stateEnum = StateEnum.WAITING_ACCEPTANCE;
             //TODO notify player of state change
             return 1;
         } else if (firePower == ((Enemy) getActiveCard()).getFirePower()){
@@ -362,13 +283,13 @@ public class GameController implements GameControllerInterface {
             return 0;
         } else {
             if (getActiveCard() instanceof Pirates) {
-                state = State.FIRING;
+                stateEnum = StateEnum.FIRING;
                 //TODO: notify player of state change
             } else if (getActiveCard() instanceof Slavers) {
-                state = State.WAITING_CREW;
+                stateEnum = StateEnum.WAITING_CREW;
                 //TODO: notify player of state change
             } else if (getActiveCard() instanceof Smugglers) {
-                state = State.WAITING_CARGO_LOST;
+                stateEnum = StateEnum.WAITING_CARGO_LOST;
                 //TODO: notify player of state change
             }
             return -1;
@@ -382,7 +303,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries) {
-        if (state != State.WAITING_CANNONS) {
+        if (stateEnum != StateEnum.WAITING_CANNONS) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
         if (!username.equals(currentPlayer)) {
@@ -391,7 +312,7 @@ public class GameController implements GameControllerInterface {
         declaredForFight.putIfAbsent(username, model.FirePower(getPlayerByID(username), new HashSet<>(cannons), batteries));
         if (declaredForFight.size() >= model.getInGamePlayers().stream().filter(p -> !isPlayerDisconnected(p.getUsername())).count()) {
             if (((CombatZone)getActiveCard()).combatType() == 0) {
-                state = State.FIRING;
+                stateEnum = StateEnum.FIRING;
                 currentPlayer = declaredForFight.entrySet().stream()
                         .min(Map.Entry.comparingByValue())
                         .map(Map.Entry::getKey)
@@ -411,13 +332,13 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the smugglers card has not been defeated
      */
     private void acceptSmugglers(String username) {
-        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Smugglers) {
+        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Smugglers) {
             throw new IllegalStateException("Cannot accept smugglers now");
         }
         if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
-        state = State.WAITING_CARGO_GAIN;
+        stateEnum = StateEnum.WAITING_CARGO_GAIN;
         //TODO: notify player of state change
         cargoGained = model.smugglersSuccess(getPlayerByID(username));
     }
@@ -430,14 +351,14 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the pirates card has not been defeated
      */
     private void acceptPirates(String username) {
-        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Pirates) {
+        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Pirates) {
             throw new IllegalStateException("Cannot accept pirates now");
         }
         if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         model.piratesSuccess(getPlayerByID(username));
-        state = State.FLIGHT;
+        stateEnum = StateEnum.FLIGHT;
         drawCard();
     }
 
@@ -449,19 +370,19 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the slavers card has not been defeated
      */
     private void acceptSlavers(String username) {
-        if (state != State.WAITING_ACCEPTANCE && getActiveCard() instanceof Slavers) {
+        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Slavers) {
             throw new IllegalStateException("Cannot accept slavers now");
         }
         if (!getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
         model.slaversSuccess(getPlayerByID(username));
-        state = State.FLIGHT;
+        stateEnum = StateEnum.FLIGHT;
         drawCard();
     }
 
     public void acceptCard(String username) {
-        if (state != State.WAITING_ACCEPTANCE) {
+        if (stateEnum != StateEnum.WAITING_ACCEPTANCE) {
             throw new IllegalStateException("Cannot accept card now");
         }
         if (!username.equals(currentPlayer)) {
@@ -484,7 +405,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void loseCrew(String username, List<Cabin> cabins) {
-        if (state != State.WAITING_CREW) {
+        if (stateEnum != StateEnum.WAITING_CREW) {
             throw new IllegalStateException("Cannot lose crew now");
         }
         if (!username.equals(currentPlayer)) {
@@ -492,15 +413,15 @@ public class GameController implements GameControllerInterface {
         }
         if (getActiveCard() instanceof AbandonedShip) {
             abandonedShip(username, cabins);
-            state = State.FLIGHT;
+            stateEnum = StateEnum.FLIGHT;
             drawCard();
         } else if (getActiveCard() instanceof Slavers) {
             model.slaversFailure(getPlayerByID(username), cabins);
-            state = State.FLIGHT;
+            stateEnum = StateEnum.FLIGHT;
             drawCard();
         } else if (getActiveCard() instanceof CombatZone) {
             model.CombatZoneLostCrew(getPlayerByID(username), cabins);
-            state = State.WAITING_CANNONS;
+            stateEnum = StateEnum.WAITING_CANNONS;
             currentPlayer = getFirstOnlinePlayer();
             declaredForFight = new HashMap<>();
             // TODO: notify player of state change
@@ -512,26 +433,26 @@ public class GameController implements GameControllerInterface {
      * @implSpec gets in the correct state by looking at the first projectile in the list
      */
     private void nextFire() {
-        if (state != State.FIRING) {
+        if (stateEnum != StateEnum.FIRING) {
             throw new IllegalStateException("Cannot fire outside the firing phase");
         }
         if (projectiles.isEmpty()) {
             return;
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
-            state = State.WAITING_SHIELDS;
+            stateEnum = StateEnum.WAITING_SHIELDS;
             //TODO: notify player of state change
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
-            state = State.WAITING_CANNONS;
+            stateEnum = StateEnum.WAITING_CANNONS;
             //TODO: notify player of state change
         } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
             try {
                 model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
             } catch (InvalidShipException e) {
-                state = State.VALIDATING;
+                stateEnum = StateEnum.VALIDATING;
                 //TODO: notify player to validate ship
             }
         } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
-            state = State.WAITING_SHIELDS;
+            stateEnum = StateEnum.WAITING_SHIELDS;
             //TODO: notify player of state change
         }
     }
@@ -546,14 +467,14 @@ public class GameController implements GameControllerInterface {
      * @apiNote Ship may need to be validated
      */
     public void activateShield(String username, Shield shieldComp, Battery batteryComp) {
-        if (state != State.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_FIRE)) {
+        if (stateEnum != StateEnum.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_FIRE)) {
             throw new IllegalStateException("Cannot activate shields now");
         }
         if (shieldComp == null) {
             try {
                 model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
             } catch (InvalidShipException e) {
-                state = State.VALIDATING;
+                stateEnum = StateEnum.VALIDATING;
                 //TODO: notify player to validate ship
             }
         }
@@ -563,13 +484,13 @@ public class GameController implements GameControllerInterface {
             try {
                 model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
             } catch (InvalidShipException e) {
-                state = State.VALIDATING;
+                stateEnum = StateEnum.VALIDATING;
                 //TODO: notify player to validate ship
             }
         }
         if (projectiles.size() > 1) {
             projectiles.removeFirst();
-            state = State.FIRING;
+            stateEnum = StateEnum.FIRING;
             nextFire();
         } else {
             if (getActiveCard() instanceof Pirates) {
@@ -593,7 +514,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
-        if (state != State.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
+        if (stateEnum != StateEnum.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
             throw new IllegalStateException("Cannot activate cannons now");
         }
         if (!username.equals(currentPlayer)) {
@@ -607,7 +528,7 @@ public class GameController implements GameControllerInterface {
             try {
                 model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
             } catch (InvalidShipException e) {
-                state = State.VALIDATING;
+                stateEnum = StateEnum.VALIDATING;
                 // TODO: notify player to validate ship
             }
         }
@@ -617,7 +538,7 @@ public class GameController implements GameControllerInterface {
             projectiles = ((MeteorSwarm)getActiveCard()).getMeteors();
             endMove(username);
         } else {
-            state = State.FIRING;
+            stateEnum = StateEnum.FIRING;
             nextFire();
         }
     }
@@ -638,7 +559,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      */
     public void endMove(String username) {
-        if (state == State.VALIDATING || state == State.ENDGAME || state == State.ASSEMBLING || state == State.CREATING || state == State.FLIGHT) {
+        if (stateEnum == StateEnum.VALIDATING || stateEnum == StateEnum.ENDGAME || stateEnum == StateEnum.ASSEMBLING || stateEnum == StateEnum.CREATING || stateEnum == StateEnum.FLIGHT) {
             throw new IllegalStateException("Cannot end move outside the card phase");
         }
         if (!username.equals(currentPlayer)) {
@@ -651,16 +572,16 @@ public class GameController implements GameControllerInterface {
         // TODO select only active players (or any player and call a thread to manage the inactive ones?)
         currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
         if (getActiveCard() instanceof Planets) {
-            state = State.WAITING_PLANET;
+            stateEnum = StateEnum.WAITING_PLANET;
         } else if (getActiveCard() instanceof AbandonedShip) {
-            state = State.WAITING_CREW;
+            stateEnum = StateEnum.WAITING_CREW;
             currentPlayer = getNextOnlinePlayer(currentPlayer);
             if (currentPlayer == null) {
                 drawCard();
                 return;
             }
         } else if (getActiveCard() instanceof AbandonedStation) {
-            state = State.WAITING_ACCEPTANCE;
+            stateEnum = StateEnum.WAITING_ACCEPTANCE;
             currentPlayer = getNextOnlinePlayer(currentPlayer);
             if (currentPlayer == null) {
                 drawCard();
@@ -669,9 +590,9 @@ public class GameController implements GameControllerInterface {
         } else if (getActiveCard() instanceof CombatZone) {
             //TODO
         } else if (getActiveCard() instanceof MeteorSwarm) {
-            state = State.FIRING;
+            stateEnum = StateEnum.FIRING;
         } else if (getActiveCard() instanceof Enemy && !getActiveCard().isPlayed()) {
-            state = State.WAITING_CANNONS;
+            stateEnum = StateEnum.WAITING_CANNONS;
         }
 
 
@@ -681,7 +602,7 @@ public class GameController implements GameControllerInterface {
             if (getActiveCard() instanceof Planets) {
                 model.movePlayerReverse();
             }
-            state = State.FLIGHT;
+            stateEnum = StateEnum.FLIGHT;
             drawCard();
         }
     }
@@ -693,26 +614,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) {
-        if (state != State.WAITING_ENGINES) {
-            throw new IllegalStateException("Cannot activate engines now");
-        }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        if (getActiveCard() instanceof CombatZone) {
-            declaredForFight.put(username, (float) model.EnginePower(getPlayerByID(username), engines.size(), batteries));
-            if (declaredForFight.size() >= model.getInGamePlayers()
-                    .stream()
-                    .filter(p -> !isPlayerDisconnected(p.getUsername()))
-                    .toList()
-                    .size()) {
-                declaredForFight.entrySet().stream().min(Map.Entry.comparingByValue()).ifPresent(entry -> currentPlayer = entry.getKey());
-                state = State.WAITING_CREW;
-                //TODO: notify players of state change
-            }
-        } else if (getActiveCard() instanceof OpenSpace) {
-
-        }
+        //TODO
     }
 
     /**
@@ -733,7 +635,7 @@ public class GameController implements GameControllerInterface {
     /**
      * @param asker is the username of the player asking for data
      * @param asked is the username of the player being asked for data
-     * @return player data
+     * @return player data, if the asker is the same as the asked, return the full data, otherwise return only public data
      */
     @Override
     public Player getPlayerData(String asker, String asked) {
@@ -744,6 +646,7 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    //TODO: if player color is chosen at connection time, this method is fine, if not, it should be called within validating state, maybe editing #readyToFly function, providing the color chosen
     /**
      * Sets the color for a specific player
      *
@@ -784,13 +687,16 @@ public class GameController implements GameControllerInterface {
     public Map<Player, Integer> getPlayerScores(){
         return model.calculateScore();
     }
+    //TODO: maybe this method should return a Map <String, Integer> instead of a Map<Player, Integer> to avoid exposing the Player object
+    //TODO: maybe make this function only available in the endgame state?
 
     /**
-     * @param username
+     * Handles the event of a player giving up
+     * @param username is the username of the player that wants to give up
      */
     @Override
     public void giveUp(String username) {
-
+        model.giveUp(getPlayerByID(username));
     }
 
     /**
@@ -824,7 +730,7 @@ public class GameController implements GameControllerInterface {
         }
 
         // Check if player is in the disconnected list
-        if (!disconnectedPlayers.contains(username)) {
+        if (!isPlayerDisconnected(username)) {
             return false; // Player isn't disconnected, nothing to do
         }
 
@@ -885,15 +791,6 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Gets the current state of the game
-     *
-     * @return Current game state
-     */
-    public State getState() {
-        return state;
-    }
-
-    /**
      * Takes a component from the unviewed pile
      *
      * @param username Username of the player taking the component
@@ -903,18 +800,7 @@ public class GameController implements GameControllerInterface {
      * @throws NoSuchElementException if the component is not in the unviewed pile
      */
     public synchronized Component takeComponentFromUnviewed(String username, Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot take components outside the assembling phase");
-        }
-
-        try {
-            model.componentFromUnviewed(component);
-            // Add component to viewed pile so other players can see it
-            model.componentToViewed(component);
-            return component;
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("Component not found in unviewed pile");
-        }
+        return state.takeComponentFromUnviewed(getPlayerByID(username), component);
     }
 
     /**
@@ -927,16 +813,7 @@ public class GameController implements GameControllerInterface {
      * @throws NoSuchElementException if the component is not in the viewed pile //TODO check if this is the right exception
      */
     public synchronized Component takeComponentFromViewed(String username, Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot take components outside the assembling phase");
-        }
-
-        try {
-            model.componentFromViewed(component);
-            return component;
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("Component not found in viewed pile");
-        }
+        return state.takeComponentFromViewed(getPlayerByID(username), component);
     }
 
     /**
@@ -949,22 +826,10 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the component is not in the player's booked list
      */
     public Component takeComponentFromBooked(String username, Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot take components outside the assembling phase");
-        }
-
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Booking components is only available in level 2 games");
         }
-
-        Player player = getPlayerByID(username);
-
-        try {
-            model.componentFromBooked(component, player);
-            return component;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Component not found in player's booked list");
-        }
+        return state.takeComponentFromBooked(getPlayerByID(username), component);
     }
 
     /**
@@ -976,16 +841,10 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if there aren't enough available spaces in the player's booked list
      */
     public void addComponentToBooked(String username, Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot book components outside the assembling phase");
-        }
-
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Booking components is only available in level 2 games");
         }
-
-        Player player = getPlayerByID(username);
-        model.componentToBooked(component, player);
+        state.addComponentToBooked(getPlayerByID(username), component);
     }
 
     /**
@@ -995,10 +854,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public synchronized void addComponentToViewed(Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot manipulate components outside the assembling phase");
-        }
-        model.componentToViewed(component);
+        state.addComponentToViewed(component);
     }
 
     /**
@@ -1012,19 +868,7 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidParameterException if placement is invalid (handled by ship implementation)
      */
     public void placeComponent(String username, Component component, int x, int y) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot place components outside the assembling phase");
-        }
-
-        Player player = getPlayerByID(username);
-
-        //TODO: addToShip does not throw any exception
-        try {
-            model.addToShip(component, player, x, y);
-        } catch (Exception e) {
-            // Ship implementation will throw appropriate exceptions if placement is invalid
-            throw new InvalidParameterException("Cannot place component at specified location: " + e.getMessage());
-        }
+        state.placeComponent(getPlayerByID(username), component, x, y);
     }
 
     /**
@@ -1034,10 +878,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentClockwise(Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot rotate components outside the assembling phase");
-        }
-        model.RotateClockwise(component);
+        state.rotateComponentClockwise(component);
     }
 
     /**
@@ -1047,10 +888,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentCounterclockwise(Component component) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot rotate components outside the assembling phase");
-        }
-        model.RotateCounterclockwise(component);
+        state.rotateComponentCounterclockwise(component);
     }
 
     /**
@@ -1063,11 +901,7 @@ public class GameController implements GameControllerInterface {
      * @see #validateShip(String username)
      */
     public void removeComponentFromShip(String username, Component component) {
-        if (state != State.VALIDATING) {
-            throw new IllegalStateException("Cannot remove components outside the assembling phase");
-        }
-        Player player = getPlayerByID(username);
-        model.removeComponent(component, player);
+        state.removeComp(getPlayerByID(username), component);
     }
 
     /**
@@ -1076,28 +910,33 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player that wants to validate the ship
      * @return true if ship is valid, false otherwise
      * @throws IllegalStateException if game is not in VALIDATING state
-     * @apiNote this function must be called from the view until the ship is valid
+     * @apiNote this function must be called in a loop from the view until the ship is valid
+     * @see #removeComponentFromShip(String username, Component component)
+     * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public boolean validateShip(String username) {
-        if (state != State.VALIDATING) {
-            throw new IllegalStateException("Cannot validate ship outside the assembling phase");
+        if (!state.isShipValid(getPlayerByID(username))) {
+            return false;
+        } else {
+            if (state.allShipsReady()) {
+                drawCard();
+                //TODO: notify players of state change
+            }
+            return true;
         }
-        return model.shipValidating(getPlayerByID(username));
     }
 
     /**
      * Stops the assembling phase for a player
      * @param username is the username of the player that wants to stop assembling
      * @param position is the relative position on board where the player wants to put their rocket
+     * @throws IllegalStateException if game is not in ASSEMBLING state
+     * @implNote performs state change to VALIDATING when all players have completed assembling
      */
     public void stopAssembling(String username, int position) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot validate ship outside the assembling phase");
-        }
-        assemblingComplete.put(username, true);
-        model.stopAssembling(getPlayerByID(username), position);
-        if(assemblingComplete.values().stream().allMatch(Boolean::booleanValue)){
-            state = State.VALIDATING;
+        state.stopAssembling(getPlayerByID(username), position);
+        if (state.allAssembled()) {
+            state = new ValidatingShipState(model);
             //TODO: notify players of state change
         }
     }
@@ -1112,23 +951,13 @@ public class GameController implements GameControllerInterface {
      * @throws HourglassException if the player has not completed assembling yet when turning last time
      */
     public void turnHourglass(String username) throws HourglassException {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot validate ship outside the assembling phase");
-        }
-        if (!connectedPlayers.contains(username)) {
+        if (isPlayerDisconnected(username)) {
             throw new IllegalArgumentException("Cannot turn hourglass for not connected player");
         }
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-        if (model.getTurnedHourglass() == 1 && !assemblingComplete.get(username)) {
-            throw new HourglassException("Cannot turn hourglass for the last time for a player that has not completed assembling yet");
-        }
-        if (model.getRemainingTime() != 0) {
-            throw new HourglassException("Cannot turn hourglass if time is not 0");
-        }
-        model.turnHourglass();
-        //TODO: notify players of hourglass turn?
+        state.turnHourglass(getPlayerByID(username));
     }
 
     /**
@@ -1137,16 +966,16 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player checking the hourglass
      * @return Remaining time in seconds
      * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws IllegalArgumentException if the game is not in level 2
+     * @throws IllegalArgumentException if the game is not in level 2 or the player is disconnected
      */
     public int getHourglassTime(String username) {
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot use hourglass outside the assembling phase");
-        }
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Hourglass is only available in level 2 games");
         }
-        return model.getRemainingTime();
+        if (isPlayerDisconnected(username)) {
+            throw new IllegalArgumentException("Player disconnected");
+        }
+        return state.getHourglassTime(getPlayerByID(username));
     }
 
     /**
@@ -1160,20 +989,14 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the game is not in level 2
      */
     public List<AdventureCard> peekDeck(String username, int num){
-        if (state != State.ASSEMBLING) {
-            throw new IllegalStateException("Cannot view a deck outside the assembling phase");
-        }
         if (model.getLevel() != 2) {
             throw new IllegalStateException("Decks are only available in level 2 games");
         }
-        if (!connectedPlayers.contains(username)) {
+        if (isPlayerDisconnected(username)) {
             throw new IllegalArgumentException("Cannot view deck for not connected player");
         }
-        if (assemblingComplete.get(username)){
-            throw new IllegalArgumentException("Cannot view deck after ship is done assembling");
-        }
-        return model.viewDeck(num);
-        // TODO: maybe synchronized on deck?
+        // TODO: synchronize this method on the selected deck?
+        return state.peekDeck(getPlayerByID(username), num);
     }
 
     /**
@@ -1188,39 +1011,20 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the cabin provided is a StartingCabin
      */
     public void addAlien(String username, AlienColor color, Cabin cabin) {
-        if (state != State.VALIDATING) {
-            throw new IllegalStateException("Cannot add aliens outside the validating phase");
-        }
-        if (!model.shipValidating(getPlayerByID(username))) {
-            throw new IllegalArgumentException("Cannot add alien to invalid ship");
-        }
-        if (cabin instanceof StartingCabin) {
-            throw new IllegalArgumentException("Aliens can only be placed in cabins");
-        }
-        if(model.getLevel() != 2){
+                if(model.getLevel() != 2){
             throw new IllegalArgumentException("Aliens are only available in level 2 games");
         }
-        model.setAlien(color, cabin, getPlayerByID(username));
+        state.addAlien(getPlayerByID(username), color, cabin);
     }
 
     /**
-     * Initializes the ship for a player
-     * @param username is the username of the player that wants to initialize the ship
-     * @throws IllegalStateException if the game is not in the validating phase
-     * @apiNote To be used after ship validation
-     * @implNote username ship must be valid
+     * Sets the player to be ready to fly
+     * @param username is the username of the player that wants to fly
+     * @throws IllegalStateException if game is not in VALIDATING state
+     * @throws IllegalArgumentException if the player's ship is not valid
+     * @apiNote be careful to add aliens before calling this function
      */
-    public void initShip(String username) {
-        if (state != State.VALIDATING) {
-            throw new IllegalStateException("Cannot initiate ship outside the validating phase");
-        }
-        model.getGame().getPlayers().forEach(p -> {if(p.equals(getPlayerByID(username))) p.getShip().initAstronauts();});
-        readyToFly.put(username, true);
-        if(readyToFly.values().stream().allMatch(Boolean::booleanValue)) {
-            state = State.FLIGHT;
-            model.createDeck();
-            //TODO: notify players of state change
-            drawCard();
-        }
+    public void readyToFly(String username) {
+        state.readyToFly(getPlayerByID(username));
     }
 }

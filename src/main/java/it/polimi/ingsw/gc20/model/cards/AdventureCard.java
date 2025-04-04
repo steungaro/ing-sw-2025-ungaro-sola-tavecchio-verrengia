@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.states.*;
 
 
@@ -67,7 +68,7 @@ public abstract class AdventureCard {
         this.level = level;
     }
 
-    public abstract void setState(State gameState);
+    public abstract void setState(GameController controller);
 
     /**
      * Public getter for the played attribute

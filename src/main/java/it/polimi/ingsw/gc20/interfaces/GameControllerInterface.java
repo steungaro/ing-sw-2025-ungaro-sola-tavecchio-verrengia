@@ -24,7 +24,7 @@ public interface GameControllerInterface {
     Player getPlayerData(String asker, String asked);
 
     // Game state
-    State getState();
+    String getState();
     Map<Player, Integer> getPlayerScores();
 
     // Ship assembly
@@ -49,22 +49,22 @@ public interface GameControllerInterface {
     boolean validateShip(String username);
     void removeComponentFromShip(String username, Component component);
     void addAlien(String username, AlienColor color, Cabin cabin);
-    void initShip(String username);
+    void readyToFly(String username);
 
     // Gameplay
     AdventureCard getActiveCard();
-    void landOnPlanet(String username, int planetIndex);
-    void loadCargo(String username, CargoColor loaded, CargoHold ch);
-    void unloadCargo(String username, CargoColor lost, CargoHold ch);
-    void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to);
-    void acceptCard(String username);
-    void loseCrew(String username, List<Cabin> cabins);
-    void endMove(String username);
+    void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException;
+    void loadCargo(String username, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException;
+    void unloadCargo(String username, CargoColor lost, CargoHold ch) throws IllegalStateException, InvalidTurnException;
+    void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException;
+    void acceptCard(String username) throws IllegalStateException, InvalidTurnException;
+    void loseCrew(String username, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException;
+    void endMove(String username) throws IllegalStateException, InvalidTurnException;
 
     // Activate ship components
-    void activateEngines(String username, List<Engine> engines, List<Battery> batteries);
-    void activateShield(String username, Shield shield, Battery battery);
-    void activateCannonForProjectile(String username, Cannon cannon, Battery battery);
-    int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries);
-    void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries);
+    void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
+    void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException;
+    void activateCannonForProjectile(String username, Cannon cannon, Battery battery) throws IllegalStateException, InvalidTurnException;
+    int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
+    void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
 }

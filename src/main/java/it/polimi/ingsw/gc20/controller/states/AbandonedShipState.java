@@ -1,9 +1,15 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.components.Cabin;
+import it.polimi.ingsw.gc20.model.player.Player;
+
+import java.util.List;
+
 public class AbandonedShipState extends State{
-    int lostCrew;
-    int credits;
-    int lostDays;
+    private final int lostCrew;
+    private final int credits;
+    private final int lostDays;
 
     /**
      * Default constructor
@@ -14,4 +20,13 @@ public class AbandonedShipState extends State{
         this.lostDays = lostDays;
     }
 
+    @Override
+    public String toString() {
+        return "AbandonedShipState";
+    }
+
+    @Override
+    public void loseCrew(Player player, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException {
+
+    }
 }
