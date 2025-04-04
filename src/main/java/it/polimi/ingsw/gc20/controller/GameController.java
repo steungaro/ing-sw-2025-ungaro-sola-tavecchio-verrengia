@@ -103,6 +103,7 @@ public class GameController implements GameControllerInterface {
             state = new EndgameState();
         } else {
             card.setState(this);
+            state.addModelController(model, this);
         }
     }
 
@@ -1026,5 +1027,9 @@ public class GameController implements GameControllerInterface {
      */
     public void readyToFly(String username) {
         state.readyToFly(getPlayerByID(username));
+    }
+
+    public String getCurrentPlayer() {
+        return currentPlayer;
     }
 }

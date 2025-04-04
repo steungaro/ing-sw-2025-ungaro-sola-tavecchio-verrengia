@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.HourglassException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.List;
@@ -118,6 +120,10 @@ public abstract class State{
     }
 
     public void readyToFly(Player player) {
+        exception();
+    }
+
+    public void addModelController(GameModel model, GameController controller) {
         exception();
     }
 

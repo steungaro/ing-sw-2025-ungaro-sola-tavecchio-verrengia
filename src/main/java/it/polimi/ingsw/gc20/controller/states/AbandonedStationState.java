@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 
 import java.util.List;
 
-public class AbandonedStationState extends State {
+public class AbandonedStationState extends PlayingState {
     private final int crewNeeded;
     private final List<CargoColor> reward;
     private final int lostDays;
