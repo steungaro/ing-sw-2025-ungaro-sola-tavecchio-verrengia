@@ -478,7 +478,7 @@ public abstract class Ship {
     /**
      * @param cargo is the cargo to be loaded
      */
-    public void loadCargo(CargoColor cargo, CargoHold h) {
+    public void loadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (h.getAvailableSlots() < 1) {
             throw new IllegalArgumentException("No available slots in cargo hold");
         }
@@ -489,7 +489,7 @@ public abstract class Ship {
     /**
      * @param cargo is the cargo to be unloaded
      */
-    public void unloadCargo(CargoColor cargo, CargoHold h) {
+    public void unloadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (cargos.getOrDefault(cargo, 0) < 1) {
             throw new IllegalArgumentException("No cargo of that type to unload");
         }

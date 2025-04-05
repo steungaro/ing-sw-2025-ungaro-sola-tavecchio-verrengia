@@ -127,7 +127,7 @@ public class GameController implements GameControllerInterface {
         if (!currentPlayer.equals(username)) {
             throw new InvalidTurnException("Not your turn");
         }
-        state.landOnPlanet(username, planetIndex);
+        state.landOnPlanet(getPlayerByID(username), planetIndex);
     }
 
     /**

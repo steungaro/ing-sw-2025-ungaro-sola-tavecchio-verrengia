@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.components.Cabin;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class AbandonedShipState extends PlayingState{
      * Default constructor
      */
     public AbandonedShipState(int lostCrew, int credits, int lostDays) {
+        super();
         this.lostCrew = lostCrew;
         this.credits = credits;
         this.lostDays = lostDays;

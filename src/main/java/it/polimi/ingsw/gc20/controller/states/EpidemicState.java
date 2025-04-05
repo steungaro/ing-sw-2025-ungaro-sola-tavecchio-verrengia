@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.controller.states;
 
-public class EpidemicState extends State {
+public class EpidemicState extends PlayingState {
     /**
      * Default constructor
      */
@@ -11,5 +11,9 @@ public class EpidemicState extends State {
     @Override
     public String toString() {
         return "EpidemicState";
+    }
+
+    public void epidemic(){
+
     }
 }

@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.PlanetsState;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.player.Player;
@@ -19,6 +22,11 @@ public class Planets extends AdventureCard {
         super();
         planets = new ArrayList<>();
         lostDays = 0;
+    }
+
+    @Override
+    public void setState(GameController controller) {
+        controller.setState(new PlanetsState(planets, lostDays));
     }
 
     public List<Planet> getPlanets() {

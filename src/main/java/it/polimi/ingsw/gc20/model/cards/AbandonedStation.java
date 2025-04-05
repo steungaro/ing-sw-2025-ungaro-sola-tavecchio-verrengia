@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.cards;
 import java.util.*;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.AbandonedStationState;
 import it.polimi.ingsw.gc20.controller.states.PlanetsState;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.Player;
@@ -88,6 +89,6 @@ public class AbandonedStation extends AdventureCard {
     }
 
     public void setState(GameController controller) {
-        controller.setState(new PlanetsState());
+        controller.setState(new AbandonedStationState(crewNeeded, reward, lostDays));
     }
 }
