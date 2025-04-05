@@ -14,6 +14,10 @@ public class EpidemicState extends PlayingState {
     }
 
     public void epidemic(){
+    }
+
+    @Override
+    public void automaticAction() {
 
     }
 }

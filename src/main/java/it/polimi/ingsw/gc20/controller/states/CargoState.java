@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.exceptions.CargoException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.player.Player;
 
-public class CargoState extends PlayingState{
+public abstract class CargoState extends PlayingState{
 
     public CargoState(){
         super();
@@ -18,7 +20,7 @@ public class CargoState extends PlayingState{
      * @throws IllegalArgumentException if it's not the player's turn
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalArgumentException{
+    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException{
         if(!player.getUsername().equals(currentPlayer)){
             throw new IllegalArgumentException("It's not your turn");
         }
@@ -33,7 +35,7 @@ public class CargoState extends PlayingState{
      * @throws IllegalArgumentException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch){
+    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
         if(!player.getUsername().equals(currentPlayer)){
             throw new IllegalArgumentException("It's not your turn");
         }
@@ -49,7 +51,7 @@ public class CargoState extends PlayingState{
      * @throws IllegalArgumentException if it's not the player's turn
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo){
+    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo)throws IllegalStateException, InvalidTurnException, CargoException{
         if(!player.getUsername().equals(currentPlayer)){
             throw new IllegalArgumentException("It's not your turn");
         }

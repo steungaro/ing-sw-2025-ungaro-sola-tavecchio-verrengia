@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.HourglassException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
@@ -73,19 +74,19 @@ public abstract class State{
     public void landOnPlanet(Player player, int planetIndex) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void loadCargo(Player player, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException {
+    public void loadCargo(Player player, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
-    public void unloadCargo(Player player, CargoColor lost, CargoHold ch) throws IllegalStateException, InvalidTurnException {
+    public void unloadCargo(Player player, CargoColor lost, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
-    public void moveCargo(Player player, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException {
+    public void moveCargo(Player player, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
     public void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-        public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
+    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
         exception();
     }
     public void loseCrew(Player player, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException {
@@ -101,14 +102,11 @@ public abstract class State{
     public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void activateCannonForProjectile(Player player, Cannon cannon, Battery battery) throws IllegalStateException, InvalidTurnException {
-        exception();
-    }
     public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
         exception();
         return 0;
     }
-    public void activateCannonsCombatZone(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
         exception();
     }
 
@@ -127,6 +125,10 @@ public abstract class State{
     }
 
     public void addModelController(GameModel model, GameController controller) {
+        exception();
+    }
+
+    public void automaticAction() {
         exception();
     }
 

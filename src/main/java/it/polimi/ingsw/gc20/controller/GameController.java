@@ -22,17 +22,9 @@ public class GameController implements GameControllerInterface {
 
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-//    private final Map<String, Boolean> assemblingComplete = new HashMap<>();
-//    private final Map<String, Boolean> readyToFly = new HashMap<>();
     private String currentPlayer;
 
     private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
-
-//    private List<CargoColor> cargoGained;
-//    private int cargoLost;
-//    private Map<String, Float> declaredForFight;
-//    private List<Projectile> projectiles;
-
     /**
      * Default constructor
      *
@@ -56,24 +48,18 @@ public class GameController implements GameControllerInterface {
 
     public void setState(State state) {
         this.state = state;
+        //TODO: notify players of state change
     }
 
     /**
      * @return the first player in the list of players that is online
      */
-    private String getFirstOnlinePlayer() {
+    public String getFirstOnlinePlayer() {
         return model.getInGamePlayers().stream()
                 .map(Player::getUsername)
                 .filter(connectedPlayers::contains)
                 .findFirst()
                 .orElse(null);
-    }
-
-    /**
-     * @return the first player in the list of players without regarding their online status
-     */
-    private String getFirstPlayer() {
-        return model.getInGamePlayers().getFirst().getUsername();
     }
 
     /**
@@ -97,13 +83,28 @@ public class GameController implements GameControllerInterface {
      * Handles the card drawing phase of the game
      * Processes the card based on its type
      */
-    private void drawCard(){
+    public void drawCard(){
         AdventureCard card = model.drawCard();
+        currentPlayer = getFirstOnlinePlayer();
         if (card == null) {
             state = new EndgameState();
         } else {
             card.setState(this);
             state.addModelController(model, this);
+        }
+    }
+
+    /**
+     * Makes the game move to the next turn
+     * @return false if there are no more players to play, true otherwise
+     */
+    public boolean nextTurn() {
+        currentPlayer = getNextOnlinePlayer(currentPlayer);
+        if (currentPlayer == null) {
+            currentPlayer = getFirstOnlinePlayer();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -136,24 +137,13 @@ public class GameController implements GameControllerInterface {
      * @param loaded is the cargo that the player wants to load
      * @param ch is the cargo hold where the player wants to load the cargo
      * @throws IllegalStateException if the game is not in the cargo loading phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the array of cargo provided by the current card does not contain the loaded component
+     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
      */
     @Override
-    public void loadCargo(String username, CargoColor loaded, CargoHold ch) {
-        if (stateEnum != StateEnum.WAITING_CARGO_GAIN) {
-            throw new IllegalStateException("Cannot load cargo outside the cargo phase");
-        }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
+    public void loadCargo(String username, CargoColor loaded, CargoHold ch) throws InvalidTurnException, CargoException {
         Player player = getPlayerByID(username);
-        if (!cargoGained.contains(loaded)) {
-            throw new IllegalArgumentException("Cargo gained does not contain the loaded cargo");
-        }
-        cargoGained.remove(loaded);
-        model.addCargo(getPlayerByID(username), loaded, ch);
+        state.loadCargo(player, loaded, ch);
     }
 
     /**
@@ -162,30 +152,12 @@ public class GameController implements GameControllerInterface {
      * @param lost is the cargo that the player wants to unload
      * @param ch is the cargo hold where the player wants to unload the cargo
      * @throws IllegalStateException if the game is not in the cargo unloading phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the player is not unloading the most valuable cargo (only in LOST CARGO PHASE)
-     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combatzone (to remove most valuable one)
+     * @throws InvalidTurnException if it is not the player's turn
+     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combat zone (to remove most valuable one)
      */
     @Override
-    public void unloadCargo(String username, CargoColor lost, CargoHold ch) {
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        if (stateEnum != StateEnum.WAITING_CARGO_GAIN && stateEnum != StateEnum.WAITING_CARGO_LOST) {
-            throw new IllegalStateException("Cannot unload cargo outside the cargo phase");
-        }
-        Player player = getPlayerByID(username);
-
-        if (stateEnum == StateEnum.WAITING_CARGO_LOST) {
-            Map<CargoColor, Integer> playerCargo = player.getShip().getCargo();
-            for (CargoColor c : playerCargo.keySet()) {
-                if (c.ordinal() < lost.ordinal() && playerCargo.get(c) > 0) {
-                    throw new IllegalArgumentException("Not unloading the most valuable cargo.");
-                }
-            }
-        cargoLost--;
-        }
-        model.MoveCargo(getPlayerByID(username), lost, ch, null);
+    public void unloadCargo(String username, CargoColor lost, CargoHold ch) throws InvalidTurnException, CargoException {
+        state.unloadCargo(getPlayerByID(username), lost, ch);
     }
 
     /**
@@ -195,267 +167,65 @@ public class GameController implements GameControllerInterface {
      * @param from is the cargo hold where the player wants to move the cargo from
      * @param to is the cargo hold where the player wants to move the cargo to
      * @throws IllegalStateException if the game is not in the cargo moving phase
-     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used in losing/gaining cargo
      */
     @Override
-    public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) {
-        if (stateEnum != StateEnum.WAITING_CARGO_GAIN && stateEnum != StateEnum.WAITING_CARGO_LOST) {
-            throw new IllegalStateException("Cannot move cargo outside the cargo phase");
-        }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        Player player = getPlayerByID(username);
-        model.MoveCargo(getPlayerByID(username), cargo, from, to);
+    public void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) throws InvalidTurnException, CargoException {
+        state.moveCargo(getPlayerByID(username), cargo, from, to);
     }
 
     /**
-     * Unloads crew from the player's ship to activate the card -> player gains credits and loses days
-     * @param username is the username of the player that wants to activate abandoned ship card
-     * @param cabins is the list of cabins that the player wants to unload crew from (make it double if removing two asstronauts)
-     * @throws IllegalStateException if the game is not in the abandoned ship phase
-     * @throws IllegalArgumentException if the player does not have enough crew to abandon the ship
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @apiNote To be used after accepting an abandoned ship
+     * Accepts a card and performs the action associated with it
+     * @param username is the username of the player that wants to accept the card
+     * @throws IllegalStateException if the game is not in the card phase
+     * @throws InvalidTurnException if it is not the player's turn
      */
-    private void abandonedShip(String username, List<Cabin> cabins) {
-        if (stateEnum != StateEnum.WAITING_CREW && getActiveCard() instanceof AbandonedShip) {
-            throw new IllegalStateException("Cannot abandon ship outside the abandoned ship card");
-        }
+    @Override
+    public void acceptCard(String username) throws IllegalStateException, InvalidTurnException {
         if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
+            throw new InvalidTurnException("Not your turn");
         }
-        if (model.getCrew(getPlayerByID(username)) < ((AbandonedShip)getActiveCard()).getLostCrew()) {
-            throw new IllegalStateException("Cannot abandon ship with insufficient crew");
-        }
-        Player player = getPlayerByID(username);
-        model.AbandonedShip(getPlayerByID(username), cabins);
+        state.acceptCard(getPlayerByID(username));
+    }
+
+    public int getOnlinePlayers() {
+        return connectedPlayers.size();
     }
 
     /**
-     * Activates abandoned station card, returns the list of cargo provided by the card and enters the cargo phase
-     * @param username is the username of the player that wants to activate abandoned station card
-     * @throws IllegalStateException if the game is not in the abandoned station phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the player does not have enough crew to invade the station
-     */
-    private void abandonedStation(String username) {
-        AbandonedStation card = (AbandonedStation) getActiveCard();
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        if(stateEnum != StateEnum.WAITING_ACCEPTANCE){
-            throw new IllegalStateException("Cannot land on station outside the abandoned station phase");
-        } else if (getPlayerByID(username).getShip().crew() < card.getCrewNeeded()) {
-            throw new IllegalStateException("Cannot invade station with insufficient crew");
-        }
-        stateEnum = StateEnum.WAITING_CARGO_GAIN;
-        getActiveCard().playCard();
-        cargoGained = model.AbandonedStation(getPlayerByID(username));
-    }
-
-    /**
-     * To be called when an enemy card is active, used to declare firepower and activate cannons. If the player wins the fight, the card is considered defeated and the player can take its rewards
-     * @param username is the username of the player that wants to shoot the enemy
+     * To be called when a player wants to activate their cannons
+     * @param username is the username of the player that wants to activate their cannons
      * @param cannons is the list of cannons that the player wants to activate
      * @param batteries is the list of batteries that the player wants to use to activate the cannons
-     * @throws IllegalStateException if the game is not in the enemy phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @return 1 if the player wins the fight, 0 if the fight is a draw, -1 if the player loses the fight
-     */
-    public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries){
-        if (stateEnum != StateEnum.WAITING_CANNONS) {
-            throw new IllegalStateException("Cannot activate cannons now");
-        }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        Player player = getPlayerByID(username);
-        float firePower =  model.FirePower(player, new HashSet<>(cannons), batteries);
-
-        if(firePower > ((Enemy) getActiveCard()).getFirePower()){
-            getActiveCard().playCard();
-            stateEnum = StateEnum.WAITING_ACCEPTANCE;
-            //TODO notify player of state change
-            return 1;
-        } else if (firePower == ((Enemy) getActiveCard()).getFirePower()){
-            endMove(username); //nextPlayer
-            return 0;
-        } else {
-            if (getActiveCard() instanceof Pirates) {
-                stateEnum = StateEnum.FIRING;
-                //TODO: notify player of state change
-            } else if (getActiveCard() instanceof Slavers) {
-                stateEnum = StateEnum.WAITING_CREW;
-                //TODO: notify player of state change
-            } else if (getActiveCard() instanceof Smugglers) {
-                stateEnum = StateEnum.WAITING_CARGO_LOST;
-                //TODO: notify player of state change
-            }
-            return -1;
-        }
-    }
-
-    /**
-     * @param username
-     * @param cannons
-     * @param batteries
+     * @throws IllegalStateException if the game is not in the cannon activation phase
+     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateCannonsCombatZone(String username, List<Cannon> cannons, List<Battery> batteries) {
-        if (stateEnum != StateEnum.WAITING_CANNONS) {
-            throw new IllegalStateException("Cannot activate cannons now");
-        }
+    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException {
         if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
+            throw new InvalidTurnException("Not your turn");
         }
-        declaredForFight.putIfAbsent(username, model.FirePower(getPlayerByID(username), new HashSet<>(cannons), batteries));
-        if (declaredForFight.size() >= model.getInGamePlayers().stream().filter(p -> !isPlayerDisconnected(p.getUsername())).count()) {
-            if (((CombatZone)getActiveCard()).combatType() == 0) {
-                stateEnum = StateEnum.FIRING;
-                currentPlayer = declaredForFight.entrySet().stream()
-                        .min(Map.Entry.comparingByValue())
-                        .map(Map.Entry::getKey)
-                        .orElse(null);
-                nextFire();
-            } else {
+        state.activateCannons(getPlayerByID(username), cannons, batteries);
+    }
 
-            }
-        }
+    public void setCurrentPlayer(String currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
     /**
-     * To be called when a smugglers card has been defeated, used to accept the smugglers' offer and take the rewards
-     * @param username is the username of the player that wants to accept the smugglers' offer
-     * @throws IllegalStateException if the game is not in the smugglers phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the smugglers card has not been defeated
-     */
-    private void acceptSmugglers(String username) {
-        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Smugglers) {
-            throw new IllegalStateException("Cannot accept smugglers now");
-        }
-        if (!getActiveCard().isPlayed()) {
-            throw new IllegalStateException("Card not defeated");
-        }
-        stateEnum = StateEnum.WAITING_CARGO_GAIN;
-        //TODO: notify player of state change
-        cargoGained = model.smugglersSuccess(getPlayerByID(username));
-    }
-
-    /**
-     * To be called when a pirates card has been defeated, used to accept the pirates' offer and take the rewards
-     * @param username is the username of the player that wants to accept the pirates' offer
-     * @throws IllegalStateException if the game is not in the pirates phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the pirates card has not been defeated
-     */
-    private void acceptPirates(String username) {
-        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Pirates) {
-            throw new IllegalStateException("Cannot accept pirates now");
-        }
-        if (!getActiveCard().isPlayed()) {
-            throw new IllegalStateException("Card not defeated");
-        }
-        model.piratesSuccess(getPlayerByID(username));
-        stateEnum = StateEnum.FLIGHT;
-        drawCard();
-    }
-
-    /**
-     * To be called when a slavers card has been defeated, used to accept the reward
-     * @param username is the username of the player that wants
-     * @throws IllegalStateException if the game is not in the slavers phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @throws IllegalArgumentException if the slavers card has not been defeated
-     */
-    private void acceptSlavers(String username) {
-        if (stateEnum != StateEnum.WAITING_ACCEPTANCE && getActiveCard() instanceof Slavers) {
-            throw new IllegalStateException("Cannot accept slavers now");
-        }
-        if (!getActiveCard().isPlayed()) {
-            throw new IllegalStateException("Card not defeated");
-        }
-        model.slaversSuccess(getPlayerByID(username));
-        stateEnum = StateEnum.FLIGHT;
-        drawCard();
-    }
-
-    public void acceptCard(String username) {
-        if (stateEnum != StateEnum.WAITING_ACCEPTANCE) {
-            throw new IllegalStateException("Cannot accept card now");
-        }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        if (getActiveCard() instanceof AbandonedStation) {
-            abandonedStation(username);
-        } else if (getActiveCard() instanceof Smugglers) {
-            acceptSmugglers(username);
-        } else if (getActiveCard() instanceof Pirates) {
-            acceptPirates(username);
-        } else if (getActiveCard() instanceof Slavers) {
-            acceptSlavers(username);
-        }
-    }
-
-    /**
-     * @param username
-     * @param cabins
+     * To be called when a player wants to lose crew
+     * @param username is the username of the player that wants to lose crew
+     * @param cabins is the list of cabins that the player wants to lose crew from
+     * @throws IllegalStateException if the game is not in the correct phase
+     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void loseCrew(String username, List<Cabin> cabins) {
-        if (stateEnum != StateEnum.WAITING_CREW) {
-            throw new IllegalStateException("Cannot lose crew now");
-        }
+    public void loseCrew(String username, List<Cabin> cabins) throws InvalidTurnException {
         if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
+            throw new InvalidTurnException("Not your turn");
         }
-        if (getActiveCard() instanceof AbandonedShip) {
-            abandonedShip(username, cabins);
-            stateEnum = StateEnum.FLIGHT;
-            drawCard();
-        } else if (getActiveCard() instanceof Slavers) {
-            model.slaversFailure(getPlayerByID(username), cabins);
-            stateEnum = StateEnum.FLIGHT;
-            drawCard();
-        } else if (getActiveCard() instanceof CombatZone) {
-            model.CombatZoneLostCrew(getPlayerByID(username), cabins);
-            stateEnum = StateEnum.WAITING_CANNONS;
-            currentPlayer = getFirstOnlinePlayer();
-            declaredForFight = new HashMap<>();
-            // TODO: notify player of state change
-        }
-    }
-
-    /**
-     * To be called when a meteor swarm card or a pirates card or a combatzone card is firing the player
-     * @implSpec gets in the correct state by looking at the first projectile in the list
-     */
-    private void nextFire() {
-        if (stateEnum != StateEnum.FIRING) {
-            throw new IllegalStateException("Cannot fire outside the firing phase");
-        }
-        if (projectiles.isEmpty()) {
-            return;
-        } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_METEOR) {
-            stateEnum = StateEnum.WAITING_SHIELDS;
-            //TODO: notify player of state change
-        } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_METEOR) {
-            stateEnum = StateEnum.WAITING_CANNONS;
-            //TODO: notify player of state change
-        } else if (projectiles.getFirst().getFireType() == FireType.HEAVY_FIRE) {
-            try {
-                model.Fire(getPlayerByID(currentPlayer), model.getGame().rollDice(), projectiles.getFirst());
-            } catch (InvalidShipException e) {
-                stateEnum = StateEnum.VALIDATING;
-                //TODO: notify player to validate ship
-            }
-        } else if (projectiles.getFirst().getFireType() == FireType.LIGHT_FIRE) {
-            stateEnum = StateEnum.WAITING_SHIELDS;
-            //TODO: notify player of state change
-        }
+        state.loseCrew(getPlayerByID(username), cabins);
     }
 
     /**
@@ -467,81 +237,11 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateShield(String username, Shield shieldComp, Battery batteryComp) {
-        if (stateEnum != StateEnum.WAITING_SHIELDS && (projectiles.getFirst().getFireType() != FireType.LIGHT_METEOR || projectiles.getFirst().getFireType() != FireType.LIGHT_FIRE)) {
-            throw new IllegalStateException("Cannot activate shields now");
-        }
-        if (shieldComp == null) {
-            try {
-                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
-            } catch (InvalidShipException e) {
-                stateEnum = StateEnum.VALIDATING;
-                //TODO: notify player to validate ship
-            }
-        }
-        Player player = getPlayerByID(username);
-        model.UseShield(player, batteryComp);
-        if (shieldComp != null && !projectiles.isEmpty() && !Arrays.stream(shieldComp.getCoveredSides()).toList().contains(projectiles.getFirst().getFireType())) {
-            try {
-                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
-            } catch (InvalidShipException e) {
-                stateEnum = StateEnum.VALIDATING;
-                //TODO: notify player to validate ship
-            }
-        }
-        if (projectiles.size() > 1) {
-            projectiles.removeFirst();
-            stateEnum = StateEnum.FIRING;
-            nextFire();
-        } else {
-            if (getActiveCard() instanceof Pirates) {
-                projectiles = model.piratesFailure();
-            } else if (getActiveCard() instanceof MeteorSwarm) {
-                projectiles = ((MeteorSwarm) getActiveCard()).getMeteors();
-            }
-            endMove(username);
-        }
-    }
-
-
-    /**
-     * To be called when a heavy_meteor is firing the player
-     * @param username is the username of the player that wants to activate the cannon
-     * @param cannon is the cannon that the player wants to activate
-     * @param battery is the energy component that the player wants to use to activate the cannon
-     * @throws IllegalStateException if the game is not in the meteor swarm phase
-     * @throws IllegalArgumentException if it is not the player's turn
-     * @apiNote Ship may need to be validated
-     */
-    @Override
-    public void activateCannonForProjectile(String username, Cannon cannon, Battery battery) {
-        if (stateEnum != StateEnum.WAITING_CANNONS && projectiles.getFirst().getFireType() != FireType.HEAVY_METEOR) {
-            throw new IllegalStateException("Cannot activate cannons now");
-        }
+    public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException {
         if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
+            throw new InvalidTurnException("Not your turn");
         }
-        List<Cannon> valid = model.heavyMeteorCannon(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
-        List <Battery> batteryList = new ArrayList<>();
-        batteryList.add(battery);
-        model.removeEnergy(getPlayerByID(username), batteryList);
-        if (!valid.contains(cannon)) {
-            try {
-                model.Fire(getPlayerByID(username), model.getGame().rollDice(), projectiles.getFirst());
-            } catch (InvalidShipException e) {
-                stateEnum = StateEnum.VALIDATING;
-                // TODO: notify player to validate ship
-            }
-        }
-
-        projectiles.removeFirst();
-        if (projectiles.isEmpty()) {
-            projectiles = ((MeteorSwarm)getActiveCard()).getMeteors();
-            endMove(username);
-        } else {
-            stateEnum = StateEnum.FIRING;
-            nextFire();
-        }
+        state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
     }
 
     /**
@@ -557,65 +257,29 @@ public class GameController implements GameControllerInterface {
      * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
      * @param username is the username of the player that wants to terminate their turn
      * @throws IllegalStateException if the game is not in the card phase
-     * @throws IllegalArgumentException if it is not the player's turn
+     * @throws InvalidTurnException if it is not the player's turn
      */
-    public void endMove(String username) {
-        if (stateEnum == StateEnum.VALIDATING || stateEnum == StateEnum.ENDGAME || stateEnum == StateEnum.ASSEMBLING || stateEnum == StateEnum.CREATING || stateEnum == StateEnum.FLIGHT) {
-            throw new IllegalStateException("Cannot end move outside the card phase");
+    public void endMove(String username) throws InvalidTurnException {
+        if(!username.equals(currentPlayer)) {
+            throw new InvalidTurnException("Not your turn");
         }
-        if (!username.equals(currentPlayer)) {
-            throw new IllegalArgumentException("Not your turn");
-        }
-        if (getActiveCard().isPlayed()) {
-            drawCard();
-            return;
-        }
-        // TODO select only active players (or any player and call a thread to manage the inactive ones?)
-        currentPlayer = model.getGame().getPlayers().get((model.getGame().getPlayers().indexOf(getPlayerByID(currentPlayer)) + 1) % model.getGame().getPlayers().size()).getUsername();
-        if (getActiveCard() instanceof Planets) {
-            stateEnum = StateEnum.WAITING_PLANET;
-        } else if (getActiveCard() instanceof AbandonedShip) {
-            stateEnum = StateEnum.WAITING_CREW;
-            currentPlayer = getNextOnlinePlayer(currentPlayer);
-            if (currentPlayer == null) {
-                drawCard();
-                return;
-            }
-        } else if (getActiveCard() instanceof AbandonedStation) {
-            stateEnum = StateEnum.WAITING_ACCEPTANCE;
-            currentPlayer = getNextOnlinePlayer(currentPlayer);
-            if (currentPlayer == null) {
-                drawCard();
-                return;
-            }
-        } else if (getActiveCard() instanceof CombatZone) {
-            //TODO
-        } else if (getActiveCard() instanceof MeteorSwarm) {
-            stateEnum = StateEnum.FIRING;
-        } else if (getActiveCard() instanceof Enemy && !getActiveCard().isPlayed()) {
-            stateEnum = StateEnum.WAITING_CANNONS;
-        }
-
-
-
-
-        if (Objects.equals(currentPlayer, model.getGame().getPlayers().getFirst().getUsername())) { //last player played their turn
-            if (getActiveCard() instanceof Planets) {
-                model.movePlayerReverse();
-            }
-            stateEnum = StateEnum.FLIGHT;
-            drawCard();
-        }
+        state.endMove(getPlayerByID(username));
     }
 
     /**
-     * @param username
-     * @param engines
-     * @param batteries
+     * To be called when a player activates their engines
+     * @param username is the username of the player that wants to activate their engines
+     * @param engines is the list of engines that the player wants to activate
+     * @param batteries is the list of batteries that the player wants to use to activate the engines
+     * @throws IllegalStateException if the game is not in the engine activation phase
+     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) {
-        //TODO
+    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException {
+        if (!username.equals(currentPlayer)) {
+            throw new InvalidTurnException("Not your turn");
+        }
+        state.activateEngines(getPlayerByID(username), engines, batteries);
     }
 
     /**
@@ -750,14 +414,13 @@ public class GameController implements GameControllerInterface {
      * @return Player object containing player data
      * @throws IllegalArgumentException if the player is not found
      */
-    private Player getPlayerByID(String username){
+    public Player getPlayerByID(String username){
         return model.getGame().getPlayers()
                 .stream()
                 .filter(player -> player.getUsername().equals(username))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Player not found"));
     }
-
 
     /**
      * Retrieves all usernames of players in the game
@@ -912,7 +575,7 @@ public class GameController implements GameControllerInterface {
      * @return true if ship is valid, false otherwise
      * @throws IllegalStateException if game is not in VALIDATING state
      * @apiNote this function must be called in a loop from the view until the ship is valid
-     * @see #removeComponentFromShip(String username, Component component)
+     * @see #removeComponentFromShip(String, Component)
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public boolean validateShip(String username) {

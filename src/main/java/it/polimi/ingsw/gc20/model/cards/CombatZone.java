@@ -2,6 +2,10 @@ package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
 
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.CombatZone0State;
+import it.polimi.ingsw.gc20.controller.states.CombatZone1State;
+import it.polimi.ingsw.gc20.controller.states.State;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
@@ -25,6 +29,20 @@ public class CombatZone extends AdventureCard {
         lostCargo = 0;
         lostCrew = 0;
         cannonFire = new ArrayList<>();
+    }
+
+    /**
+     * @param controller
+     */
+    @Override
+    public void setState(GameController controller) {
+        if (combatType() == 0) {
+            State state;
+            state = new CombatZone0State(lostDays, lostCrew, cannonFire);
+            state.automaticAction();
+            controller.setState(state);
+        } else
+            controller.setState(new CombatZone1State(lostDays, lostCargo, cannonFire));
     }
 
     /**
