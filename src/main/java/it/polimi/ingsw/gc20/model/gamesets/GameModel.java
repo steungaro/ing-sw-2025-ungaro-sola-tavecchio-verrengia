@@ -412,18 +412,30 @@ public class GameModel {
             playersToMove.clear();
     }
 
-    /**
-     * function to apply the effect of the abandoned ship card
-     *
-     * @apiNote the player has already chosen the crew members to remove, controller need to pass the list of cabins
-     *
-     * @param p player whose chose to activate the effect of the card
-     * @param a list of cabins to remove crew members from
+    /** Function to call when the player lose some memeber of the crew
+     * @param p player that lose the crew
+     * @param l list of crew member to remove
      */
-    public void AbandonedShip(Player p, List<Cabin> a) {
-        AdventureCard c = getActiveCard();
-        setActiveCard(null);
-        ((AbandonedShip) c).Effect(p, game, a);
+    public void loseCrew (Player p, List<Cabin> l){
+        for (Cabin cabin : l) {
+            p.getShip().unloadCrew(cabin);
+        }
+    }
+
+    /** Function to move a player
+     * @param p player to move
+     * @param num number of spaces to move
+     */
+    public void movePlayer (Player p, int num){
+        game.move(p, num);
+    }
+
+    /** Function to add credits to a player
+     * @param p player to add the credits
+     * @param credits number of credits to add
+     */
+    public void addCredits (Player p, int credits){
+        p.addCredits(credits);
     }
 
     /** function to get the number of astronauts and alien for certain condition of some cards
