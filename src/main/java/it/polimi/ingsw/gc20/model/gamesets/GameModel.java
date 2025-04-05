@@ -629,36 +629,6 @@ public class GameModel {
         return p.getShip().getAstronauts();
     }
 
-    /** function for the lost days effect of the combat zone card
-     *
-     * @apiNote for the combat zone controller needs to calculate which player has which effect similar in pirates, smuggler and slavers
-     * @param p player
-     */
-    public void CombatZoneLostDays (Player p){
-        AdventureCard c = getActiveCard();
-        ((CombatZone) c).EffectLostDays(p, game);
-    }
-
-    /** function for the lost crew effect of the combat zone card
-     *
-     * @param p player
-     * @param c list of crew to remove
-     */
-    public void CombatZoneLostCrew (Player p, List<Cabin> c){
-        AdventureCard card = getActiveCard();
-        ((CombatZone) card).EffectLostCrew(p, c);
-    }
-
-    /** function for the lost cargo effect of the combat zone card
-     *
-     * @param p player
-     * @param c list of cargo to remove
-     */
-    public void combatZoneLostCargo (Player p, List <CargoHold> c){
-        AdventureCard card = getActiveCard();
-        ((CombatZone) card).EffectLostCargo(p, c);
-    }
-
     /** function for the Fire effect of the combat zone card
      *
      * @return list of projectile to be shot at the player
@@ -722,27 +692,6 @@ public class GameModel {
             }
     }
 
-
-    /**function to call in case of player winning against slavers and choosing to take the reward
-     * @apiNote controller need to verify which method in the model call (success or failure)
-     * @param p player that activate the effect
-     */
-    public void slaversSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        ((Slavers) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against slavers
-     *
-     * @param p player that activate the effect
-     * @param l list of crew member to remove
-     */
-    public void slaversFailure (Player p, List<Cabin> l){
-        AdventureCard card = getActiveCard();
-        ((Slavers) card).EffectFailure(p, l);
-    }
-
-
     /** function to call in case of player winning against smugglers, and it chose to take the reward
      *
      * @param p player that activate the effect
@@ -751,25 +700,6 @@ public class GameModel {
     public List<CargoColor> smugglersSuccess (Player p){
         AdventureCard card = getActiveCard();
         return ((Smugglers) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against smugglers
-     *
-     * @param p player that activate the effect
-     * @param l list of cargo to remove
-     */
-    public void smugglersFailure (Player p, List<CargoHold> l){
-        AdventureCard card = getActiveCard();
-        ((Smugglers) card).EffectFailure(p, l);
-    }
-
-    /** function to call in case of player winning against pirates and chose to activate the effect
-     *
-     * @param p player that activate the effect
-     */
-    public void piratesSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        ((Pirates) card).EffectSuccess(p, game);
     }
 
     /** function to call in case of player losing against pirates
