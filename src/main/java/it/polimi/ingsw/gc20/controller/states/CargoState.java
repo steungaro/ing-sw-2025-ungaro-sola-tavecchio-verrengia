@@ -1,15 +1,17 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
-public abstract class CargoState extends PlayingState{
+public abstract class CargoState extends PlayingState {
 
-    public CargoState(){
-        super();
+    public CargoState(GameController gc, GameModel gm) {
+        super(gm, gc);
     }
 
     /**
@@ -21,10 +23,10 @@ public abstract class CargoState extends PlayingState{
      */
     @Override
     public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException{
-        if(!player.getUsername().equals(currentPlayer)){
+        if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
-        model.addCargo(player, loaded, chTo);
+        getModel().addCargo(player, loaded, chTo);
     }
 
     /**
@@ -36,13 +38,13 @@ public abstract class CargoState extends PlayingState{
      */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
-        if(!player.getUsername().equals(currentPlayer)){
+        if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
-        model.MoveCargo(player, unloaded, ch, null);
+        getModel().MoveCargo(player, unloaded, ch, null);
     }
 
-    /**
+    /**getCurrentPlayer()
      * This method is used to move a cargo from one cargo hold to another
      * @param player the player who is moving the cargo
      * @param loaded the color of the cargo to be moved
@@ -52,9 +54,9 @@ public abstract class CargoState extends PlayingState{
      */
     @Override
     public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo)throws IllegalStateException, InvalidTurnException, CargoException{
-        if(!player.getUsername().equals(currentPlayer)){
+        if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
-        model.MoveCargo(player, loaded, chFrom, chTo);
+        getModel().MoveCargo(player, loaded, chFrom, chTo);
     }
 }

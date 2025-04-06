@@ -10,7 +10,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.*;
 
-public class CombatZone0State extends PlayingState {
+public class CombatZone0State extends State {
     private final int lostDays;
     private final int lostCrew;
     private final List<Projectile> cannonFires;

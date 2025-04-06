@@ -1,7 +1,9 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 import java.util.*;
 
@@ -23,6 +25,15 @@ public class Slavers extends AdventureCard implements Enemy{
         this.lostMembers = 0;
         this.reward = 0;
         this.lostDays = 0;
+    }
+
+    /**
+     * @param controller
+     * @param model
+     */
+    @Override
+    public void setState(GameController controller, GameModel model) {
+
     }
 
     /**

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ValidatingShipState extends State {
-    private final GameModel model;
     private final Map<Player, Boolean> validShips = new HashMap<>();
     private final Map<Player, Boolean> alienAdded = new HashMap<>();
 
@@ -19,8 +18,7 @@ public class ValidatingShipState extends State {
      * Default constructor
      */
     public ValidatingShipState(GameModel model) {
-        super();
-        this.model = model;
+        super(model);
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             alienAdded.put(player, model.getLevel() == 0); // if level 0, alien is considered added
@@ -34,7 +32,7 @@ public class ValidatingShipState extends State {
 
     @Override
     public boolean isShipValid(Player player) {
-        if (model.shipValidating(player)) {
+        if (getModel().shipValidating(player)) {
             validShips.put(player, true);
             return true;
         }
@@ -43,7 +41,7 @@ public class ValidatingShipState extends State {
 
     @Override
     public void removeComp(Player player, Component component) {
-        model.removeComponent(component, player);
+        getModel().removeComponent(component, player);
     }
 
     @Override
@@ -59,7 +57,7 @@ public class ValidatingShipState extends State {
         if (cabin instanceof StartingCabin) {
             throw new IllegalArgumentException("Aliens can only be placed in cabins");
         }
-        model.setAlien(color, cabin, player);
+        getModel().setAlien(color, cabin, player);
     }
 
     @Override
@@ -72,7 +70,7 @@ public class ValidatingShipState extends State {
 
     @Override
     public void initAllShips() {
-        for (Player player : model.getInGamePlayers()) {
+        for (Player player : getModel().getInGamePlayers()) {
             player.getShip().initAstronauts();
         }
     }

@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.PiratesState;
+import it.polimi.ingsw.gc20.controller.states.State;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
 
@@ -22,6 +26,12 @@ public class Pirates extends AdventureCard implements Enemy {
         credits = 0;
         lostDays = 0;
         cannonFire = new ArrayList<>();
+    }
+
+    @Override
+    public void setState(GameController controller, GameModel model) {
+        State state = new PiratesState(controller, model, firePower, cannonFire, credits, lostDays);
+        controller.setState(state);
     }
 
     public void setCannonFire(List<Projectile> cannonFire) {
@@ -54,25 +64,5 @@ public class Pirates extends AdventureCard implements Enemy {
 
     public int getLostDays() {
         return lostDays;
-    }
-
-    /**
-     * @param p is the player that has drawn the card
-     * @param g is the game
-     * @implNote the player moves back of lostDays days and gains credits
-     */
-    public void EffectSuccess(Player p, Game g) {
-        g.move(p, -lostDays);
-        p.addCredits(credits);
-    }
-
-    /**
-     * @return the list of projectiles that will be fired
-     * @implNote the projectiles are fired in the order they are in the list
-     * @apiNote the controller needs to obtain the list of fires and apply the rules specified in Projectile
-     * @see Projectile
-     */
-    public List<Projectile> EffectFailure() {
-        return this.getCannonFire();
     }
 }

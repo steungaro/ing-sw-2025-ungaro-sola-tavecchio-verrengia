@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.controller.states;
 
-public class EpidemicState extends PlayingState {
+public class EpidemicState extends State {
     /**
      * Default constructor
      */
@@ -18,6 +18,8 @@ public class EpidemicState extends PlayingState {
 
     @Override
     public void automaticAction() {
-
+        model.getInGamePlayers().stream()
+                .filter(p -> controller.isPlayerDisconnected(p.getUsername()))
+                .forEach(p -> {p.getShip().epidemic();});
     }
 }

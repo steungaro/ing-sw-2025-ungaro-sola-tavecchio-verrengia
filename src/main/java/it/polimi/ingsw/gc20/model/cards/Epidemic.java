@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.cards;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.states.EpidemicState;
 import it.polimi.ingsw.gc20.controller.states.State;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 /**
@@ -20,7 +21,7 @@ public class Epidemic extends AdventureCard {
      * @param controller
      */
     @Override
-    public void setState(GameController controller) {
+    public void setState(GameController controller, GameModel gm) {
         State state = new EpidemicState();
         controller.setState(state);
         try {
@@ -30,14 +31,4 @@ public class Epidemic extends AdventureCard {
         }
         state.automaticAction();
     }
-
-    /**
-     * @param p player
-     * @implNote The card calls the epidemic method of the player's ship
-     */
-    public void Effect(Player p) {
-        p.getShip().epidemic();
-        playCard();
-    }
-
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.*;
@@ -24,6 +25,15 @@ public class Smugglers extends AdventureCard implements Enemy {
         firePower = 0;
         lostDays = 0;
         reward = new ArrayList<>();
+    }
+
+    /**
+     * @param controller
+     * @param model
+     */
+    @Override
+    public void setState(GameController controller, GameModel model) {
+
     }
 
     /**

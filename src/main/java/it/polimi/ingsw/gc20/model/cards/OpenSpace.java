@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.MeteorSwarmState;
+import it.polimi.ingsw.gc20.controller.states.OpenSpaceState;
+import it.polimi.ingsw.gc20.controller.states.State;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 /**
@@ -15,12 +20,11 @@ public class OpenSpace extends AdventureCard {
     }
 
     /**
-     * @param p player
-     * @param g game
-     * @param power engine power
-     * @implNote moves the player of the declared firepower
+     * @param controller
      */
-    public void Effect(Player p, Game g, int power) {
-        g.move(p, power);
+    @Override
+    public void setState(GameController controller, GameModel model) {
+        State state = new OpenSpaceState(controller, model);
+        controller.setState(state);
     }
 }

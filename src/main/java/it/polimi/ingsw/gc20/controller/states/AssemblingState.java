@@ -13,32 +13,32 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class AssemblingState extends State {
-    GameModel model;
-    Map<Player, Boolean> assembled = new HashMap<>();
+    private final Map<Player, Boolean> assembled = new HashMap<>();
     
     /**
      * Default constructor
      */
     public AssemblingState(GameModel model) {
-        super();
-        this.model = model;
-        for (Player player : model.getInGamePlayers()) {
+        super(model);
+        for (Player player : getModel().getInGamePlayers()) {
             assembled.put(player, false);
         }
-        model.initCountdown();
+        getModel().initCountdown();
     }
 
     @Override
     public String toString() {
-        return "AssemblingState";
+        return "AssemblingState{ " +
+                "assembled=" + assembled +
+                " }";
     }
 
     @Override
     public Component takeComponentFromUnviewed(Player player, Component component) {
         try {
-            model.componentFromUnviewed(component);
+            getModel().componentFromUnviewed(component);
             // Add component to viewed pile so other players can see it
-            model.componentToViewed(component);
+            getModel().componentToViewed(component);
             return component;
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Component not found in unviewed pile");
@@ -47,7 +47,7 @@ public class AssemblingState extends State {
     @Override
     public Component takeComponentFromViewed(Player player, Component component) {
         try {
-            model.componentFromViewed(component);
+            getModel().componentFromViewed(component);
             return component;
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Component not found in viewed pile");
@@ -56,7 +56,7 @@ public class AssemblingState extends State {
     @Override
     public Component takeComponentFromBooked(Player player, Component component) {
         try {
-            model.componentFromBooked(component, player);
+            getModel().componentFromBooked(component, player);
             return component;
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Component not found in player's booked list");
@@ -65,19 +65,19 @@ public class AssemblingState extends State {
     @Override
     public void addComponentToBooked(Player player, Component component) {
         try {
-            model.componentToBooked(component, player);
+            getModel().componentToBooked(component, player);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Component not found in player's booked list");
         }
     }
     @Override
     public void addComponentToViewed(Component component) {
-        model.componentToViewed(component);
+        getModel().componentToViewed(component);
     }
     @Override
     public void placeComponent(Player player, Component component, int x, int y) {
         try {
-            model.addToShip(component, player, x, y);
+            getModel().addToShip(component, player, x, y);
         } catch (Exception e) {
             // Ship implementation will throw appropriate exceptions if placement is invalid
             throw new InvalidParameterException("Cannot place component at specified location: " + e.getMessage());
@@ -85,15 +85,15 @@ public class AssemblingState extends State {
     }
     @Override
     public void rotateComponentClockwise(Component component) {
-        model.RotateClockwise(component);
+        getModel().RotateClockwise(component);
     }
     @Override
     public void rotateComponentCounterclockwise(Component component) {
-        model.RotateCounterclockwise(component);
+        getModel().RotateCounterclockwise(component);
     }
     @Override
     public void stopAssembling(Player player, int position) {
-        model.stopAssembling(player, position);
+        getModel().stopAssembling(player, position);
         assembled.put(player, true);
     }
 
@@ -104,22 +104,22 @@ public class AssemblingState extends State {
 
     @Override
     public List<AdventureCard> peekDeck(Player player, int num) {
-        return model.viewDeck(num);
+        return getModel().viewDeck(num);
     }
 
     @Override
     public int getHourglassTime(Player player) {
-        return model.getRemainingTime();
+        return getModel().getRemainingTime();
     }
 
     @Override
     public void turnHourglass(Player player) throws HourglassException {
-        if (model.getTurnedHourglass() == 1 && !assembled.get(player)) {
+        if (getModel().getTurnedHourglass() == 1 && !assembled.get(player)) {
             throw new HourglassException("Cannot turn hourglass for the last time for a player that has not completed assembling yet");
         }
-        if (model.getRemainingTime() != 0) {
+        if (getModel().getRemainingTime() != 0) {
             throw new HourglassException("Cannot turn hourglass if time is not 0");
         }
-        model.turnHourglass();
+        getModel().turnHourglass();
     }
 }

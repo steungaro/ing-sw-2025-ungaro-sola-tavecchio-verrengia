@@ -13,6 +13,33 @@ import it.polimi.ingsw.gc20.model.player.Player;
 import java.util.List;
 
 public abstract class State{
+    private final GameModel model;
+    private final GameController controller;
+
+    /**
+     * Default constructor
+     */
+    public State(GameModel model, GameController controller) {
+        this.model = model;
+        this.controller = controller;
+    }
+    public State(GameController controller) {
+        this.model = null;
+        this.controller = controller;
+    }
+    public State(GameModel model) {
+        this.model = model;
+        this.controller = null;
+    }
+
+    public GameModel getModel() {
+        return model;
+    }
+
+    public GameController getController() {
+        return controller;
+    }
+
     private void exception() {
         throw new IllegalStateException("Cannot perform this action in " + this.toString() + " state");
     }
@@ -121,10 +148,6 @@ public abstract class State{
     }
 
     public void readyToFly(Player player) {
-        exception();
-    }
-
-    public void addModelController(GameModel model, GameController controller) {
         exception();
     }
 

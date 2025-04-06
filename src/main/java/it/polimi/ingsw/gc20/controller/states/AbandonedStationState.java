@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.List;
@@ -27,8 +29,8 @@ public class AbandonedStationState extends CargoState {
     /**
      * Default constructor
      */
-    public AbandonedStationState(int crewNeeded, List<CargoColor> reward, int lostDays) {
-        super();
+    public AbandonedStationState(GameController gc, GameModel gm, int crewNeeded, List<CargoColor> reward, int lostDays) {
+        super(gc, gm);
         this.crewNeeded = crewNeeded;
         this.reward = reward;
         this.lostDays = lostDays;
@@ -36,18 +38,22 @@ public class AbandonedStationState extends CargoState {
 
     @Override
     public String toString() {
-        return "AbandonedStationState";
+        return "AbandonedStationState{ " +
+                "crewNeeded=" + crewNeeded +
+                ", reward=" + reward +
+                ", lostDays=" + lostDays +
+                '}';
     }
 
     @Override
     public void acceptCard(Player player) throws InvalidTurnException {
-        if(!player.getUsername().equals(currentPlayer)){
+        if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
         if(player.getShip().crew() < crewNeeded){
             throw new IllegalStateException("You don't have enough crew to land on the station");
         }
-        controller.getActiveCard().playCard();
+        getController().getActiveCard().playCard();
     }
 
     /**
@@ -61,7 +67,7 @@ public class AbandonedStationState extends CargoState {
      */
     @Override
     public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalArgumentException, CargoException, InvalidTurnException {
-        if(controller.getActiveCard().isPlayed()){
+        if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't load cargo unless you are on the station");
         }
         if(!reward.contains(loaded)){
@@ -82,7 +88,7 @@ public class AbandonedStationState extends CargoState {
      */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalArgumentException, InvalidTurnException, CargoException {
-        if(controller.getActiveCard().isPlayed()){
+        if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't unload cargo unless you are on the station");
         }
         super.unloadCargo(player, unloaded, ch);
@@ -100,7 +106,7 @@ public class AbandonedStationState extends CargoState {
      */
     @Override
     public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalArgumentException, InvalidTurnException, CargoException {
-        if(controller.getActiveCard().isPlayed()){
+        if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't move cargo unless you are on the station");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
@@ -114,13 +120,17 @@ public class AbandonedStationState extends CargoState {
      */
     @Override
     public void endMove(Player player) throws InvalidTurnException {
-        if (!player.getUsername().equals(currentPlayer)){
+        if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (controller.nextTurn() || controller.getActiveCard().isPlayed()){
-            controller.drawCard();
+        if (getController().getActiveCard().isPlayed()) {
+            // TODO getModel().move(player, -lostDays);
+            getController().drawCard();
+        } else {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getController().drawCard();
+            }
         }
-        // TODO: model.move(player, -lostDays);
-        // model.move(player, -lostDays);
     }
 }

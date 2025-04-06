@@ -4,9 +4,7 @@ import java.util.*;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.states.PlanetsState;
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
-import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
 /**
  * @author GC20
@@ -25,8 +23,8 @@ public class Planets extends AdventureCard {
     }
 
     @Override
-    public void setState(GameController controller) {
-        controller.setState(new PlanetsState(planets, lostDays));
+    public void setState(GameController controller, GameModel model) {
+        controller.setState(new PlanetsState(controller, model, planets, lostDays));
     }
 
     public List<Planet> getPlanets() {
@@ -47,28 +45,5 @@ public class Planets extends AdventureCard {
 
     public void setLostDays(int lostDays) {
         this.lostDays = lostDays;
-    }
-
-    /**
-     * @param player is the player that wants to land on a planet
-     * @param planet is the planet where the player wants to land
-     * @return the list of cargo that the player can take from the planet, cargo is removed from bank, if not enough cargo is available in bank, it will not be created
-     * @apiNote the controller needs to verify that the planet is available and then manage Cargo loading
-     */
-    public List<CargoColor> land (Player player, Planet planet) {
-        if (!planet.getAvailable()) {
-            throw new IllegalArgumentException("The planet is not available");
-        }
-        return planet.land(player);
-    }
-
-    /**
-     * This method is called when a player loses days due to choosing to land on a planet
-     * @param player is the player that loses days
-     * @param game is the game where the player is playing
-     * @apiNote days are lost in inverse order of flight
-     */
-    public void effectLostDays(Player player, Game game) {
-        game.move(player, -lostDays);
     }
 }

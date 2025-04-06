@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.interfaces.*;
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -22,9 +23,9 @@ public class GameController implements GameControllerInterface {
 
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-    private String currentPlayer;
 
     private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
+
     /**
      * Default constructor
      *
@@ -41,14 +42,24 @@ public class GameController implements GameControllerInterface {
         model = new GameModel();
         model.startGame(level, usernames, gameID);
         state = new AssemblingState(model);
-        currentPlayer = "";
         connectedPlayers.addAll(usernames);
         //TODO: notify players of game start
     }
 
+    /**
+     * Changes the game state and notifies players of the change
+     * @param state is the new state of the game
+     */
     public void setState(State state) {
         this.state = state;
         //TODO: notify players of state change
+    }
+
+    /** Getter method for the gameID
+     * @return game id
+     */
+    public String getGameID() {
+        return gameID;
     }
 
     /**
@@ -64,8 +75,7 @@ public class GameController implements GameControllerInterface {
 
     /**
      * @param username is the username of the player
-     * @return the next player in the list of players that is online
-     * @implNote do not call this method if the player is the last one in the list
+     * @return the next player in the list of players that is online or null if there are no more players (the last player has played or there are no players online)
      */
     private String getNextOnlinePlayer(String username) {
         if (model.getInGamePlayers().getLast().getUsername().equals(username)) {
@@ -74,37 +84,22 @@ public class GameController implements GameControllerInterface {
         return model.getInGamePlayers()
                 .stream()
                 .map(Player::getUsername)
+                .dropWhile(name -> !name.equals(username))
+                .skip(1)  // Skip the current player
                 .filter(connectedPlayers::contains)
-                .toList()
-                .get(model.getInGamePlayers().indexOf(getPlayerByID(username)) + 1);
+                .findFirst()
+                .orElse(null);
     }
 
     /**
      * Handles the card drawing phase of the game
-     * Processes the card based on its type
      */
     public void drawCard(){
         AdventureCard card = model.drawCard();
-        currentPlayer = getFirstOnlinePlayer();
         if (card == null) {
             state = new EndgameState();
         } else {
-            card.setState(this);
-            state.addModelController(model, this);
-        }
-    }
-
-    /**
-     * Makes the game move to the next turn
-     * @return false if there are no more players to play, true otherwise
-     */
-    public boolean nextTurn() {
-        currentPlayer = getNextOnlinePlayer(currentPlayer);
-        if (currentPlayer == null) {
-            currentPlayer = getFirstOnlinePlayer();
-            return true;
-        } else {
-            return false;
+            card.setState(this, model);
         }
     }
 
@@ -124,10 +119,7 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException {
-        if (!currentPlayer.equals(username)) {
-            throw new InvalidTurnException("Not your turn");
-        }
+    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException, IllegalStateException {
         state.landOnPlanet(getPlayerByID(username), planetIndex);
     }
 
@@ -183,9 +175,6 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void acceptCard(String username) throws IllegalStateException, InvalidTurnException {
-        if (!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.acceptCard(getPlayerByID(username));
     }
 
@@ -203,14 +192,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException {
-        if (!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.activateCannons(getPlayerByID(username), cannons, batteries);
-    }
-
-    public void setCurrentPlayer(String currentPlayer) {
-        this.currentPlayer = currentPlayer;
     }
 
     /**
@@ -222,9 +204,6 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void loseCrew(String username, List<Cabin> cabins) throws InvalidTurnException {
-        if (!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.loseCrew(getPlayerByID(username), cabins);
     }
 
@@ -238,9 +217,6 @@ public class GameController implements GameControllerInterface {
      * @apiNote Ship may need to be validated
      */
     public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException {
-        if (!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
     }
 
@@ -260,9 +236,6 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidTurnException if it is not the player's turn
      */
     public void endMove(String username) throws InvalidTurnException {
-        if(!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.endMove(getPlayerByID(username));
     }
 
@@ -276,9 +249,6 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException {
-        if (!username.equals(currentPlayer)) {
-            throw new InvalidTurnException("Not your turn");
-        }
         state.activateEngines(getPlayerByID(username), engines, batteries);
     }
 
@@ -361,7 +331,8 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void giveUp(String username) {
-        model.giveUp(getPlayerByID(username));
+        //TODO
+        //model.giveUp(getPlayerByID(username));
     }
 
     /**
@@ -583,6 +554,7 @@ public class GameController implements GameControllerInterface {
             return false;
         } else {
             if (state.allShipsReady()) {
+                state.initAllShips();
                 drawCard();
                 //TODO: notify players of state change
             }
@@ -692,7 +664,18 @@ public class GameController implements GameControllerInterface {
         state.readyToFly(getPlayerByID(username));
     }
 
-    public String getCurrentPlayer() {
-        return currentPlayer;
+    public String getCurrentPlayer() throws IllegalStateException {
+        if (state instanceof PlayingState) {
+            return ((PlayingState) state).getCurrentPlayer();
+        } else {
+            throw new IllegalStateException("No current player in this state");
+        }
+    }
+
+    public List<String> getInGameConnectedPlayers() {
+        return model.getInGamePlayers().stream()
+                .map(Player::getUsername)
+                .filter(connectedPlayers::contains)
+                .collect(Collectors.toList());
     }
 }
