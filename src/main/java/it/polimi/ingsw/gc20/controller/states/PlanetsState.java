@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlanetsState extends CargoState {
-    private List<Planet> planets;
-    private int lostDays;
+    private final List<Planet> planets;
+    private final int lostDays;
     private String landedPlayer;
     private int landedPlanetIndex;
+    private final List<Player> playersToMove;
     /**
      * Default constructor
      */
@@ -26,6 +27,7 @@ public class PlanetsState extends CargoState {
         this.lostDays = lostDays;
         this.landedPlayer = null;
         this.landedPlanetIndex = -1;
+        this.playersToMove = new ArrayList<>();
     }
 
     @Override
@@ -56,6 +58,7 @@ public class PlanetsState extends CargoState {
             planets.get(planetIndex).setAvailable(false);
             landedPlayer = username;
             landedPlanetIndex = planetIndex;
+            playersToMove.add(getController().getPlayerByID(username));
         } else {
             throw new IllegalStateException("The planet is not available");
         }
@@ -99,6 +102,7 @@ public class PlanetsState extends CargoState {
         landedPlanetIndex = -1;
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
             getController().drawCard();
         }
     }

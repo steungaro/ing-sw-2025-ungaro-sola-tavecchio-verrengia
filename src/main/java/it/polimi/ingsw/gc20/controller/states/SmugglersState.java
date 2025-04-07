@@ -153,7 +153,7 @@ public class SmugglersState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         if (defeated) {
-            //TODO getModel().move(player, -lostDays);
+            getModel().movePlayer(player, -lostDays);
             getController().drawCard();
         } else {
             if (currentLostCargo > 0) {
