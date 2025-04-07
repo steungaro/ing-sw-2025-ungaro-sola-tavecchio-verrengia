@@ -110,6 +110,9 @@ public abstract class State{
     public void moveCargo(Player player, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
+    public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+        exception();
+    }
     public void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException {
         exception();
     }

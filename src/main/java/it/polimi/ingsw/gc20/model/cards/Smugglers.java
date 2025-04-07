@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import it.polimi.ingsw.gc20.controller.GameController;
-import it.polimi.ingsw.gc20.model.components.CargoHold;
-import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.controller.states.SmugglersState;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
 import java.util.*;
@@ -27,13 +26,9 @@ public class Smugglers extends AdventureCard implements Enemy {
         reward = new ArrayList<>();
     }
 
-    /**
-     * @param controller
-     * @param model
-     */
     @Override
     public void setState(GameController controller, GameModel model) {
-
+        controller.setState(new SmugglersState(controller, model, lostCargo, firePower, lostDays, reward));
     }
 
     /**
@@ -98,30 +93,6 @@ public class Smugglers extends AdventureCard implements Enemy {
      * @return reward
      */
     public List<CargoColor> getReward() {
-        return reward;
-    }
-
-
-    /**
-     * @param p is the player that has the effect applied onto
-     * @param l is the list of cargoHold that lose cargo
-     * @implNote The player loses cargo (the most valuable one is removed from each cargoHold)
-     * @apiNote The controller needs to verify that the player has enough cargo to lose (or call removeEnergy) and that the cargo lost is the most valuable owned by the player
-     */
-    public void EffectFailure(Player p, List<CargoHold> l) {
-        for (CargoHold c : l) {
-            p.getShip().unloadCargo(c);
-        }
-    }
-
-    /**
-     * @param p is the player that has the effect applied onto
-     * @param g is the game where the player is playing
-     * @return the list of cargo that the player gains
-     * @implNote The player loses lostDays
-     */
-    public List<CargoColor> EffectSuccess(Player p, Game g) {
-        g.move(p, -lostDays);
         return reward;
     }
 }

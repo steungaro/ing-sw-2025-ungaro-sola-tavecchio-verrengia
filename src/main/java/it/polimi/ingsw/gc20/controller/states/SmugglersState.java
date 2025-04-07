@@ -1,15 +1,168 @@
 package it.polimi.ingsw.gc20.controller.states;
 
-public class SmugglersState extends State {
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.exceptions.CargoException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.components.Battery;
+import it.polimi.ingsw.gc20.model.components.Cannon;
+import it.polimi.ingsw.gc20.model.components.CargoHold;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.model.player.Player;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * @author GC20
+ * This state manages a Smugglers card. A player, in their turn, will call shootEnemy and can win (1), tie (0), lose (-1):
+ * - when winning, a player can accept the card or end the move (after accepting the card the player can load or unload cargo and then end move)
+ * - when tieing, a new player is picked
+ * - when losing, player has to unload/move cargo until the lost cargo is 0, then call endMove
+ * - additional loseEnergy function may be called when a player has no more cargo to lose
+ */
+public class SmugglersState extends CargoState {
+    private final int lostCargo;
+    private final int firePower;
+    private final int lostDays;
+    private final List<CargoColor> reward;
+    private boolean defeated;
+    private boolean accepted;
+    private int currentLostCargo;
     /**
      * Default constructor
      */
-    public SmugglersState() {
-        super();
+    public SmugglersState(GameController gc, GameModel gm, int lostCargo, int firePower, int lostDays, List<CargoColor> reward) {
+        super(gc, gm);
+        this.lostCargo = lostCargo;
+        this.firePower = firePower;
+        this.lostDays = lostDays;
+        this.reward = reward;
+        defeated = false;
+        accepted = false;
+    }
+
+    @Override
+    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (!defeated) {
+            throw new IllegalStateException("Card not defeated");
+        }
+        accepted = true;
+    }
+
+    @Override
+    public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (!defeated) {
+            throw new IllegalStateException("Card not defeated. Cannot lose energy now");
+        }
+        if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
+            throw new IllegalStateException("Cannot lose energy if having cargo available");
+        }
+        List<Battery> batteries = new ArrayList<>();
+        batteries.add(battery);
+        getModel().removeEnergy(player, batteries);
+        currentLostCargo--;
+        if (player.getShip().getTotalEnergy() == 0) {
+            currentLostCargo = 0;
+        }
+    }
+
+    /**
+     * This method is used to load a cargo from a cargo hold to the player's cargo hold
+     * @param player the player who is loading the cargo
+     * @param loaded the color of the cargo to be loaded
+     * @param chTo the cargo hold to which the cargo is loaded
+     * @throws IllegalArgumentException if it's not the player's turn
+     */
+    @Override
+    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException {
+        if(!player.getUsername().equals(getCurrentPlayer())){
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (!defeated || !accepted) {
+            throw new IllegalStateException("Card not defeated or accepted yet");
+        }
+        if (!reward.contains(loaded)) {
+            throw new CargoException("Not in the card reward");
+        }
+        getModel().addCargo(player, loaded, chTo);
+        reward.remove(loaded);
+    }
+
+    /**
+     * This method is used to unload a cargo from the player's cargo hold
+     * @param player the player who is unloading the cargo
+     * @param unloaded the color of the cargo to be unloaded
+     * @param ch the cargo hold from which the cargo is unloaded
+     * @throws IllegalArgumentException if it's not the player's turn
+     */
+    @Override
+    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
+        if(!player.getUsername().equals(getCurrentPlayer())){
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (!defeated) {
+            currentLostCargo--;
+        }
+        getModel().MoveCargo(player, unloaded, ch, null);
     }
 
     @Override
     public String toString() {
-        return "SmugglersState";
+        return "SmugglersState{ " +
+                "lostCargo=" + lostCargo +
+                ", firePower=" + firePower +
+                ", lostDays=" + lostDays +
+                ", reward=" + reward +
+                '}';
+    }
+
+    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
+        if (firePower > this.firePower) {
+            getController().getActiveCard().playCard();
+            defeated = true;
+            currentLostCargo = 0;
+            return 1;
+        } else if (firePower == this.firePower) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getController().drawCard();
+            }
+            currentLostCargo = 0;
+            return 0;
+        } else {
+            currentLostCargo = lostCargo;
+            return -1;
+        }
+    }
+
+    @Override
+    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (defeated) {
+            //TODO getModel().move(player, -lostDays);
+            getController().drawCard();
+        } else {
+            if (currentLostCargo > 0) {
+                throw new IllegalStateException("Lose all your cargo before ending move");
+            }
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getController().drawCard();
+            }
+        }
     }
 }
