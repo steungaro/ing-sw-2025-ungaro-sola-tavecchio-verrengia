@@ -11,6 +11,8 @@ import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameModel {
     private Game game;
@@ -103,7 +105,7 @@ public class GameModel {
      *
      */
     private void sortPlayerByPosition() {
-        playersToMove.sort((p1, p2) -> p1.getPosition() - p2.getPosition());
+        playersToMove.sort(Comparator.comparingInt(Player::getPosition));
     }
 
     /** private function for the init of one player used only in start game
@@ -165,7 +167,7 @@ public class GameModel {
         try {
             allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Errore nel caricamento dei componenti", e);
         }
 
         pile.addUnviewed(allComponents);
@@ -445,17 +447,6 @@ public class GameModel {
     public int getCrew (Player p) {
         return p.getShip().crew();
     }
-    /**
-     * function to apply the effect of the abandoned station card
-     *
-     * @apiNote the controller needs to verify the number of crew member of the ship before calling this method, calling this only if the player activate the effect
-     * @param p player whose chose to activate the effect of the card
-     * @return the list of cargo colors
-     */
-    public List<CargoColor> AbandonedStation(Player p) {
-        AdventureCard c = getActiveCard();
-        return ((AbandonedStation) c).Effect(p, game);
-    }
 
     /**
      * function to call when is needed to calculate the firepower of the ship
@@ -558,26 +549,6 @@ public class GameModel {
     }
 
     /**
-     * method for the stardust card
-     *
-     * @param p player victim of the effect of the card
-     */
-    public void Stardust(Player p) {
-        AdventureCard c = getActiveCard();
-        ((Stardust) c).Effect(p, game);
-    }
-
-    /**
-     * method for the epidemic card
-     *
-     * @param p player victim of the effect of the card
-     */
-    public void Epidemic(Player p) {
-        AdventureCard c = getActiveCard();
-        ((Epidemic) c).Effect(p);
-    }
-
-    /**
      * method to calculate the score of the players
      *
      * @return map of the player and the score
@@ -627,16 +598,6 @@ public class GameModel {
      */
     public int getAstronauts(Player p) {
         return p.getShip().getAstronauts();
-    }
-
-    /** function for the Fire effect of the combat zone card
-     *
-     * @return list of projectile to be shot at the player
-     * @apiNote the controller needs to verify if the projectile hit the ship, in case of hit the Fire method is called in gameModel
-     */
-    public List<Projectile> combatZoneGetFire(){
-        AdventureCard card = getActiveCard();
-        return ((CombatZone) card).EffectCannonFire();
     }
 
     /** function to call when a projectile is fired and hit the ship
@@ -690,26 +651,6 @@ public class GameModel {
                 cannons.addAll(s.getCannons(direction, diceResult - 4));
                 return cannons;
             }
-    }
-
-    /** function to call in case of player winning against smugglers, and it chose to take the reward
-     *
-     * @param p player that activate the effect
-     * @return list of cargo reward
-     */
-    public List<CargoColor> smugglersSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        return ((Smugglers) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against pirates
-     *
-     * @return list of projectile to fire at the ship of the player
-     * @apiNote controller needs to roll the dice and call the method fire when a projectile hits the ship
-     */
-    public List<Projectile> piratesFailure (){
-        AdventureCard card = getActiveCard();
-        return ((Pirates) card).EffectFailure();
     }
 
     /** function to removeEnergy to utilize in case of not having enough cargo
@@ -777,16 +718,6 @@ public class GameModel {
         }
         return true;
     }
-
-    /** function called by the controller to get the meteor that will hit the players
-     *
-     * @return list of projectile that will aim for the ship of the player
-     */
-    public List<Projectile> MeteorSwarm (){
-        AdventureCard card = getActiveCard();
-        return ((MeteorSwarm) card).Effect();
-    }
-
 
     /**
      * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
