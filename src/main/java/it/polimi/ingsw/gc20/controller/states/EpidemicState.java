@@ -23,6 +23,6 @@ public class EpidemicState extends PlayingState {
     public void automaticAction() {
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().isPlayerDisconnected(p.getUsername()))
-                .forEach(p -> {p.getShip().epidemic();});
+                .forEach(p -> p.getShip().epidemic());
     }
 }
