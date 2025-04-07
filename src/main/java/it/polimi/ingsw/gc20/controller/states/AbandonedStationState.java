@@ -124,7 +124,7 @@ public class AbandonedStationState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         if (getController().getActiveCard().isPlayed()) {
-            // TODO getModel().move(player, -lostDays);
+            getModel().movePlayer(player, -lostDays);
             getController().drawCard();
         } else {
             nextPlayer();

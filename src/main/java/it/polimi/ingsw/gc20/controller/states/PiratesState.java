@@ -52,8 +52,8 @@ public class PiratesState extends PlayingState {
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
-        //TODO getModel().move(player, -lostDays);
-        //TODO getModel().addCredits(player, credits);
+        getModel().movePlayer(player, -lostDays);
+        getModel().addCredits(player, credits);
     }
 
     @Override

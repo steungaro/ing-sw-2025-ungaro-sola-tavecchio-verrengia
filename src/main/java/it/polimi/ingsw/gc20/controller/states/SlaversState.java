@@ -47,6 +47,7 @@ public class SlaversState extends PlayingState {
         float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
+            defeated = true;
             return 1;
         } else if (firePower == this.firePower) {
             nextPlayer();
@@ -70,9 +71,9 @@ public class SlaversState extends PlayingState {
         if (cabins.size() < lostMembers) {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
-        //TODO getModel().loseCrew(player, cabins);
-        //TODO getModel().addCredits(player, credits);
-        //TODO getModel().move(player, -lostDays);
+        getModel().loseCrew(player, cabins);
+        getModel().addCredits(player, reward);
+        getModel().movePlayer(player, -lostDays);
         nextPlayer();
         if (getCurrentPlayer() == null) {
             getController().drawCard();
@@ -87,8 +88,8 @@ public class SlaversState extends PlayingState {
         if (!defeated) {
             throw new IllegalStateException("Card not defeated");
         }
-        //TODO getModel().move(player, -lostDays);
-        //TODO getModel().addCredits(player, reward);
+        getModel().movePlayer(player, -lostDays);
+        getModel().addCredits(player, reward);
         getController().drawCard();
     }
 }

@@ -22,8 +22,7 @@ public class OpenSpaceState extends EnginesState {
 
     @Override
     public void finalAction(Map<Player, Integer> declaredEngines) {
-//TODO             declaredEngines.entrySet()
-//                    .forEach(e -> getModel().move(e.getKey(), e.getValue()));
+           declaredEngines.forEach((key, value) -> getModel().movePlayer(key, value));
         getController().drawCard();
     }
 

@@ -55,9 +55,9 @@ public class AbandonedShipState extends PlayingState {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
 
-        //TODO getModel().loseCrew(player, cabins);
-        //TODO getModel().addCredits(player, credits);
-        //TODO getModel().move(player, -lostDays);
+        getModel().loseCrew(player, cabins);
+        getModel().addCredits(player, credits);
+        getModel().movePlayer(player, -lostDays);
         getController().getActiveCard().playCard();
         getController().drawCard();
     }
