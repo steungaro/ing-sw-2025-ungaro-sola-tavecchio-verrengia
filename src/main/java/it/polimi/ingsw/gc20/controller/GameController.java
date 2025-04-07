@@ -664,6 +664,42 @@ public class GameController implements GameControllerInterface {
         state.readyToFly(getPlayerByID(username));
     }
 
+    /**
+     * @param username is the username of the player that wants to roll the dice
+     * @return the result of the dice roll
+     * @throws IllegalStateException if the game is not in the correct phase
+     * @throws InvalidTurnException if it is not the player's turn
+     */
+    @Override
+    public int rollDice(String username) throws IllegalStateException, InvalidTurnException {
+        if (state instanceof PlayingState) {
+            if (!getCurrentPlayer().equals(username)) {
+                throw new InvalidTurnException("It's not your turn");
+            }
+            return model.getGame().rollDice();
+        } else {
+            throw new IllegalStateException("Game is not in the correct phase");
+        }
+    }
+
+    /**
+     * @param username is the username of the player that wants to know the last rolled dice
+     * @return the last rolled dice
+     * @throws IllegalStateException if the game is not in the correct phase
+     * @throws InvalidTurnException if it is not the player's turn
+     */
+    @Override
+    public int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException {
+        if (state instanceof PlayingState) {
+            if (!getCurrentPlayer().equals(username)) {
+                throw new InvalidTurnException("It's not your turn");
+            }
+            return model.getGame().lastRolled();
+        } else {
+            throw new IllegalStateException("Game is not in the correct phase");
+        }
+    }
+
     public String getCurrentPlayer() throws IllegalStateException {
         if (state instanceof PlayingState) {
             return ((PlayingState) state).getCurrentPlayer();

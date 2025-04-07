@@ -64,7 +64,7 @@ public class FireManager {
             return false;
         }
         Projectile fire = fires.getFirst();
-        int dice = gm.getGame().rollDice();
+        int dice = gm.getGame().lastRolled();
         if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection()) !=
         ConnectorEnum.ZERO) {
             return false;

@@ -27,8 +27,7 @@ MeteorSwarm extends AdventureCard {
      */
     @Override
     public void setState(GameController controller, GameModel model) {
-        State state = new MeteorSwarmState(meteors);
-        state.addModelController(model, controller);
+        State state = new MeteorSwarmState(controller, model, meteors);
         controller.setState(state);
     }
 
@@ -39,15 +38,4 @@ MeteorSwarm extends AdventureCard {
     public List<Projectile> getMeteors() {
         return meteors;
     }
-
-
-    /**
-     * @return the list of meteors
-     * @apiNote the controller needs to scroll through the list of meteors and apply the effects observing the rules
-     * @see Projectile
-     */
-    public List<Projectile> Effect() {
-        return getMeteors();
-    }
-
 }

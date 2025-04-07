@@ -52,6 +52,8 @@ public interface GameControllerInterface {
     void readyToFly(String username);
 
     // Gameplay
+    int rollDice(String username) throws IllegalStateException, InvalidTurnException;
+    int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException;
     AdventureCard getActiveCard();
     void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException;
     void loadCargo(String username, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException;

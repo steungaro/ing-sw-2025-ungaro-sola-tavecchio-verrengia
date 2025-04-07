@@ -18,10 +18,9 @@ public class StardustState extends PlayingState {
 
     @Override
     public void automaticAction() {
-        //TODO
-//        getController().getInGameConnectedPlayers().stream()
-//                .map(p ->getController().getPlayerByID(p))
-//                .forEach(player -> getModel().move(-player.getShip().getAllExposed()));
+//TODO        getController().getInGameConnectedPlayers().stream()
+//TODO                .map(p ->getController().getPlayerByID(p))
+//TODO                .forEach(player -> getModel().move(-player.getShip().getAllExposed()));
         getController().getActiveCard().playCard();
         getController().drawCard();
     }

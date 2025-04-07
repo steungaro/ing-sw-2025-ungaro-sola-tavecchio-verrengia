@@ -17,12 +17,9 @@ public class Epidemic extends AdventureCard {
     public Epidemic() {
     }
 
-    /**
-     * @param controller
-     */
     @Override
     public void setState(GameController controller, GameModel gm) {
-        State state = new EpidemicState();
+        State state = new EpidemicState(controller, gm);
         controller.setState(state);
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
