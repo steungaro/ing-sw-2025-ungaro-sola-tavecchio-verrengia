@@ -1,5 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.MeteorSwarmState;
+import it.polimi.ingsw.gc20.controller.states.State;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
+
 import java.util.*;
 
 /**
@@ -17,6 +22,15 @@ MeteorSwarm extends AdventureCard {
         meteors = new ArrayList<>();
     }
 
+    /**
+     * @param controller
+     */
+    @Override
+    public void setState(GameController controller, GameModel model) {
+        State state = new MeteorSwarmState(controller, model, meteors);
+        controller.setState(state);
+    }
+
     public void setMeteors(List<Projectile> meteors) {
         this.meteors = meteors;
     }
@@ -24,15 +38,4 @@ MeteorSwarm extends AdventureCard {
     public List<Projectile> getMeteors() {
         return meteors;
     }
-
-
-    /**
-     * @return the list of meteors
-     * @apiNote the controller needs to scroll through the list of meteors and apply the effects observing the rules
-     * @see Projectile
-     */
-    public List<Projectile> Effect() {
-        return getMeteors();
-    }
-
 }

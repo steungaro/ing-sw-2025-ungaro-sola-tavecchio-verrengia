@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.components.Cabin;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
-import it.polimi.ingsw.gc20.model.player.Player;
-import java.util.*;
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.SlaversState;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
 /**
  * @author GC20
@@ -23,6 +22,11 @@ public class Slavers extends AdventureCard implements Enemy{
         this.lostMembers = 0;
         this.reward = 0;
         this.lostDays = 0;
+    }
+
+    @Override
+    public void setState(GameController controller, GameModel model) {
+        controller.setState(new SlaversState(controller, model, firePower, lostMembers, reward, lostDays));
     }
 
     /**
@@ -87,26 +91,5 @@ public class Slavers extends AdventureCard implements Enemy{
      */
     public int getLostDays() {
         return lostDays;
-    }
-
-    /**
-     * @param p is the player that the card has to affect
-     * @param l is the list of cabins that lose a crew member
-     * @implNote The player loses the crew members
-     */
-    public void EffectFailure(Player p, List<Cabin> l) {
-        for (Cabin c : l) {
-            p.getShip().unloadCrew(c);
-        }
-    }
-
-    /**
-     * @param p is the player that the card has to affect
-     * @param g is the game
-     * @implNote The player loses the lostDays and gains the reward
-     */
-    public void EffectSuccess(Player p, Game g) {
-        p.addCredits(reward);
-        g.move(p, -lostDays);
     }
 }

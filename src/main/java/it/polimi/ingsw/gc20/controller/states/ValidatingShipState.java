@@ -1,0 +1,77 @@
+package it.polimi.ingsw.gc20.controller.states;
+
+import it.polimi.ingsw.gc20.model.components.AlienColor;
+import it.polimi.ingsw.gc20.model.components.Cabin;
+import it.polimi.ingsw.gc20.model.components.Component;
+import it.polimi.ingsw.gc20.model.components.StartingCabin;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.model.player.Player;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ValidatingShipState extends State {
+    private final Map<Player, Boolean> validShips = new HashMap<>();
+    private final Map<Player, Boolean> alienAdded = new HashMap<>();
+
+    /**
+     * Default constructor
+     */
+    public ValidatingShipState(GameModel model) {
+        super(model);
+        for (Player player : model.getInGamePlayers()) {
+            validShips.put(player, false);
+            alienAdded.put(player, model.getLevel() == 0); // if level 0, alien is considered added
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ValidatingShipState";
+    }
+
+    @Override
+    public boolean isShipValid(Player player) {
+        if (getModel().shipValidating(player)) {
+            validShips.put(player, true);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void removeComp(Player player, Component component) {
+        getModel().removeComponent(component, player);
+    }
+
+    @Override
+    public boolean allShipsReady() {
+        return validShips.values().stream().allMatch(Boolean::booleanValue) && alienAdded.values().stream().allMatch(Boolean::booleanValue);
+    }
+
+    @Override
+    public void addAlien(Player player, AlienColor color, Cabin cabin) {
+        if (!validShips.get(player)) {
+            throw new IllegalArgumentException("Cannot add alien to invalid ship");
+        }
+        if (cabin instanceof StartingCabin) {
+            throw new IllegalArgumentException("Aliens can only be placed in cabins");
+        }
+        getModel().setAlien(color, cabin, player);
+    }
+
+    @Override
+    public void readyToFly(Player player) {
+        if (!validShips.get(player)) {
+            throw new IllegalArgumentException("Cannot fly with invalid ship");
+        }
+        validShips.put(player, true);
+    }
+
+    @Override
+    public void initAllShips() {
+        for (Player player : getModel().getInGamePlayers()) {
+            player.getShip().initAstronauts();
+        }
+    }
+}

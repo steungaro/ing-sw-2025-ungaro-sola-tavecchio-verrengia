@@ -1,10 +1,8 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import java.util.*;
-
-import it.polimi.ingsw.gc20.model.components.Cabin;
-import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.*;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
 /**
  * @author GC20
@@ -23,6 +21,12 @@ public class AbandonedShip extends AdventureCard {
         lostCrew = 0;
         credits = 0;
         lostDays = 0;
+    }
+
+    @Override
+    public void setState(GameController gc, GameModel gm) {
+        State state = new AbandonedShipState(gc, gm, lostCrew, credits, lostDays);
+        gc.setState(state);
     }
 
     /**
@@ -77,26 +81,5 @@ public class AbandonedShip extends AdventureCard {
 
     public int getLostDays() {
         return lostDays;
-    }
-
-    /**
-     * Applies card effect on player p, applying effect means the player accepted the card
-     * @param p player that accepted the card
-     * @param g game
-     * @param l list of cabins to remove crew from
-     * @implNote player p loses lostCrew crew members, gains credits and loses lostDays days
-     */
-    public void Effect(Player p, Game g, List<Cabin> l) throws IllegalArgumentException {
-        if (lostCrew > p.getShip().crew() || lostCrew > l.size()) {
-            throw new IllegalArgumentException("Not enough crew members to accept the card");
-        } else {
-            for (Cabin cabin : l) {
-                p.getShip().unloadCrew(cabin);
-            }
-        }
-
-        p.addCredits(credits);
-        g.move(p, -lostDays);
-        playCard();
     }
 }

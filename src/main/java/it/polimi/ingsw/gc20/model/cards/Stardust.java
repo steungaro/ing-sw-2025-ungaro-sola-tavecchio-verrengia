@@ -1,5 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.EpidemicState;
+import it.polimi.ingsw.gc20.controller.states.StardustState;
+import it.polimi.ingsw.gc20.controller.states.State;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.gamesets.Game;
 import it.polimi.ingsw.gc20.model.ship.Ship;
@@ -17,13 +22,17 @@ public class Stardust extends AdventureCard {
     }
 
     /**
-     * @param p player affected by the card
-     * @param g game
-     * @implNote Each player loses a fly day for each exposed connector in their ship
-     * @see Ship
+     * @param controller
      */
-    public void Effect(Player p, Game g) {
-        g.move(p, -p.getShip().getAllExposed());
-        playCard();
+    @Override
+    public void setState(GameController controller, GameModel model) {
+        State state = new StardustState(controller, model);
+        controller.setState(state);
+        try {
+            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        state.automaticAction();
     }
 }

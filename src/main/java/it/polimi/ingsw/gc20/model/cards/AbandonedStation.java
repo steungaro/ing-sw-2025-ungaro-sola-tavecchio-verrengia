@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.model.cards;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.states.AbandonedStationState;
+import it.polimi.ingsw.gc20.controller.states.State;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.Player;
 
@@ -71,16 +75,8 @@ public class AbandonedStation extends AdventureCard {
         return lostDays;
     }
 
-    /**
-     * @param p is the player that has to be affected by the card
-     * @param g is the game where the player is playing
-     * @return the list of cargo that the player receives
-     * @implNote The player loses the lostDays, and the list of cargo is returned to the caller
-     * @apiNote The controller needs to verify that the player has enough crew members to accept the card
-     */
-    public List<CargoColor> Effect(Player p, Game g) {
-        g.move(p, -lostDays);
-        playCard();
-        return reward;
+    public void setState(GameController gc, GameModel gm) {
+        State state = new AbandonedStationState(gc, gm, crewNeeded, reward, lostDays);
+        gc.setState(state);
     }
 }
