@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
@@ -23,11 +24,11 @@ public class CombatZone1State extends CargoState {
     /**
      * Default constructor
      */
-    public CombatZone1State(GameController gc, GameModel gm, int lostDays, int lostCargo, List<Projectile> cannonFires) {
-        super(gc, gm);
-        this.lostDays = lostDays;
-        this.lostCargo = lostCargo;
-        this.cannonFires = cannonFires;
+    public CombatZone1State(GameController controller, GameModel model, AdventureCard card) {
+        super(controller, model);
+        this.lostDays = card.getLostDays();
+        this.lostCargo = card.getLostCargo();
+        this.cannonFires = card.getCannonFire();
         this.declaredFirepower = new HashMap<>();
         this.declaredEnginePower = new HashMap<>();
         for (Player player : getModel().getInGamePlayers()) {
@@ -109,6 +110,7 @@ public class CombatZone1State extends CargoState {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
+            getModel().getActiveCard().playCard();
             getController().drawCard();
         }
     }

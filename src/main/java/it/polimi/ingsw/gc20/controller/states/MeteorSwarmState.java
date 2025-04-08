@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.Cannon;
@@ -18,10 +19,10 @@ public class MeteorSwarmState extends PlayingState {
     /**
      * Default constructor
      */
-    public MeteorSwarmState(GameController gc, GameModel gm, List<Projectile> meteors) {
-        super(gm, gc);
-        this.meteors = meteors;
-        manager = new FireManager(gm, meteors, gc.getPlayerByID(getCurrentPlayer()));
+    public MeteorSwarmState(GameController controller, GameModel model, AdventureCard card) {
+        super(model, controller);
+        this.meteors = card.getCannonFire();
+        manager = new FireManager(model, meteors, controller.getPlayerByID(getCurrentPlayer()));
     }
 
     @Override
@@ -63,6 +64,7 @@ public class MeteorSwarmState extends PlayingState {
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
                 getController().drawCard();
             } else {
                 manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
