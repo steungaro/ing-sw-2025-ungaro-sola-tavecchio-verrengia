@@ -7,6 +7,8 @@ import it.polimi.ingsw.gc20.controller.states.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -163,7 +165,30 @@ public abstract class AdventureCard {
 
 
     public void setState(GameController controller, GameModel model){
-        //TODO implement this method
+        try {
+            // Construct the full class name with package
+            String stateClassName = "it.polimi.ingsw.gc20.controller.states." + name + "State";
+
+            // Get the class object for the state
+            Class<?> stateClass = Class.forName(stateClassName);
+
+            // Get the constructor that takes GameModel, GameController, and AdventureCard
+            Constructor<?> constructor = stateClass.getConstructor(
+                    GameModel.class, GameController.class, AdventureCard.class);
+
+            // Instantiate the state using the constructor
+            Object stateInstance = constructor.newInstance(model, controller, this);
+
+            // Set the state in the controller
+            controller.setState((State) stateInstance);
+        } catch (ClassNotFoundException e) {
+            System.err.println("State class not found for card: " + name);
+            e.printStackTrace();
+        } catch (NoSuchMethodException | IllegalAccessException |
+                 InstantiationException | InvocationTargetException e) {
+            System.err.println("Error creating state for card: " + name);
+            e.printStackTrace();
+        }
     }
 
     /**
