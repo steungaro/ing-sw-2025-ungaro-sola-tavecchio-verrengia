@@ -91,7 +91,7 @@ public class PiratesState extends PlayingState {
         manager.activateCannon(cannons.getFirst(), batteries.getFirst());
         do {
             manager.fire();
-        } while (!manager.isFirstHeavyFire());
+        } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
             getController().drawCard();
         }
@@ -105,7 +105,7 @@ public class PiratesState extends PlayingState {
         manager.activateShield(shield, battery);
         do {
             manager.fire();
-        } while (!manager.isFirstHeavyFire());
+        } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
             getController().drawCard();
         }
