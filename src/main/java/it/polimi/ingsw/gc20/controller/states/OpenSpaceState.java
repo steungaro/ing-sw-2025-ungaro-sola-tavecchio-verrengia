@@ -23,7 +23,12 @@ public class OpenSpaceState extends EnginesState {
     //TODO if enginePower = 0 then the player early land
     @Override
     public void finalAction(Map<Player, Integer> declaredEngines) {
-           declaredEngines.forEach((key, value) -> getModel().movePlayer(key, value));
+           declaredEngines.forEach((key, value) -> {
+               getModel().movePlayer(key, value);
+                if (value == 0) {
+                     getController().defeated(key.getUsername());
+                }
+           });
         getController().drawCard();
     }
 

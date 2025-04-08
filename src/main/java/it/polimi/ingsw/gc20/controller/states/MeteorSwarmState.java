@@ -39,7 +39,7 @@ public class MeteorSwarmState extends PlayingState {
         manager.activateCannon(cannons.getFirst(), batteries.getFirst());
         do {
             manager.fire();
-        } while (!manager.isFirstHeavyFire());
+        } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
@@ -59,7 +59,7 @@ public class MeteorSwarmState extends PlayingState {
         manager.activateShield(shield, battery);
         do {
             manager.fire();
-        } while (!manager.isFirstHeavyFire());
+        } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
