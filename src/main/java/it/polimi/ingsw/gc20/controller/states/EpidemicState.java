@@ -1,14 +1,15 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
 public class EpidemicState extends PlayingState {
     /**
      * Default constructor
      */
-    public EpidemicState(GameController gameController, GameModel gameModel) {
-        super(gameModel, gameController);
+    public EpidemicState(GameController controller, GameModel model, AdventureCard card) {
+        super(model, controller);
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
         } catch (InterruptedException e) {
@@ -30,5 +31,7 @@ public class EpidemicState extends PlayingState {
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().isPlayerDisconnected(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
+        getModel().getActiveCard().playCard();
+        getController().drawCard();
     }
 }

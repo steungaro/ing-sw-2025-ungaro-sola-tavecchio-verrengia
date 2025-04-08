@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
@@ -29,11 +30,11 @@ public class AbandonedStationState extends CargoState {
     /**
      * Default constructor
      */
-    public AbandonedStationState(GameController gc, GameModel gm, int crewNeeded, List<CargoColor> reward, int lostDays) {
-        super(gc, gm);
-        this.crewNeeded = crewNeeded;
-        this.reward = reward;
-        this.lostDays = lostDays;
+    public AbandonedStationState(GameController controller, GameModel model, AdventureCard card) {
+        super(controller, model);
+        this.crewNeeded = card.getCrewNeeded();
+        this.reward = card.getReward();
+        this.lostDays = card.getLostDays();
     }
 
     @Override

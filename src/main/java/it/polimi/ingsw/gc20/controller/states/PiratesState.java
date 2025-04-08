@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.Cannon;
@@ -31,12 +32,12 @@ public class PiratesState extends PlayingState {
     /**
      * Default constructor
      */
-    public PiratesState(GameController gc, GameModel gm, int firePower, List<Projectile> cannonFire, int credits, int lostDays) {
-        super(gm, gc);
-        this.firePower = firePower;
-        this.cannonFire = cannonFire;
-        this.credits = credits;
-        this.lostDays = lostDays;
+    public PiratesState(GameController controller, GameModel model, AdventureCard card) {
+        super(model, controller);
+        this.firePower = card.getFirePower();
+        this.cannonFire = card.getCannonFire();
+        this.credits = card.getCredits();
+        this.lostDays = card.getLostDays();
     }
 
     @Override
@@ -107,6 +108,7 @@ public class PiratesState extends PlayingState {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
+            getModel().getActiveCard().playCard();
             getController().drawCard();
         }
     }
@@ -122,6 +124,7 @@ public class PiratesState extends PlayingState {
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
+        getModel().getActiveCard().playCard();
         getController().drawCard();
     }
 }
