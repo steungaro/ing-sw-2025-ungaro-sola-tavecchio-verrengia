@@ -50,6 +50,7 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
+    
     @Override
     public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
