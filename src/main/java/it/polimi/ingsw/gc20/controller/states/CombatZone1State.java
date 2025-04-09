@@ -28,7 +28,7 @@ public class CombatZone1State extends CargoState {
         super(controller, model);
         this.lostDays = card.getLostDays();
         this.lostCargo = card.getLostCargo();
-        this.cannonFires = card.getCannonFire();
+        this.cannonFires = card.getProjectiles();
         this.declaredFirepower = new HashMap<>();
         this.declaredEnginePower = new HashMap<>();
         for (Player player : getModel().getInGamePlayers()) {

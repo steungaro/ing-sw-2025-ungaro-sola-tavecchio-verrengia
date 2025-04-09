@@ -26,7 +26,7 @@ public class AbandonedShipState extends PlayingState {
      */
     public AbandonedShipState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
-        this.lostCrew = card.getLostCrew();
+        this.lostCrew = card.getCrew();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
     }

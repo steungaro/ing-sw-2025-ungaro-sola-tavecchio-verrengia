@@ -25,8 +25,8 @@ public class CombatZone0State extends PlayingState {
     public CombatZone0State(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
         this.lostDays = card.getLostDays();
-        this.lostCrew = card.getLostCrew();
-        this.cannonFires = card.getCannonFire();
+        this.lostCrew = card.getCrew();
+        this.cannonFires = card.getProjectiles();
         this.declaredFirepower = new HashMap<>();
         this.declaredEnginePower = new HashMap<>();
         for (Player player : getModel().getInGamePlayers()) {

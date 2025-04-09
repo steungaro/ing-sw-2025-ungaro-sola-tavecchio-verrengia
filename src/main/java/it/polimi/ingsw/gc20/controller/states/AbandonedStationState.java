@@ -32,7 +32,7 @@ public class AbandonedStationState extends CargoState {
      */
     public AbandonedStationState(GameController controller, GameModel model, AdventureCard card) {
         super(controller, model);
-        this.crewNeeded = card.getCrewNeeded();
+        this.crewNeeded = card.getCrew();
         this.reward = card.getReward();
         this.lostDays = card.getLostDays();
     }

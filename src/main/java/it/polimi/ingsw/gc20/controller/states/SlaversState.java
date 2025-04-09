@@ -24,7 +24,7 @@ public class SlaversState extends PlayingState {
     public SlaversState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
-        this.lostMembers = card.getLostMembers();
+        this.lostMembers = card.getCrew();
         this.reward = card.getCredits();
         this.lostDays = card.getLostDays();
         this.defeated = false;

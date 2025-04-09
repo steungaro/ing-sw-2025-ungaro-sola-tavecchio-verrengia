@@ -35,7 +35,7 @@ public class PiratesState extends PlayingState {
     public PiratesState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
-        this.cannonFire = card.getCannonFire();
+        this.cannonFire = card.getProjectiles();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
     }
