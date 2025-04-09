@@ -20,18 +20,14 @@ public abstract class AdventureCard {
     private int level;
     private int IDCard;
     private boolean played;
-    private int lostCrew;
+    private int crew;
     private int credits;
     private int lostDays;
-    private int crewNeeded;
     private List<CargoColor> reward;
     private int lostCargo;
-    private List<Projectile> cannonFire;
-    private List<Projectile> meteors;
+    private List<Projectile> projectiles;
     private int firePower;
     private List<Planet> planets;
-    private int lostMembers;
-
 
 
 
@@ -71,12 +67,12 @@ public abstract class AdventureCard {
         this.played = played;
     }
 
-    public int getLostCrew() {
-        return lostCrew;
+    public int getCrew() {
+        return crew;
     }
 
-    public void setLostCrew(int lostCrew) {
-        this.lostCrew = lostCrew;
+    public void setCrew(int crew) {
+        this.crew = crew;
     }
 
     public int getCredits() {
@@ -95,14 +91,6 @@ public abstract class AdventureCard {
         this.lostDays = lostDays;
     }
 
-    public int getCrewNeeded() {
-        return crewNeeded;
-    }
-
-    public void setCrewNeeded(int crewNeeded) {
-        this.crewNeeded = crewNeeded;
-    }
-
     public List<CargoColor> getReward() {
         return reward;
     }
@@ -119,20 +107,12 @@ public abstract class AdventureCard {
         this.lostCargo = lostCargo;
     }
 
-    public List<Projectile> getCannonFire() {
-        return cannonFire;
+    public List<Projectile> getProjectiles() {
+        return projectiles;
     }
 
-    public void setCannonFire(List<Projectile> cannonFire) {
-        this.cannonFire = cannonFire;
-    }
-
-    public List<Projectile> getMeteors() {
-        return meteors;
-    }
-
-    public void setMeteors(List<Projectile> meteors) {
-        this.meteors = meteors;
+    public void setProjectiles(List<Projectile> projectiles) {
+        this.projectiles = projectiles;
     }
 
     public int getFirePower() {
@@ -149,14 +129,6 @@ public abstract class AdventureCard {
 
     public void setPlanets(List<Planet> planets) {
         this.planets = planets;
-    }
-
-    public int getLostMembers() {
-        return lostMembers;
-    }
-
-    public void setLostMembers(int lostMembers) {
-        this.lostMembers = lostMembers;
     }
 
     public Boolean isPlayed(){
@@ -203,7 +175,7 @@ public abstract class AdventureCard {
      * @implNote if the card has lostCrew > 0, the method returns 1, else 0
      */
     public int combatType() {
-        if (lostCrew > 0) {
+        if (crew > 0) {
             return 1;
         } else {
             return 0;

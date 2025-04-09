@@ -2,7 +2,7 @@
     {
       "name": "Slavers",
       "firePower": "6",
-      "lostMembers": "3",
+      "crew": "3",
       "reward": "5",
       "lostDays": "1",
       "IDCard": "1",
@@ -20,7 +20,7 @@
     {
       "name": "Pirates",
       "firePower": "5",
-      "cannonFire": [
+      "projectiles": [
         {
             "Direction": "UP",
             "fireType": "LIGHT_FIRE"
@@ -66,7 +66,7 @@
     },
     {
       "name": "MeteorSwarm",
-      "meteors": [
+      "projectiles": [
         {
           "direction": "UP",
           "fireType": "HEAVY_METEOR"
@@ -85,7 +85,7 @@
     },
     {
       "name": "MeteorSwarm",
-      "meteors": [
+      "projectiles": [
             {
               "direction": "UP",
               "fireType": "LIGHT_METEOR"
@@ -112,7 +112,7 @@
     },
     {
       "name": "MeteorSwarm",
-        "meteors": [
+        "projectiles": [
             {
             "direction": "UP",
             "fireType": "HEAVY_METEOR"
@@ -255,7 +255,7 @@
       "name": "CombatZone",
       "lostDays": "3",
       "lostCargo": "0",
-      "cannonFire": [{
+      "projectiles": [{
           "Direction": "DOWN",
           "fireType": "LIGHT_FIRE"
         },
@@ -263,13 +263,13 @@
           "Direction": "DOWN",
           "fireType": "HEAVY_FIRE"
       }],
-        "lostCrew": "2",
+        "crew": "2",
         "IDCard": "16",
         "Level": "0"
     },
     {
       "name": "AbandonedShip",
-      "lostCrew": "2",
+      "crew": "2",
       "credits": "3",
       "lostDays": "1",
       "IDCard": "17",
@@ -277,7 +277,7 @@
     },
     {
       "name": "AbandonedShip",
-      "lostCrew": "3",
+      "crew": "3",
       "credits": "4",
       "lostDays": "1",
       "IDCard": "18",
@@ -285,7 +285,7 @@
     },
     {
       "name": "AbandonedStation",
-      "crewNeeded": "5",
+      "crew": "5",
       "reward": [
         "YELLOW",
         "GREEN"
@@ -296,7 +296,7 @@
     },
     {
       "name": "AbandonedStation",
-      "crewNeeded": "6",
+      "crew": "6",
       "reward": [
           "RED",
           "RED"
@@ -308,7 +308,7 @@
     {
       "name": "Slavers",
       "firePower": "7",
-      "lostMembers": "4",
+      "crew": "4",
       "reward": "8",
       "lostDays": "2",
       "IDCard": "21",
@@ -330,7 +330,7 @@
     {
       "name": "Pirates",
       "firePower": "6",
-      "cannonFire": [
+      "projectiles": [
         {
             "Direction": "UP",
             "fireType": "HEAVY_FIRE"
@@ -378,7 +378,7 @@
     },
     {
       "name": "MeteorSwarm",
-        "meteors": [
+        "projectiles": [
             {
             "direction": "UP",
             "fireType": "LIGHT_METEOR"
@@ -405,7 +405,7 @@
     },
     {
       "name": "MeteorSwarm",
-        "meteors": [
+        "projectiles": [
             {
             "direction": "UP",
             "fireType": "HEAVY_METEOR"
@@ -428,7 +428,7 @@
     },
     {
       "name": "MeteorSwarm",
-        "meteors": [
+        "projectiles": [
             {
             "direction": "UP",
             "fireType": "LIGHT_METEOR"
@@ -651,7 +651,7 @@
       "name": "CombatZone",
         "lostDays": "4",
         "lostCargo": "3",
-        "cannonFire": [
+        "projectiles": [
           {
             "Direction": "UP",
             "fireType": "LIGHT_FIRE"
@@ -669,13 +669,13 @@
               "fireType": "HEAVY_FIRE"
           }
         ],
-        "lostCrew": "0",
+        "crew": "0",
         "IDCard": "38",
         "Level": "2"
         },
         {
         "name": "AbandonedShip",
-        "lostCrew": "4",
+        "crew": "4",
         "credits": "6",
         "lostDays": "1",
         "IDCard": "39",
@@ -683,7 +683,7 @@
         },
         {
         "name": "AbandonedShip",
-        "lostCrew": "5",
+        "crew": "5",
         "credits": "8",
         "lostDays": "2",
         "IDCard": "40",
@@ -691,7 +691,7 @@
         },
         {
         "name": "AbandonedStation",
-        "crewNeeded": "7",
+        "crew": "7",
         "reward": [
             "RED",
             "YELLOW"
@@ -702,7 +702,7 @@
         },
         {
         "name": "AbandonedStation",
-        "crewNeeded": "8",
+        "crew": "8",
         "reward": [
             "YELLOW",
             "YELLOW",
