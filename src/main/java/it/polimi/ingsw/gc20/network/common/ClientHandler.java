@@ -6,4 +6,5 @@ public interface ClientHandler {
     void handleRequest();
     void disconnect ();
     String getClientUsername();
+    Boolean isConnected();
 }

@@ -2,8 +2,7 @@ package it.polimi.ingsw.gc20.network.RMI;
 
 import it.polimi.ingsw.gc20.exceptions.ServerCriticalError;
 import it.polimi.ingsw.gc20.network.NetworkManager;
-import it.polimi.ingsw.gc20.network.common.ClientHandler;
-import it.polimi.ingsw.gc20.network.common.Server;
+import it.polimi.ingsw.gc20.network.common.*;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -31,7 +30,7 @@ public class RMIServer implements Server {
     }
 
     /**
-     * Funtion to start the RMI server.
+     * Function to start the RMI server.
      * //TODO add the port as a parameter
      */
     @Override
@@ -66,12 +65,12 @@ public class RMIServer implements Server {
     }
 
     /**
-     * Function to stop the RMI Server, disconnetting all client
+     * Function to stop the RMI Server, disconnecting all client
      */
     @Override
     public void stop() {
         running = false;
-        //Disconnetting all the client, we copy the list clients
+        //Disconnecting all the client, we copy the list clients
         for (ClientHandler client : new ArrayList<>(clients)){
             client.disconnect();
         }
@@ -86,7 +85,7 @@ public class RMIServer implements Server {
     public void registerClient (ClientHandler client) {
         clients.add(client);
         NetworkManager.getInstance().registerClient(client);
-        LOGGER.info("Client registrato: " + client.getClientUsername());
+        LOGGER.info("registered client: " + client.getClientUsername());
     }
 
     /** Function to remove a Client from the server
@@ -96,15 +95,15 @@ public class RMIServer implements Server {
     public void removeClient (ClientHandler client) {
         clients.remove(client);
         NetworkManager.getInstance().removeClient(client.getClientUsername());
-        LOGGER.info("Client rimosso: " + client.getClientUsername());
+        LOGGER.info("removed client: " + client.getClientUsername());
     }
 
     /** Function to broadCast a message
      *
-     * @param message messsage to broadcast
+     * @param message message to broadcast
      */
     public void broadcastMessage(Object message) {
-        //copiamo l'array per evitare modifiche concorrenti da capire se meglio synchronized
+        //maybe better synchronized than copying the list
         for (ClientHandler client : new ArrayList<>(clients)) {
             executor.submit(() -> client.sendMessage(message));
         }
@@ -127,4 +126,18 @@ public class RMIServer implements Server {
         return rmiServerHandler;
     }
 
+    public void updateClient(String username, ClientHandler client) {
+        ClientHandler existingClient = NetworkManager.getInstance().getClient(username);
+
+        if (existingClient != null) {
+            // Remove the old client
+            this.removeClient(existingClient);
+            // Add the new client
+            this.registerClient(client);
+        } else {
+            LOGGER.warning("Client not found: " + username);
+            return;
+        }
+        LOGGER.info("Client updated: " + client.getClientUsername());
+    }
 }

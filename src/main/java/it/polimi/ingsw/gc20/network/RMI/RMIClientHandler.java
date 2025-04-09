@@ -73,9 +73,10 @@ public class RMIClientHandler implements ClientHandler {
 
     /**
      * Function to check if the client is connected.
+     *
      * @return True if the client is connected, false otherwise.
      */
-    public boolean isConnected() {
+    public Boolean isConnected() {
         return connected;
     }
 

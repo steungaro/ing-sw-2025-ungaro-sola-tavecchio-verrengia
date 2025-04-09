@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.network.RMI;
 
 import it.polimi.ingsw.gc20.network.*;
+import it.polimi.ingsw.gc20.network.common.ClientHandler;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -27,34 +28,54 @@ public class RMIAuthService implements RMIAuthInterface {
      * @throws IllegalArgumentException if the username is invalid or already in use.
      */
     public String login(String username) throws IllegalArgumentException {
-        // Check if the username is valid
-        if (NetworkManager.getInstance().getClient(username) != null) {
-            LOGGER.warning("Username already exists");
-            throw new IllegalArgumentException("Username already exists");
+        ClientHandler existingClient = NetworkManager.getInstance().getClient(username);
+
+        // Case 1: if is a new username
+        if (existingClient==null) {
+            // Generate a session token
+            String token = UUID.randomUUID().toString();
+            tokenToUsername.put(token, username);
+            RMIClientHandler clientHandler = new RMIClientHandler(username);
+            server.registerClient(clientHandler);
+            LOGGER.info(String.format("Utente Registrato via RMI: " + username));
+            return token;
         }
+        // Case 2: if the username is already in use -- verify if is connected
+        else if (!existingClient.isConnected()) {
+            // remove old token
+            tokenToUsername.entrySet().removeIf(entry -> username.equals(entry.getValue()));
+            // Generate a new session token
+            String token = UUID.randomUUID().toString();
+            tokenToUsername.put(token, username);
 
-
-        // Generate a session token
-        String token = UUID.randomUUID().toString();
-        tokenToUsername.put(token, username);
-        RMIClientHandler clientHandler = new RMIClientHandler(username);
-        server.registerClient(clientHandler);
-        LOGGER.info(String.format("Utente Registrato via RMI: " + username));
-        return token;
+            // Update the client handler
+            RMIClientHandler clientHandler = new RMIClientHandler(username);
+            server.updateClient(username, clientHandler);
+            LOGGER.info(String.format("Utente riconnesso via RMI: " + username));
+            return token;
+        }
+        // Case 3: if the username is already in use and connected
+        else {
+            LOGGER.warning("Username già in uso");
+            throw new IllegalArgumentException("Username già in uso");
+        }
     }
 
     /**
      * Function to log out a user.
      *
      * @param token The session token of the user.
-     * @return
+     * @return True if the user was logged out successfully, false otherwise.
      * @throws RemoteException if the token is invalid.
      */
     public boolean logout(String token) throws RemoteException {
         String username = tokenToUsername.remove(token);
         if (username != null) {
             LOGGER.info(String.format("Utente disconnesso: " + username));
-            NetworkManager.getInstance().removeClient(username);
+            ClientHandler client = NetworkManager.getInstance().getClient(username);
+            if (client != null) {
+                client.disconnect();
+            }
             return true;
         } else {
             LOGGER.warning("Token non valido");
