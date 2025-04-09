@@ -23,6 +23,7 @@ import java.util.List;
  * - the player can activate the cannon or the shield
  * - heavu fire are automatically activated
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class PiratesState extends PlayingState {
     private final List<Projectile> cannonFire;
     private final int firePower;

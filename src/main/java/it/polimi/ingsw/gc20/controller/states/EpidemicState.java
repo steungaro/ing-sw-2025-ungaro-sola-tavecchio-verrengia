@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class EpidemicState extends PlayingState {
     /**
      * Default constructor

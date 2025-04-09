@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.List;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class MeteorSwarmState extends PlayingState {
     private final List<Projectile> meteors;
     private FireManager manager;
@@ -21,7 +22,7 @@ public class MeteorSwarmState extends PlayingState {
      */
     public MeteorSwarmState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
-        this.meteors = card.getCannonFire();
+        this.meteors = card.getProjectiles();
         manager = new FireManager(model, meteors, controller.getPlayerByID(getCurrentPlayer()));
     }
 

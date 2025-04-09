@@ -23,6 +23,7 @@ import java.util.List;
  * - when losing, player has to unload/move cargo until the lost cargo is 0, then call endMove
  * - additional loseEnergy function may be called when a player has no more cargo to lose
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class SmugglersState extends CargoState {
     private final int lostCargo;
     private final int firePower;

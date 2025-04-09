@@ -16,6 +16,7 @@ import java.util.List;
  * - end the move (discard card)
  *    + if all players have ended their moves without accepting the card, a new card is drawn
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class AbandonedShipState extends PlayingState {
     private final int lostCrew;
     private final int credits;

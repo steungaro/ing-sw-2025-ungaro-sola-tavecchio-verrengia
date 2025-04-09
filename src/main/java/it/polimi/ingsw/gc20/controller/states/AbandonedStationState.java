@@ -22,6 +22,7 @@ import java.util.List;
  * - discard the card (end the move)
  * if the card is not accepted by any player, or if the card has been played, a new card is drawn
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class AbandonedStationState extends CargoState {
     private final int crewNeeded;
     private final List<CargoColor> reward;
