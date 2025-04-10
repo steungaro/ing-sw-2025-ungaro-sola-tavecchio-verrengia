@@ -40,7 +40,7 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
 
-        gameController = new GameController(id, players, level);
+        gameController = new    GameController(id, players, level);
         model = new GameModel();
         abandonedShipState = new AbandonedShipState(gameController, model, 1, 2, 3);
     }
