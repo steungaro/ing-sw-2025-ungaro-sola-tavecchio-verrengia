@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.*;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class CombatZone0State extends PlayingState {
     private final int lostDays;
     private int lostCrew;
