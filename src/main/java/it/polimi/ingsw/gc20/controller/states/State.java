@@ -158,4 +158,8 @@ public abstract class State{
         exception();
     }
 
+    public State resume() {
+        exception();
+        return null;
+    }
 }
