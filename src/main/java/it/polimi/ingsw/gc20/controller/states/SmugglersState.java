@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.Cannon;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
@@ -22,6 +23,7 @@ import java.util.List;
  * - when losing, player has to unload/move cargo until the lost cargo is 0, then call endMove
  * - additional loseEnergy function may be called when a player has no more cargo to lose
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class SmugglersState extends CargoState {
     private final int lostCargo;
     private final int firePower;
@@ -33,12 +35,12 @@ public class SmugglersState extends CargoState {
     /**
      * Default constructor
      */
-    public SmugglersState(GameController gc, GameModel gm, int lostCargo, int firePower, int lostDays, List<CargoColor> reward) {
-        super(gc, gm);
-        this.lostCargo = lostCargo;
-        this.firePower = firePower;
-        this.lostDays = lostDays;
-        this.reward = reward;
+    public SmugglersState(GameController controller, GameModel model, AdventureCard card) {
+        super(controller, model);
+        this.lostCargo = card.getLostCargo();
+        this.firePower = card.getFirePower();
+        this.lostDays = card.getLostDays();
+        this.reward = card.getReward();
         defeated = false;
         accepted = false;
     }
@@ -137,6 +139,7 @@ public class SmugglersState extends CargoState {
         } else if (firePower == this.firePower) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                getController().getActiveCard().playCard();
                 getController().drawCard();
             }
             currentLostCargo = 0;
@@ -154,6 +157,7 @@ public class SmugglersState extends CargoState {
         }
         if (defeated) {
             getModel().movePlayer(player, -lostDays);
+            getModel().getActiveCard().playCard();
             getController().drawCard();
         } else {
             if (currentLostCargo > 0) {
@@ -161,6 +165,7 @@ public class SmugglersState extends CargoState {
             }
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                getController().getActiveCard().playCard();
                 getController().drawCard();
             }
         }

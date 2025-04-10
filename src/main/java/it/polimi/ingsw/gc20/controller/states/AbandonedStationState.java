@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
@@ -21,6 +22,7 @@ import java.util.List;
  * - discard the card (end the move)
  * if the card is not accepted by any player, or if the card has been played, a new card is drawn
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class AbandonedStationState extends CargoState {
     private final int crewNeeded;
     private final List<CargoColor> reward;
@@ -29,11 +31,11 @@ public class AbandonedStationState extends CargoState {
     /**
      * Default constructor
      */
-    public AbandonedStationState(GameController gc, GameModel gm, int crewNeeded, List<CargoColor> reward, int lostDays) {
-        super(gc, gm);
-        this.crewNeeded = crewNeeded;
-        this.reward = reward;
-        this.lostDays = lostDays;
+    public AbandonedStationState(GameController controller, GameModel model, AdventureCard card) {
+        super(controller, model);
+        this.crewNeeded = card.getCrew();
+        this.reward = card.getReward();
+        this.lostDays = card.getLostDays();
     }
 
     @Override

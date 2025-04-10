@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Cannon;
@@ -20,12 +21,13 @@ public class SlaversState extends PlayingState {
     /**
      * Default constructor
      */
-    public SlaversState(GameController gc, GameModel gm, int firePower, int lostMembers, int reward, int lostDays) {
-        super(gm, gc);
-        this.firePower = firePower;
-        this.lostMembers = lostMembers;
-        this.reward = reward;
-        this.lostDays = lostDays;
+    @SuppressWarnings("unused") // dynamically created by Cards
+    public SlaversState(GameController controller, GameModel model, AdventureCard card) {
+        super(model, controller);
+        this.firePower = card.getFirePower();
+        this.lostMembers = card.getCrew();
+        this.reward = card.getCredits();
+        this.lostDays = card.getLostDays();
         this.defeated = false;
     }
 
@@ -52,6 +54,7 @@ public class SlaversState extends PlayingState {
         } else if (firePower == this.firePower) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                getController().getActiveCard().playCard();
                 getController().drawCard();
             }
             return 0;
@@ -76,6 +79,7 @@ public class SlaversState extends PlayingState {
         getModel().movePlayer(player, -lostDays);
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            getController().getActiveCard().playCard();
             getController().drawCard();
         }
     }
@@ -90,6 +94,7 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
+        getController().getActiveCard().playCard();
         getController().drawCard();
     }
 }

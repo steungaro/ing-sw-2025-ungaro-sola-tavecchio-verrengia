@@ -1,17 +1,19 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.*;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class OpenSpaceState extends EnginesState {
 
     /**
      * Default constructor
      */
-    public OpenSpaceState(GameController controller, GameModel model) {
+    public OpenSpaceState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
     }
 
@@ -22,7 +24,13 @@ public class OpenSpaceState extends EnginesState {
 
     @Override
     public void finalAction(Map<Player, Integer> declaredEngines) {
-           declaredEngines.forEach((key, value) -> getModel().movePlayer(key, value));
+        declaredEngines.forEach((key, value) -> {
+            getModel().movePlayer(key, value);
+            if (value == 0) {
+                 getController().defeated(key.getUsername());
+            }
+           });
+        getModel().getActiveCard().playCard();
         getController().drawCard();
     }
 

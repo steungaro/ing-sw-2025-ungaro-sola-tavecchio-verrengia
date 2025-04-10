@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
@@ -15,6 +16,7 @@ import java.util.List;
  * - end the move (discard card)
  *    + if all players have ended their moves without accepting the card, a new card is drawn
  */
+@SuppressWarnings("unused") // dynamically created by Cards
 public class AbandonedShipState extends PlayingState {
     private final int lostCrew;
     private final int credits;
@@ -23,11 +25,11 @@ public class AbandonedShipState extends PlayingState {
     /**
      * Default constructor
      */
-    public AbandonedShipState(GameController controller, GameModel model, int lostCrew, int credits, int lostDays) {
+    public AbandonedShipState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
-        this.lostCrew = lostCrew;
-        this.credits = credits;
-        this.lostDays = lostDays;
+        this.lostCrew = card.getCrew();
+        this.credits = card.getCredits();
+        this.lostDays = card.getLostDays();
     }
 
     @Override

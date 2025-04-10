@@ -668,6 +668,10 @@ public class GameController implements GameControllerInterface {
         state.readyToFly(getPlayerByID(username));
     }
 
+    public void defeated(String username) {
+        model.giveUp(getPlayerByID(username));
+    }
+
     /**
      * @param username is the username of the player that wants to roll the dice
      * @return the result of the dice roll

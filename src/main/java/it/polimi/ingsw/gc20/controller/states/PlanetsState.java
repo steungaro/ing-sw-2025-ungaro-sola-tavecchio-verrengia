@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Planet;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
@@ -21,10 +22,11 @@ public class PlanetsState extends CargoState {
     /**
      * Default constructor
      */
-    public PlanetsState(GameController gc, GameModel gm, List<Planet> planets, int lostDays) {
-        super(gc, gm);
-        this.planets = planets;
-        this.lostDays = lostDays;
+    @SuppressWarnings("unused") // dynamically created by Cards
+    public PlanetsState(GameController controller, GameModel model, AdventureCard card) {
+        super(controller, model);
+        this.planets = card.getPlanets();
+        this.lostDays = card.getLostDays();
         this.landedPlayer = null;
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();

@@ -383,7 +383,7 @@ public class GameModel {
                 game.getPlayers().get(i).setGameStatus(false);
             }
         }
-
+        //TODO se la carta è combat zone e ce un solo player salto
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
