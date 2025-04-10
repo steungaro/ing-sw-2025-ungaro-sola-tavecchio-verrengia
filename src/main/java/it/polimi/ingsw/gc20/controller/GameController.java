@@ -349,7 +349,9 @@ public class GameController implements GameControllerInterface {
         } else {
             throw new IllegalArgumentException("Player not found in game, not connected or never joined");
         }
-        // Player remains in the game model
+        if(connectedPlayers.size() == 1){
+            state = new PausedState(state, model, this);
+        }
     }
 
     /**
@@ -374,7 +376,9 @@ public class GameController implements GameControllerInterface {
         disconnectedPlayers.remove(username);
         connectedPlayers.add(username);
 
-        // Player data is still in the model, so no need to recreate
+        if(connectedPlayers.size() == 2){
+            state = state.resume();
+        }
         return true;
     }
 
