@@ -362,8 +362,10 @@ public class GameModel {
      * @apiNote only called in level 2 games
      */
     public void createDeck() {
-        Board b = game.getBoard();
-        ((NormalBoard) b).mergeDecks();
+        if (level == 2) {
+            Board b = game.getBoard();
+            ((NormalBoard) b).mergeDecks();
+        }
     }
 
     /**
