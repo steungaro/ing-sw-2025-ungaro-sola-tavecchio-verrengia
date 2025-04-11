@@ -375,7 +375,7 @@ public class GameModel {
      */
     public AdventureCard drawCard() {
         game.sortPlayerByPosition();
-        for (int i = 1; i<= game.getPlayers().size(); i++){
+        for (int i = 1; i< game.getPlayers().size(); i++){
             if (game.getPlayers().getFirst().getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
                 game.getPlayers().get(i).setGameStatus(false);
             }

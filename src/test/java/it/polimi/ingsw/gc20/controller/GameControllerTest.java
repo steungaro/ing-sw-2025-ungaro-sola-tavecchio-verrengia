@@ -23,12 +23,13 @@ class GameControllerTest {
     GameController gameController;
     GameModel model;
     AbandonedShipState abandonedShipState;
+    AdventureCard adventureCard;
+    String id = "0";
 
     @BeforeEach
     void setUp() {
         // Initialize the GameController object before each test
         // This is a placeholder, replace with actual initialization code
-        String id = "0";
         String player1 = "player1";
         String player2 = "player2";
         String player3 = "player3";
@@ -40,9 +41,14 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
 
-        gameController = new    GameController(id, players, level);
+        gameController = new GameController(id, players, level);
         model = new GameModel();
-        abandonedShipState = new AbandonedShipState(gameController, model, 1, 2, 3);
+        adventureCard = new AdventureCard();
+        adventureCard.setCrew(2);
+        adventureCard.setCredits(3);
+        adventureCard.setLostDays(1);
+        abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
+        model.startGame(2, players, "10");
     }
 
     @Test
@@ -53,22 +59,41 @@ class GameControllerTest {
 
     @Test
     void getGameID() {
+        assertEquals(id, gameController.getGameID());
     }
 
     @Test
     void getFirstOnlinePlayer() {
+        String firstOnlinePlayer = gameController.getFirstOnlinePlayer();
+        assertEquals("player1", firstOnlinePlayer);
     }
 
     @Test
     void drawCard() {
+        gameController.drawCard();
+        AdventureCard drawnCard = gameController.getModel().getActiveCard();
+        assertNotNull(drawnCard);
+        /*assertEquals(adventureCard.getCrew(), drawnCard.getCrew());
+        assertEquals(adventureCard.getCredits(), drawnCard.getCredits());
+        assertEquals(adventureCard.getLostDays(), drawnCard.getLostDays());*/
     }
 
     @Test
     void getState() {
+        gameController.setState(abandonedShipState);
+        assertEquals(abandonedShipState.toString(), gameController.getState());
     }
 
     @Test
     void landOnPlanet() {
+        Planet planetCard = new Planet();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        planetCard.setReward(reward);
+
+        gameController.setState();
+        gameController.landOnPlanet("player1", 1);
+        assertEquals("Planet", gameController.getModel().getCurrentLocation());
     }
 
     @Test

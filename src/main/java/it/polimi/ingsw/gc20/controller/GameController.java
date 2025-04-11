@@ -723,4 +723,8 @@ public class GameController implements GameControllerInterface {
                 .filter(connectedPlayers::contains)
                 .collect(Collectors.toList());
     }
+
+    public GameModel getModel(){
+        return this.model;
+    }
 }
