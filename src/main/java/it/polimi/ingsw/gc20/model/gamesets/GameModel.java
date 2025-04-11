@@ -147,6 +147,7 @@ public class GameModel {
         if (level == 2) {
             board = new NormalBoard();
             board.createDeck();
+            ((NormalBoard)board).mergeDecks();
         } else {
             board = new LearnerBoard();
             board.createDeck();

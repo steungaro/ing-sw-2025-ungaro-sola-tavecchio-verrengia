@@ -49,8 +49,6 @@ class GameControllerTest {
         adventureCard.setLostDays(1);
         abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
         model.startGame(2, players, "10");
-
-        gameController.validateShip("player1");
     }
 
     @Test
@@ -75,9 +73,6 @@ class GameControllerTest {
         gameController.drawCard();
         AdventureCard drawnCard = gameController.getModel().getActiveCard();
         assertNotNull(drawnCard);
-        /*assertEquals(adventureCard.getCrew(), drawnCard.getCrew());
-        assertEquals(adventureCard.getCredits(), drawnCard.getCredits());
-        assertEquals(adventureCard.getLostDays(), drawnCard.getLostDays());*/
     }
 
     @Test
@@ -87,12 +82,24 @@ class GameControllerTest {
     }
 
     @Test
-    void landOnPlanet() {
-        /*Planet planetCard = new Planet();
+    void landOnPlanet() throws InvalidTurnException {
+        Planet planet = new Planet();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
-        planetCard.setReward(reward);*/
+        planet.setReward(reward);
+        planet.setAvailable(true);
+        List<Planet> planets = new ArrayList<>();
+        planets.add(planet);
 
+        AdventureCard planetsCard = new AdventureCard();
+        planetsCard.setPlanets(planets);
+        planetsCard.setLostDays(1);
+        planetsCard.setPlanets(planets);
+
+        PlanetsState planetsState = new PlanetsState(gameController, model, planetsCard);
+        gameController.setState(planetsState);
+
+        gameController.landOnPlanet("player1", 0);
     }
 
     @Test

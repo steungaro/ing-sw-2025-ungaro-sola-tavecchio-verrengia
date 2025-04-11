@@ -46,13 +46,14 @@ public class PlanetsState extends CargoState {
 
     /**
      * Accepts a planet card and lands on the planet
-     * @param username is the username of the player that wants to land on the planet
+     * @param player is the player that wants to land on the planet
      * @param planetIndex is the index of the planet card in the player's hand
      * @throws IllegalStateException if the game is not in the planet phase
      * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException {
+    public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException {
+        String username = player.getUsername();
         if (!getCurrentPlayer().equals(username)) {
             throw new InvalidTurnException("It's not your turn");
         }
