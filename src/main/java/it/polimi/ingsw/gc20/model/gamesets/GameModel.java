@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.player.*;
@@ -9,6 +11,8 @@ import it.polimi.ingsw.gc20.model.ship.*;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameModel {
     private Game game;
@@ -74,13 +78,6 @@ public class GameModel {
         return this.activeCard;
     }
 
-    /** private function to init the player used to simplify the start game function
-     *
-     * @param username of the player
-     * @param index of the player to set the color
-     * @return the player initialized
-     */
-
     /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
      *
      * @return list ot the player that need to be moved
@@ -108,7 +105,7 @@ public class GameModel {
      *
      */
     private void sortPlayerByPosition() {
-        playersToMove.sort((p1, p2) -> p1.getPosition() - p2.getPosition());
+        playersToMove.sort(Comparator.comparingInt(Player::getPosition));
     }
 
     /** private function for the init of one player used only in start game
@@ -129,12 +126,13 @@ public class GameModel {
         }
         return player;
     }
+
     /**
      * function that starts the game
      * it creates the game, the pile, set the level of the game and create the decks
      * and board based on the level
      * it also creates the players set the usernames, status, color and ship based on the level
-     * and also add all component to the unviewed list
+     * and also add all component to the unViewed list
      * @param level           level of the game
      * @param usernames       list of the players' username
      * @param gameID          id of the game
@@ -153,7 +151,7 @@ public class GameModel {
             board = new LearnerBoard();
             board.createDeck();
         }
-
+        game.addBoard(board);
         //creating the players and initializing the player
         for (int i = 0; i < usernames.size(); i++) {
             Player player = initPlayer(usernames.get(i), i);
@@ -164,10 +162,12 @@ public class GameModel {
 
         List<Component> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Errore nel caricamento dei componenti", e);
         }
 
         pile.addUnviewed(allComponents);
@@ -177,12 +177,12 @@ public class GameModel {
     }
 
     /**
-     * function when a component is taken from the unviewed list
-     * it removes the component from the unviewed list
-     * TODO understand whether the chosen component should be returned to the controller
+     * function when a component is taken from the unViewed list
+     * it removes the component from the unViewed list
+     *
      *
      * @param c component to remove
-     * @throws NoSuchElementException if the component is not present in the unviewed list
+     * @throws NoSuchElementException if the component is not present in the unViewed list
      */
     public void componentFromUnviewed(Component c) throws NoSuchElementException {
         game.getPile().removeUnviewed(c);
@@ -385,49 +385,36 @@ public class GameModel {
                 game.getPlayers().get(i).setGameStatus(false);
             }
         }
-
+        //TODO se la carta è combat zone e ce un solo player salto
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
 
-    /**
-     * function to call when the Planet card is active and the player select a planet to land
-     * it return the list of cargo reward for the player that land in a planet
-     *
-     * @param p     player that lands
-     * @param index index of the planet
-     * @return the list of cargo colors
+
+    /** Function to call when the player lose some memeber of the crew
+     * @param p player that lose the crew
+     * @param l list of crew member to remove
      */
-    public List<CargoColor> PlanetLand(Player p, int index) {
-        AdventureCard c = getActiveCard();
-        Planet planet = ((Planets) c).getPlanet(index);
-        addPlayersToMove(p);
-        return ((Planets) c).land(p, planet);
+    public void loseCrew (Player p, List<Cabin> l){
+        for (Cabin cabin : l) {
+            p.getShip().unloadCrew(cabin);
+        }
     }
 
-    /** function to call after a planet card is activated to move the player
+    /** Function to move a player
+     * @param p player to move
+     * @param num number of spaces to move
      */
-    public void movePlayerReverse (){
-            AdventureCard c = getActiveCard();
-            sortPlayerByPosition();
-            for (Player p : playersToMove){
-                ((Planets) c).effectLostDays(p, game);
-            }
-            playersToMove.clear();
+    public void movePlayer (Player p, int num){
+        game.move(p, num);
     }
 
-    /**
-     * function to apply the effect of the abandoned ship card
-     *
-     * @apiNote the player has already chosen the crew members to remove, controller need to pass the list of cabins
-     *
-     * @param p player whose chose to activate the effect of the card
-     * @param a list of cabins to remove crew members from
+    /** Function to add credits to a player
+     * @param p player to add the credits
+     * @param credits number of credits to add
      */
-    public void AbandonedShip(Player p, List<Cabin> a) {
-        AdventureCard c = getActiveCard();
-        setActiveCard(null);
-        ((AbandonedShip) c).Effect(p, game, a);
+    public void addCredits (Player p, int credits){
+        p.addCredits(credits);
     }
 
     /** function to get the number of astronauts and alien for certain condition of some cards
@@ -436,17 +423,6 @@ public class GameModel {
      */
     public int getCrew (Player p) {
         return p.getShip().crew();
-    }
-    /**
-     * function to apply the effect of the abandoned station card
-     *
-     * @apiNote the controller needs to verify the number of crew member of the ship before calling this method, calling this only if the player activate the effect
-     * @param p player whose chose to activate the effect of the card
-     * @return the list of cargo colors
-     */
-    public List<CargoColor> AbandonedStation(Player p) {
-        AdventureCard c = getActiveCard();
-        return ((AbandonedStation) c).Effect(p, game);
     }
 
     /**
@@ -493,7 +469,7 @@ public class GameModel {
     }
 
     /**
-     * method to move or remove a cargo from the ship if the to cargoHold is null
+     * method to move or remove a cargo from the ship if the cargoHold to is null
      * @param c    cargo to move
      * @param from cargoHold from
      * @param to   cargoHold to
@@ -517,29 +493,6 @@ public class GameModel {
     }
 
     /**
-     * method for the openSpace card
-     * it verifies if the engine power is zero if so it set the player state to false
-     *
-     * @param p             player whose chose to activate the effect of the card
-     * @param doubleEngines number of double engines to activate
-     * @param energy        list of energy to use
-     * @throws IllegalArgumentException if there is not enough energy
-     */
-    public void OpenSpace(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
-        int power;
-        AdventureCard c = getActiveCard();
-        try {
-            power = EnginePower(p, doubleEngines, energy);
-            if (power == 0) {
-                p.setGameStatus(false);
-            }
-            ((OpenSpace) c).Effect(p, game, power);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Not enough energy");
-        }
-    }
-
-    /**
      * method to remove a battery when  a shield is utilized
      *
      * @param p player whose chose to activate the effect of the card
@@ -550,42 +503,20 @@ public class GameModel {
     }
 
     /**
-     * method for the stardust card
-     *
-     * @param p player victim of the effect of the card
-     */
-    public void Stardust(Player p) {
-        AdventureCard c = getActiveCard();
-        ((Stardust) c).Effect(p, game);
-    }
-
-    /**
-     * method for the epidemic card
-     *
-     * @param p player victim of the effect of the card
-     */
-    public void Epidemic(Player p) {
-        AdventureCard c = getActiveCard();
-        ((Epidemic) c).Effect(p);
-    }
-
-    /**
      * method to calculate the score of the players
-     * TODO add conditions if two player have the same number of connector exposed both get the reward
      *
+     * @return map of the player and the score
      */
     public Map<Player, Integer> calculateScore() {
         Map<Player, Integer> score = new HashMap<>();
         game.sortPlayerByPosition();
         int min = 0;
         int waste;
-        Player g=game.getPlayers().getFirst();
         int points=4;
         for (Player p : game.getPlayers()) {
             if (p.isInGame()) {
                 if (min > p.getShip().getAllExposed() || min == 0) {
                     min = p.getShip().getAllExposed();
-                    g = p;
                 }
                 if (level == 2) {
                     score.put(p, points * 2);
@@ -603,11 +534,13 @@ public class GameModel {
                 score.put (p, score.get(p) + color.value()*quantity);
             }
         }
-        if (g.isInGame()) {
-            if (level == 2) {
-                score.put(g, score.get(g) + 4);
-            } else {
-                score.put(g, score.get(g) + 2);
+        for (Player g : game.getPlayers()) {
+            if (g.getShip().getAllExposed() == min && g.isInGame()) {
+                if (level == 2) {
+                    score.put(g, score.get(g) + 4);
+                } else {
+                    score.put(g, score.get(g) + 2);
+                }
             }
         }
         return score;
@@ -621,51 +554,11 @@ public class GameModel {
         return p.getShip().getAstronauts();
     }
 
-    /** function for the lost days effect of the combat zone card
-     *
-     * @apiNote for the combat zone controller needs to calculate which player has which effect similar in pirates, smuggler and slavers
-     * @param p player
-     */
-    public void CombatZoneLostDays (Player p){
-        AdventureCard c = getActiveCard();
-        ((CombatZone) c).EffectLostDays(p, game);
-    }
-
-    /** function for the lost crew effect of the combat zone card
-     *
-     * @param p player
-     * @param c list of crew to remove
-     */
-    public void CombatZoneLostCrew (Player p, List<Cabin> c){
-        AdventureCard card = getActiveCard();
-        ((CombatZone) card).EffectLostCrew(p, c);
-    }
-
-    /** function for the lost cargo effect of the combat zone card
-     *
-     * @param p player
-     * @param c list of cargo to remove
-     */
-    public void combatZoneLostCargo (Player p, List <CargoHold> c){
-        AdventureCard card = getActiveCard();
-        ((CombatZone) card).EffectLostCargo(p, c);
-    }
-
-    /** function for the Fire effect of the combat zone card
-     *
-     * @return list of projectile to be shot at the player
-     * @apiNote the controller needs to verify if the projectile hit the ship, in case of hit the Fire method is called in gameModel
-     */
-    public List<Projectile> combatZoneGetFire(){
-        AdventureCard card = getActiveCard();
-        return ((CombatZone) card).EffectCannonFire();
-    }
-
     /** function to call when a projectile is fired and hit the ship
      * @param p player who get hit
      * @param diceResult result of the dice throw that indicates the row or column hit
      * @throws InvalidShipException if the ship is invalid
-     * @apiNote controller utilize this methon only if the projectile hit the ship
+     * @apiNote controller utilize this method only if the projectile hit the ship
      */
     public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
         Component c;
@@ -712,66 +605,6 @@ public class GameModel {
                 cannons.addAll(s.getCannons(direction, diceResult - 4));
                 return cannons;
             }
-    }
-
-
-    /**function to call in case of player winning against slavers and choosing to take the reward
-     * @apiNote controller need to verify which method in the model call (success or failure)
-     * @param p player that activate the effect
-     */
-    public void slaversSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        ((Slavers) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against slavers
-     *
-     * @param p player that activate the effect
-     * @param l list of crew member to remove
-     */
-    public void slaversFailure (Player p, List<Cabin> l){
-        AdventureCard card = getActiveCard();
-        ((Slavers) card).EffectFailure(p, l);
-    }
-
-
-    /** function to call in case of player winning against smugglers, and it chose to take the reward
-     *
-     * @param p player that activate the effect
-     * @return list of cargo reward
-     */
-    public List<CargoColor> smugglersSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        return ((Smugglers) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against smugglers
-     *
-     * @param p player that activate the effect
-     * @param l list of cargo to remove
-     */
-    public void smugglersFailure (Player p, List<CargoHold> l){
-        AdventureCard card = getActiveCard();
-        ((Smugglers) card).EffectFailure(p, l);
-    }
-
-    /** function to call in case of player winning against pirates and chose to activate the effect
-     *
-     * @param p player that activate the effect
-     */
-    public void piratesSuccess (Player p){
-        AdventureCard card = getActiveCard();
-        ((Pirates) card).EffectSuccess(p, game);
-    }
-
-    /** function to call in case of player losing against pirates
-     *
-     * @return list of projectile to fire at the ship of the player
-     * @apiNote controller needs to roll the dice and call the method fire when a projectile hits the ship
-     */
-    public List<Projectile> piratesFailure (){
-        AdventureCard card = getActiveCard();
-        return ((Pirates) card).EffectFailure();
     }
 
     /** function to removeEnergy to utilize in case of not having enough cargo
@@ -840,16 +673,6 @@ public class GameModel {
         return true;
     }
 
-    /** function called by the controller to get the meteor that will hit the players
-     *
-     * @return list of projectile that will aim for the ship of the player
-     */
-    public List<Projectile> MeteorSwarm (){
-        AdventureCard card = getActiveCard();
-        return ((MeteorSwarm) card).Effect();
-    }
-
-
     /**
      * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
      */
@@ -905,9 +728,31 @@ public class GameModel {
         return inGamePlayers;
     }
 
+    /** Function that set the player status to false if the choose to give up
+     * @param p player that choose to give up
+     */
+    public void giveUp (Player p) {
+        p.setGameStatus(false);
+    }
+
+    /** Function that auto validate the ship if the player is disconnected
+     * @param p player that is disconnected
+     */
+    public void  autoValidation (Player p){
+        int row;
+        int column;
+        if(level==2){
+            row = 2;
+            column = 3;
+        }
+        else{
+            row = 2;
+            column = 2;
+        }
+
+        p.getShip().findValid(row, column);
+    }
     //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
-    //TODO metodi per gestione sceglie di ritirarsi (nel controller)
-    //TODO gestione creazione dei deck (da vedere con json)
     //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
 }
 

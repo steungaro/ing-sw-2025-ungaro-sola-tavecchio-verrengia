@@ -255,6 +255,107 @@ public abstract class Ship {
     }
 
     /**
+     * find all the valid components of the ship and kill the invalid ones
+     * @param row
+     * @param col
+     * @return
+     * @apiNote Note tha with row=-1 and col=-1 the function will start with the starting cabin
+     */
+    public void findValid(int row, int col) {
+        if(row == -1 && col == -1){
+            row = getRows()/2;
+            col = getCols()/2;
+        }
+        if (row < 0 || col < 0 || row >= getRows() || col >= getCols()) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        int rows = getRows();
+        int cols = getCols();
+        int[][] visited = new int[rows][cols];
+
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{row, col});
+        visited[row][col] = 1;
+
+        // Set all the table to 1
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                visited[i][j] = 1;
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            int[] current = queue.poll();
+            int i = current[0];
+            int j = current[1];
+            Component component = getComponentAt(i, j);
+
+            if (component == null) continue;
+
+            // Check connections in all four directions
+            Map<Direction, ConnectorEnum> connectors = component.getConnectors();
+            for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+                Direction dir = entry.getKey();
+                ConnectorEnum connector = entry.getValue();
+
+                // Skip if there's no connector in this direction
+                if (connector == null || connector == ConnectorEnum.ZERO) {
+                    continue;
+                }
+
+                // Calculate adjacent cell coordinates
+                int adjRow = i, adjCol = j;
+
+                switch (dir) {
+                    case UP:
+                        adjRow--;
+                        break;
+                    case DOWN:
+                        adjRow++;
+                        break;
+                    case LEFT:
+                        adjCol--;
+                        break;
+                    case RIGHT:
+                    default:
+                        adjCol++;
+                        break;
+                }
+
+                // Check if adjacent cell is within bounds and has a component
+                Component adjComponent = getComponentAt(adjRow, adjCol);
+                if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
+                    if (visited[adjRow][adjCol]==0) {
+                        // Check if adjacent component has a matching connector
+                        if (component.isValid(adjComponent, dir)) {
+                            // Valid connection found, add to queue
+                            if(visited[adjRow][adjCol]!=-1){
+                                queue.add(new int[]{adjRow, adjCol});
+                                visited[adjRow][adjCol] = 1;
+                            }
+                        }else{
+                            visited[adjRow][adjCol] = -1; // Mark as invalid
+                        }
+                    }
+                }
+
+                // kill all the componente that have not been visited
+                for (int k = 0; k < rows; k++) {
+                    for (int l = 0; l < cols; l++) {
+                        if (visited[k][l] != 1) {
+                            Component c = getComponentAt(k, l);
+                            if (c != null) {
+                                killComponent(c);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Validates if all components are connected to the starting position
      * @param startRow Starting row for validation
      * @param startCol Starting column for validation
@@ -381,7 +482,7 @@ public abstract class Ship {
     /**
      * @param cargo is the cargo to be loaded
      */
-    public void loadCargo(CargoColor cargo, CargoHold h) {
+    public void loadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (h.getAvailableSlots() < 1) {
             throw new IllegalArgumentException("No available slots in cargo hold");
         }
@@ -392,7 +493,7 @@ public abstract class Ship {
     /**
      * @param cargo is the cargo to be unloaded
      */
-    public void unloadCargo(CargoColor cargo, CargoHold h) {
+    public void unloadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (cargos.getOrDefault(cargo, 0) < 1) {
             throw new IllegalArgumentException("No cargo of that type to unload");
         }
