@@ -48,7 +48,6 @@ class GameControllerTest {
         adventureCard.setCredits(3);
         adventureCard.setLostDays(1);
         abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
-        model.startGame(2, players, "10");
     }
 
     @Test
@@ -103,11 +102,42 @@ class GameControllerTest {
     }
 
     @Test
-    void loadCargo() {
+    void loadCargo() throws InvalidTurnException, CargoException {
+        AdventureCard abandonedStationCard = new AdventureCard();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        reward.add(CargoColor.YELLOW);
+        abandonedStationCard.setReward(reward);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+
+        CargoColor loaded = CargoColor.BLUE;
+        gameController.setState(abandonedStationState);
+
+        CargoHold CargoHold = new CargoHold();
+        CargoHold.setSlots(3);
+        gameController.getModel().setActiveCard(abandonedStationCard);
+        gameController.loadCargo("player1", loaded, CargoHold);
     }
 
     @Test
-    void unloadCargo() {
+    void unloadCargo() throws InvalidTurnException, CargoException {
+        AdventureCard abandonedStationCard = new AdventureCard();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        reward.add(CargoColor.YELLOW);
+        abandonedStationCard.setReward(reward);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+
+        CargoColor loaded = CargoColor.BLUE;
+        gameController.setState(abandonedStationState);
+
+        CargoHold CargoHold = new CargoHold();
+        CargoHold.setSlots(3);
+        List<CargoColor> cargoHeld = new ArrayList<>();
+        cargoHeld.add(loaded);
+        CargoHold.setCargoHeld(cargoHeld);
+        gameController.getModel().setActiveCard(abandonedStationCard);
+        gameController.unloadCargo("player1", loaded, CargoHold);
     }
 
     @Test
