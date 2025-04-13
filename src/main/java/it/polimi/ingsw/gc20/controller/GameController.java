@@ -97,7 +97,7 @@ public class GameController implements GameControllerInterface {
     public void drawCard(){
         AdventureCard card = model.drawCard();
         if (card == null) {
-            state = new EndgameState();
+            state = new EndgameState(state.getController());
         } else {
             card.setState(this, model);
         }
@@ -351,6 +351,9 @@ public class GameController implements GameControllerInterface {
         }
         if(connectedPlayers.size() == 1){
             state = new PausedState(state, model, this);
+        }else if(connectedPlayers.isEmpty()){
+            state = new EndgameState(state.getController());
+            MatchController.getInstance().endGame(gameID);
         }
     }
 
