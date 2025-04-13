@@ -562,6 +562,7 @@ public class GameController implements GameControllerInterface {
         } else {
             if (state.allShipsReady()) {
                 state.initAllShips();
+                model.createDeck();
                 drawCard();
                 //TODO: notify players of state change
             }

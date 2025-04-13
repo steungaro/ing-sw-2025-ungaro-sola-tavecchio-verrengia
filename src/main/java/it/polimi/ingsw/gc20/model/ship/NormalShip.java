@@ -308,12 +308,19 @@ public class NormalShip extends Ship {
      * @param alien: the alien to be added
      * @param c: the cabin where the alien will be added
      * @throws IllegalArgumentException: the cabin cannot host the alien
+     * @throws IllegalArgumentException: the alien is already present in the ship
      */
     public void addAlien(AlienColor alien, Cabin c) throws IllegalArgumentException {
         c.setAlien(alien);
         if (alien == AlienColor.BROWN){
+            if (brownAlien) {
+                throw new IllegalArgumentException("Brown alien already present");
+            }
             brownAlien = true;
         } else {
+            if (purpleAlien) {
+                throw new IllegalArgumentException("Purple alien already present");
+            }
             purpleAlien = true;
         }
     }
