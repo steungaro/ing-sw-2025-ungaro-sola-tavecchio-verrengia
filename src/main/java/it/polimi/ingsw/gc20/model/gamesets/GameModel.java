@@ -388,33 +388,6 @@ public class GameModel {
         this.setActiveCard(game.getBoard().drawCard());
         return this.getActiveCard();
     }
-
-    /**
-     * function to call when the Planet card is active and the player select a planet to land
-     * it return the list of cargo reward for the player that land in a planet
-     *
-     * @param p     player that lands
-     * @param index index of the planet
-     * @return the list of cargo colors
-     */
-    public List<CargoColor> PlanetLand(Player p, int index) {
-        AdventureCard c = getActiveCard();
-        Planet planet = ((Planets) c).getPlanet(index);
-        addPlayersToMove(p);
-        return ((Planets) c).land(p, planet);
-    }
-
-    /** function to call after a planet card is activated to move the player
-     */
-    public void movePlayerReverse (){
-            AdventureCard c = getActiveCard();
-            sortPlayerByPosition();
-            for (Player p : playersToMove){
-                ((Planets) c).effectLostDays(p, game);
-            }
-            playersToMove.clear();
-    }
-
     /** Function to call when the player lose some memeber of the crew
      * @param p player that lose the crew
      * @param l list of crew member to remove
@@ -514,29 +487,6 @@ public class GameModel {
      */
     public void addCargo(Player p, CargoColor c, CargoHold ch) {
         p.getShip().loadCargo(c, ch);
-    }
-
-    /**
-     * method for the openSpace card
-     * it verifies if the engine power is zero if so it set the player state to false
-     *
-     * @param p             player whose chose to activate the effect of the card
-     * @param doubleEngines number of double engines to activate
-     * @param energy        list of energy to use
-     * @throws IllegalArgumentException if there is not enough energy
-     */
-    public void OpenSpace(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
-        int power;
-        AdventureCard c = getActiveCard();
-        try {
-            power = EnginePower(p, doubleEngines, energy);
-            if (power == 0) {
-                p.setGameStatus(false);
-            }
-            ((OpenSpace) c).Effect(p, game, power);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Not enough energy");
-        }
     }
 
     /**
