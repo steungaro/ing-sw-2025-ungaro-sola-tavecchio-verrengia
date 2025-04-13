@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class State{
     private final GameModel model;
@@ -159,6 +160,10 @@ public abstract class State{
     }
 
     public State resume() {
+        exception();
+        return null;
+    }
+    public Map<Player, Integer> getScore(){
         exception();
         return null;
     }

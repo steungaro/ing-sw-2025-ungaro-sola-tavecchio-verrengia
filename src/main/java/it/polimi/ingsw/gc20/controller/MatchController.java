@@ -119,6 +119,10 @@ public class MatchController {
 
     }
 
+    public void endGame(String id) {
+        games.removeIf(g -> g.getGameID().equals(id));
+    }
+
     /**
      * @param id is the id of the lobby to start
      */
