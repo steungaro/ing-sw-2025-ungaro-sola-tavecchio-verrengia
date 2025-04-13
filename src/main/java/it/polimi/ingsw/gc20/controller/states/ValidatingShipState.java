@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.components.StartingCabin;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.ship.NormalShip;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,6 +57,9 @@ public class ValidatingShipState extends State {
         }
         if (cabin instanceof StartingCabin) {
             throw new IllegalArgumentException("Aliens can only be placed in cabins");
+        }
+        if (getModel().getLevel() < 2) {
+            throw new IllegalArgumentException("Aliens can only be added in level 2");
         }
         getModel().setAlien(color, cabin, player);
     }
