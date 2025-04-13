@@ -5,16 +5,25 @@ import it.polimi.ingsw.gc20.controller.MatchController;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EndgameState extends State {
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     /**
      * Default constructor
      */
     public EndgameState(GameController controller) {
         super(controller);
-        MatchController.getInstance().endGame(controller.getGameID());
+        scheduler.schedule(this::killGame, 30, TimeUnit.SECONDS);
+    }
+
+    private void killGame() {
+        MatchController.getInstance().endGame(getController().getGameID());
+        scheduler.shutdown();
     }
 
     @Override
