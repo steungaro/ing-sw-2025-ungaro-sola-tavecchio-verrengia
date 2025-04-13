@@ -18,7 +18,7 @@ public abstract class EnginesState extends PlayingState{
         super(model, controller);
     }
 
-    public abstract void finalAction(Map<Player, Integer> declaredEngines);
+    public abstract void finalEngineAction(Map<Player, Integer> declaredEngines);
 
     @Override
     public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
@@ -28,7 +28,7 @@ public abstract class EnginesState extends PlayingState{
         declaredEngines.put(player, getModel().EnginePower(player, engines.size(), batteries));
         nextPlayer();
         if (getCurrentPlayer() == null) {
-            finalAction(declaredEngines);
+            finalEngineAction(declaredEngines);
         }
     }
 }

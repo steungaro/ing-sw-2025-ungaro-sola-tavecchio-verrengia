@@ -23,7 +23,7 @@ public class OpenSpaceState extends EnginesState {
     }
 
     @Override
-    public void finalAction(Map<Player, Integer> declaredEngines) {
+    public void finalEngineAction(Map<Player, Integer> declaredEngines) {
         declaredEngines.forEach((key, value) -> {
             getModel().movePlayer(key, value);
             if (value == 0) {

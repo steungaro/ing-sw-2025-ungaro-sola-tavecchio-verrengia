@@ -557,17 +557,7 @@ public class GameController implements GameControllerInterface {
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public boolean validateShip(String username) {
-        if (!state.isShipValid(getPlayerByID(username))) {
-            return false;
-        } else {
-            if (state.allShipsReady()) {
-                state.initAllShips();
-                model.createDeck();
-                drawCard();
-                //TODO: notify players of state change
-            }
-            return true;
-        }
+        return state.isShipValid(getPlayerByID(username));
     }
 
     /**
@@ -670,6 +660,12 @@ public class GameController implements GameControllerInterface {
      */
     public void readyToFly(String username) {
         state.readyToFly(getPlayerByID(username));
+        if (state.allShipsReady()) {
+            state.initAllShips();
+            model.createDeck();
+            drawCard();
+            //TODO: notify players of state change
+        }
     }
 
     public void defeated(String username) {

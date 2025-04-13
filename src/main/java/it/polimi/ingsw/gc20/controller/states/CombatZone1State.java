@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.*;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class CombatZone1State extends CargoState {
     private final int lostDays;
     private int lostCargo;
@@ -92,11 +93,12 @@ public class CombatZone1State extends CargoState {
         }
         declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteries));
         if (declaredEnginePower.size() == getController().getInGameConnectedPlayers().size()) {
-            Player p = declaredEnginePower.entrySet()
+            setCurrentPlayer(declaredEnginePower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
-                    .getKey();
+                    .getKey()
+                    .getUsername());
             removingCargo = true;
         }
     }
@@ -162,12 +164,7 @@ public class CombatZone1State extends CargoState {
         if (!removingCargo) {
             throw new IllegalStateException("Not in removing cargo state");
         }
-        if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
-            throw new IllegalStateException("Cannot lose energy if having cargo available");
-        }
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
-        getModel().removeEnergy(player, batteries);
+        super.loseEnergy(player, battery);
         lostCargo--;
         if (player.getShip().getTotalEnergy() == 0) {
             lostCargo = 0;
