@@ -35,7 +35,7 @@ public interface GameControllerInterface {
     Component takeComponentFromViewed(String username, Component component);
     Component takeComponentFromBooked(String username, Component component);
     void addComponentToBooked(String username, Component component);
-    void addComponentToViewed(Component component);
+    void addComponentToViewed(String username, Component component);
     void placeComponent(String username, Component component, int x, int y);
 
     //TODO: maybe group rotate methods into generic ones with a type parameter

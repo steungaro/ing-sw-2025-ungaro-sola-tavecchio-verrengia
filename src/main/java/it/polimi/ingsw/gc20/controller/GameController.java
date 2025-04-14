@@ -530,7 +530,7 @@ public class GameController implements GameControllerInterface {
      * @param component Component to add to viewed pile
      * @throws IllegalStateException if game is not in ASSEMBLING state
      */
-    public synchronized void addComponentToViewed(Component component) {
+    public synchronized void addComponentToViewed(String username, Component component) {
         state.addComponentToViewed(component);
     }
 
