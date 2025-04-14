@@ -158,9 +158,8 @@ public abstract class State{
         exception();
     }
 
-    public State resume() {
+    public void resume() {
         exception();
-        return null;
     }
     public Map<String, Integer> getScore(){
         exception();

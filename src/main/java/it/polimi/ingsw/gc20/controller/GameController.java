@@ -373,7 +373,7 @@ public class GameController implements GameControllerInterface {
         if(connectedPlayers.size() == 1){
             state = new PausedState(state, model, this);
         }else if(connectedPlayers.isEmpty()){
-            state = new EndgameState(state.getController());
+            state = new EndgameState(this);
             MatchController.getInstance().endGame(gameID);
         }
     }
@@ -401,7 +401,7 @@ public class GameController implements GameControllerInterface {
         connectedPlayers.add(username);
 
         if(connectedPlayers.size() == 2){
-            state = state.resume();
+            state.resume();
         }
         return true;
     }
