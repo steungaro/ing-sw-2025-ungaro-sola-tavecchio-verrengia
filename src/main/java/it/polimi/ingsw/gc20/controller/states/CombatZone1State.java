@@ -63,7 +63,8 @@ public class CombatZone1State extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(cannons), batteries));
-        if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
             getModel().movePlayer(declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
@@ -92,7 +93,8 @@ public class CombatZone1State extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteries));
-        if (declaredEnginePower.size() == getController().getInGameConnectedPlayers().size()) {
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
             setCurrentPlayer(declaredEnginePower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
