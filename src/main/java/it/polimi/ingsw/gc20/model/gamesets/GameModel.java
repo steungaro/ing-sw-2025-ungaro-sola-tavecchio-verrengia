@@ -495,7 +495,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @param e energy to use
      */
-    public void UseShield(Player p, Battery e) {
+    public void useShield(Player p, Battery e) {
         p.getShip().useEnergy(e);
     }
 

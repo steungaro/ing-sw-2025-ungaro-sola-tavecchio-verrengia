@@ -3,10 +3,14 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class CargoState extends PlayingState {
 
@@ -58,5 +62,14 @@ public abstract class CargoState extends PlayingState {
             throw new IllegalArgumentException("It's not your turn");
         }
         getModel().MoveCargo(player, loaded, chFrom, chTo);
+    }
+
+    public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+        if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
+            throw new IllegalStateException("Cannot lose energy if having cargo available");
+        }
+        List<Battery> batteries = new ArrayList<>();
+        batteries.add(battery);
+        getModel().removeEnergy(player, batteries);
     }
 }

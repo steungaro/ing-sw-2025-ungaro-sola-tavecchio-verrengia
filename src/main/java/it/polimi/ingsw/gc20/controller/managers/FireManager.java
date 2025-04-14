@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FireManager {
-    private List<Projectile> fires;
+    private final List<Projectile> fires;
     private boolean skipNextFire;
-    private GameModel gm;
+    private final GameModel gm;
     Player player;
 
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
@@ -43,13 +43,11 @@ public class FireManager {
         if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
             throw new IllegalStateException("Cannot activate cannon in this state");
         }
-        List<Battery> batteries = new ArrayList<>();
         if (battery == null || shield == null) {
             skipNextFire = false;
             return;
         }
-        batteries.add(battery);
-        gm.removeEnergy(player, batteries);
+        gm.useShield(player, battery);
         if (shield.getCoveredSides()[0] == fires.getFirst().getDirection() || shield.getCoveredSides()[1] == fires.getFirst().getDirection()) {
             skipNextFire = true;
         }
