@@ -191,7 +191,7 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException {
+    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException, InvalidShipException {
         state.activateCannons(getPlayerByID(username), cannons, batteries);
     }
 
@@ -319,11 +319,9 @@ public class GameController implements GameControllerInterface {
      *
      * @return Map associating each player with their score
      */
-    public Map<Player, Integer> getPlayerScores(){
-        return model.calculateScore();
+    public Map<String, Integer> getPlayerScores(){
+        return state.getScore();
     }
-    //TODO: maybe this method should return a Map <String, Integer> instead of a Map<Player, Integer> to avoid exposing the Player object
-    //TODO: maybe make this function only available in the endgame state?
 
     /**
      * Handles the event of a player giving up

@@ -2,13 +2,11 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.MatchController;
-import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.HashMap;
 import java.util.Map;
 
 public class EndgameState extends State {
@@ -32,7 +30,7 @@ public class EndgameState extends State {
     }
 
     @Override
-    public Map<Player, Integer> getScore() {
+    public Map<String, Integer> getScore() {
         return getModel().calculateScore();
     }
 }

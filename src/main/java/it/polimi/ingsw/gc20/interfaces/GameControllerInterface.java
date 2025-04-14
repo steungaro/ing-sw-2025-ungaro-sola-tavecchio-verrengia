@@ -25,7 +25,7 @@ public interface GameControllerInterface {
 
     // Game state
     String getState();
-    Map<Player, Integer> getPlayerScores();
+    Map<String, Integer> getPlayerScores();
 
     // Ship assembly
     //TODO: maybe group take/place methods into generic ones with a type parameter
@@ -66,5 +66,5 @@ public interface GameControllerInterface {
     // Activate ship components
     void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
     void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException;
-    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
+    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
 }

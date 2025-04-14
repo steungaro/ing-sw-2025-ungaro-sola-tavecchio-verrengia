@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
@@ -24,7 +25,7 @@ import java.util.List;
  * - heavu fire are automatically activated
  */
 @SuppressWarnings("unused") // dynamically created by Cards
-public class PiratesState extends PlayingState {
+public class PiratesState extends ValidateShipState {
     private final List<Projectile> cannonFire;
     private final int firePower;
     private final int credits;
@@ -59,9 +60,12 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if(isSplit){
+            throw new InvalidShipException("You have to choose the branch of the ship before shooting");
         }
         float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
         if (firePower > this.firePower) {
@@ -76,9 +80,9 @@ public class PiratesState extends PlayingState {
         } else {
             manager = new FireManager(getModel(), cannonFire, player);
             while (!manager.isFirstHeavyFire()) {
-                manager.fire();
+                isSplit = manager.fire();
             }
-            if (manager.finished()) {
+            if (manager.finished() && !isSplit) {
                 getController().drawCard();
             }
             return -1;
@@ -86,9 +90,12 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if(isSplit){
+            throw new InvalidShipException("You have to choose the branch of the ship before activating cannons");
         }
         manager.activateCannon(cannons.getFirst(), batteries.getFirst());
         do {
@@ -100,9 +107,12 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if(isSplit){
+            throw new InvalidShipException("You have to choose the branch of the ship before activating shields");
         }
         manager.activateShield(shield, battery);
         do {
@@ -115,7 +125,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+    public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -124,6 +134,9 @@ public class PiratesState extends PlayingState {
         }
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
+        }
+        if(isSplit){
+            throw new InvalidShipException("You have to choose the branch of the ship before ending your turn");
         }
         getModel().getActiveCard().playCard();
         getController().drawCard();

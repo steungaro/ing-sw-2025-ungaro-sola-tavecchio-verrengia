@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.HourglassException;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -123,21 +124,21 @@ public abstract class State{
     public void loseCrew(Player player, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+    public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 
     public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
         return 0;
     }
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 
@@ -163,7 +164,7 @@ public abstract class State{
         exception();
         return null;
     }
-    public Map<Player, Integer> getScore(){
+    public Map<String, Integer> getScore(){
         exception();
         return null;
     }

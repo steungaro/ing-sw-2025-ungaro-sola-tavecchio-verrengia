@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.model.ship;
 
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import org.javatuples.Tuple;
 
 import java.util.*;
 
