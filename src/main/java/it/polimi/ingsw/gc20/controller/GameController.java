@@ -269,9 +269,10 @@ public class GameController implements GameControllerInterface {
      * @param batteries is the list of batteries that the player wants to use to activate the engines
      * @throws IllegalStateException if the game is not in the engine activation phase
      * @throws InvalidTurnException if it is not the player's turn
+     * @throws InvalidShipException if the ship is not valid
      */
     @Override
-    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException {
+    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException, InvalidShipException {
         state.activateEngines(getPlayerByID(username), engines, batteries);
     }
 

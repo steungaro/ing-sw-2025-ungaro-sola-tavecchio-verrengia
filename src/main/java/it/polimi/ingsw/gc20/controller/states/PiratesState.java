@@ -22,10 +22,11 @@ import java.util.List;
  * - the player can accept the card or endMove
  * In case of losing:
  * - the player can activate the cannon or the shield
- * - heavu fire are automatically activated
+ * - heavy fires are automatically activated
+ * - if a InvalidShipException is thrown, the player has to validate the ship before doing anything else
  */
 @SuppressWarnings("unused") // dynamically created by Cards
-public class PiratesState extends ValidateShipState {
+public class PiratesState extends PlayingState {
     private final List<Projectile> cannonFire;
     private final int firePower;
     private final int credits;
@@ -64,9 +65,6 @@ public class PiratesState extends ValidateShipState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(isSplit){
-            throw new InvalidShipException("You have to choose the branch of the ship before shooting");
-        }
         float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
@@ -79,13 +77,39 @@ public class PiratesState extends ValidateShipState {
             return 0;
         } else {
             manager = new FireManager(getModel(), cannonFire, player);
-            while (!manager.isFirstHeavyFire()) {
-                isSplit = manager.fire();
+            while (manager.isFirstHeavyFire()) {
+                manager.fire();
             }
-            if (manager.finished() && !isSplit) {
-                getController().drawCard();
+            if (manager.finished()) {
+                nextPlayer();
+                if (getCurrentPlayer() == null) {
+                    getModel().getActiveCard().playCard();
+                    getController().drawCard();
+                } else {
+                    manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+                }
             }
             return -1;
+        }
+    }
+
+    @Override
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        super.chooseBranch(player, col, row);
+        while (manager.isFirstHeavyFire()) {
+            manager.fire();
+        }
+        if (manager.finished()) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
         }
     }
 
@@ -94,15 +118,18 @@ public class PiratesState extends ValidateShipState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(isSplit){
-            throw new InvalidShipException("You have to choose the branch of the ship before activating cannons");
-        }
         manager.activateCannon(cannons.getFirst(), batteries.getFirst());
         do {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
-            getController().drawCard();
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
         }
     }
 
@@ -111,16 +138,18 @@ public class PiratesState extends ValidateShipState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(isSplit){
-            throw new InvalidShipException("You have to choose the branch of the ship before activating shields");
-        }
         manager.activateShield(shield, battery);
         do {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().drawCard();
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
         }
     }
 
@@ -132,11 +161,11 @@ public class PiratesState extends ValidateShipState {
         if (manager != null && !manager.finished()) {
             throw new IllegalStateException("You have to finish the fire before ending your turn");
         }
+        if (manager != null && manager.isSplit()) {
+            throw new InvalidShipException("Ship not valid");
+        }
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
-        }
-        if(isSplit){
-            throw new InvalidShipException("You have to choose the branch of the ship before ending your turn");
         }
         getModel().getActiveCard().playCard();
         getController().drawCard();

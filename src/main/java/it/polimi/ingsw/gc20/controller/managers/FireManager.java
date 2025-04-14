@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller.managers;
 
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.FireType;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -14,6 +15,7 @@ public class FireManager {
     private final List<Projectile> fires;
     private boolean skipNextFire;
     private final GameModel gm;
+    private final Validator validator;
     Player player;
 
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
@@ -21,11 +23,15 @@ public class FireManager {
         this.skipNextFire = false;
         this.gm = model;
         this.player = p;
+        this.validator = new Validator();
     }
 
-    public void activateCannon(Cannon cannon, Battery battery) {
+    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException {
         if (fires.getFirst().getFireType() != FireType.HEAVY_METEOR) {
             throw new IllegalStateException("Cannot activate cannon in this state");
+        }
+        if (validator.isSplit()) {
+            throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
         if (battery == null || cannon == null) {
             skipNextFire = false;
@@ -39,9 +45,12 @@ public class FireManager {
         }
     }
 
-    public void activateShield(Shield shield, Battery battery) {
+    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException {
         if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
             throw new IllegalStateException("Cannot activate cannon in this state");
+        }
+        if (validator.isSplit()) {
+            throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
         if (battery == null || shield == null) {
             skipNextFire = false;
@@ -53,30 +62,36 @@ public class FireManager {
         }
     }
 
-    public boolean fire() {
+    public void fire() throws InvalidShipException {
+        if (validator.isSplit()) {
+            throw new InvalidShipException("Ship is not valid, validate it before firing");
+        }
         if (skipNextFire) {
             skipNextFire = false;
-            return false;
         }
         if (fires.isEmpty()) {
-            return false;
+            return;
         }
         Projectile fire = fires.getFirst();
         int dice = gm.getGame().lastRolled();
         if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection()) !=
         ConnectorEnum.ZERO) {
-            return false;
+            return;
         }
         try {
             gm.Fire(player, dice, fire);
         } catch (InvalidShipException e) {
-            return true;
+            validator.setSplit();
+            throw e;
         }
-        return false;
     }
 
     public boolean finished() {
         return fires.isEmpty();
+    }
+
+    public boolean isSplit() {
+        return validator.isSplit();
     }
 
     public boolean isFirstHeavyFire() {
@@ -84,5 +99,15 @@ public class FireManager {
             return false;
         }
         return fires.getFirst().getFireType() == FireType.HEAVY_FIRE;
+    }
+
+    public void chooseBranch(Player p, Integer row, Integer col) throws InvalidTurnException {
+        if (!p.equals(player)) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (!validator.isSplit()) {
+            throw new IllegalStateException("Ship is valid.");
+        }
+        validator.chooseBranch(p, row, col);
     }
 }

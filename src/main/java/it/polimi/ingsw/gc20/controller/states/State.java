@@ -126,7 +126,7 @@ public abstract class State{
         exception();
     }
 
-    public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
     public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
@@ -164,5 +164,9 @@ public abstract class State{
     public Map<String, Integer> getScore(){
         exception();
         return null;
+    }
+
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        exception();
     }
 }

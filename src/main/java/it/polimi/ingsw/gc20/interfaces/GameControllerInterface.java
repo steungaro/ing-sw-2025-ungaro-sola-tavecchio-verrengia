@@ -65,7 +65,7 @@ public interface GameControllerInterface {
     int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
 
     // Activate ship components
-    void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
+    void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
     void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException;
     void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
 
