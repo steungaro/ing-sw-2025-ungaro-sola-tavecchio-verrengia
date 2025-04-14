@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.interfaces;
 
-import it.polimi.ingsw.gc20.controller.*;
 import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -10,6 +9,7 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public interface GameControllerInterface {
 
     // Player management
@@ -61,10 +61,14 @@ public interface GameControllerInterface {
     void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException, CargoException;
     void acceptCard(String username) throws IllegalStateException, InvalidTurnException;
     void loseCrew(String username, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException;
-    void endMove(String username) throws IllegalStateException, InvalidTurnException;
+    void endMove(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
 
     // Activate ship components
     void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
-    void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException;
+    void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException;
     void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+
+    // Game end
+    Map<String, Integer> getScore() throws IllegalStateException;
 }

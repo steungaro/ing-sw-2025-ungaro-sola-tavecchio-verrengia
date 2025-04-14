@@ -124,6 +124,20 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
+     * Shoots an enemy (pirates, slavers, smugglers)
+     * @param username is the username of the player that wants to shoot the enemy
+     * @param cannons is the list of cannons that the player wants to use to shoot
+     * @param batteries is the list of batteries that the player wants to use to shoot
+     * @return 1 if the player wins, 0 if it's a draw, -1 if the player loses
+     * @throws IllegalStateException if the game is not in the shooting phase
+     * @throws InvalidTurnException if it is not the player's turn
+     */
+    @Override
+    public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+        return state.shootEnemy(getPlayerByID(username), cannons, batteries);
+    }
+
+    /**
      * Loads cargo onto the player's ship
      * @param username is the username of the player that wants to load the cargo
      * @param loaded is the cargo that the player wants to load
@@ -196,6 +210,15 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
+     * @return the score of the game
+     * @throws IllegalStateException if the game is not in the endgame phase
+     */
+    @Override
+    public Map<String, Integer> getScore() throws IllegalStateException {
+        return state.getScore();
+    }
+
+    /**
      * To be called when a player wants to lose crew
      * @param username is the username of the player that wants to lose crew
      * @param cabins is the list of cabins that the player wants to lose crew from
@@ -216,7 +239,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException {
+    public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException, InvalidShipException {
         state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
     }
 
@@ -235,7 +258,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if the game is not in the card phase
      * @throws InvalidTurnException if it is not the player's turn
      */
-    public void endMove(String username) throws InvalidTurnException {
+    public void endMove(String username) throws InvalidTurnException, InvalidShipException {
         state.endMove(getPlayerByID(username));
     }
 

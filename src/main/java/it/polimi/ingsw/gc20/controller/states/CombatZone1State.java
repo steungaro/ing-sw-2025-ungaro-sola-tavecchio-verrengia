@@ -14,7 +14,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 import java.util.*;
 
 @SuppressWarnings("unused") // dynamically created by Cards
-public class CombatZone1State extends CargoState {
+public class CombatZone1State extends PlayingState {
     private final int lostDays;
     private int lostCargo;
     private final List<Projectile> cannonFires;
@@ -27,7 +27,7 @@ public class CombatZone1State extends CargoState {
      */
     @SuppressWarnings("unused") // dynamically created by Cards
     public CombatZone1State(GameController controller, GameModel model, AdventureCard card) {
-        super(controller, model);
+        super(model, controller);
         this.lostDays = card.getLostDays();
         this.lostCargo = card.getLostCargo();
         this.cannonFires = card.getProjectiles();
@@ -121,14 +121,14 @@ public class CombatZone1State extends CargoState {
     }
 
     @Override
-    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (!removingCargo) {
             throw new IllegalStateException("Not in removing cargo state");
         }
-        super.moveCargo(player, loaded, chFrom, chTo);
+        getModel().MoveCargo(player, loaded, chFrom, chTo);
     }
 
     @Override

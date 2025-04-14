@@ -43,7 +43,7 @@ public abstract class State{
     }
 
     private void exception() {
-        throw new IllegalStateException("Cannot perform this action in " + this.toString() + " state");
+        throw new IllegalStateException("Cannot perform this action in " + this + " state");
     }
     
     public Component takeComponentFromUnviewed(Player player, Component component) {
@@ -100,9 +100,7 @@ public abstract class State{
     public void initAllShips() {
         exception();
     }
-    public void landOnPlanet(Player player, int planetIndex) throws IllegalStateException, InvalidTurnException {
-        exception();
-    }
+
     public void loadCargo(Player player, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
@@ -115,7 +113,7 @@ public abstract class State{
     public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException {
+    public void landOnPlanet(Player player, int planetIndex) throws IllegalStateException, InvalidTurnException {
         exception();
     }
     public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {

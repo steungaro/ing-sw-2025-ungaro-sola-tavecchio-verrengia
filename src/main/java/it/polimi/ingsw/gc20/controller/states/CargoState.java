@@ -23,12 +23,12 @@ public abstract class CargoState extends PlayingState {
      * @param player the player who is loading the cargo
      * @param loaded the color of the cargo to be loaded
      * @param chTo the cargo hold to which the cargo is loaded
-     * @throws IllegalArgumentException if it's not the player's turn
+     * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException{
+    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws InvalidTurnException, CargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new IllegalArgumentException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn");
         }
         getModel().addCargo(player, loaded, chTo);
     }
@@ -38,33 +38,43 @@ public abstract class CargoState extends PlayingState {
      * @param player the player who is unloading the cargo
      * @param unloaded the color of the cargo to be unloaded
      * @param ch the cargo hold from which the cargo is unloaded
-     * @throws IllegalArgumentException if it's not the player's turn
+     * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws InvalidTurnException, CargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
         getModel().MoveCargo(player, unloaded, ch, null);
     }
 
-    /**getCurrentPlayer()
+    /**
      * This method is used to move a cargo from one cargo hold to another
      * @param player the player who is moving the cargo
      * @param loaded the color of the cargo to be moved
      * @param chFrom the cargo hold from which the cargo is moved
      * @param chTo the cargo hold to which the cargo is moved
-     * @throws IllegalArgumentException if it's not the player's turn
+     * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo)throws IllegalStateException, InvalidTurnException, CargoException{
+    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws InvalidTurnException, CargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
         getModel().MoveCargo(player, loaded, chFrom, chTo);
     }
 
+    /**
+     * This method is used to lose energy from the player's ship when not having cargo
+     * @param player the player who is losing energy
+     * @param battery the battery to be lost
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws IllegalStateException if the player has cargo available
+     */
     public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
         if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
             throw new IllegalStateException("Cannot lose energy if having cargo available");
         }

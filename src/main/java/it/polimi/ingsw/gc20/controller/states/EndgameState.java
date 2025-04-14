@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.MatchController;
-import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class EndgameState extends State {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -31,6 +31,10 @@ public class EndgameState extends State {
 
     @Override
     public Map<String, Integer> getScore() {
-        return getModel().calculateScore();
+        return getModel().calculateScore()
+                .entrySet()
+                .stream()
+                .map(entry -> Map.entry(entry.getKey().getUsername(), entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }
