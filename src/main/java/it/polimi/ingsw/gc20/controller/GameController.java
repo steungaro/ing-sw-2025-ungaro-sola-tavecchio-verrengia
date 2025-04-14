@@ -277,6 +277,19 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
+     * To be called when a player needs to chose one of the two branches a ship is divided into after a fire.
+     * @param username is the username of the player that wants to choose a branch
+     * @param col is the column of the ship where the player wants to choose a branch
+     * @param row is the row of the ship where the player wants to choose a branch
+     * @throws InvalidTurnException if it is not the player's turn
+     * @throws InvalidShipException if the ship is not valid (in case a new heavyFire is shot right after choosing)
+     */
+    @Override
+    public void chooseBranch(String username, int col, int row) throws InvalidTurnException, InvalidShipException {
+        state.chooseBranch(getPlayerByID(username), col, row);
+    }
+
+    /**
      * Gets a list of player colors that aren't currently assigned to any player
      *
      * @return List of available player colors

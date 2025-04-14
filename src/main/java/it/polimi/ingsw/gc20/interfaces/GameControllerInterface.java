@@ -20,6 +20,8 @@ public interface GameControllerInterface {
     List<String> getDisconnectedPlayers();
     boolean isPlayerDisconnected(String username);
     void setPlayerColor(String username, PlayerColor color);
+
+
     List<PlayerColor> getAvailableColors();
     Player getPlayerData(String asker, String asked);
 
@@ -52,6 +54,7 @@ public interface GameControllerInterface {
     void readyToFly(String username);
 
     // Gameplay
+    void chooseBranch(String username, int col, int row) throws InvalidTurnException, InvalidShipException;
     int rollDice(String username) throws IllegalStateException, InvalidTurnException;
     int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException;
     AdventureCard getActiveCard();
