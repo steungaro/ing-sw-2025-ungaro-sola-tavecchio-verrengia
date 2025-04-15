@@ -161,6 +161,7 @@ public abstract class State{
     public void resume() {
         exception();
     }
+
     public Map<String, Integer> getScore(){
         exception();
         return null;
