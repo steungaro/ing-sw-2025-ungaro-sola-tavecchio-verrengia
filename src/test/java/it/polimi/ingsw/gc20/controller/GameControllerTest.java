@@ -237,7 +237,30 @@ class GameControllerTest {
     }
 
     @Test
-    void activateShield() {
+    void activateShield() throws InvalidTurnException {
+        // TODO -> Better test in State section
+        AdventureCard adventureCard1 = new AdventureCard();
+        List<Projectile> projectiles = new ArrayList<>();
+        Projectile projectile1 = new Projectile();
+        projectile1.setDirection(Direction.DOWN);
+        projectile1.setFireType(FireType.LIGHT_METEOR);
+        projectiles.add(projectile1);
+        adventureCard1.setProjectiles(projectiles);
+
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController, gameController.getModel(), adventureCard1);
+
+        Shield shield = new Shield();
+        Direction[] directions = {Direction.UP, Direction.RIGHT};
+        shield.setCoveredSides(directions);
+
+        Battery battery = new Battery();
+        battery.setSlots(3);
+        battery.fillBattery();
+
+        gameController.getModel().setActiveCard(adventureCard1);
+        gameController.setState(meteorSwarmState);
+
+        gameController.activateShield("player1", shield, battery);
     }
 
     @Test

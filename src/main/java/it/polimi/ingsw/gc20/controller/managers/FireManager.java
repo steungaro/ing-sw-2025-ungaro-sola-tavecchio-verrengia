@@ -41,7 +41,7 @@ public class FireManager {
 
     public void activateShield(Shield shield, Battery battery) {
         if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
-            throw new IllegalStateException("Cannot activate cannon in this state");
+            throw new IllegalStateException("Cannot activate shield in this state");
         }
         List<Battery> batteries = new ArrayList<>();
         if (battery == null || shield == null) {
