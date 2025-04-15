@@ -671,18 +671,15 @@ public class GameController implements GameControllerInterface {
         state.rollDice(getPlayerByID(username));
     }
 
-    public String getCurrentPlayer() throws IllegalStateException {
-        if (state instanceof PlayingState) {
-            return ((PlayingState) state).getCurrentPlayer();
-        } else {
-            throw new IllegalStateException("No current player in this state");
-        }
-    }
 
     public List<String> getInGameConnectedPlayers() {
         return model.getInGamePlayers().stream()
                 .map(Player::getUsername)
                 .filter(connectedPlayers::contains)
                 .collect(Collectors.toList());
+    }
+
+    public void addHandler(EventType<? extends Event> type, EventHandler<? extends Event> handler) {
+        eventHandlers.computeIfAbsent(type, k -> new ArrayList<>()).add(handler);
     }
 }
