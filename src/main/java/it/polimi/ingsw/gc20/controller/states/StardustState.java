@@ -9,7 +9,7 @@ public class StardustState extends PlayingState {
     /**
      * Default constructor
      */
-    public StardustState(GameController controller, GameModel model, AdventureCard card) {
+    public StardustState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
