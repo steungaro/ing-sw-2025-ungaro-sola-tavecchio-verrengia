@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
@@ -13,7 +14,8 @@ import it.polimi.ingsw.gc20.model.player.Player;
 
 import java.util.*;
 
-public class CombatZone1State extends CargoState {
+@SuppressWarnings("unused") // dynamically created by Cards
+public class CombatZone1State extends PlayingState {
     private final int lostDays;
     private int lostCargo;
     private final List<Projectile> cannonFires;
@@ -26,7 +28,7 @@ public class CombatZone1State extends CargoState {
      */
     @SuppressWarnings("unused") // dynamically created by Cards
     public CombatZone1State(GameController controller, GameModel model, AdventureCard card) {
-        super(controller, model);
+        super(model, controller);
         this.lostDays = card.getLostDays();
         this.lostCargo = card.getLostCargo();
         this.cannonFires = card.getProjectiles();
@@ -62,7 +64,8 @@ public class CombatZone1State extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(cannons), batteries));
-        if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
             getModel().movePlayer(declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
@@ -91,18 +94,20 @@ public class CombatZone1State extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteries));
-        if (declaredEnginePower.size() == getController().getInGameConnectedPlayers().size()) {
-            Player p = declaredEnginePower.entrySet()
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
+            setCurrentPlayer(declaredEnginePower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
-                    .getKey();
+                    .getKey()
+                    .getUsername());
             removingCargo = true;
         }
     }
 
     @Override
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -117,14 +122,14 @@ public class CombatZone1State extends CargoState {
     }
 
     @Override
-    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (!removingCargo) {
             throw new IllegalStateException("Not in removing cargo state");
         }
-        super.moveCargo(player, loaded, chFrom, chTo);
+        getModel().MoveCargo(player, loaded, chFrom, chTo);
     }
 
     @Override
@@ -162,15 +167,25 @@ public class CombatZone1State extends CargoState {
         if (!removingCargo) {
             throw new IllegalStateException("Not in removing cargo state");
         }
-        if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
-            throw new IllegalStateException("Cannot lose energy if having cargo available");
-        }
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
-        getModel().removeEnergy(player, batteries);
+        super.loseEnergy(player, battery);
         lostCargo--;
         if (player.getShip().getTotalEnergy() == 0) {
             lostCargo = 0;
+        }
+    }
+
+    @Override
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        manager.chooseBranch(player, col, row);
+        while (manager.isFirstHeavyFire()) {
+            manager.fire();
+        }
+        if (manager.finished()) {
+            getModel().getActiveCard().playCard();
+            getController().drawCard();
         }
     }
 }

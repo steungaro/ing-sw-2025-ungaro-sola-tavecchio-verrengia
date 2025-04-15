@@ -4,6 +4,10 @@ import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @SuppressWarnings("unused") // dynamically created by Cards
 public class EpidemicState extends PlayingState {
     /**
@@ -11,12 +15,8 @@ public class EpidemicState extends PlayingState {
      */
     public EpidemicState(GameController controller, GameModel model, AdventureCard card) {
         super(model, controller);
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        this.automaticAction();
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(this::automaticAction, 5, TimeUnit.SECONDS);
     }
 
     @Override

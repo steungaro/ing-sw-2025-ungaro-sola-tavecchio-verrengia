@@ -337,6 +337,7 @@ public class GameModel {
      * @param p player that adds the alien
      * @throws IllegalArgumentException  if the component is not a cabin
      * @throws InvalidParameterException if the cabin cannot host this type of alien
+     * @throws IllegalArgumentException if the alien has already been added
      */
     public void setAlien(AlienColor a, Cabin c, Player p) throws IllegalArgumentException, InvalidParameterException {
         Ship s = p.getShip();
@@ -499,7 +500,7 @@ public class GameModel {
      * @param p player whose chose to activate the effect of the card
      * @param e energy to use
      */
-    public void UseShield(Player p, Battery e) {
+    public void useShield(Player p, Battery e) {
         p.getShip().useEnergy(e);
     }
 

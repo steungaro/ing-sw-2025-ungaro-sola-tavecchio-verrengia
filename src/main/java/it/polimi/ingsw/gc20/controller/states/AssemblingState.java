@@ -59,16 +59,12 @@ public class AssemblingState extends State {
             getModel().componentFromBooked(component, player);
             return component;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Component not found in player's booked list");
+            throw new NoSuchElementException("Component not found in player's booked list");
         }
     }
     @Override
     public void addComponentToBooked(Player player, Component component) {
-        try {
-            getModel().componentToBooked(component, player);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Component not found in player's booked list");
-        }
+        getModel().componentToBooked(component, player);
     }
     @Override
     public void addComponentToViewed(Component component) {

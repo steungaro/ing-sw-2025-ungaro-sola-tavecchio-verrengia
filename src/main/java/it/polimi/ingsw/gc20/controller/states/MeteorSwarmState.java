@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
@@ -34,7 +35,7 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -54,7 +55,7 @@ public class MeteorSwarmState extends PlayingState {
 
     
     @Override
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -62,6 +63,26 @@ public class MeteorSwarmState extends PlayingState {
         do {
             manager.fire();
         } while (manager.isFirstHeavyFire());
+        if (manager.finished()) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+            }
+        }
+    }
+
+    @Override
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        manager.chooseBranch(player, col, row);
+        while (manager.isFirstHeavyFire()) {
+            manager.fire();
+        }
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {

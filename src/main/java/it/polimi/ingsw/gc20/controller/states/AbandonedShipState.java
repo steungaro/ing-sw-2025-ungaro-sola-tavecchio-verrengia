@@ -64,8 +64,13 @@ public class AbandonedShipState extends PlayingState {
         getController().drawCard();
     }
 
+    /**
+     * This method is used to end the move and discard the card
+     * @param player the player who is ending the move
+     * @throws InvalidTurnException if it's not the player's turn
+     */
     @Override
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+    public void endMove(Player player) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

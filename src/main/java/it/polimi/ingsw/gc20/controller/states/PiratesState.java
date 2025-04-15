@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
@@ -21,7 +22,8 @@ import java.util.List;
  * - the player can accept the card or endMove
  * In case of losing:
  * - the player can activate the cannon or the shield
- * - heavu fire are automatically activated
+ * - heavy fires are automatically activated
+ * - if a InvalidShipException is thrown, the player has to validate the ship before doing anything else
  */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class PiratesState extends PlayingState {
@@ -59,7 +61,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -75,18 +77,44 @@ public class PiratesState extends PlayingState {
             return 0;
         } else {
             manager = new FireManager(getModel(), cannonFire, player);
-            while (!manager.isFirstHeavyFire()) {
+            while (manager.isFirstHeavyFire()) {
                 manager.fire();
             }
             if (manager.finished()) {
-                getController().drawCard();
+                nextPlayer();
+                if (getCurrentPlayer() == null) {
+                    getModel().getActiveCard().playCard();
+                    getController().drawCard();
+                } else {
+                    manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+                }
             }
             return -1;
         }
     }
 
     @Override
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        super.chooseBranch(player, col, row);
+        while (manager.isFirstHeavyFire()) {
+            manager.fire();
+        }
+        if (manager.finished()) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
+        }
+    }
+
+    @Override
+    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -95,12 +123,18 @@ public class PiratesState extends PlayingState {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
-            getController().drawCard();
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
         }
     }
 
     @Override
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -109,18 +143,26 @@ public class PiratesState extends PlayingState {
             manager.fire();
         } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().drawCard();
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getModel().getActiveCard().playCard();
+                getController().drawCard();
+            } else {
+                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+            }
         }
     }
 
     @Override
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+    public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (manager != null && !manager.finished()) {
             throw new IllegalStateException("You have to finish the fire before ending your turn");
+        }
+        if (manager != null && manager.isSplit()) {
+            throw new InvalidShipException("Ship not valid");
         }
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");

@@ -1,16 +1,17 @@
 package it.polimi.ingsw.gc20.interfaces;
 
-import it.polimi.ingsw.gc20.controller.*;
 import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
+import java.rmi.Remote;
 import java.util.List;
 import java.util.Map;
 
-public interface GameControllerInterface {
+@SuppressWarnings("unused")
+public interface GameControllerInterface extends Remote {
 
     // Player management
     void giveUp(String username);
@@ -20,23 +21,23 @@ public interface GameControllerInterface {
     List<String> getDisconnectedPlayers();
     boolean isPlayerDisconnected(String username);
     void setPlayerColor(String username, PlayerColor color);
+
+
     List<PlayerColor> getAvailableColors();
     Player getPlayerData(String asker, String asked);
 
     // Game state
     String getState();
-    Map<Player, Integer> getPlayerScores();
+    Map<String, Integer> getPlayerScores();
 
     // Ship assembly
-    //TODO: maybe group take/place methods into generic ones with a type parameter
     Component takeComponentFromUnviewed(String username, Component component);
     Component takeComponentFromViewed(String username, Component component);
     Component takeComponentFromBooked(String username, Component component);
     void addComponentToBooked(String username, Component component);
-    void addComponentToViewed(Component component);
+    void addComponentToViewed(String username, Component component);
     void placeComponent(String username, Component component, int x, int y);
 
-    //TODO: maybe group rotate methods into generic ones with a type parameter
     void rotateComponentClockwise(Component component);
     void rotateComponentCounterclockwise(Component component);
 
@@ -52,6 +53,7 @@ public interface GameControllerInterface {
     void readyToFly(String username);
 
     // Gameplay
+    void chooseBranch(String username, int col, int row) throws InvalidTurnException, InvalidShipException;
     int rollDice(String username) throws IllegalStateException, InvalidTurnException;
     int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException;
     AdventureCard getActiveCard();
@@ -61,10 +63,14 @@ public interface GameControllerInterface {
     void moveCargo(String username, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException, CargoException;
     void acceptCard(String username) throws IllegalStateException, InvalidTurnException;
     void loseCrew(String username, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException;
-    void endMove(String username) throws IllegalStateException, InvalidTurnException;
+    void endMove(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
 
     // Activate ship components
-    void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
-    void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException;
-    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException;
+    void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    void activateShield(String username, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+
+    // Game end
+    Map<String, Integer> getScore() throws IllegalStateException;
 }

@@ -97,7 +97,7 @@ public class GameController implements GameControllerInterface {
     public void drawCard(){
         AdventureCard card = model.drawCard();
         if (card == null) {
-            state = new EndgameState();
+            state = new EndgameState(state.getController());
         } else {
             card.setState(this, model);
         }
@@ -121,6 +121,20 @@ public class GameController implements GameControllerInterface {
     @Override
     public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException, IllegalStateException {
         state.landOnPlanet(getPlayerByID(username), planetIndex);
+    }
+
+    /**
+     * Shoots an enemy (pirates, slavers, smugglers)
+     * @param username is the username of the player that wants to shoot the enemy
+     * @param cannons is the list of cannons that the player wants to use to shoot
+     * @param batteries is the list of batteries that the player wants to use to shoot
+     * @return 1 if the player wins, 0 if it's a draw, -1 if the player loses
+     * @throws IllegalStateException if the game is not in the shooting phase
+     * @throws InvalidTurnException if it is not the player's turn
+     */
+    @Override
+    public int shootEnemy(String username, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+        return state.shootEnemy(getPlayerByID(username), cannons, batteries);
     }
 
     /**
@@ -191,8 +205,17 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException {
+    public void activateCannons(String username, List<Cannon> cannons, List<Battery> batteries) throws InvalidTurnException, InvalidShipException {
         state.activateCannons(getPlayerByID(username), cannons, batteries);
+    }
+
+    /**
+     * @return the score of the game
+     * @throws IllegalStateException if the game is not in the endgame phase
+     */
+    @Override
+    public Map<String, Integer> getScore() throws IllegalStateException {
+        return state.getScore();
     }
 
     /**
@@ -216,7 +239,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException {
+    public void activateShield(String username, Shield shieldComp, Battery batteryComp) throws InvalidTurnException, InvalidShipException {
         state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
     }
 
@@ -235,7 +258,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalStateException if the game is not in the card phase
      * @throws InvalidTurnException if it is not the player's turn
      */
-    public void endMove(String username) throws InvalidTurnException {
+    public void endMove(String username) throws InvalidTurnException, InvalidShipException {
         state.endMove(getPlayerByID(username));
     }
 
@@ -246,10 +269,24 @@ public class GameController implements GameControllerInterface {
      * @param batteries is the list of batteries that the player wants to use to activate the engines
      * @throws IllegalStateException if the game is not in the engine activation phase
      * @throws InvalidTurnException if it is not the player's turn
+     * @throws InvalidShipException if the ship is not valid
      */
     @Override
-    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException {
+    public void activateEngines(String username, List<Engine> engines, List<Battery> batteries) throws InvalidTurnException, InvalidShipException {
         state.activateEngines(getPlayerByID(username), engines, batteries);
+    }
+
+    /**
+     * To be called when a player needs to chose one of the two branches a ship is divided into after a fire.
+     * @param username is the username of the player that wants to choose a branch
+     * @param col is the column of the ship where the player wants to choose a branch
+     * @param row is the row of the ship where the player wants to choose a branch
+     * @throws InvalidTurnException if it is not the player's turn
+     * @throws InvalidShipException if the ship is not valid (in case a new heavyFire is shot right after choosing)
+     */
+    @Override
+    public void chooseBranch(String username, int col, int row) throws InvalidTurnException, InvalidShipException {
+        state.chooseBranch(getPlayerByID(username), col, row);
     }
 
     /**
@@ -319,11 +356,9 @@ public class GameController implements GameControllerInterface {
      *
      * @return Map associating each player with their score
      */
-    public Map<Player, Integer> getPlayerScores(){
-        return model.calculateScore();
+    public Map<String, Integer> getPlayerScores(){
+        return state.getScore();
     }
-    //TODO: maybe this method should return a Map <String, Integer> instead of a Map<Player, Integer> to avoid exposing the Player object
-    //TODO: maybe make this function only available in the endgame state?
 
     /**
      * Handles the event of a player giving up
@@ -351,6 +386,9 @@ public class GameController implements GameControllerInterface {
         }
         if(connectedPlayers.size() == 1){
             state = new PausedState(state, model, this);
+        }else if(connectedPlayers.isEmpty()){
+            state = new EndgameState(this);
+            MatchController.getInstance().endGame(gameID);
         }
     }
 
@@ -377,7 +415,7 @@ public class GameController implements GameControllerInterface {
         connectedPlayers.add(username);
 
         if(connectedPlayers.size() == 2){
-            state = state.resume();
+            state.resume();
         }
         return true;
     }
@@ -492,7 +530,7 @@ public class GameController implements GameControllerInterface {
      * @param component Component to add to viewed pile
      * @throws IllegalStateException if game is not in ASSEMBLING state
      */
-    public synchronized void addComponentToViewed(Component component) {
+    public synchronized void addComponentToViewed(String username, Component component) {
         state.addComponentToViewed(component);
     }
 
@@ -554,17 +592,7 @@ public class GameController implements GameControllerInterface {
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public boolean validateShip(String username) {
-        if (!state.isShipValid(getPlayerByID(username))) {
-            return false;
-        } else {
-            if (state.allShipsReady()) {
-                state.initAllShips();
-                model.createDeck();
-                drawCard();
-                //TODO: notify players of state change
-            }
-            return true;
-        }
+        return state.isShipValid(getPlayerByID(username));
     }
 
     /**
@@ -667,6 +695,12 @@ public class GameController implements GameControllerInterface {
      */
     public void readyToFly(String username) {
         state.readyToFly(getPlayerByID(username));
+        if (state.allShipsReady()) {
+            state.initAllShips();
+            model.createDeck();
+            drawCard();
+            //TODO: notify players of state change
+        }
     }
 
     public void defeated(String username) {
