@@ -78,7 +78,6 @@ public class NormalBoard extends Board {
         mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
-
             cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
         } catch (Exception e) {
             e.printStackTrace();

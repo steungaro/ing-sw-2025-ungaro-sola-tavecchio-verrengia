@@ -13,7 +13,7 @@ public class OpenSpaceState extends EnginesState {
     /**
      * Default constructor
      */
-    public OpenSpaceState(GameController controller, GameModel model, AdventureCard card) {
+    public OpenSpaceState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
     }
 

@@ -15,7 +15,7 @@ import java.util.List;
  * @author GC20
  */
 
-public abstract class AdventureCard {
+public class AdventureCard {
     private String name;
     private int level;
     private int IDCard;

@@ -3,7 +3,7 @@
       "name": "Slavers",
       "firePower": "6",
       "crew": "3",
-      "reward": "5",
+      "credit": "5",
       "lostDays": "1",
       "IDCard": "1",
       "level": "1"
@@ -309,7 +309,7 @@
       "name": "Slavers",
       "firePower": "7",
       "crew": "4",
-      "reward": "8",
+      "credit": "8",
       "lostDays": "2",
       "IDCard": "21",
       "Level": "2"
