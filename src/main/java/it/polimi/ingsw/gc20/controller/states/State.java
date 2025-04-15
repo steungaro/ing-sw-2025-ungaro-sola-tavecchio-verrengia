@@ -170,4 +170,8 @@ public abstract class State{
     public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
         exception();
     }
+
+    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+        exception();
+    }
 }

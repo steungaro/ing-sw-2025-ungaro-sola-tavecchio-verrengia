@@ -52,8 +52,7 @@ public interface GameControllerInterface extends Remote {
 
     // Gameplay
     void chooseBranch(String username, int col, int row) throws InvalidTurnException, InvalidShipException;
-    int rollDice(String username) throws IllegalStateException, InvalidTurnException;
-    int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException;
+    void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException;
     AdventureCard getActiveCard();
     void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException;
     void loadCargo(String username, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException;

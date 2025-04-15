@@ -21,8 +21,7 @@ import java.util.List;
  * In case of winning:
  * - the player can accept the card or endMove
  * In case of losing:
- * - the player can activate the cannon or the shield
- * - heavy fires are automatically activated
+ * - the player will roll dice (if the first fire is a heavy fire, it will be automatically activated otherwise the player has to activate a shield (even null))
  * - if a InvalidShipException is thrown, the player has to validate the ship before doing anything else
  */
 @SuppressWarnings("unused") // dynamically created by Cards
@@ -61,7 +60,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -77,29 +76,20 @@ public class PiratesState extends PlayingState {
             return 0;
         } else {
             manager = new FireManager(getModel(), cannonFire, player);
-            while (manager.isFirstHeavyFire()) {
-                manager.fire();
-            }
-            if (manager.finished()) {
-                nextPlayer();
-                if (getCurrentPlayer() == null) {
-                    getModel().getActiveCard().playCard();
-                    getController().drawCard();
-                } else {
-                    manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
-                }
-            }
             return -1;
         }
     }
 
     @Override
-    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        super.chooseBranch(player, col, row);
-        while (manager.isFirstHeavyFire()) {
+        if (manager == null || manager.finished()) {
+            throw new IllegalStateException("Cannot roll dice when not firing");
+        }
+        getModel().getGame().rollDice();
+        if (manager.isFirstHeavyFire()) {
             manager.fire();
         }
         if (manager.finished()) {
@@ -114,14 +104,11 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        manager.activateCannon(cannons.getFirst(), batteries.getFirst());
-        do {
-            manager.fire();
-        } while (manager.isFirstHeavyFire());
+        manager.chooseBranch(player, col, row);
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
@@ -139,9 +126,7 @@ public class PiratesState extends PlayingState {
             throw new InvalidTurnException("It's not your turn");
         }
         manager.activateShield(shield, battery);
-        do {
-            manager.fire();
-        } while (manager.isFirstHeavyFire());
+        manager.fire();
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {

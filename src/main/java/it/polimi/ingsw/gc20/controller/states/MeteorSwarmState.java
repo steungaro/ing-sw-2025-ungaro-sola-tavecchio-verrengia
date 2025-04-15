@@ -40,9 +40,6 @@ public class MeteorSwarmState extends PlayingState {
             throw new InvalidTurnException("It's not your turn");
         }
         manager.activateCannon(cannons.getFirst(), batteries.getFirst());
-        do {
-            manager.fire();
-        } while (manager.isFirstHeavyFire());
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
@@ -53,16 +50,24 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
-    
+    @Override
+    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (manager == null || manager.finished()) {
+            throw new IllegalStateException("Cannot roll dice when not firing");
+        }
+        getModel().getGame().rollDice();
+    }
+
     @Override
     public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         manager.activateShield(shield, battery);
-        do {
-            manager.fire();
-        } while (manager.isFirstHeavyFire());
+        manager.fire();
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
@@ -75,14 +80,11 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         manager.chooseBranch(player, col, row);
-        while (manager.isFirstHeavyFire()) {
-            manager.fire();
-        }
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
