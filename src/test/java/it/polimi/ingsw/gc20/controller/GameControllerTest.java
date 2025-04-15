@@ -43,11 +43,16 @@ class GameControllerTest {
 
         gameController = new GameController(id, players, level);
         model = new GameModel();
+<<<<<<< Updated upstream
         adventureCard = new AdventureCard();
         adventureCard.setCrew(2);
         adventureCard.setCredits(3);
         adventureCard.setLostDays(1);
         abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
+=======
+        model.startGame(2, players, "10");
+        abandonedShipState = new AbandonedShipState(gameController, model, new AdventureCard());
+>>>>>>> Stashed changes
     }
 
     @Test
@@ -58,29 +63,49 @@ class GameControllerTest {
 
     @Test
     void getGameID() {
+<<<<<<< Updated upstream
         assertEquals(id, gameController.getGameID());
+=======
+        String expectedId = "0";
+        assertEquals(expectedId, gameController.getGameID());
+>>>>>>> Stashed changes
     }
 
     @Test
     void getFirstOnlinePlayer() {
+<<<<<<< Updated upstream
         String firstOnlinePlayer = gameController.getFirstOnlinePlayer();
         assertEquals("player1", firstOnlinePlayer);
+=======
+        String expectedPlayer = "player1";
+        assertEquals(expectedPlayer, gameController.getFirstOnlinePlayer());
+>>>>>>> Stashed changes
     }
 
     @Test
     void drawCard() {
+<<<<<<< Updated upstream
         gameController.drawCard();
         AdventureCard drawnCard = gameController.getModel().getActiveCard();
         assertNotNull(drawnCard);
+=======
+        // Assuming the deck is not empty
+        gameController.drawCard();
+>>>>>>> Stashed changes
     }
 
     @Test
     void getState() {
+<<<<<<< Updated upstream
+=======
+        // Assuming the state is set to AbandonedShipState
+>>>>>>> Stashed changes
         gameController.setState(abandonedShipState);
         assertEquals(abandonedShipState.toString(), gameController.getState());
     }
 
     @Test
+<<<<<<< Updated upstream
     void landOnPlanet() throws InvalidTurnException {
         Planet planet = new Planet();
         List<CargoColor> reward = new ArrayList<>();
@@ -168,6 +193,29 @@ class GameControllerTest {
         CargoHoldTo.setCargoHeld(cargoHeldTo);
 
         gameController.unloadCargo("player1", loaded, CargoHoldFrom);
+=======
+    void landOnPlanet() {
+        // Assuming the player is on a planet
+        // TODO : first fix the planet (Adventure Card) and then test this method
+    }
+
+    @Test
+    void loadCargo() {
+        // Assuming the player has a cargo hold and the cargo is available
+        // TODO : first fix the cargo (Adventure Card) and then test this method
+    }
+
+    @Test
+    void unloadCargo() {
+        // Assuming the player has a cargo hold and the cargo is available
+        // TODO : first fix the cargo (Adventure Card) and then test this method
+    }
+
+    @Test
+    void moveCargo() {
+        // Assuming the player has a cargo hold and the cargo is available
+        // TODO : first fix the cargo (Adventure Card) and then test this method
+>>>>>>> Stashed changes
     }
 
     @Test
