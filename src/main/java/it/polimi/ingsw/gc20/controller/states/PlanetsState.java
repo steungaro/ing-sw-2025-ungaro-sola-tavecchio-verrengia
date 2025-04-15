@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc20.model.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class PlanetsState extends CargoState {
     private final List<Planet> planets;
     private final int lostDays;
@@ -53,15 +54,14 @@ public class PlanetsState extends CargoState {
      */
     @Override
     public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException {
-        String username = player.getUsername();
-        if (!getCurrentPlayer().equals(username)) {
+        if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (planets.get(planetIndex).getAvailable()) {
             planets.get(planetIndex).setAvailable(false);
-            landedPlayer = username;
+            landedPlayer = player.getUsername();
             landedPlanetIndex = planetIndex;
-            playersToMove.add(getController().getPlayerByID(username));
+            playersToMove.add(player);
         } else {
             throw new IllegalStateException("The planet is not available");
         }

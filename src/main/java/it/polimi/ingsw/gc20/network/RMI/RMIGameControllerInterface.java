@@ -1,17 +1,20 @@
-package it.polimi.ingsw.gc20.interfaces;
+package it.polimi.ingsw.gc20.network.RMI;
 
-import it.polimi.ingsw.gc20.exceptions.*;
-import it.polimi.ingsw.gc20.model.cards.*;
+import it.polimi.ingsw.gc20.exceptions.CargoException;
+import it.polimi.ingsw.gc20.exceptions.HourglassException;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.player.*;
-import it.polimi.ingsw.gc20.model.gamesets.*;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.model.player.PlayerColor;
 
 import java.rmi.Remote;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
-public interface GameControllerInterface extends Remote {
+public interface RMIGameControllerInterface extends Remote {
 
     // Player management
     void giveUp(String username);

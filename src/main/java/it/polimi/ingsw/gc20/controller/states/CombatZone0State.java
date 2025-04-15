@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.FireManager;
+import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
@@ -103,7 +104,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -123,7 +124,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -131,6 +132,21 @@ public class CombatZone0State extends PlayingState {
         do {
             manager.fire();
         } while (manager.isFirstHeavyFire());
+        if (manager.finished()) {
+            getModel().getActiveCard().playCard();
+            getController().drawCard();
+        }
+    }
+
+    @Override
+    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        manager.chooseBranch(player, col, row);
+        while (manager.isFirstHeavyFire()) {
+            manager.fire();
+        }
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
             getController().drawCard();

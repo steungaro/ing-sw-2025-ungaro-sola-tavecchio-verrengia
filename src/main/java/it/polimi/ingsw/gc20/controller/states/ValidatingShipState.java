@@ -41,6 +41,9 @@ public class ValidatingShipState extends State {
 
     @Override
     public void removeComp(Player player, Component component) {
+        if (validShips.get(player)) {
+            throw new IllegalArgumentException("Cannot remove component from valid ship");
+        }
         getModel().removeComponent(component, player);
     }
 
@@ -56,6 +59,9 @@ public class ValidatingShipState extends State {
         }
         if (cabin instanceof StartingCabin) {
             throw new IllegalArgumentException("Aliens can only be placed in cabins");
+        }
+        if (getModel().getLevel() < 2) {
+            throw new IllegalArgumentException("Aliens can only be added in level 2");
         }
         getModel().setAlien(color, cabin, player);
     }

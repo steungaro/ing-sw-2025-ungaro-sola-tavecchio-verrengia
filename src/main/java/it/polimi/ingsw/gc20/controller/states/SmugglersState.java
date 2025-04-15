@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -64,12 +63,7 @@ public class SmugglersState extends CargoState {
         if (!defeated) {
             throw new IllegalStateException("Card not defeated. Cannot lose energy now");
         }
-        if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
-            throw new IllegalStateException("Cannot lose energy if having cargo available");
-        }
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
-        getModel().removeEnergy(player, batteries);
+        super.loseEnergy(player, battery);
         currentLostCargo--;
         if (player.getShip().getTotalEnergy() == 0) {
             currentLostCargo = 0;

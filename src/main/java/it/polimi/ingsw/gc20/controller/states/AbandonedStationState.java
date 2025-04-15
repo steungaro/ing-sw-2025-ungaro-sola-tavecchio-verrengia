@@ -47,8 +47,14 @@ public class AbandonedStationState extends CargoState {
                 '}';
     }
 
+    /**
+     * This method is used to accept the card and land on the station
+     * @param player the player who is landing on the station
+     * @throws IllegalStateException if the player doesn't have enough crew
+     * @throws InvalidTurnException if it's not the player's turn
+     */
     @Override
-    public void acceptCard(Player player) throws InvalidTurnException {
+    public void acceptCard(Player player) throws InvalidTurnException, IllegalStateException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
@@ -63,7 +69,7 @@ public class AbandonedStationState extends CargoState {
      * @param player the player who is loading the cargo
      * @param loaded the color of the cargo to be loaded
      * @param chTo the cargo hold to which the cargo is loaded
-     * @throws IllegalArgumentException if the station was not boarded and if the cargo is not in the reward
+     * @throws IllegalStateException if the station was not boarded and if the cargo is not in the reward
      * @throws CargoException if the cargo is not in the reward
      * @throws InvalidTurnException if it's not the player's turn
      */

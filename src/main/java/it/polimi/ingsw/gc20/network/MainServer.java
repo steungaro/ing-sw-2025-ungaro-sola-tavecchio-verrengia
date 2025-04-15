@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.network;
 
-public class MainServer {
+public class  MainServer {
     public static void main(String[] args) {
         NetworkFactory networkFactory = new NetworkFactory();
         networkFactory.initialize();

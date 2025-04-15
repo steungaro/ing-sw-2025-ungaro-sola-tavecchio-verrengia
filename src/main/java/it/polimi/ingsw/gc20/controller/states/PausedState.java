@@ -13,8 +13,8 @@ public class PausedState extends State {
         this.previousState = previousState;
     }
 
-    public State resume() {
-        return previousState;
+    public void resume() {
+        getController().setState(previousState);
     }
 
     @Override
