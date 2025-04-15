@@ -20,10 +20,8 @@ public interface GameControllerInterface extends Remote {
     List<String> getAllUsernames();
     List<String> getDisconnectedPlayers();
     boolean isPlayerDisconnected(String username);
-    void setPlayerColor(String username, PlayerColor color);
 
 
-    List<PlayerColor> getAvailableColors();
     Player getPlayerData(String asker, String asked);
 
     // Game state

@@ -79,13 +79,15 @@ public class CombatZone0State extends PlayingState {
         if (player.getUsername().equals(getCurrentPlayer())) {
             getModel().loseCrew(player, cabins);
             if (player.getShip().crew() == 0) {
-                getController().defeated(player.getUsername());
+                lostCrew = 0;
+                removingCrew = false;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
-            } else if (lostCrew == 0) {
-                removingCrew = false;
             }
-            setCurrentPlayer(getController().getFirstOnlinePlayer());
+            if (lostCrew == 0) {
+                removingCrew = false;
+                setCurrentPlayer(getController().getFirstOnlinePlayer());
+            }
         } else {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -139,11 +141,11 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+    public void chooseBranch(Player player, int row, int col) throws InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        manager.chooseBranch(player, col, row);
+        manager.chooseBranch(player, row, col);
         while (manager.isFirstHeavyFire()) {
             manager.fire();
         }

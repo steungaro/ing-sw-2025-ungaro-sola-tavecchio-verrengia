@@ -24,8 +24,6 @@ public class EpidemicState extends PlayingState {
         return "EpidemicState";
     }
 
-    public void epidemic(){
-    }
 
     @Override
     public void automaticAction() {

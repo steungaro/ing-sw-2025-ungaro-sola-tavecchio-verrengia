@@ -289,20 +289,6 @@ public class GameController implements GameControllerInterface {
         state.chooseBranch(getPlayerByID(username), col, row);
     }
 
-    /**
-     * Gets a list of player colors that aren't currently assigned to any player
-     *
-     * @return List of available player colors
-     */
-    public List<PlayerColor> getAvailableColors(){
-        List<PlayerColor> availableColors = new ArrayList<>(Arrays.asList(PlayerColor.values()));
-
-        for (Player p: model.getGame().getPlayers()){
-            PlayerColor color = p.getColor();
-            availableColors.remove(color);
-        }
-        return availableColors;
-    }
 
     /**
      * @param asker is the username of the player asking for data
@@ -318,38 +304,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    //TODO: if player color is chosen at connection time, this method is fine, if not, it should be called within validating state, maybe editing #readyToFly function, providing the color chosen
-    /**
-     * Sets the color for a specific player
-     *
-     * @param username Username of the player to update
-     * @param color Color to assign to the player
-     * @throws IllegalArgumentException if player is not found or color is already taken
-     */
-    @Override
-    public void setPlayerColor(String username, PlayerColor color) {
-        // Check if color is available
-        List<PlayerColor> availableColors = getAvailableColors();
-        if (!availableColors.contains(color)) {
-            throw new IllegalArgumentException("Color is already taken by another player");
-        }
-
-        // Find player with matching username
-        Player targetPlayer = null;
-        for (Player p : model.getGame().getPlayers()) {
-            if (p.getUsername().equals(username)) {
-                targetPlayer = p;
-                break;
-            }
-        }
-
-        if (targetPlayer == null) {
-            throw new IllegalArgumentException("Player not found in game");
-        }
-
-        // Set the color for the player
-        targetPlayer.setColor(color);
-    }
 
     /**
      * Calculates and returns the final scores for all players
