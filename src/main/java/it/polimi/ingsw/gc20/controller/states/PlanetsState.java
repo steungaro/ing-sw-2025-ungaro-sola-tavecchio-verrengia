@@ -23,7 +23,7 @@ public class PlanetsState extends CargoState {
      * Default constructor
      */
     @SuppressWarnings("unused") // dynamically created by Cards
-    public PlanetsState(GameController controller, GameModel model, AdventureCard card) {
+    public PlanetsState(GameModel model, GameController controller, AdventureCard card) {
         super(controller, model);
         this.planets = card.getPlanets();
         this.lostDays = card.getLostDays();

@@ -95,7 +95,7 @@ class GameControllerTest {
         planetsCard.setLostDays(1);
         planetsCard.setPlanets(planets);
 
-        PlanetsState planetsState = new PlanetsState(gameController, model, planetsCard);
+        PlanetsState planetsState = new PlanetsState(model, gameController, planetsCard);
         gameController.setState(planetsState);
 
         gameController.landOnPlanet("player1", 0);
@@ -137,27 +137,103 @@ class GameControllerTest {
         cargoHeld.add(loaded);
         CargoHold.setCargoHeld(cargoHeld);
         gameController.getModel().setActiveCard(abandonedStationCard);
+        gameController.loadCargo("player1", loaded, CargoHold);
         gameController.unloadCargo("player1", loaded, CargoHold);
     }
 
     @Test
-    void moveCargo() {
+    void moveCargo() throws InvalidTurnException, CargoException {
+        // TODO -> Better test in State section
+        AdventureCard abandonedStationCard = new AdventureCard();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        reward.add(CargoColor.YELLOW);
+        abandonedStationCard.setReward(reward);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+
+        CargoColor loaded = CargoColor.BLUE;
+        gameController.setState(abandonedStationState);
+
+        CargoHold CargoHoldFrom = new CargoHold();
+        CargoHoldFrom.setSlots(3);
+        List<CargoColor> cargoHeldFrom = new ArrayList<>();
+        cargoHeldFrom.add(loaded);
+        CargoHoldFrom.setCargoHeld(cargoHeldFrom);
+
+        CargoHold CargoHoldTo = new CargoHold();
+        CargoHoldTo.setSlots(3);
+        List<CargoColor> cargoHeldTo = new ArrayList<>();
+        gameController.getModel().setActiveCard(abandonedStationCard);
+        gameController.loadCargo("player1", loaded, CargoHoldTo);
+        CargoHoldTo.setCargoHeld(cargoHeldTo);
+
+        gameController.unloadCargo("player1", loaded, CargoHoldFrom);
     }
 
     @Test
-    void acceptCard() {
+    void acceptCard() throws InvalidTurnException {
+        // TODO -> Better test in State section
+        AdventureCard abandonedStationCard = new AdventureCard();
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.BLUE);
+        reward.add(CargoColor.YELLOW);
+        abandonedStationCard.setReward(reward);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+
+        CargoColor loaded = CargoColor.BLUE;
+        gameController.setState(abandonedStationState);
+
+        CargoHold CargoHoldFrom = new CargoHold();
+        CargoHoldFrom.setSlots(3);
+        List<CargoColor> cargoHeldFrom = new ArrayList<>();
+        cargoHeldFrom.add(loaded);
+        CargoHoldFrom.setCargoHeld(cargoHeldFrom);
+
+        CargoHold CargoHoldTo = new CargoHold();
+        CargoHoldTo.setSlots(3);
+        List<CargoColor> cargoHeldTo = new ArrayList<>();
+        gameController.getModel().setActiveCard(abandonedStationCard);
+
+        gameController.acceptCard("player1");
     }
 
     @Test
     void getOnlinePlayers() {
+        // TODO -> int or list ????
+        int size = gameController.getOnlinePlayers();
+        assertEquals(4, size);
     }
 
     @Test
     void activateCannons() {
+        // TODO -> Better test in State section
+        // TODO -> First FIX the cannon
     }
 
     @Test
-    void loseCrew() {
+    void loseCrew() throws InvalidTurnException {
+        // TODO -> Better test in State section
+
+        AdventureCard adventureCard1 = new AdventureCard();
+        adventureCard1.setCrew(2);
+        adventureCard1.setCredits(3);
+        adventureCard1.setLostDays(1);
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController, gameController.getModel(), adventureCard1);
+        gameController.setState(abandonedShipState1);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        Cabin cabin1 = new Cabin();
+        cabin1.setAstronauts(2);
+
+        Cabin cabin2 = new Cabin();
+        cabin2.setAstronauts(1);
+
+        List<Cabin> cabins = new ArrayList<>();
+        cabins.add(cabin1);
+        cabins.add(cabin2);
+
+        gameController.loseCrew("player1", cabins);
+        assertEquals(cabin1.getAstronauts() + cabin2.getAstronauts(), 1);
     }
 
     @Test
