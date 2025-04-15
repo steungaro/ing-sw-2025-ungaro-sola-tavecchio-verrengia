@@ -681,14 +681,7 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public int rollDice(String username) throws IllegalStateException, InvalidTurnException {
-        if (state instanceof PlayingState) {
-            if (!getCurrentPlayer().equals(username)) {
-                throw new InvalidTurnException("It's not your turn");
-            }
-            return model.getGame().rollDice();
-        } else {
-            throw new IllegalStateException("Game is not in the correct phase");
-        }
+        return state.rollDice(getPlayerByID(username));
     }
 
     /**

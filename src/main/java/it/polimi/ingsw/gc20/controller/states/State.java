@@ -162,4 +162,9 @@ public abstract class State{
         exception();
         return null;
     }
+
+    public int rollDice(Player player) throws InvalidTurnException {
+        exception();
+        return 0;
+    }
 }
