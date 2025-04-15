@@ -565,6 +565,9 @@ public class GameModel {
         Component c;
         if (fire.getFireType() == FireType.LIGHT_METEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
+            if (c==null) {
+                return;
+            }
             if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
                 return;
             }

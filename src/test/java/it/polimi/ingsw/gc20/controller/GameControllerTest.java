@@ -259,7 +259,7 @@ class GameControllerTest {
 
         gameController.getModel().setActiveCard(adventureCard1);
         gameController.setState(meteorSwarmState);
-
+        gameController.rollDice("player1");
         gameController.activateShield("player1", shield, battery);
     }
 
