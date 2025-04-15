@@ -6,11 +6,12 @@ import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 
+import java.rmi.Remote;
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public interface GameControllerInterface {
+public interface GameControllerInterface extends Remote {
 
     // Player management
     void giveUp(String username);
@@ -30,7 +31,6 @@ public interface GameControllerInterface {
     Map<String, Integer> getPlayerScores();
 
     // Ship assembly
-    //TODO: maybe group take/place methods into generic ones with a type parameter
     Component takeComponentFromUnviewed(String username, Component component);
     Component takeComponentFromViewed(String username, Component component);
     Component takeComponentFromBooked(String username, Component component);
@@ -38,7 +38,6 @@ public interface GameControllerInterface {
     void addComponentToViewed(String username, Component component);
     void placeComponent(String username, Component component, int x, int y);
 
-    //TODO: maybe group rotate methods into generic ones with a type parameter
     void rotateComponentClockwise(Component component);
     void rotateComponentCounterclockwise(Component component);
 

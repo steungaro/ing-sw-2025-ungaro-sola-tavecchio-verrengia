@@ -101,10 +101,8 @@ public class Lobby {
     /**
      * @return the game controller created from the lobby
      * @see GameController
-     * @TODO implement the creation of the game controller
      */
-    /*public GameController createGameController() {
+    public GameController createGameController() {
         return new GameController(id, users, level);
-    }*/
-
+    }
 }
