@@ -44,11 +44,16 @@ class GameControllerTest {
         gameController = new GameController(id, players, level);
         model = new GameModel();
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         adventureCard = new AdventureCard();
         adventureCard.setCrew(2);
         adventureCard.setCredits(3);
         adventureCard.setLostDays(1);
         abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
+=======
+        model.startGame(2, players, "10");
+        abandonedShipState = new AbandonedShipState(gameController, model, new AdventureCard());
+>>>>>>> Stashed changes
 =======
         model.startGame(2, players, "10");
         abandonedShipState = new AbandonedShipState(gameController, model, new AdventureCard());
@@ -64,7 +69,12 @@ class GameControllerTest {
     @Test
     void getGameID() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         assertEquals(id, gameController.getGameID());
+=======
+        String expectedId = "0";
+        assertEquals(expectedId, gameController.getGameID());
+>>>>>>> Stashed changes
 =======
         String expectedId = "0";
         assertEquals(expectedId, gameController.getGameID());
@@ -74,8 +84,13 @@ class GameControllerTest {
     @Test
     void getFirstOnlinePlayer() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         String firstOnlinePlayer = gameController.getFirstOnlinePlayer();
         assertEquals("player1", firstOnlinePlayer);
+=======
+        String expectedPlayer = "player1";
+        assertEquals(expectedPlayer, gameController.getFirstOnlinePlayer());
+>>>>>>> Stashed changes
 =======
         String expectedPlayer = "player1";
         assertEquals(expectedPlayer, gameController.getFirstOnlinePlayer());
@@ -85,9 +100,14 @@ class GameControllerTest {
     @Test
     void drawCard() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         gameController.drawCard();
         AdventureCard drawnCard = gameController.getModel().getActiveCard();
         assertNotNull(drawnCard);
+=======
+        // Assuming the deck is not empty
+        gameController.drawCard();
+>>>>>>> Stashed changes
 =======
         // Assuming the deck is not empty
         gameController.drawCard();
@@ -97,6 +117,10 @@ class GameControllerTest {
     @Test
     void getState() {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+        // Assuming the state is set to AbandonedShipState
+>>>>>>> Stashed changes
 =======
         // Assuming the state is set to AbandonedShipState
 >>>>>>> Stashed changes
@@ -215,6 +239,9 @@ class GameControllerTest {
     void moveCargo() {
         // Assuming the player has a cargo hold and the cargo is available
         // TODO : first fix the cargo (Adventure Card) and then test this method
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     }
 
