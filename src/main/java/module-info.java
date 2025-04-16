@@ -10,7 +10,6 @@ module it.polimi.ingsw.gc20 {
     requires java.smartcardio;
     requires java.rmi;
     requires java.logging;
-    requires java.rmi;
     opens it.polimi.ingsw.gc20 to javafx.fxml;
     exports it.polimi.ingsw.gc20;
     exports it.polimi.ingsw.gc20.network.RMI;
