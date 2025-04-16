@@ -289,20 +289,6 @@ public class GameController implements GameControllerInterface {
         state.chooseBranch(getPlayerByID(username), col, row);
     }
 
-    /**
-     * Gets a list of player colors that aren't currently assigned to any player
-     *
-     * @return List of available player colors
-     */
-    public List<PlayerColor> getAvailableColors(){
-        List<PlayerColor> availableColors = new ArrayList<>(Arrays.asList(PlayerColor.values()));
-
-        for (Player p: model.getGame().getPlayers()){
-            PlayerColor color = p.getColor();
-            availableColors.remove(color);
-        }
-        return availableColors;
-    }
 
     /**
      * @param asker is the username of the player asking for data
@@ -318,38 +304,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    //TODO: if player color is chosen at connection time, this method is fine, if not, it should be called within validating state, maybe editing #readyToFly function, providing the color chosen
-    /**
-     * Sets the color for a specific player
-     *
-     * @param username Username of the player to update
-     * @param color Color to assign to the player
-     * @throws IllegalArgumentException if player is not found or color is already taken
-     */
-    @Override
-    public void setPlayerColor(String username, PlayerColor color) {
-        // Check if color is available
-        List<PlayerColor> availableColors = getAvailableColors();
-        if (!availableColors.contains(color)) {
-            throw new IllegalArgumentException("Color is already taken by another player");
-        }
-
-        // Find player with matching username
-        Player targetPlayer = null;
-        for (Player p : model.getGame().getPlayers()) {
-            if (p.getUsername().equals(username)) {
-                targetPlayer = p;
-                break;
-            }
-        }
-
-        if (targetPlayer == null) {
-            throw new IllegalArgumentException("Player not found in game");
-        }
-
-        // Set the color for the player
-        targetPlayer.setColor(color);
-    }
 
     /**
      * Calculates and returns the final scores for all players
@@ -709,47 +663,14 @@ public class GameController implements GameControllerInterface {
 
     /**
      * @param username is the username of the player that wants to roll the dice
-     * @return the result of the dice roll
      * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException if it is not the player's turn
+     * @throws InvalidTurnException  if it is not the player's turn
      */
     @Override
-    public int rollDice(String username) throws IllegalStateException, InvalidTurnException {
-        if (state instanceof PlayingState) {
-            if (!getCurrentPlayer().equals(username)) {
-                throw new InvalidTurnException("It's not your turn");
-            }
-            return model.getGame().rollDice();
-        } else {
-            throw new IllegalStateException("Game is not in the correct phase");
-        }
+    public void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+        state.rollDice(getPlayerByID(username));
     }
 
-    /**
-     * @param username is the username of the player that wants to know the last rolled dice
-     * @return the last rolled dice
-     * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException if it is not the player's turn
-     */
-    @Override
-    public int lastRolledDice(String username) throws IllegalStateException, InvalidTurnException {
-        if (state instanceof PlayingState) {
-            if (!getCurrentPlayer().equals(username)) {
-                throw new InvalidTurnException("It's not your turn");
-            }
-            return model.getGame().lastRolled();
-        } else {
-            throw new IllegalStateException("Game is not in the correct phase");
-        }
-    }
-
-    public String getCurrentPlayer() throws IllegalStateException {
-        if (state instanceof PlayingState) {
-            return ((PlayingState) state).getCurrentPlayer();
-        } else {
-            throw new IllegalStateException("No current player in this state");
-        }
-    }
 
     public List<String> getInGameConnectedPlayers() {
         return model.getInGamePlayers().stream()
@@ -758,7 +679,7 @@ public class GameController implements GameControllerInterface {
                 .collect(Collectors.toList());
     }
 
-    public GameModel getModel(){
-        return this.model;
+    public void addHandler(EventType<? extends Event> type, EventHandler<? extends Event> handler) {
+        eventHandlers.computeIfAbsent(type, k -> new ArrayList<>()).add(handler);
     }
 }

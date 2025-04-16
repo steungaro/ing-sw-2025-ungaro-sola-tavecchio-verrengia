@@ -57,9 +57,6 @@ public class ValidatingShipState extends State {
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }
-        if (cabin instanceof StartingCabin) {
-            throw new IllegalArgumentException("Aliens can only be placed in cabins");
-        }
         if (getModel().getLevel() < 2) {
             throw new IllegalArgumentException("Aliens can only be added in level 2");
         }

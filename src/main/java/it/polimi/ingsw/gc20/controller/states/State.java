@@ -161,12 +161,17 @@ public abstract class State{
     public void resume() {
         exception();
     }
+
     public Map<String, Integer> getScore(){
         exception();
         return null;
     }
 
     public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+        exception();
+    }
+
+    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 }
