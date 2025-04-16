@@ -1,29 +1,13 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 public class Engine extends Component {
 
-    private int power;
     private boolean doublePower;
     private Direction orientation = Direction.DOWN;
 
     public Engine() {}
-
-    /**
-     * Function that creates a new engine with the given parameters.
-     * @return the power of the engine
-     */
-    public int getPower() {
-        return power;
-    }
-
-    /**
-     * Function that sets the power of the engine.
-     * @param power the power of the engine
-     */
-    public void setPower(int power) {
-        this.power = power;
-    }
-
     /**
      * Function that sets the engine as double.
      * @return true if the engine is double, false otherwise
@@ -98,5 +82,18 @@ public class Engine extends Component {
         } else if(orientation == Direction.LEFT){
             orientation = Direction.DOWN;
         }
+    }
+
+    @Override
+    public void updateParameter (Ship s, int sign){
+        if (this.doublePower) {
+            s.addDoubleEngines(sign);
+        } else
+            s.addSingleEngines(sign);
+    }
+
+    @Override
+    public boolean hasValidOrientation(Direction d){
+        return orientation == Direction.DOWN && d == Direction.DOWN;
     }
 }

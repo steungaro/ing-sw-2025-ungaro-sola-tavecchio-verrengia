@@ -93,7 +93,7 @@ public class LearnerShip extends Ship {
     public void addComponent(Component c, int row, int col){
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            updateParametersSet(c);
+            c.updateParameter(this, 1);
             c.setTile(table[row][col]);
         }
     }
@@ -107,42 +107,4 @@ public class LearnerShip extends Ship {
         astronauts--;
     }
 
-    /**
-     * Updates ship parameters when components are removed
-     * @param c Component being removed
-     */
-    @Override
-    protected void updateParametersRemove(Component c){
-        if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()==Direction.UP){
-                if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower--;
-                }else{
-                    doubleCannonsPower -= 2;
-                }
-            }else{
-                if(((Cannon) c).getPower() == 2) {
-                    doubleCannons--;
-                    doubleCannonsPower--;
-                }else if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower -= 0.5f;
-                }
-            }
-        }else if(c instanceof Engine){
-            if(((Engine) c).getDoublePower()){
-                doubleEngines--;
-            }else{
-                singleEngines--;
-            }
-        }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getAvailableEnergy();
-        } else if (c instanceof Cabin) {
-            astronauts -= ((Cabin) c).getOccupants();
-        } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
-                Integer current = cargos.getOrDefault(k, 0);
-                cargos.put(k, current - v);
-            });
-        }
-    }
 }

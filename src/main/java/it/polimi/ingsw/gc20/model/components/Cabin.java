@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.model.ship.NormalShip;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+import it.polimi.ingsw.gc20.model.ship.Tile;
+
+import java.util.Map;
 
 public class Cabin extends Component {
     private int astronauts;
@@ -131,5 +136,68 @@ public class Cabin extends Component {
 
     public int getOccupants(){
         return astronauts + (alien ? 1 : 0);
+    }
+
+    @Override
+    public boolean hasOccupants() {
+        return getOccupants()>0;
+    }
+
+    @Override
+    public void removeOccupant(Ship ship){
+        ship.unloadCrew(this);
+    }
+
+    @Override
+    public int initializeAstronauts (){
+        if (!alien) {
+            setAstronauts(2);
+            return 2;
+        }
+        return 0;
+    }
+    @Override
+    public void updateParameter (Ship s, int sign){
+        if (sign<0){
+            s.unloadCrew(this);
+        } else if (sign>0){
+            Tile[][] table = ((NormalShip) s).getTable();
+            int [] position = s.findComponent(this);
+            if (position!=null){
+                Map<Direction, ConnectorEnum> connectors = this.getConnectors();
+                for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+                    int row = position[0];
+                    int col = position[1];
+
+                    switch (entry.getKey()) {
+                        case UP:
+                            row--;
+                            break;
+                        case DOWN:
+                            row++;
+                            break;
+                        case LEFT:
+                            col--;
+                            break;
+                        case RIGHT:
+                            col++;
+                            break;
+                    }
+
+                    if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isLifeSupport())) {
+                        continue;
+                    }
+                    LifeSupport comp = (LifeSupport) table[row][col].getComponent();
+                    if (this.isValid(comp, entry.getKey())) {
+                        this.addSupport(comp);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isCabin() {
+        return true;
     }
 }

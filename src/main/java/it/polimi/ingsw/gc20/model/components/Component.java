@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.gc20.model.ship.Ship;
 import it.polimi.ingsw.gc20.model.ship.Tile;
 
 @JsonTypeInfo(
@@ -109,6 +110,7 @@ public abstract class Component {
      * @param c the component to check
      * @param d the direction of the component
      * @return true if the link is correct, false otherwise
+     * //TODO could be overwritten in the subclasses like cannon and engine
      */
     public Boolean isValid(Component c, Direction d){
         Direction opposite;
@@ -129,5 +131,40 @@ public abstract class Component {
             return true;
         }
         return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(opposite) != ConnectorEnum.ZERO;
+    }
+
+    /**
+     * Function to update the parameter of the ship
+     * @param s ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     */
+    public void updateParameter(Ship s, int sign){}
+
+    public boolean hasOccupants(){
+        return false; // default implementation
+    }
+
+    public void removeOccupant(Ship ship){
+        // default implementation
+    }
+
+    public boolean shieldIn (Direction d){
+        return false; //default implementation
+    }
+
+    public boolean hasValidOrientation (Direction d){
+        return true; //default implementation
+    }
+
+    public int initializeAstronauts (){
+        return 0; //default implementation
+    }
+
+    public boolean isCabin(){
+        return false; //default implementation
+    }
+
+    public boolean isLifeSupport(){
+        return false; //default implementation
     }
 }

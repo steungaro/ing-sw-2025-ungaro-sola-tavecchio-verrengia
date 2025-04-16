@@ -1,7 +1,9 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 public class Cannon extends Component {
-    private float power;
+    private int power;
     private Direction orientation =  Direction.UP;
 
     public Cannon() {}
@@ -80,5 +82,28 @@ public class Cannon extends Component {
         } else if(orientation == Direction.LEFT){
             orientation = Direction.DOWN;
         }
+    }
+
+    @Override
+    public void updateParameter(Ship s, int sign) {
+        if (!(orientation == Direction.UP)){
+             if (power == 1) {
+                 s.addSingleCannonsPower(0.5f*sign);
+             } else{
+                    s.addDoubleCannonsPower(sign);
+             }
+        } else {
+            if (power == 1) {
+                s.addSingleCannonsPower(sign);
+            } else{
+                s.addDoubleCannonsPower(2*sign);
+            }
+        }
+    }
+
+
+    @Override
+    public boolean hasValidOrientation(Direction d) {
+        return orientation == d;
     }
 }

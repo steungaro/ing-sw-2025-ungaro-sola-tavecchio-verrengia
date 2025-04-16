@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 import java.util.*;
 
 public class CargoHold extends Component {
@@ -97,5 +99,17 @@ public class CargoHold extends Component {
      */
     public void cleanCargo() {
         cargoHeld.clear();
+    }
+
+    @Override
+    public void updateParameter (Ship ship, int sign) {
+        if (sign < 0) {
+            for (CargoColor c : cargoHeld.keySet()) {
+                if (cargoHeld.get(c) > 0) {
+                    ship.unloadCargo(c, this);
+                }
+
+            }
+        }
     }
 }

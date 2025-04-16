@@ -79,4 +79,14 @@ public class Shield extends Component {
             }
         }
     }
+
+    @Override
+    public boolean shieldIn (Direction dir) {
+        for (Direction d : coveredSides) {
+            if (d == dir) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
