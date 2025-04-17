@@ -28,6 +28,11 @@ public class LifeSupport extends Component {
         this.color = color;
     }
 
+    /**
+     * Function that update the parameter of the ship
+     * @param ship ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     */
     @Override
     public void updateParameter(Ship ship, int sign) {
         if (sign < 0) {
@@ -37,6 +42,10 @@ public class LifeSupport extends Component {
         }
     }
 
+    /**
+     * Function that returns true if the component is a life support
+     * @return true if the component is a life support
+     */
     @Override
     public boolean isLifeSupport() {
         return true;

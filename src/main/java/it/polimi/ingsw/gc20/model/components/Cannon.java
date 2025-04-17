@@ -45,20 +45,13 @@ public class Cannon extends Component {
      * */
     @Override
     public void rotateClockwise() {
-        ConnectorEnum conn = connectors.get(Direction.UP);
-        connectors.put(Direction.UP, connectors.get(Direction.LEFT));
-        connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
-        connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
-        connectors.put(Direction.RIGHT, conn);
+        super.rotateClockwise();
 
-        if(orientation == Direction.UP){
-            orientation = Direction.RIGHT;
-        } else if(orientation == Direction.RIGHT){
-            orientation = Direction.DOWN;
-        } else if(orientation == Direction.DOWN){
-            orientation = Direction.LEFT;
-        } else if(orientation == Direction.LEFT){
-            orientation = Direction.UP;
+        switch (orientation) {
+            case UP: orientation = Direction.RIGHT; break;
+            case RIGHT: orientation = Direction.DOWN; break;
+            case DOWN: orientation = Direction.LEFT; break;
+            case LEFT: orientation = Direction.UP; break;
         }
     }
 
@@ -67,20 +60,13 @@ public class Cannon extends Component {
      * */
     @Override
     public void rotateCounterclockwise() {
-        ConnectorEnum conn = connectors.get(Direction.UP);
-        connectors.put(Direction.UP, connectors.get(Direction.RIGHT));
-        connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
-        connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
-        connectors.put(Direction.LEFT, conn);
+        super.rotateCounterclockwise();
 
-        if(orientation == Direction.UP){
-            orientation = Direction.LEFT;
-        } else if(orientation == Direction.RIGHT){
-            orientation = Direction.UP;
-        } else if(orientation == Direction.DOWN){
-            orientation = Direction.RIGHT;
-        } else if(orientation == Direction.LEFT){
-            orientation = Direction.DOWN;
+        switch (orientation) {
+            case UP: orientation = Direction.LEFT; break;
+            case RIGHT: orientation = Direction.UP; break;
+            case DOWN: orientation = Direction.RIGHT; break;
+            case LEFT: orientation = Direction.DOWN; break;
         }
     }
 

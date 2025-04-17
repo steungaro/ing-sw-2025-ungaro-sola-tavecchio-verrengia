@@ -4,23 +4,39 @@ public class StartingCabin extends Cabin {
 
     public StartingCabin() {}
 
+    /** Function that try to set an alien in the cabin.
+     * @param color the color of the alien
+     * @throws IllegalArgumentException because the starting cabin cannot have an alien
+     */
     @Override
-    public void setAlien(AlienColor color) {
+    public void setAlien(AlienColor color) throws IllegalArgumentException {
         throw new IllegalArgumentException("Cannot set an alien in the starting cabin");
     }
 
+    /**
+     * Function that returns the alien in the cabin.
+     * @return false because the starting cabin cannot have an alien
+     */
     @Override
     public boolean getAlien() {
         return false;
     }
 
+    /**
+     * Function that returns the color of the alien in the cabin.
+     * @return NONE because the starting cabin cannot have an alien
+     */
     @Override
     public AlienColor getAlienColor() {
         return AlienColor.NONE;
     }
 
+    /**
+     * Function that unload alien from the cabin.
+     * @throws IllegalArgumentException because the starting cabin cannot have an alien
+     */
     @Override
-    public void unloadAlien() {
+    public void unloadAlien() throws IllegalArgumentException {
         throw new IllegalArgumentException("Cannot unload an alien in the starting cabin");
     }
 
@@ -33,6 +49,10 @@ public class StartingCabin extends Cabin {
         super.setColor(AlienColor.NONE);
     }
 
+    /**
+     * Function that removes support from the cabin.
+     * @param ls the lifeSupport that's removed
+     */
     @Override
     public void removeSupport(LifeSupport ls) {
         super.setColor(AlienColor.NONE);

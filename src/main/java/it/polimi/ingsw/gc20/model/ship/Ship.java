@@ -476,7 +476,10 @@ public abstract class Ship {
     }
 
     /**
+     * Function to load a cargo in a cargo hold
      * @param cargo is the cargo to be loaded
+     * @param h cargo hold to load the cargo in
+     * @throws IllegalArgumentException if the cargo hold is full
      */
     public void loadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (h.getAvailableSlots() < 1) {
@@ -487,7 +490,10 @@ public abstract class Ship {
     }
 
     /**
+     * Function to unload a cargo from the ship
      * @param cargo is the cargo to be unloaded
+     * @param h is the cargo hold to unload the cargo from
+     * @throws IllegalArgumentException if there is no cargo of that type to unload
      */
     public void unloadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
         if (cargos.getOrDefault(cargo, 0) < 1) {
@@ -498,6 +504,7 @@ public abstract class Ship {
     }
 
     /**
+     * Function that removes the most valuable cargo from a cargo hold
      * @param h is the cargo hold to unload the cargo from
      * @implNote cargo is removed from the most valuable one first
      */
@@ -609,9 +616,11 @@ public abstract class Ship {
     }
 
     /**
+     * Function that removes energy from the battery
      * @param battery is the battery to remove energy from
+     * @throws IllegalArgumentException if the battery is empty
      */
-    public void useEnergy(Battery battery) {
+    public void useEnergy(Battery battery) throws IllegalArgumentException {
         if (battery.getAvailableEnergy() < 1) {
             throw new IllegalArgumentException("Battery is empty");
         }
@@ -620,24 +629,25 @@ public abstract class Ship {
     }
 
     /**
+     * Function to unloadCrew from the ship
      * @param c is the crew member to be unloaded
      */
     public abstract void unloadCrew(Cabin c);
 
-    /**
-     * @return whether the ship has engines or not
-     */
-    public boolean hasEngines() {
-        return singleEngines > 0 || doubleEngines > 0;
-    }
 
     /**
+     * Function that gets the cargo held by the ship
      * @return cargo held by the ship
      */
     public Map<CargoColor, Integer> getCargo() {
         return cargos;
     }
 
+    /**
+     * Function that finds the component in the ship
+     * @param c component to find
+     * @return the position of the component in the ship
+     */
     public int[] findComponent (Component c) {
         int rows = getRows();
         int cols = getCols();
@@ -649,5 +659,13 @@ public abstract class Ship {
             }
         }
         return null;
+    }
+
+    /**
+     * Function that verify is the ship is a normal ship
+     * @return true if the ship is a normal ship, false otherwise
+     */
+    public boolean isNormal (){
+        return false; //default implementation
     }
 }

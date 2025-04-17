@@ -98,8 +98,13 @@ public class LearnerShip extends Ship {
         }
     }
 
+    /**
+     * Function to unload a crew member from the ship
+     * @param c is the crew member to be unloaded
+     * @throws IllegalArgumentException if the cabin is empty
+     */
     @Override
-    public void unloadCrew(Cabin c) {
+    public void unloadCrew(Cabin c) throws IllegalArgumentException {
         if (c.getAstronauts() < 1) {
             throw new IllegalArgumentException("Empty cabin");
         }

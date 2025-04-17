@@ -110,7 +110,6 @@ public abstract class Component {
      * @param c the component to check
      * @param d the direction of the component
      * @return true if the link is correct, false otherwise
-     * //TODO could be overwritten in the subclasses like cannon and engine
      */
     public Boolean isValid(Component c, Direction d){
         Direction opposite;
@@ -140,30 +139,59 @@ public abstract class Component {
      */
     public void updateParameter(Ship s, int sign){}
 
+    /**
+     * Function that returns true if the component has occupants
+     * @return true if the component has occupants, false otherwise
+     */
     public boolean hasOccupants(){
         return false; // default implementation
     }
 
+    /** function that remove occupants from the component
+     * @param ship ship that is removing the occupant
+     */
     public void removeOccupant(Ship ship){
         // default implementation
     }
 
+    /** Function that returns true if the component is a shield and cover the direction d
+     *
+     * @param d direction of the shield
+     * @return true if the component is a shield and cover the direction d, false otherwise
+     */
     public boolean shieldIn (Direction d){
         return false; //default implementation
     }
 
+    /** Function that returns true if the component has a valid orientation
+     *
+     * @param d direction of the component
+     * @return true if the component has a valid orientation, false otherwise
+     */
     public boolean hasValidOrientation (Direction d){
         return true; //default implementation
     }
 
+    /**
+     * Function that returns the number of astronauts that can be initialized in the component
+     * @return the number of astronauts that can be initialized in the component
+     */
     public int initializeAstronauts (){
         return 0; //default implementation
     }
 
+    /**
+     * Function that returns true if the component is a cabin
+     * @return true if the component is a cabin, false otherwise
+     */
     public boolean isCabin(){
         return false; //default implementation
     }
 
+    /** Function that returns true if the component is a life support
+     *
+     * @return true if the component is a life support, false otherwise
+     */
     public boolean isLifeSupport(){
         return false; //default implementation
     }

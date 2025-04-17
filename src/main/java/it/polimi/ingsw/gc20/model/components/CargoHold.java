@@ -95,12 +95,10 @@ public class CargoHold extends Component {
     }
 
     /**
-     * This method is used to clean the cargo hold.
+     * Function to update the parameter of the ship
+     * @param ship ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
      */
-    public void cleanCargo() {
-        cargoHeld.clear();
-    }
-
     @Override
     public void updateParameter (Ship ship, int sign) {
         if (sign < 0) {

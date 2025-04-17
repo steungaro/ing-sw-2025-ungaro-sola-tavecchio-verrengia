@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.model.components;
 
-import java.util.*;
 
 public class Shield extends Component {
 
@@ -30,16 +29,8 @@ public class Shield extends Component {
         * The connectors are rotated and the covered sides are updated
      */
     @Override
-    public void rotateCounterclockwise() {
-        ConnectorEnum conn = getConnectors().get(Direction.UP);
-        Map<Direction, ConnectorEnum> newConnectors = new HashMap<>();
-
-        newConnectors.put(Direction.UP, getConnectors().get(Direction.RIGHT));
-        newConnectors.put(Direction.RIGHT, getConnectors().get(Direction.DOWN));
-        newConnectors.put(Direction.DOWN, getConnectors().get(Direction.LEFT));
-        newConnectors.put(Direction.LEFT, conn);
-        setConnectors(newConnectors);
-
+    public void rotateClockwise() {
+        super.rotateClockwise();
         // Rotate the covered sides
         for (int i = 0; i < coveredSides.length; i++) {
             if (coveredSides[i] == Direction.UP) {
@@ -59,13 +50,8 @@ public class Shield extends Component {
         * The connectors are rotated and the covered sides are updated
      */
     @Override
-    public void rotateClockwise() {
-        ConnectorEnum conn = getConnectors().get(Direction.UP);
-        getConnectors().put(Direction.UP, getConnectors().get(Direction.LEFT));
-        getConnectors().put(Direction.LEFT, getConnectors().get(Direction.DOWN));
-        getConnectors().put(Direction.DOWN, getConnectors().get(Direction.RIGHT));
-        getConnectors().put(Direction.RIGHT, conn);
-
+    public void rotateCounterclockwise() {
+        super.rotateCounterclockwise();
         // Rotate the covered sides
         for (int i = 0; i < coveredSides.length; i++) {
             if (coveredSides[i] == Direction.UP) {
@@ -80,6 +66,12 @@ public class Shield extends Component {
         }
     }
 
+
+    /**
+     * Function that return true if the shield is in the direction passed as parameter
+     * @param dir direction ti verify
+     * @return true if the shield is in the direction passed as parameter
+     */
     @Override
     public boolean shieldIn (Direction dir) {
         for (Direction d : coveredSides) {

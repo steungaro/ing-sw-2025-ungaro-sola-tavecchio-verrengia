@@ -105,8 +105,9 @@ public class NormalShip extends Ship {
     /**
      * Add a component to the booked components
      * @param c the component to be added to booked
+     * @throws IllegalArgumentException if the booked array is already full
      */
-    public void addBooked(Component c) {
+    public void addBooked(Component c) throws IllegalArgumentException{
         if (booked[0] == null) {
             booked[0]=c;
         } else if (booked[1] == null) {
@@ -131,6 +132,7 @@ public class NormalShip extends Ship {
     }
 
     /**
+     * Function that returns the component give the coordinates
      * @param row: position of the component
      * @param col: position of the component
      * @return the component at the given position
@@ -177,6 +179,11 @@ public class NormalShip extends Ship {
         return doubleEnginesActivated * 2 + singleEngines + (brownAlien ? 2 : 0);
     }
 
+    /**
+     * Function to unload a crew member from the ship
+     * @param c is the crew member to be unloaded
+     * @throws IllegalArgumentException: the cabin is empty
+     */
     @Override
     public void unloadCrew(Cabin c) {
         if (c.getOccupants() < 1) {
@@ -197,7 +204,7 @@ public class NormalShip extends Ship {
 
     /**
      * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
-     * @param c: the component that was added or removed from the ship
+     * @param c: the component that was removed from the ship
      */
     public void updateLifeSupportRemoved(Component c) {
         //Find if is there a Cabin connceted to the LifeSupport
@@ -205,12 +212,10 @@ public class NormalShip extends Ship {
         if (position == null) {
             return;
         }
-        int i = position[0];
-        int j = position[1];
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
-            int row = i;
-            int col = j;
+            int row = position [0];
+            int col = position [1];
 
             switch (entry.getKey()) {
                 case UP:
@@ -242,20 +247,21 @@ public class NormalShip extends Ship {
         }
     }
 
-    // For
+    /** Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+     * @param c: the component that was added from the ship
+     */
     public void updateLifeSupportAdded(Component c) {
         //Find if is there a Cabin connceted to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
             return;
         }
-        int i = position[0];
-        int j = position[1];
+
         //Finded the lifeSupport
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
-            int row = i;
-            int col = j;
+            int row = position[0];
+            int col = position[1];
 
             switch (entry.getKey()) {
                 case UP:
@@ -323,14 +329,24 @@ public class NormalShip extends Ship {
      * @param c Component to add
      * @param row Row position
      * @param col Column position
+     * @throws IllegalArgumentException if the position is invalid
      */
-    public void addComponent(Component c, int row, int col){
+    public void addComponent(Component c, int row, int col) throws IllegalArgumentException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             c.updateParameter(this, 1);
         }
         else
             throw new IllegalArgumentException("Invalid position");
+    }
+
+    /**
+     * Function that returns true if the ship is a normal ship
+     * @return true if the ship is a normal ship
+     */
+    @Override
+    public boolean isNormal(){
+        return true;
     }
 
 }

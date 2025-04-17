@@ -40,6 +40,11 @@ public class Battery extends Component {
         this.slots = q;
     }
 
+    /**
+     * Function that sets the available energy of the battery.
+     * @param s the ship
+     * @param sign the sign that indicates if the energy is added or removed
+     */
     @Override
     public void updateParameter(Ship s, int sign){
         s.addBatteries (sign*availableEnergy);
