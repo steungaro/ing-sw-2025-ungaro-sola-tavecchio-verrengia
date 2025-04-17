@@ -332,7 +332,7 @@ public class GameController implements GameControllerInterface {
     @Override
     public void giveUp(String username) {
         //TODO
-        //model.giveUp(getPlayerByID(username));
+        model.giveUp(getPlayerByID(username));
     }
 
     /**
@@ -363,7 +363,7 @@ public class GameController implements GameControllerInterface {
      */
     public boolean reconnectPlayer(String username) {
         // Check if player was originally in this game
-        if (getPlayerByID(username) != null) {
+        if (getPlayerByID(username) == null) {
             throw new IllegalArgumentException("Player was never part of this game");
         }
 
@@ -636,7 +636,6 @@ public class GameController implements GameControllerInterface {
         if (isPlayerDisconnected(username)) {
             throw new IllegalArgumentException("Cannot view deck for not connected player");
         }
-        // TODO: synchronize this method on the selected deck?
         return state.peekDeck(getPlayerByID(username), num);
     }
 

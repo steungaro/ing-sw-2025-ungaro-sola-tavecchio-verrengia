@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
+import it.polimi.ingsw.gc20.controller.event.game.PlaceComponentEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,8 @@ import it.polimi.ingsw.gc20.interfaces.*;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static javax.swing.text.StyleConstants.Orientation;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameControllerTest {
@@ -265,62 +268,144 @@ class GameControllerTest {
 
     @Test
     void getActiveCard() {
+        gameController.getModel().setActiveCard(adventureCard);
+        assertEquals(adventureCard, gameController.getActiveCard());
     }
 
     @Test
-    void endMove() {
+    void endMove() throws InvalidTurnException {
+        // TODO -> Better test in State section
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController, gameController.getModel(), adventureCard);
+        gameController.setState(abandonedShipState1);
+        gameController.endMove("player1");
     }
 
     @Test
-    void activateEngines() {
+    void activateEngines() throws InvalidTurnException {
+        // TODO -> Better test in State section
+        CombatZone0State combatZone0State = new CombatZone0State(gameController, gameController.getModel(), adventureCard);
+        gameController.setState(combatZone0State);
+
+        Engine engine1 = new Engine();
+        engine1.setDoublePower(true);
+
+        List<Engine> engines = new ArrayList<>();
+        engines.add(engine1);
+        gameController.getPlayerByID("player1").getShip().addComponent(engine1, 1, 1);
+        Battery battery = new Battery();
+        battery.setSlots(3);
+        gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
+        List<Battery> batteries = new ArrayList<>();
+        batteries.add(battery);
+
+        gameController.activateEngines("player1", engines, batteries);
     }
 
     @Test
     void getAvailableColors() {
+        // TODO -> Better test in State section
+        List<PlayerColor> availableColors = gameController.getAvailableColors();
+        assertNotNull(availableColors);
+        assertEquals(0, availableColors.size());
     }
 
     @Test
     void getPlayerData() {
+        // TODO -> Better test in State section
+        Player player = gameController.getPlayerByID("player1");
+        assertNotNull(player);
+        assertEquals("player1", player.getUsername());
     }
 
     @Test
     void setPlayerColor() {
+        PlayerColor color = PlayerColor.BLUE;
+        Player player = gameController.getPlayerByID("player1");
+        assertEquals(color, player.getColor());
     }
 
     @Test
     void getPlayerScores() {
+        Map<Player, Integer> playerScores = gameController.getPlayerScores();
     }
 
     @Test
     void giveUp() {
+        gameController.giveUp("player1");
+        Map<Player, Integer> playerScores = gameController.getPlayerScores();
     }
 
     @Test
     void disconnectPlayer() {
+        gameController.disconnectPlayer("player1");
+        assertTrue(gameController.isPlayerDisconnected("player1"));
+        assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
+        assertTrue(gameController.getDisconnectedPlayers().contains("player1"));
+        assertEquals(3, gameController.getOnlinePlayers());
+
+        gameController.disconnectPlayer("player2");
+        gameController.disconnectPlayer("player3");
     }
 
     @Test
     void reconnectPlayer() {
+        gameController.disconnectPlayer("player1");
+        gameController.reconnectPlayer("player1");
+        assertFalse(gameController.isPlayerDisconnected("player1"));
+        assertTrue(gameController.getInGameConnectedPlayers().contains("player1"));
+        assertFalse(gameController.getDisconnectedPlayers().contains("player1"));
+        assertEquals(4, gameController.getOnlinePlayers());
     }
 
     @Test
     void getPlayerByID() {
+        Player player = gameController.getPlayerByID("player1");
+        assertNotNull(player);
+        assertEquals("player1", player.getUsername());
     }
 
     @Test
     void getAllUsernames() {
+        List<String> usernames = gameController.getAllUsernames();
+        assertNotNull(usernames);
+        assertEquals(4, usernames.size());
+        assertTrue(usernames.contains("player1"));
+        assertTrue(usernames.contains("player2"));
+        assertTrue(usernames.contains("player3"));
+        assertTrue(usernames.contains("player4"));
     }
 
     @Test
     void getDisconnectedPlayers() {
+        gameController.disconnectPlayer("player1");
+        gameController.disconnectPlayer("player2");
+        List<String> disconnectedPlayers = gameController.getDisconnectedPlayers();
+        assertNotNull(disconnectedPlayers);
+        assertEquals(2, disconnectedPlayers.size());
+        assertTrue(disconnectedPlayers.contains("player1"));
+        assertTrue(disconnectedPlayers.contains("player2"));
     }
 
     @Test
     void isPlayerDisconnected() {
+        gameController.disconnectPlayer("player1");
+        assertTrue(gameController.isPlayerDisconnected("player1"));
+        assertFalse(gameController.isPlayerDisconnected("player2"));
     }
 
     @Test
     void takeComponentFromUnviewed() {
+        // TODO -> Better test in State section
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+
+        gameController.takeComponentFromUnviewed("player1", comp);
+
+        assertFalse(gameController.getModel().getGame().getPile().getUnviewed().contains(comp));
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
@@ -341,42 +426,131 @@ class GameControllerTest {
 
     @Test
     void placeComponent() {
+        Cabin cabin = new Cabin();
+        PlaceComponentEvent event = new PlaceComponentEvent("player1", 1, 2, 2);
+        gameController.placeComponent("player1", cabin, 2, 2);
+        assertEquals(cabin, gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2));
     }
 
     @Test
     void rotateComponentClockwise() {
+        // TODO -> Better test in State section
+        Cabin cabin = new Cabin();
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.S);
+        connectors.put(Direction.RIGHT, ConnectorEnum.ZERO);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.LEFT, ConnectorEnum.ZERO);
+        cabin.setConnectors(connectors);
+        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+        gameController.rotateComponentClockwise(cabin);
+        assertEquals(ConnectorEnum.S, cabin.getConnectors().get(Direction.RIGHT));
+        assertEquals(ConnectorEnum.ZERO, cabin.getConnectors().get(Direction.DOWN));
     }
 
     @Test
     void rotateComponentCounterclockwise() {
+        // TODO -> Better test in State section
+        Cabin cabin = new Cabin();
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.S);
+        connectors.put(Direction.RIGHT, ConnectorEnum.ZERO);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.LEFT, ConnectorEnum.ZERO);
+        cabin.setConnectors(connectors);
+        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+        gameController.rotateComponentCounterclockwise(cabin);
+        assertEquals(ConnectorEnum.S, cabin.getConnectors().get(Direction.LEFT));
+        assertEquals(ConnectorEnum.ZERO, cabin.getConnectors().get(Direction.UP));
     }
 
     @Test
     void removeComponentFromShip() {
+        Cabin cabin = new Cabin();
+        PlaceComponentEvent event = new PlaceComponentEvent("player1", 1, 2, 2);
+        gameController.placeComponent("player1", cabin, 2, 2);
+
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        gameController.setState(validatingShipState);
+        gameController.removeComponentFromShip("player1", cabin);
+
+        assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2));
     }
 
     @Test
     void validateShip() {
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        gameController.setState(validatingShipState);
+
+        // TODO -> Better test in State section
     }
 
     @Test
     void stopAssembling() {
+        // TODO -> Better test in State section
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        gameController.stopAssembling("player1", 1);
     }
 
     @Test
-    void turnHourglass() {
+    void turnHourglass() throws HourglassException, InterruptedException {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        // Wait 6 seconds to simulate the hourglass being turned
+        Thread.sleep(5000);
+
+        gameController.turnHourglass("player1");
+        assertEquals(1, gameController.getModel().getTurnedHourglass());
+
+        Thread.sleep(5000);
+
+        gameController.stopAssembling("player1", 1);
+
+        gameController.turnHourglass("player1");
+        assertEquals(2, gameController.getModel().getTurnedHourglass());
     }
 
     @Test
-    void getHourglassTime() {
+    void getHourglassTime() throws InterruptedException {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        assertEquals(4, gameController.getHourglassTime("player1"));
+
+        Thread.sleep(1000);
+
+        assertEquals(3, gameController.getHourglassTime("player1"));
+
+        Thread.sleep(8000);
+
+        assertEquals(0, gameController.getHourglassTime("player1"));
     }
 
     @Test
     void peekDeck() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        List<AdventureCard> peekedCards = gameController.peekDeck("player1", 3);
+        assertNotNull(peekedCards);
+        assertEquals(3, peekedCards.size());
     }
 
     @Test
     void addAlien() {
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        gameController.setState(validatingShipState);
+
+        AlienColor alienColor = AlienColor.BROWN;
+
+        Cabin cabin = new Cabin();
+        cabin.setColor(alienColor);
+
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+
+        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+        gameController.addAlien("player1", alienColor, cabin);
+        assertEquals(alienColor, ((Cabin)(gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
     }
 
     @Test
