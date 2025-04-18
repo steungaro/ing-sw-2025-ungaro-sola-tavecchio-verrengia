@@ -1,7 +1,7 @@
-package it.polimi.ingsw.gc20.controller.event.game;
+package it.polimi.ingsw.gc20.network.event.game;
 
-import it.polimi.ingsw.gc20.controller.event.Event;
-import it.polimi.ingsw.gc20.model.components.Component;
+import it.polimi.ingsw.gc20.network.event.Event;
+
 import java.io.Serializable;
 
 // Event that is generated when a player rotates a component

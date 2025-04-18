@@ -1,9 +1,8 @@
-package it.polimi.ingsw.gc20.controller.event.game;
+package it.polimi.ingsw.gc20.network.event.game;
 
-import it.polimi.ingsw.gc20.controller.event.Event;
-import org.javatuples.Pair;
+import it.polimi.ingsw.gc20.network.event.Event;
+
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Event that is generated when a player lands on a planet
