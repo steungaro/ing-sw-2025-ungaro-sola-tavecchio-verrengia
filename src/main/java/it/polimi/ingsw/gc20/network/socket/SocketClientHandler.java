@@ -51,6 +51,12 @@ public class SocketClientHandler implements ClientHandler {
     }
 
     @Override
+    public Boolean isConnected() {
+        // TODO
+        return false;
+    }
+
+    @Override
     public void sendMessage(Object message) {
         if (!connected) return;
 

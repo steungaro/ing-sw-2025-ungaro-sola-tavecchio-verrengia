@@ -458,7 +458,7 @@ public class GameModel {
      */
     public int EnginePower(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
         int power;
-        if (doubleEngines < energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
+        if (doubleEngines <= energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Battery e : energy) {
                 p.getShip().useEnergy(e);
@@ -526,6 +526,9 @@ public class GameModel {
                 }
                 points --;
             }
+            else{
+                continue;
+            }
             waste = p.getShip().getWaste().size();
 
             score.put(p, score.get(p) - waste);
@@ -565,6 +568,9 @@ public class GameModel {
         Component c;
         if (fire.getFireType() == FireType.LIGHT_METEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
+            if (c==null) {
+                return;
+            }
             if (c.getConnectors().get(fire.getDirection()) == ConnectorEnum.ZERO) {
                 return;
             }

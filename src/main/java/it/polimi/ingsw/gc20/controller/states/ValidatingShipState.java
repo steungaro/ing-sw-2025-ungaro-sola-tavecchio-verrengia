@@ -61,6 +61,7 @@ public class ValidatingShipState extends State {
             throw new IllegalArgumentException("Aliens can only be added in level 2");
         }
         getModel().setAlien(color, cabin, player);
+        alienAdded.put(player, true);
     }
 
     @Override

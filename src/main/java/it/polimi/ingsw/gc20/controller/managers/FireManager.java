@@ -47,7 +47,7 @@ public class FireManager {
 
     public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException {
         if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
-            throw new IllegalStateException("Cannot activate cannon in this state");
+            throw new IllegalStateException("Cannot activate shield in this state");
         }
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");

@@ -57,7 +57,7 @@ public abstract class Ship {
      * @param col Column index
      * @return Component at position, or null if empty
      */
-    protected abstract Component getComponentAt(int row, int col);
+    public abstract Component getComponentAt(int row, int col);
 
     /**
      * Sets a component at the specified position
