@@ -88,6 +88,20 @@ public class Engine extends Component {
      */
     @Override
     public boolean hasValidOrientation(Direction d){
-        return orientation == Direction.DOWN && d == Direction.DOWN;
+        if (d!= Direction.DOWN){
+            return true;
+        }
+        return orientation == d;
+    }
+
+    @Override
+    public Boolean isValid (Component c, Direction d) {
+        if (!hasValidOrientation(d)) {
+            return false;
+        }
+        if (Direction.DOWN == d && orientation == Direction.DOWN && c!=null) {
+            return false;
+        }
+        return super.isValid(c, d);
     }
 }

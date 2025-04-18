@@ -73,12 +73,16 @@ public abstract class Ship {
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
      * @throws IllegalArgumentException if the number of cannons is greater than the total energy of the ship
+     * @throws IllegalArgumentException if a cannon is a single cannon
      */
     public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
         if(energies > totalEnergy || cannons.size() != energies)
             throw new IllegalArgumentException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
+            if (cannon.getPower() == 1){
+                throw new IllegalArgumentException("cannot select single cannon");
+            }
             if (cannon.getOrientation() == Direction.UP)
                 power += cannon.getPower();
             else {
@@ -91,8 +95,12 @@ public abstract class Ship {
     /**Function that determines the total engine power of the ship that the user wants to activate
      * @param doubleEnginesActivated: the number of double engines the user wants to activate => the number of battery cells consumed
      * @return power_of_the_ship
+     * @throws IllegalArgumentException if the number of double engines activated is greater than the total number of double engines
      */
-    public Integer enginePower(Integer doubleEnginesActivated) {
+    public Integer enginePower(Integer doubleEnginesActivated) throws IllegalArgumentException {
+        if (doubleEnginesActivated > doubleEngines) {
+            throw new IllegalArgumentException("not enough double engines");
+        }
         return doubleEnginesActivated * 2 + singleEngines;
     }
 
@@ -174,6 +182,7 @@ public abstract class Ship {
         //parse throw the component of the ship until it finds a shield that covers the direction d or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
+
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < cols; j++){
                 Component component = getComponentAt(i, j);
@@ -198,15 +207,17 @@ public abstract class Ship {
         if ((d == Direction.UP || d == Direction.DOWN) && (n >= 0 && n < cols)) {
             for(int row = 0; row < rows; row++){
                 Component component = getComponentAt(row, n);
-                if(component != null && component.hasValidOrientation(d)) {
-                    cannons.add((Cannon) component);
+                if(component != null && component.isCannon()) {
+                    if (((Cannon) component).getOrientation() == d){
+                        cannons.add((Cannon) component);
+                    }
                 }
             }
         }
         if((d == Direction.LEFT || d == Direction.RIGHT) && (n >= 0 && n < rows)){
             for(int col = 0; col < cols; col++){
                 Component component = getComponentAt(n, col);
-                if(component != null && component.hasValidOrientation(d)) {
+                if(component != null && component.hasValidOrientation(d) && component.isCannon()) {
                     cannons.add((Cannon) component);
                 }
             }
@@ -268,21 +279,13 @@ public abstract class Ship {
         if (row < 0 || col < 0 || row >= getRows() || col >= getCols()) {
             throw new IndexOutOfBoundsException();
         }
-
         int rows = getRows();
         int cols = getCols();
-        int[][] visited = new int[rows][cols];
+        boolean[][] visited = new boolean[rows][cols];
 
         Queue<int[]> queue = new LinkedList<>();
         queue.add(new int[]{row, col});
-        visited[row][col] = 1;
-
-        // Set all the table to 1
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                visited[i][j] = 1;
-            }
-        }
+        visited[row][col] = true;
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
@@ -325,33 +328,26 @@ public abstract class Ship {
                 // Check if adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
-                    if (visited[adjRow][adjCol]==0) {
+                    if (!visited[adjRow][adjCol]) {
                         // Check if adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
-                            if(visited[adjRow][adjCol]!=-1){
-                                queue.add(new int[]{adjRow, adjCol});
-                                visited[adjRow][adjCol] = 1;
-                            }
-                        }else{
-                            visited[adjRow][adjCol] = -1; // Mark as invalid
-                        }
-                    }
-                }
-
-                // kill all the component that have not been visited
-                for (int k = 0; k < rows; k++) {
-                    for (int l = 0; l < cols; l++) {
-                        if (visited[k][l] != 1) {
-                            Component c = getComponentAt(k, l);
-                            if (c != null) {
-                                killComponent(c);
-                            }
+                            queue.add(new int[]{adjRow, adjCol});
+                            visited[adjRow][adjCol] = true;
                         }
                     }
                 }
             }
         }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Component component = getComponentAt(i, j);
+                if (component != null && !visited[i][j]) {
+                    killComponent(component);
+                }
+            }
+        }
+
     }
 
     /**
@@ -410,9 +406,6 @@ public abstract class Ship {
                 // Check if adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
-                    if(!component.hasValidOrientation(dir)) {
-                        return false;
-                    }
                     if (!visited[adjRow][adjCol]) {
                         // Check if adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
@@ -592,7 +585,7 @@ public abstract class Ship {
         for(int i=0; i<rows; i++){
             for(int j=0; j<cols; j++){
                 Component c = getComponentAt(i, j);
-                if(c.hasOccupants()){
+                if(c!= null && c.isCabin()){
                     for (int k = 0; k < 4; k++) {
                         if (c.getConnectors().get(Direction.values()[k]) != ConnectorEnum.ZERO) {
                             if (k == 0) {
@@ -604,8 +597,8 @@ public abstract class Ship {
                             } else {
                                 adj = getComponentAt(i + 1, j);
                             }
-                            if (adj.hasOccupants()) {
-                                c.removeOccupant(this);
+                            if (adj.isCabin()) {
+                                unloadCrew((Cabin) c);
                                 break;
                             }
                         }
@@ -668,4 +661,6 @@ public abstract class Ship {
     public boolean isNormal (){
         return false; //default implementation
     }
+
+
 }

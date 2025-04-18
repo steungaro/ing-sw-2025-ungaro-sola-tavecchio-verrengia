@@ -87,9 +87,16 @@ public class Cannon extends Component {
         }
     }
 
+    @Override
+    public boolean isCannon() {
+        return true;
+    }
 
     @Override
-    public boolean hasValidOrientation(Direction d) {
-        return orientation == d;
+    public Boolean isValid (Component c, Direction d) {
+        if (d == orientation && c != null){
+            return false;
+        }
+        return super.isValid(c, d);
     }
 }

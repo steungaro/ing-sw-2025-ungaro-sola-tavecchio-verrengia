@@ -110,7 +110,7 @@ public class Cabin extends Component {
      * @param ls the lifeSupport that's added
      */
     public void addSupport(LifeSupport ls) {
-        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) {
+        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) { 
             cabinColor = AlienColor.BOTH;
         } else {
             cabinColor = ls.getColor();
@@ -143,24 +143,6 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that returns true if the cabin has occupants.
-     * @return true if the cabin has occupants, false otherwise
-     */
-    @Override
-    public boolean hasOccupants() {
-        return getOccupants()>0;
-    }
-
-    /**
-     * Function that unloads from the ship one occupant of the cabin
-     * @param ship ship that is removing the occupant
-     */
-    @Override
-    public void removeOccupant(Ship ship){
-        ship.unloadCrew(this);
-    }
-
-    /**
      * Function that initialize the astronauts in the cabin.
      * @return the number of astronauts in the cabin
      */
@@ -181,7 +163,9 @@ public class Cabin extends Component {
     @Override
     public void updateParameter (Ship s, int sign){
         if (sign<0){
-            s.unloadCrew(this);
+            while (astronauts>0){
+                s.unloadCrew(this);
+            }
         } else if (sign>0){
             if (!s.isNormal()) return;
 

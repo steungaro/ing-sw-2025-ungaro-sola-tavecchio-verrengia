@@ -139,20 +139,6 @@ public abstract class Component {
      */
     public void updateParameter(Ship s, int sign){}
 
-    /**
-     * Function that returns true if the component has occupants
-     * @return true if the component has occupants, false otherwise
-     */
-    public boolean hasOccupants(){
-        return false; // default implementation
-    }
-
-    /** function that remove occupants from the component
-     * @param ship ship that is removing the occupant
-     */
-    public void removeOccupant(Ship ship){
-        // default implementation
-    }
 
     /** Function that returns true if the component is a shield and cover the direction d
      *
@@ -193,6 +179,15 @@ public abstract class Component {
      * @return true if the component is a life support, false otherwise
      */
     public boolean isLifeSupport(){
+        return false; //default implementation
+    }
+
+    /**
+     * Function that returns true if the component is a cannon
+     * @return true if the component is a cannon, false otherwise
+     *
+     */
+    public boolean isCannon() {
         return false; //default implementation
     }
 }

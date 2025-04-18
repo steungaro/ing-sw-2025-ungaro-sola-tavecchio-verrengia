@@ -17,7 +17,6 @@ public class BatteryTest {
     void testBattery() {
         battery.setSlots(2);
         assertEquals(2, battery.getSlots());
-        battery.fillBattery();
         assertEquals(2, battery.getAvailableEnergy());
         battery.useEnergy();
         assertEquals(1, battery.getAvailableEnergy());

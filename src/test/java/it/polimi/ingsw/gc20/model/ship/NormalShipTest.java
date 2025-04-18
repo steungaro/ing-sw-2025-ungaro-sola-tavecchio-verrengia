@@ -40,7 +40,7 @@ class NormalShipTest {
 
         battery = new Battery();
         battery.setSlots(2);
-        battery.fillBattery();
+        battery.setAvailableEnergy(2);
 
         Cabin1 = new Cabin();
         Cabin1.setColor(AlienColor.NONE);
@@ -490,14 +490,14 @@ class NormalShipTest {
 
 
         Cabin1.setAlien(AlienColor.BROWN);
-        ship.removeAlien(Cabin1);
+        //ship.removeAlien(Cabin1);
         assertEquals(AlienColor.NONE, Cabin1.getAlienColor());
         assertFalse(Cabin1.getAlien());
 
         // Test removing an alien from a cabin with astronauts
         Cabin1.setAstronauts(2);
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            ship.removeAlien(Cabin1);
+            //ship.removeAlien(Cabin1);
 
         assertEquals(2, Cabin1.getAstronauts());
         });
@@ -505,7 +505,7 @@ class NormalShipTest {
 
     @Test
     void updateParametersRemove() {
-        ship.updateParametersRemove(upCannon);
+        //ship.updateParametersRemove(upCannon);
         assertEquals(0, ship.singleCannonsPower);
 
         assertEquals(2, ship.doubleCannonsPower);

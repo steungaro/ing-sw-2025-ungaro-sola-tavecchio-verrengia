@@ -23,6 +23,13 @@ public class Battery extends Component {
     public int getAvailableEnergy() {
         return availableEnergy;
     }
+    /**
+     * Function that sets the available energy of the battery.
+     * @param q the energy of the battery
+     */
+    public void setAvailableEnergy(int q) {
+        this.availableEnergy = q;
+    }
 
     /**
      * Function that returns the slots of the battery.
