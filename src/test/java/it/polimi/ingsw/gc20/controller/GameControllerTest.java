@@ -6,19 +6,16 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import it.polimi.ingsw.gc20.controller.event.*;
+
 import it.polimi.ingsw.gc20.controller.states.*;
 import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
-import it.polimi.ingsw.gc20.interfaces.*;
-import java.security.InvalidParameterException;
-import java.util.*;
-import java.util.stream.Collectors;
 
-import static javax.swing.text.StyleConstants.Orientation;
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameControllerTest {
@@ -572,7 +569,7 @@ class GameControllerTest {
         validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
         gameController.readyToFly("player4");
 
-        assertTrue(validatingShipState.allShipsReady());
+        assertTrue(validatingShipState.allShipsReadyToFly());
 
         // TODO -> find solution to test this
     }

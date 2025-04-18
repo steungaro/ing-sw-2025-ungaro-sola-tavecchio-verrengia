@@ -634,7 +634,7 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the cabin provided is a StartingCabin
      */
     public void addAlien(String username, AlienColor color, Cabin cabin) {
-                if(model.getLevel() != 2){
+        if(model.getLevel() != 2){
             throw new IllegalArgumentException("Aliens are only available in level 2 games");
         }
         state.addAlien(getPlayerByID(username), color, cabin);
@@ -649,7 +649,7 @@ public class GameController implements GameControllerInterface {
      */
     public void readyToFly(String username) {
         state.readyToFly(getPlayerByID(username));
-        if (state.allShipsReady()) {
+        if (state.allShipsReadyToFly()) {
             state.initAllShips();
             model.createDeck();
             drawCard();

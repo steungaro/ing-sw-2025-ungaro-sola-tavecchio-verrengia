@@ -94,6 +94,12 @@ public abstract class State{
     public void removeComp(Player player, Component component) {
         exception();
     }
+
+    public boolean allShipsValidated() {;
+        exception();
+        return false;
+    }
+
     public void addAlien(Player player, AlienColor color, Cabin cabin) {
         exception();
     }
@@ -145,7 +151,7 @@ public abstract class State{
         return false;
     }
 
-    public boolean allShipsReady() {
+    public boolean allShipsReadyToFly() {
         exception();
         return false;
     }

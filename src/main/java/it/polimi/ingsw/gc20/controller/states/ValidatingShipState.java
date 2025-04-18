@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.controller.states;
 import it.polimi.ingsw.gc20.model.components.AlienColor;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Component;
-import it.polimi.ingsw.gc20.model.components.StartingCabin;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
 
@@ -12,7 +11,7 @@ import java.util.Map;
 
 public class ValidatingShipState extends State {
     private final Map<Player, Boolean> validShips = new HashMap<>();
-    private final Map<Player, Boolean> alienAdded = new HashMap<>();
+    private final Map<Player, Boolean> readyToFly = new HashMap<>();
 
     /**
      * Default constructor
@@ -21,7 +20,7 @@ public class ValidatingShipState extends State {
         super(model);
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
-            alienAdded.put(player, model.getLevel() == 0); // if level 0, alien is considered added
+            readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
         }
     }
 
@@ -48,12 +47,20 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public boolean allShipsReady() {
-        return validShips.values().stream().allMatch(Boolean::booleanValue) && alienAdded.values().stream().allMatch(Boolean::booleanValue);
+    public boolean allShipsReadyToFly() {
+        return validShips.values().stream().allMatch(Boolean::booleanValue) && readyToFly.values().stream().allMatch(Boolean::booleanValue);
+    }
+
+    @Override
+    public boolean allShipsValidated() {
+        return validShips.values().stream().allMatch(Boolean::booleanValue);
     }
 
     @Override
     public void addAlien(Player player, AlienColor color, Cabin cabin) {
+        if (!allShipsValidated()) {
+            throw new IllegalArgumentException("Cannot add alien: some ships are not validated");
+        }
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }
@@ -61,7 +68,6 @@ public class ValidatingShipState extends State {
             throw new IllegalArgumentException("Aliens can only be added in level 2");
         }
         getModel().setAlien(color, cabin, player);
-        alienAdded.put(player, true);
     }
 
     @Override
@@ -69,11 +75,14 @@ public class ValidatingShipState extends State {
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot fly with invalid ship");
         }
-        validShips.put(player, true);
+        readyToFly.put(player, true);
     }
 
     @Override
     public void initAllShips() {
+        if (!allShipsReadyToFly()) {
+            throw new IllegalArgumentException("Cannot initialize ships: some ships are not ready to fly");
+        }
         for (Player player : getModel().getInGamePlayers()) {
             player.getShip().initAstronauts();
         }
