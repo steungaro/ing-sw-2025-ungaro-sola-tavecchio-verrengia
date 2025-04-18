@@ -1,6 +1,6 @@
-package it.polimi.ingsw.gc20.controller.event.game;
+package it.polimi.ingsw.gc20.network.event.game;
 
-import it.polimi.ingsw.gc20.controller.event.Event;
+import it.polimi.ingsw.gc20.network.event.Event;
 import org.javatuples.Pair;
 import java.io.Serializable;
 import java.util.List;
