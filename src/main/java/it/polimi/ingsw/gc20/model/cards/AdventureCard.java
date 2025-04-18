@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author GC20
@@ -138,9 +139,11 @@ public class AdventureCard {
 
     public void setState(GameController controller, GameModel model){
         try {
+            if(Objects.equals(name, "CombatZone")){
+                name = name + combatType();
+            }
             // Construct the full class name with package
             String stateClassName = "it.polimi.ingsw.gc20.controller.states." + name + "State";
-
             // Get the class object for the state
             Class<?> stateClass = Class.forName(stateClassName);
 
