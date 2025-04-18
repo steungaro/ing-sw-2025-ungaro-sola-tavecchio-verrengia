@@ -58,6 +58,7 @@ public class ValidatingShipState extends State {
             throw new IllegalArgumentException("Aliens can only be placed in cabins");
         }
         getModel().setAlien(color, cabin, player);
+        alienAdded.put(player, true);
     }
 
     @Override

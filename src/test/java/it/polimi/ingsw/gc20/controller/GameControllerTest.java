@@ -555,21 +555,76 @@ class GameControllerTest {
 
     @Test
     void readyToFly() {
+        assertThrows(IllegalStateException.class, () -> gameController.readyToFly("player1"));
+
+
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        gameController.setState(validatingShipState);
+
+        assertThrows(IllegalArgumentException.class, () -> gameController.readyToFly("player1"));
+
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        gameController.readyToFly("player1");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+        gameController.readyToFly("player2");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+        gameController.readyToFly("player3");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+        gameController.readyToFly("player4");
+
+        assertTrue(validatingShipState.allShipsReady());
+
+        // TODO -> find solution to test this
     }
 
     @Test
-    void rollDice() {
+    void defeated() {
+        gameController.defeated("player1");
+        assertFalse(gameController.getPlayerByID("player1").isInGame());
     }
 
     @Test
-    void lastRolledDice() {
+    void rollDice() throws InvalidTurnException {
+        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        gameController.setState(slaversState);
+
+        assertThrows(InvalidTurnException.class, () -> gameController.rollDice("player2"));
+
+        gameController.rollDice("player1");
+        assertNotNull(gameController.getModel().getGame().lastRolled());
+    }
+
+    @Test
+    void lastRolledDice() throws InvalidTurnException {
+        assertThrows(IllegalStateException.class, () -> gameController.lastRolledDice("player1"));
+
+        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        gameController.setState(slaversState);
+
+        assertThrows(InvalidTurnException.class, () -> gameController.lastRolledDice("player2"));
+
+        gameController.rollDice("player1");
+        int lastRolled = gameController.getModel().getGame().lastRolled();
+        assertNotNull(lastRolled);
     }
 
     @Test
     void getCurrentPlayer() {
+        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        gameController.setState(slaversState);
+
+        String currentPlayer = gameController.getCurrentPlayer();
+        assertEquals("player1", currentPlayer);
     }
 
     @Test
     void getInGameConnectedPlayers() {
+        List<String> inGameConnectedPlayers = gameController.getInGameConnectedPlayers();
+        assertNotNull(inGameConnectedPlayers);
+        assertEquals(4, inGameConnectedPlayers.size());
+        assertTrue(inGameConnectedPlayers.contains("player1"));
+        assertTrue(inGameConnectedPlayers.contains("player2"));
+        assertTrue(inGameConnectedPlayers.contains("player3"));
+        assertTrue(inGameConnectedPlayers.contains("player4"));
     }
 }
