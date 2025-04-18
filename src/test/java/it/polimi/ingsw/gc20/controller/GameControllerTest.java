@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
-import it.polimi.ingsw.gc20.controller.event.game.PlaceComponentEvent;
+import it.polimi.ingsw.gc20.network.event.game.PlaceComponentEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

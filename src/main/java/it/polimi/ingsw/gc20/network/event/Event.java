@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc20.controller.event;
+package it.polimi.ingsw.gc20.network.event;
 
 import java.io.Serializable;
 
