@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.controller;
 
-import it.polimi.ingsw.gc20.controller.event.*;
 import it.polimi.ingsw.gc20.controller.states.*;
 import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.*;
@@ -23,8 +22,6 @@ public class GameController implements GameControllerInterface {
 
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
-
-    private final Map<EventType<? extends Event>, List<EventHandler<? extends Event>>> eventHandlers = new HashMap<>();
 
     /**
      * Default constructor
@@ -677,9 +674,5 @@ public class GameController implements GameControllerInterface {
                 .map(Player::getUsername)
                 .filter(connectedPlayers::contains)
                 .collect(Collectors.toList());
-    }
-
-    public void addHandler(EventType<? extends Event> type, EventHandler<? extends Event> handler) {
-        eventHandlers.computeIfAbsent(type, k -> new ArrayList<>()).add(handler);
     }
 }
