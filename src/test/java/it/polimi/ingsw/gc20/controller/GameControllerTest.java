@@ -407,18 +407,70 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromViewed() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        assertNotNull(assemblingState.getModel());
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
+
+        gameController.addComponentToViewed(comp);
+
+        Component comp2 = gameController.takeComponentFromViewed("player1", comp);
+
+        assertEquals(comp, comp2);
     }
 
     @Test
     void takeComponentFromBooked() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        assertNotNull(assemblingState.getModel());
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
+
+        gameController.addComponentToBooked("player1", comp);
+
+        Component comp2 = gameController.takeComponentFromBooked("player1", comp);
+
+        assertEquals(comp, comp2);
     }
 
     @Test
     void addComponentToBooked() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        assertNotNull(assemblingState.getModel());
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
+
+        gameController.addComponentToBooked("player1", comp);
+
+        Component comp2 = gameController.takeComponentFromBooked("player1", comp);
+
+        assertEquals(comp, comp2);
     }
 
     @Test
     void addComponentToViewed() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        assertNotNull(assemblingState.getModel());
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
+
+        gameController.addComponentToViewed(comp);
+
+        Component comp2 = gameController.takeComponentFromViewed("player1", comp);
+
+        assertEquals(comp, comp2);
     }
 
     @Test
@@ -511,6 +563,7 @@ class GameControllerTest {
 
     @Test
     void getHourglassTime() throws InterruptedException {
+        // TODO -> Note that there's not
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
         assertEquals(4, gameController.getHourglassTime("player1"));
