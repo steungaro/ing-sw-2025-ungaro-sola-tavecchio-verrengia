@@ -9,14 +9,14 @@ import java.util.*;
  */
 public class Pile {
 
-    private List<Component> viewed;
-    private List<Component> unviewed;
+    private final List<Component> viewed;
+    private final List<Component> unviewed;
     /**
      * Default constructor
      */
     public Pile() {
-        this.viewed = new ArrayList<Component>();
-        this.unviewed = new ArrayList<Component>();
+        this.viewed = new ArrayList<>();
+        this.unviewed = new ArrayList<>();
     }
 
     /** get function for viewed components

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.managers.Translator;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.HashSet;
 import java.util.List;
@@ -56,7 +58,7 @@ public class SmugglersState extends CargoState {
     }
 
     @Override
-    public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -78,7 +80,7 @@ public class SmugglersState extends CargoState {
      * @throws IllegalArgumentException if it's not the player's turn
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws IllegalStateException, InvalidTurnException, CargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
@@ -88,7 +90,7 @@ public class SmugglersState extends CargoState {
         if (!reward.contains(loaded)) {
             throw new CargoException("Not in the card reward");
         }
-        getModel().addCargo(player, loaded, chTo);
+        getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
         reward.remove(loaded);
     }
 
@@ -100,14 +102,14 @@ public class SmugglersState extends CargoState {
      * @throws IllegalArgumentException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
         if (!defeated) {
             currentLostCargo--;
         }
-        getModel().MoveCargo(player, unloaded, ch, null);
+        getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
     }
 
     @Override
@@ -120,11 +122,11 @@ public class SmugglersState extends CargoState {
                 '}';
     }
 
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
+        float firePower = getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class));
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
             defeated = true;

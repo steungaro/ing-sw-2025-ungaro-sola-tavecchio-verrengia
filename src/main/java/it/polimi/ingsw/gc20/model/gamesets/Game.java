@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Game {
 
-    private List<Player> players;
+    private final List<Player> players;
     private Board board;
     private String gameID;
     private Pile pile;

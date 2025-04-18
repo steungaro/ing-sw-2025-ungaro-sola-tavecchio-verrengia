@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.controller.managers.Translator;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Battery;
@@ -8,6 +9,7 @@ import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Cannon;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.HashSet;
 import java.util.List;
@@ -42,11 +44,11 @@ public class SlaversState extends PlayingState {
     }
 
     @Override
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        float firePower = getModel().FirePower(player, new HashSet<>(cannons), batteries);
+        float firePower = getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class));
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
             defeated = true;
@@ -64,7 +66,7 @@ public class SlaversState extends PlayingState {
     }
 
     @Override
-    public void loseCrew(Player player, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException {
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -74,7 +76,7 @@ public class SlaversState extends PlayingState {
         if (cabins.size() < lostMembers) {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
-        getModel().loseCrew(player, cabins);
+        getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
         getModel().addCredits(player, reward);
         getModel().movePlayer(player, -lostDays);
         nextPlayer();

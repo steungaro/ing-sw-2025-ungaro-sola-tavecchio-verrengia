@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.gc20.model.components.Component;
 
 import java.util.*;
 
@@ -12,10 +11,10 @@ import java.util.*;
  * @author GC20
  */
 public class NormalBoard extends Board {
-    private List<AdventureCard> firstVisible;
-    private List<AdventureCard> secondVisible;
-    private List<AdventureCard> thirdVisible;
-    private List<AdventureCard> invisible;
+    private final List<AdventureCard> firstVisible;
+    private final List<AdventureCard> secondVisible;
+    private final List<AdventureCard> thirdVisible;
+    private final List<AdventureCard> invisible;
     private final Hourglass hourglass;
 
     /**

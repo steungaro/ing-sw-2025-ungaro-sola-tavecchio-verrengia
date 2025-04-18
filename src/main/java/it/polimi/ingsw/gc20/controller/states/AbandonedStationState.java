@@ -4,10 +4,10 @@ import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.List;
 
@@ -74,7 +74,7 @@ public class AbandonedStationState extends CargoState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws IllegalArgumentException, CargoException, InvalidTurnException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws IllegalArgumentException, CargoException, InvalidTurnException {
         if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't load cargo unless you are on the station");
         }
@@ -95,7 +95,7 @@ public class AbandonedStationState extends CargoState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws IllegalArgumentException, InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws IllegalArgumentException, InvalidTurnException, CargoException {
         if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't unload cargo unless you are on the station");
         }
@@ -113,7 +113,7 @@ public class AbandonedStationState extends CargoState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, CargoHold chFrom, CargoHold chTo) throws IllegalArgumentException, InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws IllegalArgumentException, InvalidTurnException, CargoException {
         if(getController().getActiveCard().isPlayed()){
             throw new IllegalStateException("You can't move cargo unless you are on the station");
         }
