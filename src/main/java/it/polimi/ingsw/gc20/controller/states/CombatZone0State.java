@@ -72,7 +72,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -87,6 +87,7 @@ public class CombatZone0State extends PlayingState {
             getModel().getActiveCard().playCard();
             getController().drawCard();
         }
+        return getModel().getGame().rollDice();
     }
 
     @Override

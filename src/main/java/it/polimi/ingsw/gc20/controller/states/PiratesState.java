@@ -34,7 +34,7 @@ public class PiratesState extends PlayingState {
     /**
      * Default constructor
      */
-    public PiratesState(GameController controller, GameModel model, AdventureCard card) {
+    public PiratesState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
         this.cannonFire = card.getProjectiles();
@@ -81,7 +81,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -101,6 +101,7 @@ public class PiratesState extends PlayingState {
                 manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
             }
         }
+        return getModel().getGame().rollDice();
     }
 
     @Override

@@ -671,6 +671,15 @@ public class GameController implements GameControllerInterface {
         state.rollDice(getPlayerByID(username));
     }
 
+    /*
+     * @param username is the username of the player that wants to roll the dice
+     * @throws IllegalStateException if the game is not in the correct phase
+     * @throws InvalidTurnException  if it is not the player's turn
+     */
+    public GameModel getModel() {
+        return model;
+    }
+
 
     public List<String> getInGameConnectedPlayers() {
         return model.getInGamePlayers().stream()

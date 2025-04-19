@@ -108,7 +108,7 @@ class GameControllerTest {
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -126,7 +126,7 @@ class GameControllerTest {
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -149,7 +149,7 @@ class GameControllerTest {
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -178,7 +178,7 @@ class GameControllerTest {
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController, model, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -237,7 +237,7 @@ class GameControllerTest {
     }
 
     @Test
-    void activateShield() throws InvalidTurnException {
+    void activateShield() throws InvalidTurnException, InvalidShipException {
         // TODO -> Better test in State section
         AdventureCard adventureCard1 = new AdventureCard();
         List<Projectile> projectiles = new ArrayList<>();
@@ -247,7 +247,7 @@ class GameControllerTest {
         projectiles.add(projectile1);
         adventureCard1.setProjectiles(projectiles);
 
-        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController, gameController.getModel(), adventureCard1);
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController.getModel(), gameController, adventureCard1);
 
         Shield shield = new Shield();
         Direction[] directions = {Direction.UP, Direction.RIGHT};
@@ -270,7 +270,7 @@ class GameControllerTest {
     }
 
     @Test
-    void endMove() throws InvalidTurnException {
+    void endMove() throws InvalidTurnException, InvalidShipException {
         // TODO -> Better test in State section
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController, gameController.getModel(), adventureCard);
         gameController.setState(abandonedShipState1);
@@ -278,7 +278,7 @@ class GameControllerTest {
     }
 
     @Test
-    void activateEngines() throws InvalidTurnException {
+    void activateEngines() throws InvalidTurnException, InvalidShipException {
         // TODO -> Better test in State section
         CombatZone0State combatZone0State = new CombatZone0State(gameController, gameController.getModel(), adventureCard);
         gameController.setState(combatZone0State);
@@ -299,14 +299,6 @@ class GameControllerTest {
     }
 
     @Test
-    void getAvailableColors() {
-        // TODO -> Better test in State section
-        List<PlayerColor> availableColors = gameController.getAvailableColors();
-        assertNotNull(availableColors);
-        assertEquals(0, availableColors.size());
-    }
-
-    @Test
     void getPlayerData() {
         // TODO -> Better test in State section
         Player player = gameController.getPlayerByID("player1");
@@ -323,13 +315,13 @@ class GameControllerTest {
 
     @Test
     void getPlayerScores() {
-        Map<Player, Integer> playerScores = gameController.getPlayerScores();
+        Map<String, Integer> playerScores = gameController.getPlayerScores();
     }
 
     @Test
     void giveUp() {
         gameController.giveUp("player1");
-        Map<Player, Integer> playerScores = gameController.getPlayerScores();
+        Map<String, Integer> playerScores = gameController.getPlayerScores();
     }
 
     @Test
@@ -415,7 +407,7 @@ class GameControllerTest {
 
         assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
 
-        gameController.addComponentToViewed(comp);
+        gameController.addComponentToViewed("player1", comp);
 
         Component comp2 = gameController.takeComponentFromViewed("player1", comp);
 
@@ -466,7 +458,7 @@ class GameControllerTest {
 
         assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
 
-        gameController.addComponentToViewed(comp);
+        gameController.addComponentToViewed("player1", comp);
 
         Component comp2 = gameController.takeComponentFromViewed("player1", comp);
 
@@ -599,6 +591,17 @@ class GameControllerTest {
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
         gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+        assertThrows(IllegalArgumentException.class, () -> gameController.addAlien("player1", alienColor, cabin));
+
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        gameController.readyToFly("player1");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+        gameController.readyToFly("player2");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+        gameController.readyToFly("player3");
+        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+        gameController.readyToFly("player4");
+
         gameController.addAlien("player1", alienColor, cabin);
         assertEquals(alienColor, ((Cabin)(gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
     }
@@ -634,7 +637,7 @@ class GameControllerTest {
     }
 
     @Test
-    void rollDice() throws InvalidTurnException {
+    void rollDice() throws InvalidTurnException, InvalidShipException {
         SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
         gameController.setState(slaversState);
 
@@ -645,13 +648,13 @@ class GameControllerTest {
     }
 
     @Test
-    void lastRolledDice() throws InvalidTurnException {
-        assertThrows(IllegalStateException.class, () -> gameController.lastRolledDice("player1"));
+    void lastRolledDice() throws InvalidTurnException, InvalidShipException {
+        assertThrows(IllegalStateException.class, () -> gameController.getModel().getGame().lastRolled());
 
         SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
         gameController.setState(slaversState);
 
-        assertThrows(InvalidTurnException.class, () -> gameController.lastRolledDice("player2"));
+        assertThrows(InvalidTurnException.class, () -> gameController.getModel().getGame().lastRolled());
 
         gameController.rollDice("player1");
         int lastRolled = gameController.getModel().getGame().lastRolled();
@@ -663,7 +666,7 @@ class GameControllerTest {
         SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
         gameController.setState(slaversState);
 
-        String currentPlayer = gameController.getCurrentPlayer();
+        String currentPlayer = slaversState.getCurrentPlayer();
         assertEquals("player1", currentPlayer);
     }
 
