@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import java.util.*;
@@ -19,7 +20,6 @@ public abstract class Ship {
     protected Integer totalEnergy;
     protected Map<CargoColor, Integer> cargos;
     protected Integer astronauts;
-    List<Component> trash = new ArrayList<>();
     /**
      * Default constructor. Initializes default ship values.
      */
@@ -459,8 +459,9 @@ public abstract class Ship {
      * Removes a component from ship and adds it to waste
      * @param c Component to destroy
      * @return True if ship remains valid after removal
+     * @throws DeadAlienException if the component is a lifeSupport and the cabin near it has an alien
      */
-    public Boolean killComponent(Component c){
+    public Boolean killComponent(Component c) {
         Tile t = c.getTile();
         c.updateParameter(this, -1);
         waste.add(c);

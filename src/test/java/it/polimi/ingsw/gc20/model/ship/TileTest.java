@@ -58,5 +58,10 @@ class TileTest {
         tile.removeComponent();
         assertNull(tile.getComponent());
         assertTrue(tile.getAvailability());
+        try {
+            tile.removeComponent();
+        } catch (IllegalArgumentException e) {
+            assertEquals("Component does not exist", e.getMessage());
+        }
     }
 }

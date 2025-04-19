@@ -188,6 +188,9 @@ public class Cabin extends Component {
                     }
                     LifeSupport comp = (LifeSupport) table[row][col].getComponent();
 
+                    if (comp == null) {
+                        continue;
+                    }
                     if (entry.getValue() == ConnectorEnum.ZERO || !(comp.isLifeSupport())) {
                         continue;
                     }

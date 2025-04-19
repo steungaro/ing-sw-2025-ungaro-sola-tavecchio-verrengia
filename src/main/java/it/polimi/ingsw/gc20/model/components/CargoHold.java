@@ -53,20 +53,6 @@ public class CargoHold extends Component {
         this.availableSlots = slots;
     }
 
-    /**
-     * Function that sets the cargo in the cargo hold.
-     * @param newCargoHeld the cargo to set
-     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
-     */
-    public void setCargoHeld(List<CargoColor> newCargoHeld) {
-        if (newCargoHeld.stream().anyMatch(c -> c == CargoColor.RED)) {
-            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
-        }
-        for (CargoColor c : newCargoHeld) {
-            cargoHeld.put(c, cargoHeld.getOrDefault(c, 0) + 1);
-        }
-        this.availableSlots -= newCargoHeld.size();
-    }
 
     /**
      * This method is used to load a cargo in the cargo hold

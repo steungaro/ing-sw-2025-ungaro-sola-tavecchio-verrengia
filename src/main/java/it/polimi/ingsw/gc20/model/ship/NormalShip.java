@@ -53,9 +53,9 @@ public class NormalShip extends Ship {
     /**
      * if a brown/purple alien is present in the ship
      */
-    private Boolean brownAlien;
+    Boolean brownAlien;
 
-    private Boolean purpleAlien;
+    Boolean purpleAlien;
 
     private AlienColor colorHostable = AlienColor.NONE;
 
@@ -75,7 +75,7 @@ public class NormalShip extends Ship {
      * Function to be called at the end of construction phase to move the booked components to the waste
      */
     public void addBookedToWaste() {
-        trash.addAll(Arrays.asList(booked));
+        waste.addAll(Arrays.asList(booked));
         booked[0]=null;
         booked[1]=null;
     }
@@ -232,6 +232,9 @@ public class NormalShip extends Ship {
                     break;
             }
 
+            if (table[row][col].getComponent() == null) {
+                continue;
+            }
             if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isCabin())) {
                 continue;
             }
@@ -277,10 +280,14 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
+            if (table[row][col].getComponent() == null) {
+                continue;
+            }
 
             if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isCabin())) {
                 continue;
             }
+
 
             if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
                 Cabin comp = (Cabin) table[row][col].getComponent();
