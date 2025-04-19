@@ -126,6 +126,7 @@ class AdventureCardTest {
         adventureCard.setName("Test");
         // Ensure the exception is caught internally and does not propagate
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
+
         assertEquals("StardustState", controller.getState());
 
         adventureCard.setName("Epidemic");
@@ -135,9 +136,11 @@ class AdventureCardTest {
         assertEquals("EpidemicState", controller.getState());
 
 
-        adventureCard.setName("CombatZone");
-        adventureCard.setCrew(1);
+        adventureCard.setName("AbandonedShip");
+        adventureCard.setCrew(5);
+        adventureCard.setCredits(100);
+        adventureCard.setLostDays(2);
         adventureCard.setState(controller, model);
-        assertEquals("CombatZone1State", controller.getState());
+        assertEquals("AbandonedShipState{ lostCrew=5, credits=100, lostDays=2}", controller.getState());
     }
 }
