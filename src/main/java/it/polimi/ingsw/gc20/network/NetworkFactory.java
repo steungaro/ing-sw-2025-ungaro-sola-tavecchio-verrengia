@@ -8,24 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkFactory {
-    private List<Server> servers = new ArrayList<>();
+    private final List<Server> servers = new ArrayList<>();
 
     public void initialize() {
         NetworkManager.getInstance(); // Ensure singleton is created
     }
 
     public Server createServer(ServerType type) {
-        Server server;
-        switch (type) {
-            case RMI:
-                server = new RMIServer();
-                break;
-            case SOCKET:
-                server = new SocketServer();
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo di server non supportato");
-        }
+        Server server = switch (type) {
+            case RMI -> new RMIServer();
+            case SOCKET -> new SocketServer();
+            default -> throw new IllegalArgumentException("Not a valid server type");
+        };
         servers.add(server);
         return server;
     }
