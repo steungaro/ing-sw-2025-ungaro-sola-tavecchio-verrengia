@@ -1,21 +1,21 @@
 package it.polimi.ingsw.gc20.network.event.game;
 
-import it.polimi.ingsw.gc20.network.event.Event;
+import it.polimi.ingsw.gc20.network.event.Message;
 import org.javatuples.Pair;
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * Event that is generated when a player activates the double cannons
- * @apiNote username of the player, list of tuples of the cannon and battery components the cannons are in the first position while the batteries are in the second
+ * Message that is generated when a player activates the double cannons
  */
 public record ActivateDoubleCannonsEvent(
         String username,
-        List<Pair<Integer, Integer>> coordinates
-) implements Event, Serializable {
+        List<Pair<Integer, Integer>> cannonsCoordinates,
+        List<Pair<Integer, Integer>> batteriesCoordinates
+) implements Message, Serializable {
 
     @Override
     public String toString() {
-        return "ActivateDoubleCannonsEvent {username = " + username +  componentIDs.toString() + "}";
+        return "ActivateDoubleCannonsEvent {username = " + username + "cannons = " + cannonsCoordinates.toString() + " batteries = " + batteriesCoordinates.toString() + "}";
     }
 }
