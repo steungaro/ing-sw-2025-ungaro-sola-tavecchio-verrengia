@@ -13,7 +13,7 @@ public class EpidemicState extends PlayingState {
     /**
      * Default constructor
      */
-    public EpidemicState(GameController controller, GameModel model, AdventureCard card) {
+    public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.schedule(this::automaticAction, 5, TimeUnit.SECONDS);

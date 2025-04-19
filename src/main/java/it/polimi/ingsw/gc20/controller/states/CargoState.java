@@ -14,8 +14,8 @@ import java.util.List;
 
 public abstract class CargoState extends PlayingState {
 
-    public CargoState(GameController gc, GameModel gm) {
-        super(gm, gc);
+    public CargoState(GameModel model, GameController controller) {
+        super(model, controller);
     }
 
     /**

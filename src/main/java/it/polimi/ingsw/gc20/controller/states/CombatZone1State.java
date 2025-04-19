@@ -27,7 +27,7 @@ public class CombatZone1State extends PlayingState {
      * Default constructor
      */
     @SuppressWarnings("unused") // dynamically created by Cards
-    public CombatZone1State(GameController controller, GameModel model, AdventureCard card) {
+    public CombatZone1State(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.lostDays = card.getLostDays();
         this.lostCargo = card.getLostCargo();
