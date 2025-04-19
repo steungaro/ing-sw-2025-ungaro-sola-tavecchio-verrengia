@@ -158,11 +158,9 @@ public class AdventureCard {
             controller.setState((State) stateInstance);
         } catch (ClassNotFoundException e) {
             System.err.println("State class not found for card: " + name);
-            e.printStackTrace();
         } catch (NoSuchMethodException | IllegalAccessException |
                  InstantiationException | InvocationTargetException e) {
             System.err.println("Error creating state for card: " + name);
-            e.printStackTrace();
         }
     }
 
