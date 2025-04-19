@@ -136,6 +136,11 @@ class LearnerShipTest {
         assertEquals(battery, ship.getComponentAt(2, 1));
         assertEquals(Cabin1, ship.getComponentAt(2, 3));
         assertEquals(cargoHold, ship.getComponentAt(1, 1));
+        assertNull(ship.getComponentAt(0, -1));
+        assertNull(ship.getComponentAt(-1, 0));
+        assertNull(ship.getComponentAt(5, 4));
+        assertNull(ship.getComponentAt(4, 5));
+
     }
 
     @Test
@@ -146,6 +151,10 @@ class LearnerShipTest {
         } catch (IllegalArgumentException e) {
             assertEquals("Tile is not available", e.getMessage());
         }
+        ship.setComponentAt(newCannon, -1, 0);
+        ship.setComponentAt(newCannon, 0, -1);
+        ship.setComponentAt(newCannon, 5, 4);
+        ship.setComponentAt(newCannon, 4, 5);
     }
 
     @Test
@@ -209,6 +218,10 @@ class LearnerShipTest {
         ship.addComponent(newBattery, 1, 3);
         assertEquals(newBattery, ship.getComponentAt(1, 3));
         assertEquals (ship.getTotalEnergy(), initialPower+2);
+        ship.addComponent(newBattery, -1, 0);
+        ship.addComponent(newBattery, 0, -1);
+        ship.addComponent(newBattery, 5, 4);
+        ship.addComponent(newBattery, 4, 5);
     }
 
 
@@ -220,6 +233,12 @@ class LearnerShipTest {
         ship.unloadCrew(Cabin1);
         assertEquals(NAstro-1, Cabin1.getAstronauts());
         assertEquals (num-1, ship.crew());
+        ship.unloadCrew(Cabin1);
+        try {
+            ship.unloadCrew(Cabin1);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Empty cabin", e.getMessage());
+        }
     }
 
     @Test
