@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -12,6 +14,7 @@ public class NormalShip extends Ship {
         brownAlien = false;
         purpleAlien = false;
 
+        table = new Tile[5][7];
         // Init table
         for (int i=0; i<5; i++) {
             for (int j=0; j<7; j++) {
@@ -40,11 +43,6 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * Matrix of tiles representing the ship
-     */
-    private Tile[][] table = new Tile[5][7];
-
-    /**
      *  Components that the player is holding in hand
      */
     private Component[] booked = new Component[2];
@@ -53,11 +51,15 @@ public class NormalShip extends Ship {
     /**
      * if a brown/purple alien is present in the ship
      */
-    private Boolean brownAlien = false;
+    Boolean brownAlien;
 
-    private Boolean purpleAlien = false;
+    Boolean purpleAlien;
 
     private AlienColor colorHostable = AlienColor.NONE;
+
+    public Tile[][] getTable() {
+        return table;
+    }
 
     public AlienColor getColorHostable() {
         return colorHostable;
@@ -71,7 +73,7 @@ public class NormalShip extends Ship {
      * Function to be called at the end of construction phase to move the booked components to the waste
      */
     public void addBookedToWaste() {
-        trash.addAll(Arrays.asList(booked));
+        waste.addAll(Arrays.asList(booked));
         booked[0]=null;
         booked[1]=null;
     }
@@ -101,8 +103,9 @@ public class NormalShip extends Ship {
     /**
      * Add a component to the booked components
      * @param c the component to be added to booked
+     * @throws IllegalArgumentException if the booked array is already full
      */
-    public void addBooked(Component c) {
+    public void addBooked(Component c) throws IllegalArgumentException{
         if (booked[0] == null) {
             booked[0]=c;
         } else if (booked[1] == null) {
@@ -127,6 +130,7 @@ public class NormalShip extends Ship {
     }
 
     /**
+     * Function that returns the component give the coordinates
      * @param row: position of the component
      * @param col: position of the component
      * @return the component at the given position
@@ -156,19 +160,12 @@ public class NormalShip extends Ship {
      * Function to calculate the firepower of the ship
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power: the firepower of the ship
+     * @throws IllegalArgumentException if the energy are not enough
+     * @throws IllegalArgumentException if the cannon is single
      */
     @Override
     public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
-        if(energies > totalEnergy || energies != cannons.size())
-            throw new IllegalArgumentException("cannon size too large");
-        float power  = singleCannonsPower;
-        for(Cannon cannon : cannons){
-            if (cannon.getOrientation() == Direction.UP)
-                power += cannon.getPower();
-            else {
-                power += cannon.getPower() / 2;
-            }
-        }
+        float power = super.firePower(cannons, energies);
         return power + (purpleAlien ? 2 : 0);
     }
 
@@ -182,8 +179,13 @@ public class NormalShip extends Ship {
         return doubleEnginesActivated * 2 + singleEngines + (brownAlien ? 2 : 0);
     }
 
+    /**
+     * Function to unload a crew member from the ship
+     * @param c is the crew member to be unloaded
+     * @throws IllegalArgumentException: the cabin is empty
+     */
     @Override
-    public void unloadCrew(Cabin c) {
+    public void unloadCrew(Cabin c) throws IllegalArgumentException{
         if (c.getOccupants() < 1) {
             throw new IllegalArgumentException("Empty cabin");
         }
@@ -202,26 +204,19 @@ public class NormalShip extends Ship {
 
     /**
      * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
-     * @param c: the component that was added or removed from the ship
+     * @param c: the component that was removed from the ship
+     * @throws DeadAlienException if in the cabin there was an alien and it died
      */
-    private void updateLifeSupportRemoved(Component c) {
-        //Find if is there a Cabin connceted to the LifeSupport
-        int row, col, i, j;
-        i = 0;
-        j = 0;
-        outer_loop:
-        for (i = 0; i < getRows(); i++) {
-            for (j = 0; j < getCols(); j++) {
-                if (table[i][j].getComponent() == c) {
-                    break outer_loop;
-                }
-            }
+    public void updateLifeSupportRemoved(Component c) throws DeadAlienException {
+        //Find if is there a Cabin connected to the LifeSupport
+        int[] position = findComponent(c);
+        if (position == null) {
+            return;
         }
-        //Finded the lifeSupport
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
-            row = i;
-            col = j;
+            int row = position [0];
+            int col = position [1];
 
             switch (entry.getKey()) {
                 case UP:
@@ -238,7 +233,10 @@ public class NormalShip extends Ship {
                     break;
             }
 
-            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof Cabin)) {
+            if (table[row][col].getComponent() == null) {
+                continue;
+            }
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isCabin())) {
                 continue;
             }
 
@@ -247,31 +245,27 @@ public class NormalShip extends Ship {
                 try {
                     comp.removeSupport((LifeSupport) c);
                 } catch (Exception e) {
-                    updateParametersRemove(c);
+                    c.updateParameter(this, -1);
                 }
             }
         }
     }
 
-    // For
-    private void updateLifeSupportAdded(Component c) {
-        //Find if is there a Cabin connceted to the LifeSupport
-        int row, col, i, j;
-        i = 0;
-        j = 0;
-        outer_loop:
-        for (i = 0; i < getRows(); i++) {
-            for (j = 0; j < getCols(); j++) {
-                if (table[i][j].getComponent() == c) {
-                    break outer_loop;
-                }
-            }
+    /** Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+     * @param c: the component that was added from the ship
+     */
+    public void updateLifeSupportAdded(Component c) {
+        //Find if is there a Cabin connected to the LifeSupport
+        int[] position = findComponent(c);
+        if (position == null) {
+            return;
         }
-        //Finded the lifeSupport
+
+        //Found the lifeSupport
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
-            row = i;
-            col = j;
+            int row = position[0];
+            int col = position[1];
 
             switch (entry.getKey()) {
                 case UP:
@@ -287,18 +281,18 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-
-            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof Cabin)) {
+            if (table[row][col].getComponent() == null) {
                 continue;
             }
 
+            if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isCabin())) {
+                continue;
+            }
+
+
             if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
                 Cabin comp = (Cabin) table[row][col].getComponent();
-                try {
                     comp.addSupport((LifeSupport) c);
-                } catch (Exception e) {
-                    updateParametersSet(c);
-                }
             }
         }
     }
@@ -339,150 +333,26 @@ public class NormalShip extends Ship {
      * @param c Component to add
      * @param row Row position
      * @param col Column position
+     * @throws IllegalArgumentException if the position is invalid
      */
-    public void addComponent(Component c, int row, int col){
+    public void addComponent(Component c, int row, int col) throws IllegalArgumentException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            updateParametersSet(c);
+            try {
+                c.updateParameter(this, 1);
+            } catch (Exception _) {}
         }
         else
             throw new IllegalArgumentException("Invalid position");
     }
 
-    public void removeAlien(Cabin c) {
-        if(!c.getAlien()) {
-            throw new IllegalArgumentException("No alien in the cabin");
-        }
-        unloadCrew(c);
-    }
-
     /**
-     * Updates ship parameters when components are removed
-     * @param c Component being removed
+     * Function that returns true if the ship is a normal ship
+     * @return true if the ship is a normal ship
      */
     @Override
-    protected void updateParametersRemove(Component c){
-        if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()==Direction.UP){
-                if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower--;
-                }else{
-                    doubleCannonsPower -= 2;
-                }
-            }else{
-                if(((Cannon) c).getPower() == 1) {
-                    doubleCannons--;
-                    doubleCannonsPower--;
-                }else if(((Cannon) c).getPower() == 0.5f){
-                    singleCannonsPower -= 0.5f;
-                }
-            }
-        }else if(c instanceof Engine){
-            if(((Engine) c).getDoublePower()){
-                doubleEngines--;
-            }else{
-                singleEngines--;
-            }
-        }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getAvailableEnergy();
-        } else if (c instanceof Cabin) {
-            if (((Cabin) c).getAlien()) {
-                if (((Cabin) c).getAlienColor() == AlienColor.BROWN) {
-                    brownAlien = false;
-                } else {
-                    purpleAlien = false;
-                }
-                ((Cabin) c).unloadAlien();
-            } else {
-                astronauts -= ((Cabin) c).getAstronauts();
-                ((Cabin) c).setAstronauts(0);
-            }
-        } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
-                Integer current = cargos.getOrDefault(k, 0);
-                cargos.put(k, current - v);
-            });
-        } else if (c instanceof LifeSupport) {
-            updateLifeSupportRemoved(c);
-        }
+    public boolean isNormal(){
+        return true;
     }
 
-    @Override
-    protected void updateParametersSet(Component c){
-        if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()==Direction.UP){
-                if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower += 1;
-                }else{
-                    doubleCannonsPower += 2;
-                }
-            }else{
-                if(((Cannon) c).getPower() == 1) {
-                    doubleCannons += 1;
-                    doubleCannonsPower += 1;
-                }else if(((Cannon) c).getPower() == 0.5f){
-                    singleCannonsPower += 0.5f;
-                }
-            }
-        }else if(c instanceof Engine){
-            if(((Engine) c).getDoublePower()){
-                doubleEngines += 1;
-            }else{
-                singleEngines += 1;
-            }
-        }else if(c instanceof Battery) {
-            ((Battery) c).fillBattery();
-            totalEnergy += ((Battery) c).getSlots();
-        }else if(c instanceof Cabin) {
-            //Find if is there a LifeSupport connceted to the Cabin
-            int row, col, i, j;
-            i = 0;
-            j = 0;
-            outer_loop:
-            for (i = 0; i < getRows(); i++) {
-                for (j = 0; j < getCols(); j++) {
-                    if (table[i][j].getComponent() == c) {
-                        break outer_loop;
-                    }
-                }
-            }
-            //Finded the Cabin
-            Map<Direction, ConnectorEnum> connectors = c.getConnectors();
-            for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
-                row = i;
-                col = j;
-
-                switch (entry.getKey()) {
-                    case UP:
-                        row--;
-                        break;
-                    case DOWN:
-                        row++;
-                        break;
-                    case LEFT:
-                        col--;
-                        break;
-                    case RIGHT:
-                        col++;
-                        break;
-                }
-
-                if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent() instanceof LifeSupport)) {
-                    continue;
-                }
-
-                if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
-                    Cabin comp = (Cabin) table[i][j].getComponent();
-                    try {
-                        comp.addSupport((LifeSupport) c);
-                    } catch (Exception e) {
-                        updateParametersSet(c);
-                    }
-                }
-            }
-        } else if (c instanceof LifeSupport) {
-            updateLifeSupportAdded(c);
-        }
-        // cargoHolds and shields are not counted in the updateParametersSet
-    }
 }

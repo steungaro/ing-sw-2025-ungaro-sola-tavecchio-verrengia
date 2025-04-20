@@ -9,14 +9,7 @@ import java.security.*;
  */
 public class Tile {
 
-    /**
-     * 
-     */
     private Boolean availability;
-
-    /**
-     * 
-     */
     private Component component;
 
     /**
@@ -28,6 +21,7 @@ public class Tile {
     }
 
     /**
+     * Getter for the component
      * @return component
      */
     public Component getComponent() {
@@ -35,7 +29,9 @@ public class Tile {
     }
 
     /**
+     * Add a component to the tile
      * @param c Component
+     * @throws IllegalArgumentException if the tile is not available
      */
     public void addComponent(Component c) throws IllegalArgumentException {
         if(availability) {
@@ -48,6 +44,7 @@ public class Tile {
     }
 
     /**
+     * Getter for the availability
      * @return availability
      */
     public Boolean getAvailability() {
@@ -56,6 +53,7 @@ public class Tile {
     }
 
     /**
+     * Setter for the availability
      * @param a Boolean
      */
     public void setAvailability(Boolean a) {
@@ -63,9 +61,10 @@ public class Tile {
     }
 
     /**
-     * @throws RuntimeException Component does not exist
+     * Removes the component from the tile
+     * @throws InvalidParameterException Component does not exist
      */
-    public void removeComponent(){
+    public void removeComponent() throws InvalidParameterException {
         if(component != null){
             component = null;
             availability = true;

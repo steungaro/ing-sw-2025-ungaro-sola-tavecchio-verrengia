@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.model.ship.NormalShip;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 public class LifeSupport extends Component {
 
     private AlienColor color;
@@ -23,5 +27,29 @@ public class LifeSupport extends Component {
      */
     public void setColor(AlienColor color) {
         this.color = color;
+    }
+
+    /**
+     * Function that update the parameter of the ship
+     * @param ship ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     * @throws DeadAlienException if the alien die for lack of support
+     */
+    @Override
+    public void updateParameter(Ship ship, int sign) throws DeadAlienException {
+        if (sign < 0) {
+            ((NormalShip) ship).updateLifeSupportRemoved(this);
+        } else if (sign > 0) {
+            ((NormalShip) ship).updateLifeSupportAdded(this);
+        }
+    }
+
+    /**
+     * Function that returns true if the component is a life support
+     * @return true if the component is a life support
+     */
+    @Override
+    public boolean isLifeSupport() {
+        return true;
     }
 }

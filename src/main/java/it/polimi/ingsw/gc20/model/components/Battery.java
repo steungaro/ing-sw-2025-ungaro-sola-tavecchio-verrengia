@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 public class Battery extends Component {
 
     private int availableEnergy;
@@ -21,6 +23,13 @@ public class Battery extends Component {
     public int getAvailableEnergy() {
         return availableEnergy;
     }
+    /**
+     * Function that sets the available energy of the battery.
+     * @param q the energy of the battery
+     */
+    public void setAvailableEnergy(int q) {
+        this.availableEnergy = q;
+    }
 
     /**
      * Function that returns the slots of the battery.
@@ -39,9 +48,12 @@ public class Battery extends Component {
     }
 
     /**
-     * Function that fills the battery.
+     * Function that sets the available energy of the battery.
+     * @param s the ship
+     * @param sign the sign that indicates if the energy is added or removed
      */
-    public void fillBattery() {
-        availableEnergy = slots;
+    @Override
+    public void updateParameter(Ship s, int sign){
+        s.addBatteries (sign*availableEnergy);
     }
 }

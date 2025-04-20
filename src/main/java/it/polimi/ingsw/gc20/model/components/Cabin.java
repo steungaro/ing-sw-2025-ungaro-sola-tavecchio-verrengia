@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.model.ship.NormalShip;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+import it.polimi.ingsw.gc20.model.ship.Tile;
+
+import java.util.Map;
 
 public class Cabin extends Component {
     private int astronauts;
@@ -22,7 +27,7 @@ public class Cabin extends Component {
     * Function that sets the astronauts in the cabin.
     * @param astronauts the astronauts to set
      */
-    public void setAstronauts(int astronauts) {
+    public void setAstronauts(int astronauts) throws IllegalArgumentException{
         if (alien) {
             throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin");
         }
@@ -45,7 +50,7 @@ public class Cabin extends Component {
     * Function that sets the alien in the cabin.
     * @param color is the color of the alien
      */
-    public void setAlien(AlienColor color) {
+    public void setAlien(AlienColor color) throws IllegalArgumentException{
         if (astronauts != 0) {
             throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin.");
         }
@@ -105,7 +110,7 @@ public class Cabin extends Component {
      * @param ls the lifeSupport that's added
      */
     public void addSupport(LifeSupport ls) {
-        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) {
+        if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) { 
             cabinColor = AlienColor.BOTH;
         } else {
             cabinColor = ls.getColor();
@@ -129,7 +134,81 @@ public class Cabin extends Component {
         }
     }
 
+    /**
+     * Function that returns the number of astronauts and aliens in the cabin.
+     * @return the number of astronauts and aliens in the cabin
+     */
     public int getOccupants(){
         return astronauts + (alien ? 1 : 0);
+    }
+
+    /**
+     * Function that initialize the astronauts in the cabin.
+     * @return the number of astronauts in the cabin
+     */
+    @Override
+    public int initializeAstronauts (){
+        if (!alien) {
+            setAstronauts(2);
+            return 2;
+        }
+        return 0;
+    }
+
+    /**
+     * Function that update the parameter of the ship.
+     * @param s ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     */
+    @Override
+    public void updateParameter (Ship s, int sign){
+        if (sign<0){
+            while (astronauts>0){
+                s.unloadCrew(this);
+            }
+        } else if (sign>0){
+            if (!s.isNormal()) return;
+
+            //find the coordinates of the cabin
+            Tile[][] table = ((NormalShip) s).getTable();
+            int [] position = s.findComponent(this);
+
+            //found the cabin
+            if (position!=null){
+                Map<Direction, ConnectorEnum> connectors = this.getConnectors();
+                for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
+                    int row = position[0];
+                    int col = position[1];
+
+                    switch (entry.getKey()) {
+                        case UP: row--; break;
+                        case DOWN: row++; break;
+                        case LEFT: col--; break;
+                        case RIGHT: col++; break;
+                    }
+                    LifeSupport comp = (LifeSupport) table[row][col].getComponent();
+
+                    if (comp == null) {
+                        continue;
+                    }
+                    if (entry.getValue() == ConnectorEnum.ZERO || !(comp.isLifeSupport())) {
+                        continue;
+                    }
+
+                    if (this.isValid(comp, entry.getKey())) {
+                        this.addSupport(comp);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Function that returns true if the component is a cabin.
+     * @return true if the component is a cabin, false otherwise
+     */
+    @Override
+    public boolean isCabin() {
+        return true;
     }
 }

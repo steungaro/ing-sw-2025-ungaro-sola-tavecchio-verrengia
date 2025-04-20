@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,13 @@ public class CabinTest {
         assertEquals(AlienColor.BROWN, cabin.getAlienColor());
         cabin.unloadAlien();
         assertFalse(cabin.getAlien());
+        cabin.setAstronauts(2);
+        assertThrows(IllegalArgumentException.class, ()-> cabin.setAlien(AlienColor.BROWN));
+        cabin.unloadAstronaut();
+        cabin.unloadAstronaut();
+        assertThrows(IllegalArgumentException.class, ()-> cabin.setAlien(AlienColor.PURPLE));
+        cabin.setColor(AlienColor.PURPLE);
+        assertEquals(AlienColor.BOTH, cabin.getCabinColor());
     }
 
     @Test
@@ -39,12 +47,19 @@ public class CabinTest {
         cabin.addSupport(lifeSupport);
         assertEquals(AlienColor.BROWN, cabin.getCabinColor());
         cabin.setAlien(AlienColor.BROWN);
+        assertThrows(DeadAlienException.class, ()-> cabin.removeSupport(lifeSupport));
+        assertFalse(cabin.getAlien());
+        LifeSupport lifeSupport2 = new LifeSupport();
+        lifeSupport2.setColor(AlienColor.PURPLE);
+        cabin.addSupport(lifeSupport2);
+        cabin.addSupport(lifeSupport);
+        assertEquals(AlienColor.BOTH, cabin.getCabinColor());
         try {
             cabin.removeSupport(lifeSupport);
-        }catch (Exception e){
+        } catch (DeadAlienException e) {
 
         }
-        assertFalse(cabin.getAlien());
+        assertEquals (AlienColor.PURPLE, cabin.getCabinColor());
     }
 
 

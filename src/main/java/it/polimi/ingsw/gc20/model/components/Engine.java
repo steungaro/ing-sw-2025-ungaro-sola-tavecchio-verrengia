@@ -1,29 +1,13 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 public class Engine extends Component {
 
-    private int power;
     private boolean doublePower;
     private Direction orientation = Direction.DOWN;
 
     public Engine() {}
-
-    /**
-     * Function that creates a new engine with the given parameters.
-     * @return the power of the engine
-     */
-    public int getPower() {
-        return power;
-    }
-
-    /**
-     * Function that sets the power of the engine.
-     * @param power the power of the engine
-     */
-    public void setPower(int power) {
-        this.power = power;
-    }
-
     /**
      * Function that sets the engine as double.
      * @return true if the engine is double, false otherwise
@@ -61,20 +45,13 @@ public class Engine extends Component {
      * */
     @Override
     public void rotateClockwise() {
-        ConnectorEnum conn = connectors.get(Direction.UP);
-        connectors.put(Direction.UP, connectors.get(Direction.LEFT));
-        connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
-        connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
-        connectors.put(Direction.RIGHT, conn);
+        super.rotateClockwise();
 
-        if(orientation == Direction.UP){
-            orientation = Direction.RIGHT;
-        } else if(orientation == Direction.RIGHT){
-            orientation = Direction.DOWN;
-        } else if(orientation == Direction.DOWN){
-            orientation = Direction.LEFT;
-        } else if(orientation == Direction.LEFT){
-            orientation = Direction.UP;
+        switch (orientation) {
+            case UP: orientation = Direction.RIGHT; break;
+            case RIGHT: orientation = Direction.DOWN; break;
+            case DOWN: orientation = Direction.LEFT; break;
+            case LEFT: orientation = Direction.UP; break;
         }
     }
 
@@ -83,20 +60,48 @@ public class Engine extends Component {
      * */
     @Override
     public void rotateCounterclockwise() {
-        ConnectorEnum conn = connectors.get(Direction.UP);
-        connectors.put(Direction.UP, connectors.get(Direction.RIGHT));
-        connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
-        connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
-        connectors.put(Direction.LEFT, conn);
+        super.rotateCounterclockwise();
 
-        if(orientation == Direction.UP){
-            orientation = Direction.LEFT;
-        } else if(orientation == Direction.RIGHT){
-            orientation = Direction.UP;
-        } else if(orientation == Direction.DOWN){
-            orientation = Direction.RIGHT;
-        } else if(orientation == Direction.LEFT){
-            orientation = Direction.DOWN;
+        switch (orientation) {
+            case UP: orientation = Direction.LEFT; break;
+            case RIGHT: orientation = Direction.UP; break;
+            case DOWN: orientation = Direction.RIGHT; break;
+            case LEFT: orientation = Direction.DOWN; break;
         }
+    }
+
+    /** Function that update the parameter of the ship.
+     * @param s ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     */
+    @Override
+    public void updateParameter (Ship s, int sign){
+        if (this.getDoublePower()) {
+            s.addDoubleEngines(sign);
+        } else
+            s.addSingleEngines(sign);
+    }
+
+    /**
+     * Function that returns true if the component has valid orientation
+     * @return true if the component has valid orientation, false otherwise
+     */
+    @Override
+    public boolean hasValidOrientation(Direction d){
+        if (d!= Direction.DOWN){
+            return true;
+        }
+        return orientation == d;
+    }
+
+    @Override
+    public Boolean isValid (Component c, Direction d) {
+        if (!hasValidOrientation(d)) {
+            return false;
+        }
+        if (Direction.DOWN == d && orientation == Direction.DOWN && c!=null) {
+            return false;
+        }
+        return super.isValid(c, d);
     }
 }
