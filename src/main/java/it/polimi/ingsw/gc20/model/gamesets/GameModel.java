@@ -18,7 +18,6 @@ public class GameModel {
     private Game game;
     private AdventureCard activeCard;
     private int level;
-    private List<Player> playersToMove;
     /**
      * Default Constructor
      */
@@ -26,7 +25,6 @@ public class GameModel {
         this.game = null;
         this.activeCard = null;
         this.level = 1;
-        this.playersToMove = new ArrayList<>();
     }
 
     /**
@@ -78,35 +76,6 @@ public class GameModel {
         return this.activeCard;
     }
 
-    /**getter function for the list of player to move (when only certain player needs to be moved after an effect (example: planets)
-     *
-     * @return list ot the player that need to be moved
-     */
-    private List<Player> getPlayersToMove (){
-        return this.playersToMove;
-    }
-
-    /** setter function for the list of player to move
-     *
-     * @param playersToMove list of player to move
-     */
-    private void setPlayersToMove (List<Player> playersToMove) {
-        this.playersToMove = playersToMove;
-    }
-
-    /** function to add a player to the list of player to move
-     *
-     * @param player to add to the players to move list
-     */
-    private void addPlayersToMove (Player player) {
-        this.playersToMove.add(player);
-    }
-    /** function to sort the player to move based on their position, first element is the player with the lower position
-     *
-     */
-    private void sortPlayerByPosition() {
-        playersToMove.sort(Comparator.comparingInt(Player::getPosition));
-    }
 
     /** private function for the init of one player used only in start game
      *
@@ -759,8 +728,6 @@ public class GameModel {
 
         p.getShip().findValid(row, column);
     }
-    //TODO gestione rimozione cargo insufficienti (il controller verica se mancano e chiama il metodo per rimuovere l'energia)
-    //TODO capire la condizione per aggiungere gli alieni alla ship servirebbe una condizione tipo se puo hostare ancora un alieno ma in ship non ho nulla
 }
 
 

@@ -11,7 +11,7 @@ import java.util.*;
 public abstract class Board {
     private List<AdventureCard> deck;
     private Integer spaces;
-    private List<Player> stallBox;
+    private final List<Player> stallBox;
     /**
      * Default constructor
      */

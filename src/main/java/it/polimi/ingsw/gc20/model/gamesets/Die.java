@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import java.io.*;
 import java.util.*;
 
 /**
@@ -20,7 +19,7 @@ public class Die {
     }
 
     /**
-     * @return
+     * @return the last rolled value
      */
     public int getLastRolled() {
         if (this.lastRolled == 0) {

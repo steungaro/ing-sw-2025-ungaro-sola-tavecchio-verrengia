@@ -5,10 +5,10 @@ import it.polimi.ingsw.gc20.exceptions.CargoException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Planet;
-import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class PlanetsState extends CargoState {
     }
 
     @Override
-    public void loadCargo(Player player, CargoColor loaded, CargoHold chTo) throws InvalidTurnException, CargoException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't load cargo unless you are on the planet");
         }
@@ -81,7 +81,7 @@ public class PlanetsState extends CargoState {
     }
 
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, CargoHold ch) throws InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't unload cargo unless you are on the planet");
         }
@@ -89,7 +89,7 @@ public class PlanetsState extends CargoState {
     }
 
     @Override
-    public void moveCargo(Player player, CargoColor cargo, CargoHold from, CargoHold to) throws InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't move cargo unless you are on the planet");
         }
