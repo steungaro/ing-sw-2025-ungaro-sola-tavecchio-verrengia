@@ -82,4 +82,8 @@ public abstract class Board {
     public List<Player> getStallBox() {
         return stallBox;
     }
+
+    public void mergeDecks(){
+        //default implementation
+    }
 }

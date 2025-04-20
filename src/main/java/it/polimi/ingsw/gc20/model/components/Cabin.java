@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.components;
 
 import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.EmptyCabinException;
+import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.model.ship.Ship;
 import it.polimi.ingsw.gc20.model.ship.Tile;
@@ -27,14 +29,7 @@ public class Cabin extends Component {
     * Function that sets the astronauts in the cabin.
     * @param astronauts the astronauts to set
      */
-    public void setAstronauts(int astronauts) throws IllegalArgumentException{
-        if (alien) {
-            throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin");
-        }
-        if (astronauts > 2) {
-            throw new IllegalArgumentException("Cannot have more than 2 astronauts in the same cabin");
-
-        }
+    public void setAstronauts(int astronauts) {
         this.astronauts += astronauts;
     }
 
@@ -49,13 +44,11 @@ public class Cabin extends Component {
     /**
     * Function that sets the alien in the cabin.
     * @param color is the color of the alien
+     * @throws InvalidAlienPlacement if the alien is not the same color as the cabin
      */
-    public void setAlien(AlienColor color) throws IllegalArgumentException{
-        if (astronauts != 0) {
-            throw new IllegalArgumentException("Cannot have both astronauts and aliens in the same cabin.");
-        }
+    public void setAlien(AlienColor color) throws InvalidAlienPlacement {
         if (cabinColor != color && cabinColor != AlienColor.BOTH) {
-            throw new IllegalArgumentException("Cannot have " + color + " alien in " + cabinColor + "cabin.");
+            throw new InvalidAlienPlacement("Cannot have " + color + " alien in " + cabinColor + "cabin.");
         }
         alien = true;
         alienColor = color;
@@ -100,7 +93,7 @@ public class Cabin extends Component {
     /**
     * Function that unloads one alien from the cabin.
      */
-    public void unloadAlien() {
+    public void unloadAlien() throws InvalidAlienPlacement {
         alien = false;
         alienColor = AlienColor.NONE;
     }
@@ -164,7 +157,9 @@ public class Cabin extends Component {
     public void updateParameter (Ship s, int sign){
         if (sign<0){
             while (astronauts>0){
-                s.unloadCrew(this);
+                try {
+                    s.unloadCrew(this);
+                } catch (EmptyCabinException _) {}
             }
         } else if (sign>0){
             if (!s.isNormal()) return;

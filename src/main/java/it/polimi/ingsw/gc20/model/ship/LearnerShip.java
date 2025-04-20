@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.EmptyCabinException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.*;
 
 import java.util.HashMap;
@@ -37,7 +39,9 @@ public class LearnerShip extends Ship {
         connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
         sc.setConnectors(connectors);
-        table[2][2].addComponent(sc);
+        try {
+            table[2][2].addComponent(sc);
+        } catch (InvalidTileException _) {}
         table[2][2].setAvailability(false);
     }
 
@@ -75,9 +79,10 @@ public class LearnerShip extends Ship {
      * @param c: the component to be added
      * @param row: position of the component
      * @param col: position of the component
+     * @throws  InvalidTileException if the tile is not available
      */
     @Override
-    protected void setComponentAt(Component c, int row, int col) {
+    protected void setComponentAt(Component c, int row, int col) throws InvalidTileException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             table[row][col].addComponent(c);
         }
@@ -86,12 +91,12 @@ public class LearnerShip extends Ship {
     /**
      * Function to unload a crew member from the ship
      * @param c is the crew member to be unloaded
-     * @throws IllegalArgumentException if the cabin is empty
+     * @throws EmptyCabinException if the cabin is empty
      */
     @Override
-    public void unloadCrew(Cabin c) throws IllegalArgumentException {
+    public void unloadCrew(Cabin c) throws EmptyCabinException {
         if (c.getAstronauts() < 1) {
-            throw new IllegalArgumentException("Empty cabin");
+            throw new EmptyCabinException("Empty cabin");
         }
         c.unloadAstronaut();
         astronauts--;

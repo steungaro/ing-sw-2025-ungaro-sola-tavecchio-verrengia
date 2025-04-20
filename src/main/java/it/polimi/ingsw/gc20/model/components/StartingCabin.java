@@ -1,16 +1,18 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
+
 public class StartingCabin extends Cabin {
 
     public StartingCabin() {}
 
     /** Function that try to set an alien in the cabin.
      * @param color the color of the alien
-     * @throws IllegalArgumentException because the starting cabin cannot have an alien
+     * @throws InvalidAlienPlacement because the starting cabin cannot have an alien
      */
     @Override
-    public void setAlien(AlienColor color) throws IllegalArgumentException {
-        throw new IllegalArgumentException("Cannot set an alien in the starting cabin");
+    public void setAlien(AlienColor color) throws InvalidAlienPlacement {
+        throw new InvalidAlienPlacement("Cannot set an alien in the starting cabin");
     }
 
     /**
@@ -33,11 +35,11 @@ public class StartingCabin extends Cabin {
 
     /**
      * Function that unload alien from the cabin.
-     * @throws IllegalArgumentException because the starting cabin cannot have an alien
+     * @throws InvalidAlienPlacement because the starting cabin cannot have an alien
      */
     @Override
-    public void unloadAlien() throws IllegalArgumentException {
-        throw new IllegalArgumentException("Cannot unload an alien in the starting cabin");
+    public void unloadAlien() throws InvalidAlienPlacement {
+        throw new InvalidAlienPlacement("Cannot unload an alien in the starting cabin");
     }
 
     /**

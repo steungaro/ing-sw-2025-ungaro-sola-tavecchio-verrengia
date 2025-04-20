@@ -84,7 +84,7 @@ public class ValidatingShipState extends State {
             throw new IllegalArgumentException("Cannot initialize ships: some ships are not ready to fly");
         }
         for (Player player : getModel().getInGamePlayers()) {
-            player.getShip().initAstronauts();
+            getModel().addPieces(player);
         }
     }
 }

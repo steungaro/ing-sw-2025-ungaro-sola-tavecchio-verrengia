@@ -34,7 +34,6 @@ public class Game {
     public void addPlayer(Player p){
 
         players.add(p);
-        board.addPlayer(p);
     }
 
     /** get function for players

@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.gamesets;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
@@ -288,8 +289,9 @@ public class GameModel {
      *
      * @param c component to remove
      * @param p player that removes the component
+     * @throws DeadAlienException if the component is a life support and an alien die
      */
-    public void removeComponent(Component c, Player p) {
+    public void removeComponent(Component c, Player p) throws DeadAlienException {
         Ship s = p.getShip();
         s.killComponent(c);
     }
@@ -322,9 +324,7 @@ public class GameModel {
     public void addPieces(Player p) {
         Ship s = p.getShip();
         p.getShip().initAstronauts();
-        if (level == 2) {
-            ((NormalShip) s).addBookedToWaste();
-        }
+        s.addBookedToWaste();
     }
 
     /**
@@ -332,10 +332,8 @@ public class GameModel {
      * @apiNote only called in level 2 games
      */
     public void createDeck() {
-        if (level == 2) {
-            Board b = game.getBoard();
-            ((NormalBoard) b).mergeDecks();
-        }
+        Board b = game.getBoard();
+        b.mergeDecks();
     }
 
     /**
@@ -355,13 +353,16 @@ public class GameModel {
                 game.getPlayers().get(i).setGameStatus(false);
             }
         }
-        //TODO se la carta è combat zone e ce un solo player salto
-        this.setActiveCard(game.getBoard().drawCard());
-        return this.getActiveCard();
+        AdventureCard card = game.getBoard().drawCard();
+        while (Objects.equals(card.getName(), "CombatZone") && getInGamePlayers().size() == 1){
+            card = game.getBoard().drawCard();
+        }
+        this.setActiveCard(card);
+        return card;
     }
 
 
-    /** Function to call when the player lose some memeber of the crew
+    /** Function to call when the player lose some member of the crew
      * @param p player that lose the crew
      * @param l list of crew member to remove
      */

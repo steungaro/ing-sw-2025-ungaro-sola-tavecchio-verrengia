@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import java.util.*;
@@ -42,7 +42,7 @@ public abstract class Ship {
      * @param row where to add the component
      * @param col where to add the component
      */
-    public void addComponent(Component c, int row, int col) throws IllegalArgumentException {
+    public void addComponent(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             try {
@@ -50,7 +50,7 @@ public abstract class Ship {
             } catch (DeadAlienException _) {}
             c.setTile(table[row][col]);
         } else {
-            throw new IllegalArgumentException("Position not valid");
+            throw new InvalidTileException("Position not valid");
         }
     }
 
@@ -80,7 +80,7 @@ public abstract class Ship {
      * @param row Row index
      * @param col Column index
      */
-    protected abstract void setComponentAt(Component c, int row, int col);
+    protected abstract void setComponentAt(Component c, int row, int col) throws InvalidTileException;
 
     /**
      * Function that determines the total firepower of the ship
@@ -89,16 +89,16 @@ public abstract class Ship {
      * it also checks if the ship has the necessary amount of batteries
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
-     * @throws IllegalArgumentException if the number of cannons is greater than the total energy of the ship
-     * @throws IllegalArgumentException if a cannon is a single cannon
+     * @throws EnergyException if the number of cannons is greater than the total energy of the ship
+     * @throws InvalidCannonException if a cannon is a single cannon
      */
-    public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
+    public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
         if(energies > totalEnergy || cannons.size() != energies)
-            throw new IllegalArgumentException("cannon size too large");
+            throw new EnergyException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
             if (cannon.getPower() == 1){
-                throw new IllegalArgumentException("cannot select single cannon");
+                throw new InvalidCannonException("cannot select single cannon");
             }
             if (cannon.getOrientation() == Direction.UP)
                 power += cannon.getPower();
@@ -114,9 +114,9 @@ public abstract class Ship {
      * @return power_of_the_ship
      * @throws IllegalArgumentException if the number of double engines activated is greater than the total number of double engines
      */
-    public Integer enginePower(Integer doubleEnginesActivated) throws IllegalArgumentException {
+    public Integer enginePower(Integer doubleEnginesActivated) throws InvalidEngineException {
         if (doubleEnginesActivated > doubleEngines) {
-            throw new IllegalArgumentException("not enough double engines");
+            throw new InvalidEngineException("not enough double engines");
         }
         return doubleEnginesActivated * 2 + singleEngines;
     }
@@ -484,7 +484,10 @@ public abstract class Ship {
         Tile t = c.getTile();
         c.updateParameter(this, -1);
         waste.add(c);
-        t.removeComponent();
+        try {
+            t.removeComponent();
+        } catch (InvalidTileException _){
+        }
         return this.isValid();
     }
 
@@ -492,12 +495,10 @@ public abstract class Ship {
      * Function to load a cargo in a cargo hold
      * @param cargo is the cargo to be loaded
      * @param h cargo hold to load the cargo in
-     * @throws IllegalArgumentException if the cargo hold is full
+     * @throws CargoFullException if the cargo hold is full
+     * @throws CargoNotLoadable if the cargo is not loadable in the cargo hold
      */
-    public void loadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
-        if (h.getAvailableSlots() < 1) {
-            throw new IllegalArgumentException("No available slots in cargo hold");
-        }
+    public void loadCargo(CargoColor cargo, CargoHold h) throws CargoFullException, CargoNotLoadable {
         h.loadCargo(cargo);
         cargos.put(cargo, cargos.getOrDefault(cargo, 0) + 1);
     }
@@ -508,36 +509,10 @@ public abstract class Ship {
      * @param h is the cargo hold to unload the cargo from
      * @throws IllegalArgumentException if there is no cargo of that type to unload
      */
-    public void unloadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
-        if (cargos.getOrDefault(cargo, 0) < 1) {
-            throw new IllegalArgumentException("No cargo of that type to unload");
-        }
+    public void unloadCargo(CargoColor cargo, CargoHold h) throws InvalidCargoException {
         h.unloadCargo(cargo);
         cargos.put(cargo, cargos.get(cargo) - 1);
     }
-
-    /**
-     * Function that removes the most valuable cargo from a cargo hold
-     * @param h is the cargo hold to unload the cargo from
-     * @implNote cargo is removed from the most valuable one first
-     */
-    public void unloadCargo(CargoHold h) {
-        int red = cargos.getOrDefault(CargoColor.RED, 0);
-        int blue = cargos.getOrDefault(CargoColor.BLUE, 0);
-        int yellow = cargos.getOrDefault(CargoColor.YELLOW, 0);
-        int green = cargos.getOrDefault(CargoColor.GREEN, 0);
-
-        if (red > 0) {
-            unloadCargo(CargoColor.RED, h);
-        } else if (blue > 0) {
-            unloadCargo(CargoColor.BLUE, h);
-        } else if (yellow > 0) {
-            unloadCargo(CargoColor.YELLOW, h);
-        } else if (green > 0) {
-            unloadCargo(CargoColor.GREEN, h);
-        }
-    }
-
 
     /**
      * add single cannon power
@@ -618,7 +593,9 @@ public abstract class Ship {
                                 adj = getComponentAt(i + 1, j);
                             }
                             if (adj.isCabin()) {
-                                unloadCrew((Cabin) c);
+                                try {
+                                    unloadCrew((Cabin) c);
+                                } catch (EmptyCabinException _) {}
                                 break;
                             }
                         }
@@ -631,11 +608,11 @@ public abstract class Ship {
     /**
      * Function that removes energy from the battery
      * @param battery is the battery to remove energy from
-     * @throws IllegalArgumentException if the battery is empty
+     * @throws EnergyException if the battery is empty
      */
-    public void useEnergy(Battery battery) throws IllegalArgumentException {
+    public void useEnergy(Battery battery) throws EnergyException {
         if (battery.getAvailableEnergy() < 1) {
-            throw new IllegalArgumentException("Battery is empty");
+            throw new EnergyException("Battery is empty");
         }
         battery.useEnergy();
         totalEnergy--;
@@ -645,7 +622,7 @@ public abstract class Ship {
      * Function to unloadCrew from the ship
      * @param c is the crew member to be unloaded
      */
-    public abstract void unloadCrew(Cabin c);
+    public abstract void unloadCrew(Cabin c) throws EmptyCabinException;
 
 
     /**
@@ -680,6 +657,10 @@ public abstract class Ship {
      */
     public boolean isNormal (){
         return false; //default implementation
+    }
+
+    public void addBookedToWaste() {
+        //default implementation
     }
 
 

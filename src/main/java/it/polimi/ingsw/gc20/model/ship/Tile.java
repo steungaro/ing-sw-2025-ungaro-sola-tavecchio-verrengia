@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.*;
 import java.lang.*;
 import java.security.*;
@@ -31,15 +32,15 @@ public class Tile {
     /**
      * Add a component to the tile
      * @param c Component
-     * @throws IllegalArgumentException if the tile is not available
+     * @throws InvalidTileException if the tile is not available
      */
-    public void addComponent(Component c) throws IllegalArgumentException {
+    public void addComponent(Component c) throws InvalidTileException {
         if(availability) {
             this.component = c;
             c.setTile(this);
             this.availability = false;
         } else {
-            throw new IllegalArgumentException("Tile is not available");
+            throw new InvalidTileException("Tile is not available");
         }
     }
 
@@ -64,12 +65,12 @@ public class Tile {
      * Removes the component from the tile
      * @throws InvalidParameterException Component does not exist
      */
-    public void removeComponent() throws InvalidParameterException {
+    public void removeComponent() throws InvalidTileException {
         if(component != null){
             component = null;
             availability = true;
         }else{
-            throw new InvalidParameterException("Component does not exist");
+            throw new InvalidTileException("Component does not exist");
         }
     }
 

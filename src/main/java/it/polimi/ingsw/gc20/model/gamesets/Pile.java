@@ -68,7 +68,7 @@ public class Pile {
         // check if element is already present in the viewed list
         if (this.viewed.contains(c)) {
             //if present throw exception
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Component already present in viewed list");
         } else {
             //if not present add it
             this.viewed.add(c);

@@ -32,6 +32,7 @@ public class NormalBoard extends Board {
 
     /** function that merges the decks and shuffles them
      */
+    @Override
     public void mergeDecks() {
         // deck merging
         List <AdventureCard> deck = new ArrayList<>();
@@ -122,7 +123,7 @@ public class NormalBoard extends Board {
      * @return List<AdventureCard>
      * @throws IllegalArgumentException if numDeck is not 1, 2, 3 or 4
      */
-    public List<AdventureCard> getDeck(Integer numDeck) {
+    public List<AdventureCard> getDeck(Integer numDeck) throws IllegalArgumentException {
         return switch (numDeck) {
             case 1 -> this.firstVisible;
             case 2 -> this.secondVisible;
@@ -135,7 +136,7 @@ public class NormalBoard extends Board {
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
      * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
      */
-    public void turnHourglass() {
+    public void turnHourglass() throws IllegalArgumentException {
         if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 2) {
             this.hourglass.turn();
         } else {

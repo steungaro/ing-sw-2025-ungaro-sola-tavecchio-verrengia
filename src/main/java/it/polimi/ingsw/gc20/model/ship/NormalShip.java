@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.model.ship;
 
 import java.util.*;
 
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -38,14 +38,16 @@ public class NormalShip extends Ship {
         connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
         sc.setConnectors(connectors);
-        addComponent(sc, 2, 3);
+        try {
+            addComponent(sc, 2, 3);
+        } catch (InvalidTileException _) {}
         table[2][3].setAvailability(false);
     }
 
     /**
      *  Components that the player is holding in hand
      */
-    private Component[] booked = new Component[2];
+    private final Component[] booked = new Component[2];
 
 
     /**
@@ -72,6 +74,7 @@ public class NormalShip extends Ship {
     /**
      * Function to be called at the end of construction phase to move the booked components to the waste
      */
+    @Override
     public void addBookedToWaste() {
         waste.addAll(Arrays.asList(booked));
         booked[0]=null;
@@ -81,15 +84,15 @@ public class NormalShip extends Ship {
     /**
      * Function to remove a component from the booked components
      * @param c is the component to be removed
-     * @throws IllegalArgumentException Component not valid, not in booked
+     * @throws ComponentNotFoundException in booked
      */
-    public void removeBooked(Component c) throws IllegalArgumentException {
+    public void removeBooked(Component c) throws ComponentNotFoundException {
         if (booked[0] == c) {
             booked[0]=null;
         } else if (booked[1] == c) {
             booked[1]=null;
         }else{
-            throw new IllegalArgumentException("Component not found");
+            throw new ComponentNotFoundException("Component not found");
         }
     }
 
@@ -103,15 +106,15 @@ public class NormalShip extends Ship {
     /**
      * Add a component to the booked components
      * @param c the component to be added to booked
-     * @throws IllegalArgumentException if the booked array is already full
+     * @throws NoSpaceException if the booked array is already full
      */
-    public void addBooked(Component c) throws IllegalArgumentException{
+    public void addBooked(Component c) throws NoSpaceException{
         if (booked[0] == null) {
             booked[0]=c;
         } else if (booked[1] == null) {
             booked[1]=c;
         } else {
-            throw new IllegalArgumentException("Already 2 booked components");
+            throw new NoSpaceException("Already 2 booked components");
         }
     }
 
@@ -148,9 +151,10 @@ public class NormalShip extends Ship {
      * @param c: the component to be added
      * @param row: position of the component
      * @param col: position of the component
+     * @throws InvalidTileException if the position is invalid
      */
     @Override
-    protected void setComponentAt(Component c, int row, int col) {
+    protected void setComponentAt(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             table[row][col].addComponent(c);
         }
@@ -160,11 +164,11 @@ public class NormalShip extends Ship {
      * Function to calculate the firepower of the ship
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power: the firepower of the ship
-     * @throws IllegalArgumentException if the energy are not enough
-     * @throws IllegalArgumentException if the cannon is single
+     * @throws EnergyException if the energy are not enough
+     * @throws InvalidCannonException if the cannon is single
      */
     @Override
-    public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
+    public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
         float power = super.firePower(cannons, energies);
         return power + (purpleAlien ? 2 : 0);
     }
@@ -182,12 +186,12 @@ public class NormalShip extends Ship {
     /**
      * Function to unload a crew member from the ship
      * @param c is the crew member to be unloaded
-     * @throws IllegalArgumentException: the cabin is empty
+     * @throws EmptyCabinException the cabin is empty
      */
     @Override
-    public void unloadCrew(Cabin c) throws IllegalArgumentException{
+    public void unloadCrew(Cabin c) throws EmptyCabinException{
         if (c.getOccupants() < 1) {
-            throw new IllegalArgumentException("Empty cabin");
+            throw new EmptyCabinException ("Empty cabin");
         }
         if (c.getAlien()) {
             if (c.getAlienColor() == AlienColor.BROWN) {
@@ -195,7 +199,9 @@ public class NormalShip extends Ship {
             } else {
                 purpleAlien = false;
             }
-            c.unloadAlien();
+            try {
+                c.unloadAlien();
+            }catch (InvalidAlienPlacement _){}
         } else {
             c.unloadAstronaut();
             astronauts--;
@@ -301,19 +307,19 @@ public class NormalShip extends Ship {
      * Function to add an alien to the ship
      * @param alien: the alien to be added
      * @param c: the cabin where the alien will be added
-     * @throws IllegalArgumentException: the cabin cannot host the alien
-     * @throws IllegalArgumentException: the alien is already present in the ship
+     * @throws InvalidAlienPlacement: the cabin cannot host the alien
+     * @throws InvalidAlienPlacement: the alien is already present in the ship
      */
-    public void addAlien(AlienColor alien, Cabin c) throws IllegalArgumentException {
+    public void addAlien(AlienColor alien, Cabin c) throws InvalidAlienPlacement {
         c.setAlien(alien);
         if (alien == AlienColor.BROWN){
             if (brownAlien) {
-                throw new IllegalArgumentException("Brown alien already present");
+                throw new InvalidAlienPlacement("Brown alien already present");
             }
             brownAlien = true;
         } else {
             if (purpleAlien) {
-                throw new IllegalArgumentException("Purple alien already present");
+                throw new InvalidAlienPlacement("Purple alien already present");
             }
             purpleAlien = true;
         }
@@ -333,17 +339,17 @@ public class NormalShip extends Ship {
      * @param c Component to add
      * @param row Row position
      * @param col Column position
-     * @throws IllegalArgumentException if the position is invalid
+     * @throws InvalidTileException if the position is invalid
      */
-    public void addComponent(Component c, int row, int col) throws IllegalArgumentException{
+    public void addComponent(Component c, int row, int col) throws InvalidTileException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
             try {
                 c.updateParameter(this, 1);
-            } catch (Exception _) {}
+            } catch (DeadAlienException _) {}
         }
         else
-            throw new IllegalArgumentException("Invalid position");
+            throw new InvalidTileException("Invalid position");
     }
 
     /**

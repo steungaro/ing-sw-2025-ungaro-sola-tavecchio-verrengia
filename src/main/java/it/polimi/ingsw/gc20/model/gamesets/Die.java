@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -19,9 +20,11 @@ public class Die {
     }
 
     /**
-     * @return the last rolled value
+     * Function to get the last rolled value
+     * @return int the last rolled value
+     * @throws ArithmeticException if the die has not been rolled yet
      */
-    public int getLastRolled() {
+    public int getLastRolled() throws ArithmeticException {
         if (this.lastRolled == 0) {
             throw new ArithmeticException("Die not rolled yet");
         }
