@@ -20,6 +20,7 @@ public abstract class Ship {
     protected Integer totalEnergy;
     protected Map<CargoColor, Integer> cargos;
     protected Integer astronauts;
+    protected Tile[][] table;
     /**
      * Default constructor. Initializes default ship values.
      */
@@ -35,7 +36,23 @@ public abstract class Ship {
         astronauts = 0;
     }
 
-    public abstract void addComponent(Component c, int row, int col);
+    /**
+     * Function to add a component to the ship
+     * @param c component to add
+     * @param row where to add the component
+     * @param col where to add the component
+     */
+    public void addComponent(Component c, int row, int col) throws IllegalArgumentException {
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            setComponentAt( c, row, col);
+            try {
+                c.updateParameter(this, 1);
+            } catch (DeadAlienException _) {}
+            c.setTile(table[row][col]);
+        } else {
+            throw new IllegalArgumentException("Position not valid");
+        }
+    }
 
     /**
      * Gets the total number of rows in the ship grid
@@ -343,7 +360,9 @@ public abstract class Ship {
             for (int j = 0; j < cols; j++) {
                 Component component = getComponentAt(i, j);
                 if (component != null && !visited[i][j]) {
-                    killComponent(component);
+                    try {
+                        killComponent(component);
+                    } catch (DeadAlienException _) {}
                 }
             }
         }
@@ -461,7 +480,7 @@ public abstract class Ship {
      * @return True if ship remains valid after removal
      * @throws DeadAlienException if the component is a lifeSupport and the cabin near it has an alien
      */
-    public Boolean killComponent(Component c) {
+    public Boolean killComponent(Component c) throws DeadAlienException{
         Tile t = c.getTile();
         c.updateParameter(this, -1);
         waste.add(c);

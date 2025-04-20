@@ -16,7 +16,7 @@ public class SpecialCargoHold extends CargoHold {
      * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
      */
     @Override
-    public void loadCargo(CargoColor g) {
+    public void loadCargo(CargoColor g) throws IllegalArgumentException {
         if (this.availableSlots == 0) {
             throw new IllegalArgumentException("CargoHold is full");
         }

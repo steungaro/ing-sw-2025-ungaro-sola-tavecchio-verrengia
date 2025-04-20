@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
 import java.util.*;
+
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.model.components.*;
 /**
  * @author GC20
@@ -12,6 +14,7 @@ public class NormalShip extends Ship {
         brownAlien = false;
         purpleAlien = false;
 
+        table = new Tile[5][7];
         // Init table
         for (int i=0; i<5; i++) {
             for (int j=0; j<7; j++) {
@@ -38,11 +41,6 @@ public class NormalShip extends Ship {
         addComponent(sc, 2, 3);
         table[2][3].setAvailability(false);
     }
-
-    /**
-     * Matrix of tiles representing the ship
-     */
-    private Tile[][] table = new Tile[5][7];
 
     /**
      *  Components that the player is holding in hand
@@ -162,6 +160,8 @@ public class NormalShip extends Ship {
      * Function to calculate the firepower of the ship
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power: the firepower of the ship
+     * @throws IllegalArgumentException if the energy are not enough
+     * @throws IllegalArgumentException if the cannon is single
      */
     @Override
     public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
@@ -185,7 +185,7 @@ public class NormalShip extends Ship {
      * @throws IllegalArgumentException: the cabin is empty
      */
     @Override
-    public void unloadCrew(Cabin c) {
+    public void unloadCrew(Cabin c) throws IllegalArgumentException{
         if (c.getOccupants() < 1) {
             throw new IllegalArgumentException("Empty cabin");
         }
@@ -205,9 +205,10 @@ public class NormalShip extends Ship {
     /**
      * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
      * @param c: the component that was removed from the ship
+     * @throws DeadAlienException if in the cabin there was an alien and it died
      */
-    public void updateLifeSupportRemoved(Component c) {
-        //Find if is there a Cabin connceted to the LifeSupport
+    public void updateLifeSupportRemoved(Component c) throws DeadAlienException {
+        //Find if is there a Cabin connected to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
             return;
@@ -254,13 +255,13 @@ public class NormalShip extends Ship {
      * @param c: the component that was added from the ship
      */
     public void updateLifeSupportAdded(Component c) {
-        //Find if is there a Cabin connceted to the LifeSupport
+        //Find if is there a Cabin connected to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
             return;
         }
 
-        //Finded the lifeSupport
+        //Found the lifeSupport
         Map<Direction, ConnectorEnum> connectors = c.getConnectors();
         for (Map.Entry<Direction, ConnectorEnum> entry : connectors.entrySet()) {
             int row = position[0];
@@ -291,11 +292,7 @@ public class NormalShip extends Ship {
 
             if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
                 Cabin comp = (Cabin) table[row][col].getComponent();
-                try {
                     comp.addSupport((LifeSupport) c);
-                } catch (Exception e) {
-                    c.updateParameter(this, 1);
-                }
             }
         }
     }
@@ -338,10 +335,12 @@ public class NormalShip extends Ship {
      * @param col Column position
      * @throws IllegalArgumentException if the position is invalid
      */
-    public void addComponent(Component c, int row, int col) throws IllegalArgumentException {
+    public void addComponent(Component c, int row, int col) throws IllegalArgumentException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            c.updateParameter(this, 1);
+            try {
+                c.updateParameter(this, 1);
+            } catch (Exception _) {}
         }
         else
             throw new IllegalArgumentException("Invalid position");

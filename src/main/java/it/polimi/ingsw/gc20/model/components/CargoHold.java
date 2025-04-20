@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.components;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.ship.Ship;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 public class CargoHold extends Component {
@@ -57,11 +58,12 @@ public class CargoHold extends Component {
     /**
      * This method is used to load a cargo in the cargo hold
      * @param g the cargo to be loaded
-     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
+     * @throws InvalidParameterException if the cargo hold cannot hold red cargo
+     * @throws IllegalArgumentException if the cargo hold is full
      */
-    public void loadCargo(CargoColor g) {
+    public void loadCargo(CargoColor g) throws IllegalArgumentException, InvalidParameterException {
         if (g == CargoColor.RED) {
-            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
+            throw new InvalidParameterException("CargoHold cannot hold red cargo");
         }
         if (this.availableSlots == 0) {
             throw new IllegalArgumentException("CargoHold is full");

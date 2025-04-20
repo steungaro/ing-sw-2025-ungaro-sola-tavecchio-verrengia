@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
@@ -218,10 +219,10 @@ class LearnerShipTest {
         ship.addComponent(newBattery, 1, 3);
         assertEquals(newBattery, ship.getComponentAt(1, 3));
         assertEquals (ship.getTotalEnergy(), initialPower+2);
-        ship.addComponent(newBattery, -1, 0);
-        ship.addComponent(newBattery, 0, -1);
-        ship.addComponent(newBattery, 5, 4);
-        ship.addComponent(newBattery, 4, 5);
+        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, -1, 0));
+        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 0, -1));
+        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 5, 4));
+        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 4, 5));
     }
 
 
@@ -247,11 +248,16 @@ class LearnerShipTest {
         cannons.add(downCannon);
 
         assertEquals(2, ship.firePower(cannons, 1));
+        //Test with no battery
+        assertThrows(IllegalArgumentException.class, () -> ship.firePower(cannons, 0));
 
+        cannons.add (upCannon);
+        assertThrows (IllegalArgumentException.class, () -> ship.firePower(cannons, 2));
         // Test with no cannons
         Set<Cannon> noCannons = new HashSet<>();
         assertEquals(1, ship.firePower(noCannons, 0));
 
+        cannons.remove(upCannon);
         // Test with multiple cannons
         Cannon extraCannon = new Cannon();
         extraCannon.setOrientation(Direction.RIGHT);
@@ -296,8 +302,9 @@ class LearnerShipTest {
         assertEquals(ship.getFirstComponent(Direction.UP, 1), cargoHold);
         assertEquals(ship.getFirstComponent(Direction.RIGHT, 1), upCannon);
         assertEquals(ship.getFirstComponent(Direction.DOWN, 1), singleEngine);
-
         assertEquals(ship.getFirstComponent(Direction.LEFT, 2), battery);
+        assertNull(ship.getFirstComponent(Direction.UP, 5));
+        assertNull(ship.getFirstComponent(Direction.RIGHT, 5));
     }
 
     @Test
@@ -347,6 +354,15 @@ class LearnerShipTest {
     @Test
     void getAllExposed () {
         assertEquals(8, ship.getAllExposed());
+        Cabin cabin = new Cabin();
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.S);
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.DOWN, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.S);
+        cabin.setConnectors(connectors);
+        ship.addComponent(cabin, 2, 4);
+        assertEquals(10, ship.getAllExposed());
 
     }
 
@@ -419,8 +435,12 @@ class LearnerShipTest {
 
     @Test
     void killComponent(){
-        assertTrue(ship.killComponent(downCannon));
-        assertFalse(ship.killComponent(battery));
+        try {
+            assertTrue(ship.killComponent(downCannon));
+            assertFalse(ship.killComponent(battery));
+        } catch (DeadAlienException e) {
+            throw new RuntimeException(e);
+        }
         assertEquals(2, ship.getWaste().size());
         assertEquals(0, ship.getTotalEnergy());
         assertEquals(0, ship.doubleCannonsPower);
@@ -440,11 +460,21 @@ class LearnerShipTest {
         assertEquals (cargos.get(CargoColor.BLUE), ship.cargos.get(CargoColor.BLUE));
         ship.loadCargo (CargoColor.GREEN, cargoHold);
         ship.loadCargo (CargoColor.BLUE, cargoHold);
+        assertThrows (IllegalArgumentException.class, ()-> ship.unloadCargo(CargoColor.YELLOW, cargoHold));
         try {
             ship.loadCargo(CargoColor.GREEN, cargoHold);
         } catch (IllegalArgumentException e) {
             assertEquals("No available slots in cargo hold", e.getMessage());
         }
+        ship.unloadCargo(cargoHold);
+        ship.unloadCargo(cargoHold);
+        ship.loadCargo(CargoColor.YELLOW, cargoHold);
+        ship.unloadCargo(cargoHold);
+        SpecialCargoHold specialCargoHold= new SpecialCargoHold();
+        specialCargoHold.setSlots(1);
+        ship.addComponent(specialCargoHold, 2, 0);
+        ship.loadCargo(CargoColor.RED, specialCargoHold);
+        ship.unloadCargo(specialCargoHold);
     }
 
     @Test
@@ -481,6 +511,7 @@ class LearnerShipTest {
         ship.initAstronauts();
         ship.epidemic();
         assertEquals(2, ship.crew());
+        Cabin cabin = new Cabin();
     }
 
     @Test
@@ -489,6 +520,8 @@ class LearnerShipTest {
         ship.useEnergy(battery);
         assertEquals(initialEnergy-1, ship.getTotalEnergy());
         assertEquals(1, battery.getAvailableEnergy());
+        ship.useEnergy(battery);
+        assertThrows(IllegalArgumentException.class, ()-> ship.useEnergy(battery));
     }
 
     @Test
@@ -524,18 +557,27 @@ class LearnerShipTest {
 
     @Test
     void findValidOneElimination(){
-        ship.killComponent(downCannon);
-        ship.killComponent(battery);
+        try {
+            ship.killComponent(downCannon);
+            ship.killComponent(battery);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         assertFalse(ship.isValid());
         ship.findValid(-1, -1);
         assertNull(ship.findComponent(singleEngine));
         assertTrue(ship.isValid());
+        assertThrows(IndexOutOfBoundsException.class, ()-> ship.findValid(-1, 0));
     }
 
     @Test
     void findValidAllElimination(){
-        ship.killComponent(downCannon);
-        ship.killComponent(battery);
+        try {
+            ship.killComponent(downCannon);
+            ship.killComponent(battery);
+        } catch (DeadAlienException e) {
+            throw new RuntimeException();
+        }
         assertFalse(ship.isValid());
         ship.findValid(3, 1);
         assertNull(ship.findComponent(downCannon));

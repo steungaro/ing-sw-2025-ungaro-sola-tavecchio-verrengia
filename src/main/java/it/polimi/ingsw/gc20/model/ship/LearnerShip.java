@@ -10,12 +10,11 @@ import java.util.Map;
  */
 public class LearnerShip extends Ship {
 
-    private Tile[][] table = new Tile[5][5];
 
 
     public LearnerShip() {
         super();
-
+        table = new Tile[5][7];
         // Init table
         for (int i=0; i<5; i++) {
             for (int j=0; j<5; j++) {
@@ -81,20 +80,6 @@ public class LearnerShip extends Ship {
     protected void setComponentAt(Component c, int row, int col) {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             table[row][col].addComponent(c);
-        }
-    }
-
-    /**
-     * Adds a component to the ship at the specified position and updates ship parameters
-     * @param c Component to add
-     * @param row Row position
-     * @param col Column position
-     */
-    public void addComponent(Component c, int row, int col){
-        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
-            setComponentAt( c, row, col);
-            c.updateParameter(this, 1);
-            c.setTile(table[row][col]);
         }
     }
 

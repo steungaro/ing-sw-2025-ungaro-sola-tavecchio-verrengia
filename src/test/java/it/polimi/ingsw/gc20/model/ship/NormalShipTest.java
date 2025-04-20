@@ -138,7 +138,7 @@ class NormalShipTest {
 
 
     @Test
-    void addBookedtoWaste (){
+    void addBookedToWaste (){
         Cabin cabin3 = new Cabin();
         ship.addBooked(cabin3);
         assertTrue(ship.getBooked().contains(cabin3));
@@ -171,12 +171,9 @@ class NormalShipTest {
         ship.removeBooked(cabin3);
         assertFalse(ship.getBooked().contains(cabin3));
         assertTrue(ship.getBooked().contains(cabin4));
-
-        try {
-            ship.removeBooked(cabin5);
-        } catch (IllegalArgumentException e) {
-            assertEquals("Component not found", e.getMessage());
-        }
+        ship.addBooked(cabin3);
+        ship.removeBooked(cabin4);
+        assertThrows (IllegalArgumentException.class, ()-> ship.removeBooked(cabin5));
     }
 
     @Test
@@ -215,13 +212,17 @@ class NormalShipTest {
 
     @Test
     void enginePower() {
-        assertEquals(3, ship.enginePower(1));
-        ship.killComponent(singleEngine);
-        assertEquals(2, ship.enginePower(1));
-        ship.killComponent(doubleEngine);
-        assertEquals(0, ship.enginePower(0));
-        ship.brownAlien = true;
-        assertEquals(2, ship.enginePower(0));
+        try {
+            assertEquals(3, ship.enginePower(1));
+            ship.killComponent(singleEngine);
+            assertEquals(2, ship.enginePower(1));
+            ship.killComponent(doubleEngine);
+            assertEquals(0, ship.enginePower(0));
+            ship.brownAlien = true;
+            assertEquals(2, ship.enginePower(0));
+        } catch (DeadAlienException e){
+            throw new RuntimeException();
+        }
     }
 
 
@@ -284,7 +285,11 @@ class NormalShipTest {
         assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
 
         //Remove lifeSupport
-        ship.killComponent(lifeSupport);
+        try {
+            ship.killComponent(lifeSupport);
+        } catch (DeadAlienException e){
+            throw new RuntimeException();
+        }
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
 
     }
@@ -358,7 +363,11 @@ class NormalShipTest {
 
 
         // Test removing life support
-        ship.killComponent(lifeSupport);
+        try {
+            ship.killComponent(lifeSupport);
+        } catch (DeadAlienException e){
+            throw new RuntimeException();
+        }
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
         ship.addComponent(lifeSupport, 2, 5);
         ship.unloadCrew(Cabin1);
@@ -408,6 +417,15 @@ class NormalShipTest {
         } catch (IllegalArgumentException e) {
             assertEquals("Cannot have both astronauts and aliens in the same cabin.", e.getMessage());
         }
+        try {
+            ship.killComponent(lifeSupport);
+        } catch (DeadAlienException e) {
+            throw new RuntimeException(e);
+        }
+        lifeSupport.setColor(AlienColor.PURPLE);
+        ship.addComponent(lifeSupport, 2, 5);
+        ship.purpleAlien = true;
+        assertThrows(IllegalArgumentException.class, () -> ship.addAlien(AlienColor.PURPLE, Cabin1));
     }
 
     @Test
