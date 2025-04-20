@@ -21,7 +21,7 @@ public class MeteorSwarmState extends PlayingState {
     /**
      * Default constructor
      */
-    public MeteorSwarmState(GameController controller, GameModel model, AdventureCard card) {
+    public MeteorSwarmState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.meteors = card.getProjectiles();
         manager = new FireManager(model, meteors, controller.getPlayerByID(getCurrentPlayer()));

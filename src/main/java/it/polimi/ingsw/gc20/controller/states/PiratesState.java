@@ -34,7 +34,7 @@ public class PiratesState extends PlayingState {
     /**
      * Default constructor
      */
-    public PiratesState(GameController controller, GameModel model, AdventureCard card) {
+    public PiratesState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
         this.cannonFire = card.getProjectiles();

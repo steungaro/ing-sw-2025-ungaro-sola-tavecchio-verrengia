@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author GC20
@@ -138,9 +139,11 @@ public class AdventureCard {
 
     public void setState(GameController controller, GameModel model){
         try {
+            if(Objects.equals(name, "CombatZone")){
+                name = name + combatType();
+            }
             // Construct the full class name with package
             String stateClassName = "it.polimi.ingsw.gc20.controller.states." + name + "State";
-
             // Get the class object for the state
             Class<?> stateClass = Class.forName(stateClassName);
 
@@ -154,12 +157,10 @@ public class AdventureCard {
             // Set the state in the controller
             controller.setState((State) stateInstance);
         } catch (ClassNotFoundException e) {
-            System.err.println("State class not found for card: " + name);
-            e.printStackTrace();
+            System.out.println("State class not found for card: " + name);
         } catch (NoSuchMethodException | IllegalAccessException |
                  InstantiationException | InvocationTargetException e) {
-            System.err.println("Error creating state for card: " + name);
-            e.printStackTrace();
+            System.out.println("Error creating state for card: " + name);
         }
     }
 

@@ -1,71 +1,146 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-import it.polimi.ingsw.gc20.model.gamesets.Game;
-import it.polimi.ingsw.gc20.model.player.Player;
-import it.polimi.ingsw.gc20.model.ship.NormalShip;
-import org.junit.jupiter.api.BeforeAll;
+import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AdventureCardTest {
-    private NormalShip ship;
-    private Cannon upCannon, downCannon;
-    private Engine singleEngine, doubleEngine;
-    private Battery battery;
-    private Cabin Cabin1;
-    private CargoHold cargoHold;
-    private Player player1;
-    private Game game;
+    private AdventureCard adventureCard;
 
     @BeforeEach
-    void setUp(){
-        // Create Player 1
-        Player player1 = new Player();
-
-        // Create game
-        Game game = new Game();
-
-        // Create a new NormalShip
-        ship = new NormalShip();
-
-        // Create components
-        upCannon = new Cannon();
-        upCannon.setOrientation(Direction.UP);
-        upCannon.setPower(1);
-
-        downCannon = new Cannon();
-        downCannon.setOrientation(Direction.DOWN);
-        downCannon.setPower(2);
-
-        singleEngine = new Engine();
-        singleEngine.setDoublePower(false);
-
-        doubleEngine = new Engine();
-        doubleEngine.setDoublePower(true);
-
-        battery = new Battery();
-        battery.setSlots(2);
-        battery.fillBattery();
-
-        Cabin1 = new Cabin();
-        Cabin1.setColor(AlienColor.NONE);
-        Cabin1.setAstronauts(2);
-
-        cargoHold = new CargoHold();
-        cargoHold.loadCargo(CargoColor.BLUE);
-        cargoHold.loadCargo(CargoColor.GREEN);
-
-        // Add components to ship at valid positions
-        ship.addComponent(upCannon, 1, 3);
-        ship.addComponent(downCannon, 3, 3);
-        ship.addComponent(singleEngine, 3, 2);
-        ship.addComponent(doubleEngine, 3, 4);
-        ship.addComponent(battery, 2, 2);
-        ship.addComponent(Cabin1, 2, 4);
-        ship.addComponent(cargoHold, 1, 2);
+    void setUp() {
+        adventureCard = new AdventureCard() {
+            // Anonymous subclass for testing abstract class
+        };
     }
 
+    @Test
+    void testSetAndGetLevel() {
+        adventureCard.setLevel(3);
+        assertEquals(3, adventureCard.getLevel());
+    }
+
+    @Test
+    void testSetAndGetIDCard() {
+        adventureCard.setIDCard(42);
+        assertEquals(42, adventureCard.getIDCard());
+    }
+
+    @Test
+    void testSetAndGetName() {
+        adventureCard.setName("TestCard");
+        assertEquals("TestCard", adventureCard.getName());
+    }
+
+    @Test
+    void testSetAndGetPlayed() {
+        adventureCard.setPlayed(true);
+        assertTrue(adventureCard.isPlayed());
+    }
+
+    @Test
+    void testSetAndGetCrew() {
+        adventureCard.setCrew(5);
+        assertEquals(5, adventureCard.getCrew());
+    }
+
+    @Test
+    void testSetAndGetCredits() {
+        adventureCard.setCredits(100);
+        assertEquals(100, adventureCard.getCredits());
+    }
+
+    @Test
+    void testSetAndGetLostDays() {
+        adventureCard.setLostDays(2);
+        assertEquals(2, adventureCard.getLostDays());
+    }
+
+    @Test
+    void testSetAndGetReward() {
+        List<CargoColor> reward = List.of(CargoColor.RED, CargoColor.BLUE);
+        adventureCard.setReward(reward);
+        assertEquals(reward, adventureCard.getReward());
+    }
+
+    @Test
+    void testSetAndGetLostCargo() {
+        adventureCard.setLostCargo(3);
+        assertEquals(3, adventureCard.getLostCargo());
+    }
+
+    @Test
+    void testSetAndGetProjectiles() {
+        List<Projectile> projectiles = List.of(new Projectile(), new Projectile());
+        adventureCard.setProjectiles(projectiles);
+        assertEquals(projectiles, adventureCard.getProjectiles());
+    }
+
+    @Test
+    void testSetAndGetFirePower() {
+        adventureCard.setFirePower(10);
+        assertEquals(10, adventureCard.getFirePower());
+    }
+
+    @Test
+    void testSetAndGetPlanets() {
+        List<Planet> planets = List.of(new Planet(), new Planet());
+        adventureCard.setPlanets(planets);
+        assertEquals(planets, adventureCard.getPlanets());
+    }
+
+    @Test
+    void testPlayCard() {
+        adventureCard.playCard();
+        assertTrue(adventureCard.isPlayed());
+    }
+
+    @Test
+    void testCombatType() {
+        adventureCard.setCrew(5);
+        assertEquals(1, adventureCard.combatType());
+
+        adventureCard.setCrew(0);
+        assertEquals(0, adventureCard.combatType());
+    }
+
+    @Test
+    void testSetState() {
+        List<String> players = List.of("Player1", "Player2");
+        GameController controller = new GameController("1234", players, 2);
+        GameModel model = new GameModel();
+
+        adventureCard.setName("Stardust");
+
+        // Ensure no exceptions are thrown
+        assertDoesNotThrow(() -> adventureCard.setState(controller, model));
+        assertEquals("StardustState", controller.getState());
+
+
+        adventureCard.setName("Test");
+        // Ensure the exception is caught internally and does not propagate
+        assertDoesNotThrow(() -> adventureCard.setState(controller, model));
+
+        assertEquals("StardustState", controller.getState());
+
+        adventureCard.setName("Epidemic");
+
+        // Ensure no exceptions are thrown
+        assertDoesNotThrow(() -> adventureCard.setState(controller, model));
+        assertEquals("EpidemicState", controller.getState());
+
+
+        adventureCard.setName("AbandonedShip");
+        adventureCard.setCrew(5);
+        adventureCard.setCredits(100);
+        adventureCard.setLostDays(2);
+        adventureCard.setState(controller, model);
+        assertEquals("AbandonedShipState{ lostCrew=5, credits=100, lostDays=2}", controller.getState());
+    }
 }
