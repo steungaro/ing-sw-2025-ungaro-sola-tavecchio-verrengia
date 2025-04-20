@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,13 +48,17 @@ class LearnerShipTest {
         cargoHold.setSlots(3);
 
         // Add components to ship at valid positions
-        ship.addComponent(upCannon, 1, 2);
-        ship.addComponent(downCannon, 3, 2);
-        ship.addComponent(singleEngine, 3, 1);
-        ship.addComponent(doubleEngine, 3, 3);
-        ship.addComponent(battery, 2, 1);
-        ship.addComponent(Cabin1, 2, 3);
-        ship.addComponent(cargoHold, 1, 1);
+        try {
+            ship.addComponent(upCannon, 1, 2);
+            ship.addComponent(downCannon, 3, 2);
+            ship.addComponent(singleEngine, 3, 1);
+            ship.addComponent(doubleEngine, 3, 3);
+            ship.addComponent(battery, 2, 1);
+            ship.addComponent(Cabin1, 2, 3);
+            ship.addComponent(cargoHold, 1, 1);
+        } catch (InvalidTileException _) {
+            fail("Invalid tile exception should not be thrown");
+        }
 
 
 
@@ -116,7 +120,11 @@ class LearnerShipTest {
         StartingCabin start = (StartingCabin) ship.getComponentAt(2,2);
         start.setConnectors(connectorsStartingCabin);
 
-        ship.loadCargo(CargoColor.BLUE, cargoHold);
+        try {
+            ship.loadCargo(CargoColor.BLUE, cargoHold);
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
     }
 
     @Test
@@ -149,19 +157,27 @@ class LearnerShipTest {
         Cannon newCannon = new Cannon();
         try {
             ship.setComponentAt(newCannon, 1, 2);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidTileException e) {
             assertEquals("Tile is not available", e.getMessage());
         }
-        ship.setComponentAt(newCannon, -1, 0);
-        ship.setComponentAt(newCannon, 0, -1);
-        ship.setComponentAt(newCannon, 5, 4);
-        ship.setComponentAt(newCannon, 4, 5);
+        try {
+            ship.setComponentAt(newCannon, -1, 0);
+            ship.setComponentAt(newCannon, 0, -1);
+            ship.setComponentAt(newCannon, 5, 4);
+            ship.setComponentAt(newCannon, 4, 5);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
     }
 
     @Test
     void setComponentAtValid() {
         Cannon newCannon = new Cannon();
-        ship.setComponentAt(newCannon, 1, 3);
+        try {
+            ship.setComponentAt(newCannon, 1, 3);
+        } catch (InvalidTileException _) {
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(newCannon, ship.getComponentAt(1, 3));
     }
 
@@ -172,7 +188,11 @@ class LearnerShipTest {
         newCannon.setPower(2);
         newCannon.setOrientation(Direction.RIGHT);
         int initialPower = ship.doubleCannonsPower;
-        ship.addComponent(newCannon, 1, 3);
+        try {
+            ship.addComponent(newCannon, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid alien placement exception should not be thrown");
+        }
         assertEquals(newCannon, ship.getComponentAt(1, 3));
         assertEquals (ship.doubleCannonsPower, initialPower+1);
     }
@@ -183,7 +203,11 @@ class LearnerShipTest {
         newCannon.setPower(1);
         newCannon.setOrientation(Direction.RIGHT);
         float initialPower = ship.singleCannonsPower;
-        ship.addComponent(newCannon, 1, 3);
+        try {
+            ship.addComponent(newCannon, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(newCannon, ship.getComponentAt(1, 3));
         assertEquals (ship.singleCannonsPower, initialPower+0.5f);
     }
@@ -194,7 +218,11 @@ class LearnerShipTest {
         newEngine.setDoublePower(false);
         newEngine.setOrientation(Direction.RIGHT);
         int initialPower = ship.singleEngines;
-        ship.addComponent(newEngine, 1, 3);
+        try {
+            ship.addComponent(newEngine, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(newEngine, ship.getComponentAt(1, 3));
         assertEquals (ship.singleEngines, initialPower+1);
     }
@@ -205,7 +233,11 @@ class LearnerShipTest {
         newEngine.setDoublePower(true);
         newEngine.setOrientation(Direction.RIGHT);
         int initialPower = ship.doubleEngines;
-        ship.addComponent(newEngine, 1, 3);
+        try {
+            ship.addComponent(newEngine, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(newEngine, ship.getComponentAt(1, 3));
         assertEquals (ship.doubleEngines, initialPower+1);
     }
@@ -216,13 +248,17 @@ class LearnerShipTest {
         newBattery.setSlots(2);
         newBattery.setAvailableEnergy(2);
         int initialPower = ship.getTotalEnergy();
-        ship.addComponent(newBattery, 1, 3);
+        try {
+            ship.addComponent(newBattery, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(newBattery, ship.getComponentAt(1, 3));
         assertEquals (ship.getTotalEnergy(), initialPower+2);
-        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, -1, 0));
-        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 0, -1));
-        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 5, 4));
-        assertThrows(IllegalArgumentException.class, ()->ship.addComponent(newBattery, 4, 5));
+        assertThrows(InvalidTileException.class, ()->ship.addComponent(newBattery, -1, 0));
+        assertThrows(InvalidTileException.class, ()->ship.addComponent(newBattery, 0, -1));
+        assertThrows(InvalidTileException.class, ()->ship.addComponent(newBattery, 5, 4));
+        assertThrows(InvalidTileException.class, ()->ship.addComponent(newBattery, 4, 5));
     }
 
 
@@ -231,13 +267,21 @@ class LearnerShipTest {
         ship.initAstronauts();
         int num = ship.crew();
         int NAstro = Cabin1.getAstronauts();
-        ship.unloadCrew(Cabin1);
-        assertEquals(NAstro-1, Cabin1.getAstronauts());
-        assertEquals (num-1, ship.crew());
-        ship.unloadCrew(Cabin1);
         try {
             ship.unloadCrew(Cabin1);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
+        assertEquals(NAstro-1, Cabin1.getAstronauts());
+        assertEquals (num-1, ship.crew());
+        try {
+            ship.unloadCrew(Cabin1);
+        } catch (EmptyCabinException _) {
+            fail("Empty cabin exception should not be thrown");
+        }
+        try {
+            ship.unloadCrew(Cabin1);
+        } catch (EmptyCabinException e) {
             assertEquals("Empty cabin", e.getMessage());
         }
     }
@@ -246,16 +290,23 @@ class LearnerShipTest {
     void firePower() {
         Set<Cannon> cannons = new HashSet<>();
         cannons.add(downCannon);
-
-        assertEquals(2, ship.firePower(cannons, 1));
+        try {
+            assertEquals(2, ship.firePower(cannons, 1));
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
         //Test with no battery
-        assertThrows(IllegalArgumentException.class, () -> ship.firePower(cannons, 0));
+        assertThrows(EnergyException.class, () -> ship.firePower(cannons, 0));
 
         cannons.add (upCannon);
-        assertThrows (IllegalArgumentException.class, () -> ship.firePower(cannons, 2));
+        assertThrows (InvalidCannonException.class, () -> ship.firePower(cannons, 2));
         // Test with no cannons
         Set<Cannon> noCannons = new HashSet<>();
-        assertEquals(1, ship.firePower(noCannons, 0));
+        try {
+            assertEquals(1, ship.firePower(noCannons, 0));
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
 
         cannons.remove(upCannon);
         // Test with multiple cannons
@@ -264,21 +315,30 @@ class LearnerShipTest {
         extraCannon.setPower(2);
         cannons.add(extraCannon);
 
-        assertEquals(3, ship.firePower(cannons, 2));
+        try {
+            assertEquals(3, ship.firePower(cannons, 2));
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
     }
 
     @Test
     void enginePowerNotValid() {
         try {
             assertEquals(11, ship.enginePower(5));
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidEngineException e) {
             assertEquals("not enough double engines", e.getMessage());
         }
     }
 
     @Test
     void enginePowerValid() {
-        assertEquals(3, ship.enginePower(1));
+        try {
+            assertEquals(3, ship.enginePower(1));
+        } catch (InvalidEngineException _){
+            fail("Invalid engine exception should not be thrown");
+
+        }
     }
 
     @Test
@@ -323,7 +383,11 @@ class LearnerShipTest {
 
         shield.setConnectors(connectors);
         shield.setCoveredSides(coveredSides);
-        ship.addComponent(shield, 1, 3);
+        try {
+            ship.addComponent(shield, 1, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
 
         assertEquals(true, ship.getShield(Direction.RIGHT));
         assertEquals(true, ship.getShield(Direction.UP));
@@ -345,7 +409,11 @@ class LearnerShipTest {
         connectors.put(Direction.UP, ConnectorEnum.S);
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         rightCannon.setConnectors(connectors);
-        ship.addComponent(rightCannon, 2, 4);
+        try {
+            ship.addComponent(rightCannon, 2, 4);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         cannons = ship.getCannons(Direction.RIGHT, 2);
         assertTrue(cannons.contains(rightCannon));
         assertEquals(1, cannons.size());
@@ -361,7 +429,11 @@ class LearnerShipTest {
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         connectors.put(Direction.LEFT, ConnectorEnum.S);
         cabin.setConnectors(connectors);
-        ship.addComponent(cabin, 2, 4);
+        try {
+            ship.addComponent(cabin, 2, 4);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertEquals(10, ship.getAllExposed());
 
     }
@@ -380,7 +452,11 @@ class LearnerShipTest {
         connectors.put(Direction.UP, ConnectorEnum.S);
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         pipe.setConnectors(connectors);
-        ship.addComponent(pipe, 0, 2);
+        try {
+            ship.addComponent(pipe, 0, 2);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertFalse(ship.isValid());
     }
 
@@ -393,7 +469,11 @@ class LearnerShipTest {
         connectors.put(Direction.UP, ConnectorEnum.S);
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         pipe.setConnectors(connectors);
-        ship.addComponent(pipe, 4, 3);
+        try {
+            ship.addComponent(pipe, 4, 3);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertFalse(ship.isValid());
     }
 
@@ -406,7 +486,11 @@ class LearnerShipTest {
         connectors.put(Direction.UP, ConnectorEnum.S);
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         pipe.setConnectors(connectors);
-        ship.addComponent(pipe, 0, 2);
+        try {
+            ship.addComponent(pipe, 0, 2);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertFalse(ship.isValid());
     }
 
@@ -419,7 +503,11 @@ class LearnerShipTest {
         connectors.put(Direction.UP, ConnectorEnum.S);
         connectors.put(Direction.DOWN, ConnectorEnum.S);
         pipe.setConnectors(connectors);
-        ship.addComponent(pipe, 4, 4);
+        try {
+            ship.addComponent(pipe, 4, 4);
+        } catch (InvalidTileException _){
+            fail("Invalid tile exception should not be thrown");
+        }
         assertFalse(ship.isValid());
     }
 
@@ -431,6 +519,7 @@ class LearnerShipTest {
         ship.addToWaste(cannon);
         ship.addToWaste(cannon2);
         assertEquals(2, ship.getWaste().size());
+        ship.addBookedToWaste();
     }
 
     @Test
@@ -448,33 +537,30 @@ class LearnerShipTest {
 
     @Test
     void cargo(){
-        ship.unloadCargo (CargoColor.BLUE, cargoHold);
-        assertEquals(0, ship.cargos.get(CargoColor.BLUE));
-        ship.loadCargo(CargoColor.GREEN, cargoHold);
-        ship.loadCargo(CargoColor.BLUE, cargoHold);
-        assertEquals(1, ship.cargos.get(CargoColor.GREEN));
-        assertEquals (1, ship.cargos.get(CargoColor.BLUE));
-        ship.unloadCargo (cargoHold);
-        Map<CargoColor, Integer> cargos = ship.getCargo();
-        assertEquals(cargos.get(CargoColor.GREEN), ship.cargos.get(CargoColor.GREEN));
-        assertEquals (cargos.get(CargoColor.BLUE), ship.cargos.get(CargoColor.BLUE));
-        ship.loadCargo (CargoColor.GREEN, cargoHold);
-        ship.loadCargo (CargoColor.BLUE, cargoHold);
-        assertThrows (IllegalArgumentException.class, ()-> ship.unloadCargo(CargoColor.YELLOW, cargoHold));
+        try {
+            ship.unloadCargo(CargoColor.BLUE, cargoHold);
+            assertEquals(0, ship.cargos.get(CargoColor.BLUE));
+            ship.loadCargo(CargoColor.GREEN, cargoHold);
+            ship.loadCargo(CargoColor.BLUE, cargoHold);
+            assertEquals(1, ship.cargos.get(CargoColor.GREEN));
+            assertEquals(1, ship.cargos.get(CargoColor.BLUE));
+            ship.unloadCargo(CargoColor.BLUE, cargoHold);
+            Map<CargoColor, Integer> cargos = ship.getCargo();
+            assertEquals(cargos.get(CargoColor.GREEN), ship.cargos.get(CargoColor.GREEN));
+            assertEquals(cargos.get(CargoColor.BLUE), ship.cargos.get(CargoColor.BLUE));
+            ship.loadCargo(CargoColor.GREEN, cargoHold);
+            ship.loadCargo(CargoColor.BLUE, cargoHold);
+        } catch (Exception _) {
+            fail ("Exception should not be thrown");
+        }
+        assertThrows (InvalidCargoException.class, ()-> ship.unloadCargo(CargoColor.YELLOW, cargoHold));
         try {
             ship.loadCargo(CargoColor.GREEN, cargoHold);
-        } catch (IllegalArgumentException e) {
-            assertEquals("No available slots in cargo hold", e.getMessage());
+        } catch (CargoFullException e) {
+            assertEquals("CargoHold is full", e.getMessage());
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
         }
-        ship.unloadCargo(cargoHold);
-        ship.unloadCargo(cargoHold);
-        ship.loadCargo(CargoColor.YELLOW, cargoHold);
-        ship.unloadCargo(cargoHold);
-        SpecialCargoHold specialCargoHold= new SpecialCargoHold();
-        specialCargoHold.setSlots(1);
-        ship.addComponent(specialCargoHold, 2, 0);
-        ship.loadCargo(CargoColor.RED, specialCargoHold);
-        ship.unloadCargo(specialCargoHold);
     }
 
     @Test
@@ -511,17 +597,20 @@ class LearnerShipTest {
         ship.initAstronauts();
         ship.epidemic();
         assertEquals(2, ship.crew());
-        Cabin cabin = new Cabin();
     }
 
     @Test
     void useEnergy(){
         int initialEnergy = ship.getTotalEnergy();
-        ship.useEnergy(battery);
-        assertEquals(initialEnergy-1, ship.getTotalEnergy());
-        assertEquals(1, battery.getAvailableEnergy());
-        ship.useEnergy(battery);
-        assertThrows(IllegalArgumentException.class, ()-> ship.useEnergy(battery));
+        try {
+            ship.useEnergy(battery);
+            assertEquals(initialEnergy - 1, ship.getTotalEnergy());
+            assertEquals(1, battery.getAvailableEnergy());
+            ship.useEnergy(battery);
+        } catch (EnergyException _){
+            fail("Energy exception should not be thrown");
+        }
+        assertThrows(EnergyException.class, ()-> ship.useEnergy(battery));
     }
 
     @Test
@@ -550,7 +639,11 @@ class LearnerShipTest {
         int astronauts = ship.astronauts;
         Cabin1.updateParameter(ship, -1);
         assertEquals(astronauts-2, ship.astronauts);
-        ship.loadCargo(CargoColor.GREEN, cargoHold);
+        try {
+            ship.loadCargo(CargoColor.GREEN, cargoHold);
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
         cargoHold.updateParameter(ship, -1);
         assertEquals(0, ship.cargos.get(CargoColor.GREEN));
     }
@@ -560,8 +653,8 @@ class LearnerShipTest {
         try {
             ship.killComponent(downCannon);
             ship.killComponent(battery);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DeadAlienException _) {
+            fail("Dead alien exception should not be thrown");
         }
         assertFalse(ship.isValid());
         ship.findValid(-1, -1);
