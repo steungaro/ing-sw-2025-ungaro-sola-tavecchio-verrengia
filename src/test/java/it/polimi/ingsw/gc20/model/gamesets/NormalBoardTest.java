@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import it.polimi.ingsw.gc20.model.cards.AbandonedShip;
-import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.exceptions.HourglassException;
+import it.polimi.ingsw.gc20.exceptions.InvalidIndexException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,24 +18,32 @@ public class NormalBoardTest {
     @Test
     void defaultConstructor (){
         assertNotNull (board.getDeck());
-        assertEquals (board.getSpaces(), 24);
+        assertEquals (24, board.getSpaces());
         assertNotNull (board.getStallBox());
-        //testiamo anche i metodi peekDeck e getReaminingTime per testare il costruttore
-        // non verrano fatti test specifici per questi metodi
-        assertNotNull (board.peekDeck(1));
-        assertNotNull (board.peekDeck(2));
-        assertNotNull (board.peekDeck(3));
-        assertEquals (board.getRemainingTime(), 5);
+
+        try {
+            assertNotNull(board.peekDeck(1));
+            assertNotNull(board.peekDeck(2));
+            assertNotNull(board.peekDeck(3));
+        } catch (InvalidIndexException e) {
+            fail ("Exception should not be thrown");
+        }
+        assertThrows(InvalidIndexException.class, () -> board.peekDeck(5));
+        assertEquals (90, board.getRemainingTime());
     }
 
     @Test
     void testDeck (){
         board.createDeck();
         for (int i = 0; i< 3; i++){
-            assertNotNull (board.getDeck(1).get(i));
-            assertNotNull (board.getDeck(2).get(i));
-            assertNotNull (board.getDeck(3).get(i));
-            assertNotNull (board.getDeck(4).get(i));
+            try {
+                assertNotNull(board.getDeck(1).get(i));
+                assertNotNull(board.getDeck(2).get(i));
+                assertNotNull(board.getDeck(3).get(i));
+                assertNotNull(board.getDeck(4).get(i));
+            } catch (InvalidIndexException e) {
+                fail("Exception should not be thrown");
+            }
         }
     }
     @Test
@@ -48,25 +56,39 @@ public class NormalBoardTest {
 
     @Test
     void testHourglass1 () throws InterruptedException {
+        board.hourglass.setPeriod(5);
         board.initCountdown();
         assertEquals(5, board.getRemainingTime());
         Thread.sleep(2900);
         assertEquals(2, board.getRemainingTime());
         assertEquals(12, board.getTotalRemainingTime());
         Thread.sleep(2000);
-        board.turnHourglass();
+        try {
+            board.turnHourglass();
+        } catch (Exception e) {
+            fail("Exception should not be thrown");
+        }
         assertEquals(5, board.getRemainingTime());
         board.stopHourglass();
     }
 
     @Test
     void testHourglass2 () throws InterruptedException {
+        board.hourglass.setPeriod(5);
         board.initCountdown();
         assertThrows(IllegalArgumentException.class, () -> board.turnHourglass());
         Thread.sleep(5100);
-        board.turnHourglass();
+        try {
+            board.turnHourglass();
+        } catch (Exception e) {
+            fail("Exception should not be thrown");
+        }
         Thread.sleep(5100);
-        board.turnHourglass();
+        try {
+            board.turnHourglass();
+        } catch (HourglassException e) {
+            fail("Exception should not be thrown");
+        }
         Thread.sleep(5100);
         assertEquals(0, board.getRemainingTime());
         assertEquals(2, board.getTurnedHourglass());

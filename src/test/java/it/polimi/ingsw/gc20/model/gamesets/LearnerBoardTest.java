@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
-import it.polimi.ingsw.gc20.model.cards.AbandonedShip;
+import it.polimi.ingsw.gc20.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.cards.Planet;
-import it.polimi.ingsw.gc20.model.cards.Planets;
 import it.polimi.ingsw.gc20.model.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LearnerBoardTest {
     private Board board;
-    private AdventureCard card;
+
     @BeforeEach
     void setUp(){
         board= new LearnerBoard();
@@ -24,7 +23,7 @@ public class LearnerBoardTest {
     @Test
     void testDefaultConstructor (){
         assertNotNull (board.getDeck());
-        assertEquals (board.getSpaces(), 18);
+        assertEquals (18, board.getSpaces());
         assertNotNull (board.getStallBox());
     }
 
@@ -35,9 +34,8 @@ public class LearnerBoardTest {
         assertEquals (8, board.getDeck().size());
         for (AdventureCard card : board.getDeck()){
             assertNotNull(card);
-            if (card instanceof Planets){
-                assertNotNull(((Planets) card).getPlanets());
-                for (Planet planet : ((Planets) card).getPlanets()){
+            if (card.getName().equals("Planets")){
+                for (Planet planet : (card.getPlanets())){
                     assertNotNull(planet);
                     assertNotNull(planet.getReward());
                     assertTrue (planet.getAvailable());
@@ -48,19 +46,25 @@ public class LearnerBoardTest {
     }
     @Test
     void testDrawCardAndSetAndGetDeck (){
-        card = new AbandonedShip();
-        List<AdventureCard> deck = new ArrayList<AdventureCard>();
+        AdventureCard card = new AdventureCard();
+        List<AdventureCard> deck = new ArrayList<>();
         deck.add(card);
         board.setDeck(deck);
-        assertEquals(board.getDeck().get(0), card);
+        assertEquals(board.getDeck().getFirst(), card);
         assertEquals(deck, board.getDeck());
-        assertEquals(board.drawCard(), card);
+        try {
+            assertEquals(board.drawCard(), card);
+        } catch (Exception e){
+            fail("Exception should not be thrown");
+        }
+        assertThrows(EmptyDeckException.class, ()->board.drawCard());
     }
+
 
     @Test
     void testSetAndGetSpaces (){
         board.setSpaces(2);
-        assertEquals(board.getSpaces(), 2);
+        assertEquals(2, board.getSpaces());
     }
 
     @Test

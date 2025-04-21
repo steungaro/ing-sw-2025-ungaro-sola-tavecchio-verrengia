@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.DieNotRolledException;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 
@@ -161,8 +162,9 @@ public class Game {
 
     /** function that returns the last rolled value of the dice without rolling them
      * @return int sum of the two dice
+     * @throws DieNotRolledException if the dice have not been rolled yet
      */
-    public int lastRolled() {
+    public int lastRolled() throws DieNotRolledException {
         return dice[0].getLastRolled() + dice[1].getLastRolled();
     }
 }

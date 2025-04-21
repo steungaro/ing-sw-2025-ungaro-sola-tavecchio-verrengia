@@ -1,17 +1,20 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.player.*;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * @author GC20
  */
 public abstract class Board {
-    private List<AdventureCard> deck;
-    private Integer spaces;
-    private final List<Player> stallBox;
+    protected List<AdventureCard> deck;
+    protected Integer spaces;
+    protected final List<Player> stallBox;
+    protected final Logger logger = Logger.getLogger(Board.class.getName());
     /**
      * Default constructor
      */
@@ -25,11 +28,11 @@ public abstract class Board {
      * @exception  NoSuchElementException if the deck is empty
      * @return AdventureCard
      */
-    public AdventureCard drawCard() throws NoSuchElementException{
+    public AdventureCard drawCard() throws EmptyDeckException {
         if (!this.deck.isEmpty()) {
             return this.deck.removeFirst();
         } else { // deck is empty
-            throw new NoSuchElementException("Deck is empty");
+            throw new EmptyDeckException("Deck is empty");
         }
     }
 

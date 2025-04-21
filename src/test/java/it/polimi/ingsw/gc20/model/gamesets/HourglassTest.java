@@ -93,7 +93,7 @@ public class HourglassTest {
         hourglass.stopCountdown();
         hourglass.initCountdown();
 
-        // After turning it again, the remaining time should be reset to 10
+        // After turning the hourglass again, the remaining time should be reset to 10
         assertEquals(10, hourglass.getRemainingTime(), "The remaining time should be reset to 10 seconds after a new turn.");
     }
 }

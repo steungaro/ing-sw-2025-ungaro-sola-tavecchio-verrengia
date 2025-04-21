@@ -76,7 +76,7 @@ public class GameController implements GameControllerInterface {
     /**
      * Handles the card drawing phase of the game
      */
-    public void drawCard(){
+    public void drawCard() {
         AdventureCard card = model.drawCard();
         if (card == null) {
             state = new EndgameState(state.getController());
