@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.controller;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,19 +11,18 @@ import it.polimi.ingsw.gc20.model.lobby.Lobby;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchControllerTest {
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         // Initialize the MatchController instance before each test
-        List<String> players = new ArrayList<>();
-        players.add("player1");
-        players.add("player2");
-        players.add("player3");
-        players.add("player4");
-        GameController gameController = new GameController("0", players, 2);
         MatchController matchController = MatchController.getInstance(3, 3);
 
         Lobby lobby = matchController.createLobby("lobby1", "player1", 4, 2);
-        matchController.startLobby("1");
+        matchController.joinLobby(lobby.getId(), "player2");
+        matchController.joinLobby(lobby.getId(), "player3");
+        matchController.joinLobby(lobby.getId(), "player4");
+        matchController.startLobby(lobby.getId());
+        matchController.setMaxMatches(3);
+        matchController.setMaxLobbies(3);
     }
 
     @Test
