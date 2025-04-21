@@ -26,7 +26,7 @@ public abstract class State{
         this.controller = controller;
     }
     public State(GameController controller) {
-        this.model = null;
+        this.model = controller.getModel();
         this.controller = controller;
     }
     public State(GameModel model) {

@@ -22,7 +22,7 @@ public class SlaversState extends PlayingState {
      * Default constructor
      */
     @SuppressWarnings("unused") // dynamically created by Cards
-    public SlaversState(GameController controller, GameModel model, AdventureCard card) {
+    public SlaversState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
         this.lostMembers = card.getCrew();

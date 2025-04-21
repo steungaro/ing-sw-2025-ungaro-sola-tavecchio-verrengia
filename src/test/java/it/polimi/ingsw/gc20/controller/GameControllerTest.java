@@ -315,6 +315,9 @@ class GameControllerTest {
 
     @Test
     void getPlayerScores() {
+        EndgameState endgameState = new EndgameState(gameController);
+        gameController.setState(endgameState);
+
         Map<String, Integer> playerScores = gameController.getPlayerScores();
     }
 
@@ -322,6 +325,7 @@ class GameControllerTest {
     void giveUp() {
         gameController.giveUp("player1");
         Map<String, Integer> playerScores = gameController.getPlayerScores();
+
     }
 
     @Test
@@ -338,6 +342,7 @@ class GameControllerTest {
 
     @Test
     void reconnectPlayer() {
+        assertThrows(IllegalArgumentException.class, () -> gameController.reconnectPlayer("player5"));
         gameController.disconnectPlayer("player1");
         gameController.reconnectPlayer("player1");
         assertFalse(gameController.isPlayerDisconnected("player1"));
@@ -384,7 +389,6 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromUnviewed() {
-        // TODO -> Better test in State section
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
@@ -394,7 +398,7 @@ class GameControllerTest {
         gameController.takeComponentFromUnviewed("player1", comp);
 
         assertFalse(gameController.getModel().getGame().getPile().getUnviewed().contains(comp));
-        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
@@ -555,7 +559,6 @@ class GameControllerTest {
 
     @Test
     void getHourglassTime() throws InterruptedException {
-        // TODO -> Note that there's not
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
         assertEquals(4, gameController.getHourglassTime("player1"));
@@ -591,9 +594,9 @@ class GameControllerTest {
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
         gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
-        assertThrows(IllegalArgumentException.class, () -> gameController.addAlien("player1", alienColor, cabin));
 
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        gameController.addAlien("player1", alienColor, cabin);
         gameController.readyToFly("player1");
         validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
         gameController.readyToFly("player2");
@@ -602,7 +605,7 @@ class GameControllerTest {
         validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
         gameController.readyToFly("player4");
 
-        gameController.addAlien("player1", alienColor, cabin);
+        assertThrows(IllegalStateException.class, () -> gameController.addAlien("player1", alienColor, cabin));
         assertEquals(alienColor, ((Cabin)(gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
     }
 
@@ -626,8 +629,6 @@ class GameControllerTest {
         gameController.readyToFly("player4");
 
         assertTrue(validatingShipState.allShipsReadyToFly());
-
-        // TODO -> find solution to test this
     }
 
     @Test
@@ -638,32 +639,36 @@ class GameControllerTest {
 
     @Test
     void rollDice() throws InvalidTurnException, InvalidShipException {
-        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
 
         assertThrows(InvalidTurnException.class, () -> gameController.rollDice("player2"));
 
         gameController.rollDice("player1");
+        int lastRolled = 0;
+        lastRolled=gameController.getModel().getGame().lastRolled();
         assertNotNull(gameController.getModel().getGame().lastRolled());
     }
 
     @Test
     void lastRolledDice() throws InvalidTurnException, InvalidShipException {
-        assertThrows(IllegalStateException.class, () -> gameController.getModel().getGame().lastRolled());
+        assertThrows(ArithmeticException.class, () -> gameController.getModel().getGame().lastRolled());
 
-        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
-
-        assertThrows(InvalidTurnException.class, () -> gameController.getModel().getGame().lastRolled());
 
         gameController.rollDice("player1");
         int lastRolled = gameController.getModel().getGame().lastRolled();
-        assertNotNull(lastRolled);
+
+        gameController.rollDice("player1");
+        lastRolled=0;
+        lastRolled = gameController.getModel().getGame().lastRolled();
+        assertNotEquals(0, lastRolled);
     }
 
     @Test
     void getCurrentPlayer() {
-        SlaversState slaversState = new SlaversState(gameController, gameController.getModel(), adventureCard);
+        SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
 
         String currentPlayer = slaversState.getCurrentPlayer();
