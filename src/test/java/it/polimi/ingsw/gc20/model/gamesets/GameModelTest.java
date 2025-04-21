@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
@@ -25,11 +27,6 @@ class GameModelTest {
     }
 
     private NormalShip ship, ship2;
-    private Cannon upCannon, downCannon;
-    private Engine singleEngine, doubleEngine;
-    private Battery battery;
-    private Cabin Cabin1;
-    private CargoHold cargoHold;
 
     @BeforeEach
     void setUp2() {
@@ -38,49 +35,51 @@ class GameModelTest {
         ship2 = new NormalShip();
 
         // Create components
-        upCannon = new Cannon();
+        Cannon upCannon = new Cannon();
         upCannon.setOrientation(Direction.UP);
         upCannon.setPower(1);
 
-        downCannon = new Cannon();
+        Cannon downCannon = new Cannon();
         downCannon.setOrientation(Direction.DOWN);
         downCannon.setPower(2);
 
-        singleEngine = new Engine();
+        Engine singleEngine = new Engine();
         singleEngine.setDoublePower(false);
 
-        doubleEngine = new Engine();
+        Engine doubleEngine = new Engine();
         doubleEngine.setDoublePower(true);
 
-        battery = new Battery();
+        Battery battery = new Battery();
         battery.setSlots(2);
-        battery.fillBattery();
+        battery.setAvailableEnergy(2);
 
-        Cabin1 = new Cabin();
-        Cabin1.setColor(AlienColor.NONE);
-        Cabin1.setAstronauts(2);
+        Cabin cabin1 = new Cabin();
+        cabin1.setColor(AlienColor.NONE);
 
-        cargoHold = new CargoHold();
+        CargoHold cargoHold = new CargoHold();
         cargoHold.setSlots(3);
-        cargoHold.loadCargo(CargoColor.BLUE);
-        cargoHold.loadCargo(CargoColor.GREEN);
 
-        // Add components to ship at valid positions
-        ship.addComponent(upCannon, 1, 3);
-        ship.addComponent(downCannon, 3, 3);
-        ship.addComponent(singleEngine, 3, 2);
-        ship.addComponent(doubleEngine, 3, 4);
-        ship.addComponent(battery, 2, 2);
-        ship.addComponent(Cabin1, 2, 4);
-        ship.addComponent(cargoHold, 1, 2);
 
-        ship2.addComponent(upCannon, 1, 3);
-        ship2.addComponent(downCannon, 3, 3);
-        ship2.addComponent(singleEngine, 3, 2);
-        ship2.addComponent(doubleEngine, 3, 4);
-        ship2.addComponent(battery, 2, 2);
-        ship2.addComponent(Cabin1, 2, 4);
-        ship2.addComponent(cargoHold, 1, 2);
+        try {
+            // Add components to ship at valid positions
+            ship.addComponent(upCannon, 1, 3);
+            ship.addComponent(downCannon, 3, 3);
+            ship.addComponent(singleEngine, 3, 2);
+            ship.addComponent(doubleEngine, 3, 4);
+            ship.addComponent(battery, 2, 2);
+            ship.addComponent(cabin1, 2, 4);
+            ship.addComponent(cargoHold, 1, 2);
+
+            ship2.addComponent(upCannon, 1, 3);
+            ship2.addComponent(downCannon, 3, 3);
+            ship2.addComponent(singleEngine, 3, 2);
+            ship2.addComponent(doubleEngine, 3, 4);
+            ship2.addComponent(battery, 2, 2);
+            ship2.addComponent(cabin1, 2, 4);
+            ship2.addComponent(cargoHold, 1, 2);
+        } catch (InvalidTileException e){
+            fail("Exception should not be thrown");
+        }
 
 
         // Setting the connectors
@@ -117,7 +116,7 @@ class GameModelTest {
         connectorsCabin1.put(Direction.LEFT, ConnectorEnum.S);
         connectorsCabin1.put(Direction.UP, ConnectorEnum.S);
         connectorsCabin1.put(Direction.DOWN, ConnectorEnum.S);
-        Cabin1.setConnectors(connectorsCabin1);
+        cabin1.setConnectors(connectorsCabin1);
 
         Map<Direction, ConnectorEnum> connectorsDownCannon = new HashMap<>();
         connectorsDownCannon.put(Direction.RIGHT, ConnectorEnum.S);
@@ -148,9 +147,24 @@ class GameModelTest {
         connectorBattery2.put(Direction.DOWN, ConnectorEnum.ZERO);
         Battery battery2 = new Battery();
         battery2.setConnectors(connectorBattery2);
-        ship2.addComponent(battery2, 1,1);
+        try {
+            ship2.addComponent(battery2, 1, 1);
+        } catch (InvalidTileException e){
+            fail("Exception should not be thrown");
+        }
         StartingCabin start2 = (StartingCabin) ship2.getComponentAt(2, 3);
         start2.setConnectors(connectorsStartingCabin);
+
+        try {
+            ship.loadCargo(CargoColor.GREEN, cargoHold);
+            ship.loadCargo(CargoColor.BLUE, cargoHold);
+            ship2.loadCargo(CargoColor.GREEN, cargoHold);
+            ship2.loadCargo(CargoColor.BLUE, cargoHold);
+        } catch (Exception e) {
+            fail("Exception should not be thrown");
+        }
+        ship.initAstronauts();
+        ship2.initAstronauts();
     }
 
     @Test
@@ -185,8 +199,11 @@ class GameModelTest {
         assertEquals(8+4, score.get(gameModel.getGame().getPlayers().get(0)));
 
         Battery bat = (Battery) ship2.getComponentAt(1,1);
-        ship2.killComponent(bat);
-
+        try {
+            ship2.killComponent(bat);
+        } catch (DeadAlienException e){
+            fail("Exception should not be thrown");
+        }
         Player player1 = gameModel.getGame().getPlayers().get(0);
         Player player2;
         if(player1.getUsername().equals("player1")) {

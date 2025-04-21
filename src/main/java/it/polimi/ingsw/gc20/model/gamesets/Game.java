@@ -33,7 +33,6 @@ public class Game {
      * @param p player to add
      */
     public void addPlayer(Player p){
-
         players.add(p);
     }
 

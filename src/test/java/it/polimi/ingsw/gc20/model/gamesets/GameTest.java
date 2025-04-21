@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.DieNotRolledException;
 import it.polimi.ingsw.gc20.model.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class GameTest {
     @Test
     void testDefaultConstructor (){
         assertNotNull (game.getPlayers());
-        assertNotNull (game.getBoard());
+        assertNull (game.getBoard());
         assertNull (game.getID());
         assertNull (game.getPile());
     }
@@ -56,7 +57,7 @@ public class GameTest {
 
     @Test
     void testSetAndGetID (){
-        String gameID = "ciao";
+        String gameID = "bbr brr patapim";
         game.setID(gameID);
         assertEquals(gameID, game.getID());
     }
@@ -129,9 +130,9 @@ public class GameTest {
 
         assertTrue (game.isOccupied(8));
         game.move(player4, 2);
-        assertEquals(player4.getPosition(), 11);
+        assertEquals(11, player4.getPosition());
         game.sortPlayerByPosition();
-        assertEquals(game.getPlayers().get(0), player4);
+        assertEquals(game.getPlayers().getFirst(), player4);
     }
 
     @Test
@@ -144,7 +145,7 @@ public class GameTest {
         game.addPlayer(player2);
         game.addPlayer(player1);
         game.move(player1, 2);
-        assertEquals(player1.getPosition(), 25);
+        assertEquals(25, player1.getPosition());
     }
 
     @Test
@@ -154,6 +155,10 @@ public class GameTest {
             value = game.rollDice();
             assertTrue(value >= 0 && value <= 12);
         }
-        assertEquals (value, game.lastRolled());
+        try {
+            assertEquals(value, game.lastRolled());
+        } catch (DieNotRolledException e){
+            fail("DieNotRolledException should not be thrown");
+        }
     }
 }
