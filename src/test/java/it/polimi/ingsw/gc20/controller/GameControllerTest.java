@@ -324,6 +324,9 @@ class GameControllerTest {
     @Test
     void giveUp() {
         gameController.giveUp("player1");
+        EndgameState endgameState = new EndgameState(gameController);
+        gameController.setState(endgameState);
+
         Map<String, Integer> playerScores = gameController.getPlayerScores();
 
     }

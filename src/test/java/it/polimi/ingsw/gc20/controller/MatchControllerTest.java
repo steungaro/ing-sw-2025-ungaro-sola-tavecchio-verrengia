@@ -27,7 +27,6 @@ class MatchControllerTest {
 
     @Test
     void getGameController() {
-
     }
 
     @Test
