@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.CargoFullException;
+import it.polimi.ingsw.gc20.exceptions.CargoNotLoadable;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,15 +29,15 @@ public class CargoHoldTest {
 
 
     @Test
-    void testSetAndGetCargoHeld(){
+    void testSetAndGetCargoHeld() throws CargoNotLoadable, CargoFullException {
         try {
             cargoHold.loadCargo(CargoColor.BLUE);
-        } catch (IllegalArgumentException e) {
+        } catch (CargoFullException e) {
             assertEquals("CargoHold is full", e.getMessage());
         }
         try{
             specialCargoHold.loadCargo(CargoColor.RED);
-        }catch (IllegalArgumentException e){
+        }catch (CargoFullException e){
             assertEquals("CargoHold is full", e.getMessage());
         }
         cargoHold.setSlots(5);

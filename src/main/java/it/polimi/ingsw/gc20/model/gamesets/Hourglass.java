@@ -23,32 +23,58 @@ public class Hourglass {
         this.currentTask = null;
     }
 
+    /** Getter function for the period of the hourglass
+     *
+     * @return period of teh hourglass
+     */
     public int getPeriod() {
         return period;
     }
 
+    /** Getter function for the number of times the hourglass hase been turned
+     *
+     * @return number of times the hourglass has been turned
+     */
     public int getTurned() {
         return turned;
     }
-
+    /** Setter function for the period of the hourglass
+     *
+     * @param period period of the hourglass
+     */
     public void setPeriod(int period) {
         this.period = period;
+        this.remainingTime = period;
     }
 
+    /** function to turn the hourglass
+     *
+     */
     public void turn() {
         this.turned++;
         this.remainingTime = this.period;
         this.initCountdown();
     }
 
+    /** function to get the remaining time of the hourglass
+     *
+     * @return remaining time of the hourglass
+     */
     public int getRemainingTime() {
         return remainingTime;
     }
 
+    /** function to get the total elapsed time of the hourglass
+     *
+     * @return total elapsed time of the hourglass
+     */
     public int getTotalElapsed() {
         return period * (turned + 1) - remainingTime;
     }
 
+    /** function to start the countdown of the hourglass
+     *
+     */
     public void initCountdown() {
         // If there is a task running, cancel it
         if (currentTask != null) {
@@ -70,6 +96,9 @@ public class Hourglass {
         timer.scheduleAtFixedRate(currentTask, 0, 1000);
     }
 
+    /** function to stop the countdown of the hourglass
+     *
+     */
     public void stopCountdown() {
         if (currentTask != null) {
             currentTask.cancel();

@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
-import com.sun.jdi.connect.Connector;
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,13 +50,17 @@ class NormalShipTest {
         cargoHold.setSlots(3);
 
         // Add components to ship at valid positions
-        ship.addComponent(upCannon, 1, 3);
-        ship.addComponent(downCannon, 3, 3);
-        ship.addComponent(singleEngine, 3, 2);
-        ship.addComponent(doubleEngine, 3, 4);
-        ship.addComponent(battery, 2, 2);
-        ship.addComponent(Cabin1, 2, 4);
-        ship.addComponent(cargoHold, 1, 2);
+        try {
+            ship.addComponent(upCannon, 1, 3);
+            ship.addComponent(downCannon, 3, 3);
+            ship.addComponent(singleEngine, 3, 2);
+            ship.addComponent(doubleEngine, 3, 4);
+            ship.addComponent(battery, 2, 2);
+            ship.addComponent(Cabin1, 2, 4);
+            ship.addComponent(cargoHold, 1, 2);
+        } catch (Exception _) {
+            fail("Failed to add components to ship");
+        }
 
         // Setting the connectors
         Map<Direction, ConnectorEnum> connectorsCargoHold = new HashMap<>();
@@ -139,41 +142,54 @@ class NormalShipTest {
 
     @Test
     void addBookedToWaste (){
-        Cabin cabin3 = new Cabin();
-        ship.addBooked(cabin3);
-        assertTrue(ship.getBooked().contains(cabin3));
+        try {
+            Cabin cabin3 = new Cabin();
+            ship.addBooked(cabin3);
+            assertTrue(ship.getBooked().contains(cabin3));
 
-        Cabin cabin4 = new Cabin();
-        ship.addBooked(cabin4);
-        assertTrue(ship.getBooked().contains(cabin4));
+            Cabin cabin4 = new Cabin();
+            ship.addBooked(cabin4);
+            assertTrue(ship.getBooked().contains(cabin4));
 
-        ship.addBookedToWaste();
-        assertFalse(ship.getBooked().contains(cabin3));
-        assertFalse(ship.getBooked().contains(cabin4));
-        assertEquals(2, ship.getWaste().size());
+            ship.addBookedToWaste();
+            assertFalse(ship.getBooked().contains(cabin3));
+            assertFalse(ship.getBooked().contains(cabin4));
+            assertEquals(2, ship.getWaste().size());
+        } catch (Exception _){
+            fail("Failed to add booked components to waste");
+        }
     }
 
     @Test
     void removeBooked() {
         Cabin cabin3 = new Cabin();
-        ship.addBooked(cabin3);
-        assertTrue(ship.getBooked().contains(cabin3));
-
         Cabin cabin4 = new Cabin();
-        ship.addBooked(cabin4);
-        assertTrue(ship.getBooked().contains(cabin4));
         Cabin cabin5 = new Cabin();
         try {
+
+            ship.addBooked(cabin3);
+            assertTrue(ship.getBooked().contains(cabin3));
+
+            ship.addBooked(cabin4);
+            assertTrue(ship.getBooked().contains(cabin4));
+        } catch (Exception _){
+            fail("Failed to add booked components");
+        }
+        try {
             ship.addBooked(cabin5);
-        } catch (IllegalArgumentException e) {
+        } catch (NoSpaceException e) {
             assertEquals("Already 2 booked components", e.getMessage());
         }
-        ship.removeBooked(cabin3);
-        assertFalse(ship.getBooked().contains(cabin3));
-        assertTrue(ship.getBooked().contains(cabin4));
-        ship.addBooked(cabin3);
-        ship.removeBooked(cabin4);
-        assertThrows (IllegalArgumentException.class, ()-> ship.removeBooked(cabin5));
+        try {
+            ship.removeBooked(cabin3);
+            assertFalse(ship.getBooked().contains(cabin3));
+            assertTrue(ship.getBooked().contains(cabin4));
+            ship.addBooked(cabin3);
+            ship.removeBooked(cabin4);
+        } catch (Exception _) {
+            fail("Failed to remove booked components");
+        }
+        assertThrows (ComponentNotFoundException.class, ()-> ship.removeBooked(cabin5));
     }
 
     @Test
@@ -189,25 +205,28 @@ class NormalShipTest {
 
     @Test
     void testFirePower() {
-        Set<Cannon> cannons = new HashSet<>();
-        cannons.add(downCannon);
+        try {
+            Set<Cannon> cannons = new HashSet<>();
+            cannons.add(downCannon);
 
-        assertEquals(2, ship.firePower(cannons, 1));
+            assertEquals(2, ship.firePower(cannons, 1));
 
-        // Test with no cannons
-        Set<Cannon> noCannons = new HashSet<>();
-        assertEquals(1, ship.firePower(noCannons, 0));
+            // Test with no cannons
+            Set<Cannon> noCannons = new HashSet<>();
+            assertEquals(1, ship.firePower(noCannons, 0));
 
-        // Test with multiple cannons
-        Cannon extraCannon = new Cannon();
-        extraCannon.setPower(2);
-        cannons.add(extraCannon);
+            // Test with multiple cannons
+            Cannon extraCannon = new Cannon();
+            extraCannon.setPower(2);
+            cannons.add(extraCannon);
 
-        assertEquals(4, ship.firePower(cannons, 2));
-        // Test with a purple alien
-        ship.purpleAlien = true;
-        assertEquals(6, ship.firePower(cannons, 2));
-
+            assertEquals(4, ship.firePower(cannons, 2));
+            // Test with a purple alien
+            ship.purpleAlien = true;
+            assertEquals(6, ship.firePower(cannons, 2));
+        } catch (Exception _){
+            fail("Failed to calculate fire power");
+        }
     }
 
     @Test
@@ -229,20 +248,28 @@ class NormalShipTest {
     @Test
     void setComponentAt() {
         Cannon newCannon = new Cannon();
-        ship.setComponentAt(newCannon, 1, 5);
+        try {
+            ship.setComponentAt(newCannon, 1, 5);
+        } catch (InvalidTileException _) {
+            fail("Failed to set component at cannon");
+        }
         assertEquals(newCannon, ship.getComponentAt(1, 5));
     }
 
     @Test
     void unloadCrew(){
-        assertEquals(2, Cabin1.getAstronauts());
-        ship.unloadCrew(Cabin1);
-        assertEquals(1, Cabin1.getAstronauts());
-        ship.unloadCrew(Cabin1);
-        assertEquals(0, Cabin1.getAstronauts());
+        try {
+            assertEquals(2, Cabin1.getAstronauts());
+            ship.unloadCrew(Cabin1);
+            assertEquals(1, Cabin1.getAstronauts());
+            ship.unloadCrew(Cabin1);
+            assertEquals(0, Cabin1.getAstronauts());
+        } catch (EmptyCabinException _) {
+            fail("Failed to unload crew");
+        }
         try {
             ship.unloadCrew(Cabin1);
-        } catch (IllegalArgumentException e) {
+        } catch (EmptyCabinException e) {
             assertEquals("Empty cabin", e.getMessage());
         }
         LifeSupport ls = new LifeSupport();
@@ -252,14 +279,17 @@ class NormalShipTest {
         connectorsLifeSupport.put(Direction.LEFT, ConnectorEnum.S);
         connectorsLifeSupport.put(Direction.UP, ConnectorEnum.S);
         connectorsLifeSupport.put(Direction.DOWN, ConnectorEnum.S);
-
-        ls.setConnectors(connectorsLifeSupport);
-        ship.addComponent(ls, 1, 4);
-        ship.addAlien(AlienColor.BROWN, Cabin1);
-        assertTrue(ship.brownAlien);
-        ship.unloadCrew(Cabin1);
-        assertEquals (0, Cabin1.getOccupants());
-        assertFalse (ship.brownAlien);
+        try {
+            ls.setConnectors(connectorsLifeSupport);
+            ship.addComponent(ls, 1, 4);
+            ship.addAlien(AlienColor.BROWN, Cabin1);
+            assertTrue(ship.brownAlien);
+            ship.unloadCrew(Cabin1);
+            assertEquals(0, Cabin1.getOccupants());
+            assertFalse(ship.brownAlien);
+        } catch (Exception _){
+            fail("Failed to unload crew with life support");
+        }
 
     }
 
@@ -280,8 +310,11 @@ class NormalShipTest {
         Map<Direction, ConnectorEnum> connectorsLife = new HashMap<>();
         connectorsLife.put(Direction.LEFT, ConnectorEnum.S);
         lifeSupport.setConnectors(connectorsLife);
-
-        ship.addComponent(lifeSupport, 2, 5);
+        try {
+            ship.addComponent(lifeSupport, 2, 5);
+        } catch (InvalidTileException _) {
+            fail("Failed to add life support");
+        }
         assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
 
         //Remove lifeSupport
@@ -298,39 +331,51 @@ class NormalShipTest {
 
     @Test
     void removeBookedTest() {
-        Cabin cabin3 = new Cabin();
-        ship.addBooked(cabin3);
-        assertTrue(ship.getBooked().contains(cabin3));
+        try {
+            Cabin cabin3 = new Cabin();
+            ship.addBooked(cabin3);
+            assertTrue(ship.getBooked().contains(cabin3));
 
-        Cabin cabin4 = new Cabin();
-        ship.addBooked(cabin4);
-        assertTrue(ship.getBooked().contains(cabin4));
+            Cabin cabin4 = new Cabin();
+            ship.addBooked(cabin4);
+            assertTrue(ship.getBooked().contains(cabin4));
 
-        ship.removeBooked(cabin3);
-        assertFalse(ship.getBooked().contains(cabin3));
-        assertTrue(ship.getBooked().contains(cabin4));
+            ship.removeBooked(cabin3);
+            assertFalse(ship.getBooked().contains(cabin3));
+            assertTrue(ship.getBooked().contains(cabin4));
+        } catch (Exception _){
+            fail("Failed to remove booked components");
+        }
     }
 
     @Test
     void getBooked() {
-        Cabin cabin3 = new Cabin();
-        ship.addBooked(cabin3);
-        assertTrue(ship.getBooked().contains(cabin3));
+        try {
+            Cabin cabin3 = new Cabin();
+            ship.addBooked(cabin3);
+            assertTrue(ship.getBooked().contains(cabin3));
 
-        Cabin cabin4 = new Cabin();
-        ship.addBooked(cabin4);
-        assertTrue(ship.getBooked().contains(cabin4));
+            Cabin cabin4 = new Cabin();
+            ship.addBooked(cabin4);
+            assertTrue(ship.getBooked().contains(cabin4));
 
-        List<Component> booked = ship.getBooked();
-        assertTrue(booked.contains(cabin3));
-        assertTrue(booked.contains(cabin4));
+            List<Component> booked = ship.getBooked();
+            assertTrue(booked.contains(cabin3));
+            assertTrue(booked.contains(cabin4));
+        } catch (Exception _){
+            fail("Failed to get booked components");
+        }
     }
 
     @Test
     void addBooked() {
-        Cabin cabin3 = new Cabin();
-        ship.addBooked(cabin3);
-        assertTrue(ship.getBooked().contains(cabin3));
+        try {
+            Cabin cabin3 = new Cabin();
+            ship.addBooked(cabin3);
+            assertTrue(ship.getBooked().contains(cabin3));
+        } catch (Exception _){
+            fail("Failed to add booked components");
+        }
     }
 
     @Test
@@ -357,7 +402,11 @@ class NormalShipTest {
         LifeSupport lifeSupport = new LifeSupport();
         lifeSupport.setColor(AlienColor.BROWN);
         lifeSupport.setConnectors(connectorsLifeSupport);
-        ship.addComponent(lifeSupport, 2, 5);
+        try {
+            ship.addComponent(lifeSupport, 2, 5);
+        } catch (InvalidTileException _) {
+            fail("Failed to add life support");
+        }
 
         assertEquals(AlienColor.BROWN, Cabin1.getCabinColor());
 
@@ -369,10 +418,14 @@ class NormalShipTest {
             throw new RuntimeException();
         }
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
-        ship.addComponent(lifeSupport, 2, 5);
-        ship.unloadCrew(Cabin1);
-        ship.unloadCrew(Cabin1);
-        ship.addAlien(AlienColor.BROWN, Cabin1);
+        try {
+            ship.addComponent(lifeSupport, 2, 5);
+            ship.unloadCrew(Cabin1);
+            ship.unloadCrew(Cabin1);
+            ship.addAlien(AlienColor.BROWN, Cabin1);
+        } catch (Exception _){
+            fail("Failed to add life support");
+        }
         try {
             ship.killComponent(lifeSupport);
         } catch (Exception e) {
@@ -392,63 +445,76 @@ class NormalShipTest {
         connectorsLifeSupport.put(Direction.UP, ConnectorEnum.S);
         connectorsLifeSupport.put(Direction.DOWN, ConnectorEnum.S);
         Cabin1.setConnectors(connectorsLifeSupport);
-
-        // Add life support
         LifeSupport lifeSupport = new LifeSupport();
-        lifeSupport.setColor(AlienColor.BROWN);
-        lifeSupport.setConnectors(connectorsLifeSupport);
-        ship.addComponent(lifeSupport, 2, 5);
+        // Add life support
+        try {
+            lifeSupport.setColor(AlienColor.BROWN);
+            lifeSupport.setConnectors(connectorsLifeSupport);
+            ship.addComponent(lifeSupport, 2, 5);
 
-        ship.addAlien(AlienColor.BROWN, Cabin1);
-        assertEquals(AlienColor.BROWN, Cabin1.getAlienColor());
-        assertTrue(Cabin1.getAlien());
-        ship.unloadCrew(Cabin1);
+            ship.addAlien(AlienColor.BROWN, Cabin1);
+            assertEquals(AlienColor.BROWN, Cabin1.getAlienColor());
+            assertTrue(Cabin1.getAlien());
+            ship.unloadCrew(Cabin1);
+        } catch (Exception _){
+            fail("Failed to add alien");
+        }
 
         ship.brownAlien = true;
         try {
             ship.addAlien(AlienColor.BROWN, Cabin1);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidAlienPlacement e) {
             assertEquals("Brown alien already present", e.getMessage());
         }
         ship.brownAlien = false;
         ship.initAstronauts();
         try{
             ship.addAlien(AlienColor.BROWN, Cabin1);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidAlienPlacement e) {
             assertEquals("Cannot have both astronauts and aliens in the same cabin.", e.getMessage());
         }
         try {
             ship.killComponent(lifeSupport);
         } catch (DeadAlienException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
         lifeSupport.setColor(AlienColor.PURPLE);
-        ship.addComponent(lifeSupport, 2, 5);
+        try {
+            ship.addComponent(lifeSupport, 2, 5);
+        } catch (InvalidTileException _) {
+            fail("Failed to add life support");
+        }
         ship.purpleAlien = true;
-        assertThrows(IllegalArgumentException.class, () -> ship.addAlien(AlienColor.PURPLE, Cabin1));
+        assertThrows(InvalidAlienPlacement.class, () -> ship.addAlien(AlienColor.PURPLE, Cabin1));
     }
 
     @Test
     void testCrew(){
-        assertEquals(4, ship.crew());
-        ship.unloadCrew(Cabin1);
-        assertEquals(3, ship.crew());
-        ship.brownAlien = true;
-        assertEquals(4, ship.crew());
-        ship.purpleAlien = true;
-        assertEquals(5, ship.crew());
+        try {
+            assertEquals(4, ship.crew());
+            ship.unloadCrew(Cabin1);
+            assertEquals(3, ship.crew());
+            ship.brownAlien = true;
+            assertEquals(4, ship.crew());
+            ship.purpleAlien = true;
+            assertEquals(5, ship.crew());
+        } catch (EmptyCabinException _){
+            fail("Failed to unload crew");
+        }
     }
 
     @Test
     void addComponent() {
         Cannon newCannon = new Cannon();
-        ship.addComponent(newCannon, 1, 5);
+        try {
+            ship.addComponent(newCannon, 1, 5);
+        } catch (InvalidTileException e) {
+            fail("Failed to add component");
+        }
         assertEquals(newCannon, ship.getComponentAt(1, 5));
 
         // Test adding a component at an invalid position
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            ship.addComponent(newCannon, 6, 6);
-        });
+        Exception exception = assertThrows(InvalidTileException.class, () -> ship.addComponent(newCannon, 6, 6));
         assertEquals("Invalid position", exception.getMessage());
     }
 }

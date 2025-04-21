@@ -3,14 +3,13 @@ package it.polimi.ingsw.gc20.model.gamesets;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
-import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.ship.*;
 
-import java.security.InvalidParameterException;
+
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -117,7 +116,7 @@ public class GameModel {
         if (level == 2) {
             board = new NormalBoard();
             board.createDeck();
-            ((NormalBoard)board).mergeDecks();
+            board.mergeDecks();
         } else {
             board = new LearnerBoard();
             board.createDeck();
@@ -138,7 +137,7 @@ public class GameModel {
         try {
             allComponents = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/components.json"), Component[].class));
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Errore nel caricamento dei componenti", e);
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "error while trying to read Component.json", e);
         }
 
         pile.addUnviewed(allComponents);
@@ -153,9 +152,9 @@ public class GameModel {
      *
      *
      * @param c component to remove
-     * @throws NoSuchElementException if the component is not present in the unViewed list
+     * @throws ComponentNotFoundException if the component is not present in the unViewed list
      */
-    public void componentFromUnviewed(Component c) throws NoSuchElementException {
+    public void componentFromUnviewed(Component c) throws ComponentNotFoundException {
         game.getPile().removeUnviewed(c);
     }
 
@@ -163,9 +162,9 @@ public class GameModel {
      * function when a component is taken from the viewed list
      * it removes it from the viewed list
      * @param c component to remove
-     * @throws NoSuchElementException if the component is not present in the viewed list
+     * @throws ComponentNotFoundException if the component is not present in the viewed list
      */
-    public void componentFromViewed(Component c) throws NoSuchElementException {
+    public void componentFromViewed(Component c) throws ComponentNotFoundException {
         game.getPile().removeViewed(c);
     }
 
@@ -176,9 +175,9 @@ public class GameModel {
      * @apiNote this method is called only in level 2 games, and the component in booked list cannot be moved in the viewed list
      * @param c component to remove
      * @param p player that takes the component
-     * @throws IllegalArgumentException if the component is not present in the booked list
+     * @throws ComponentNotFoundException the component is not present in the booked list
      */
-    public void componentFromBooked(Component c, Player p) throws IllegalArgumentException {
+    public void componentFromBooked(Component c, Player p) throws ComponentNotFoundException {
         Ship s = p.getShip();
         ((NormalShip) s).removeBooked(c);
     }
@@ -188,9 +187,9 @@ public class GameModel {
      *
      * @apiNote this method is called only in level 2 games
      * @param numDeck the deck to view
-     * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
+     * @throws InvalidIndexException if numDeck is not 1, 2 or 3
      */
-    public List<AdventureCard> viewDeck(int numDeck) throws IllegalArgumentException {
+    public List<AdventureCard> viewDeck(int numDeck) throws InvalidIndexException {
         Board b = game.getBoard();
         return ((NormalBoard) b).peekDeck(numDeck);
     }
@@ -219,8 +218,9 @@ public class GameModel {
      * @apiNote this method is called only in level 2 games
      * @param c component to add
      * @param p player that adds the component
+     * @throws NoSpaceException if the booked list is full
      */
-    public void componentToBooked(Component c, Player p) {
+    public void componentToBooked(Component c, Player p) throws NoSpaceException {
         Ship s = p.getShip();
         ((NormalShip) s).addBooked(c);
     }
@@ -229,8 +229,9 @@ public class GameModel {
      * function to add a component to the viewed list
      *
      * @param c component to add
+     * @throws DuplicateComponentException if the component is already present in the viewed list
      */
-    public void componentToViewed(Component c) {
+    public void componentToViewed(Component c) throws DuplicateComponentException {
         game.getPile().addViewed(c);
     }
 
@@ -241,8 +242,9 @@ public class GameModel {
      * @param p player that adds the component
      * @param x x coordinate of the component
      * @param y y coordinate of the component
+     * @throws InvalidTileException if the tile is not valid
      */
-    public void addToShip(Component c, Player p, int x, int y) {
+    public void addToShip(Component c, Player p, int x, int y) throws InvalidTileException {
         Ship s = p.getShip();
         s.addComponent(c, x, y);
     }
@@ -306,10 +308,10 @@ public class GameModel {
      * @param a color of the alien
      * @param c cabin for the alien
      * @param p player that adds the alien
-     * @throws IllegalArgumentException  if the component is not a cabin
-     * @throws IllegalArgumentException if the alien has already been added
+     * @throws InvalidAlienPlacement  if the component is not a cabin
+     * @throws InvalidAlienPlacement if the alien has already been added
      */
-    public void setAlien(AlienColor a, Cabin c, Player p) throws IllegalArgumentException {
+    public void setAlien(AlienColor a, Cabin c, Player p) throws InvalidAlienPlacement {
         Ship s = p.getShip();
         ((NormalShip) s).addAlien(a, c);
     }
@@ -318,8 +320,6 @@ public class GameModel {
      * function that sets the astronaut in the ship and move the component from the booked list to the waste
      *
      * @param p player that adds the astronaut
-     * @throws IllegalArgumentException  if the component is not a cabin
-     * @throws InvalidParameterException if the cabin cannot host this type of astronaut
      */
     public void addPieces(Player p) {
         Ship s = p.getShip();
@@ -342,8 +342,9 @@ public class GameModel {
      *  if so the player is set as not in game
      *
      * @return the card drawn
+     * @throws EmptyDeckException if the deck is empty
      */
-    public AdventureCard drawCard() {
+    public AdventureCard drawCard() throws EmptyDeckException{
         game.sortPlayerByPosition();
         for (int i = 1; i< game.getPlayers().size(); i++){
             if (game.getPlayers().getFirst().getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
@@ -365,8 +366,9 @@ public class GameModel {
     /** Function to call when the player lose some member of the crew
      * @param p player that lose the crew
      * @param l list of crew member to remove
+     * @throws EmptyCabinException if the cabin is empty
      */
-    public void loseCrew (Player p, List<Cabin> l){
+    public void loseCrew (Player p, List<Cabin> l) throws EmptyCabinException {
         for (Cabin cabin : l) {
             p.getShip().unloadCrew(cabin);
         }
@@ -403,16 +405,20 @@ public class GameModel {
      * @param p       player whose chose to activate the effect of the card
      * @param cannons double cannons to activate
      * @param energy  energy to use
+     * @throws EnergyException if the energy is not enough
+     * @throws InvalidCannonException if the cannon is not valid
      */
-    public float FirePower(Player p, Set<Cannon> cannons, List<Battery> energy) throws IllegalArgumentException {
+    public float FirePower(Player p, Set<Cannon> cannons, List<Battery> energy) throws EnergyException, InvalidCannonException {
         float power;
-        try {
-            power = p.getShip().firePower(cannons, energy.size());
-            for (Battery e : energy) {
-                p.getShip().useEnergy(e);
+        for (Battery e : energy) {
+            if (e.getAvailableEnergy() == 0) {
+                throw new EnergyException("Not enough energy");
             }
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Not enough energy");
+        }
+        power = p.getShip().firePower(cannons, energy.size());
+
+        for (Battery e : energy) {
+            p.getShip().useEnergy(e);
         }
         return power;
     }
@@ -424,10 +430,16 @@ public class GameModel {
      * @param doubleEngines number of double engines to activate
      * @param energy        list of energy to use
      * @return the engine power of the ship
-     * @throws IllegalArgumentException if the energy passed is not enough or the ship has not sufficient energy
+     * @throws EnergyException if the energy passed is not enough or the ship has not sufficient energy
+     * @throws InvalidEngineException if the engines activated are not valid
      */
-    public int EnginePower(Player p, int doubleEngines, List<Battery> energy) throws IllegalArgumentException {
+    public int EnginePower(Player p, int doubleEngines, List<Battery> energy) throws EnergyException, InvalidEngineException {
         int power;
+        for (Battery e : energy) {
+            if (e.getAvailableEnergy() == 0) {
+                throw new EnergyException("Not enough energy");
+            }
+        }
         if (doubleEngines <= energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Battery e : energy) {
@@ -444,12 +456,19 @@ public class GameModel {
      * @param c    cargo to move
      * @param from cargoHold from
      * @param to   cargoHold to
+     * @throws InvalidCargoException if there are no cargo of that type to unload
+     * @throws CargoNotLoadable if the cargo is not loadable
+     * @throws CargoFullException if the cargoHold is full
      */
-    public void MoveCargo(Player p, CargoColor c, CargoHold from, CargoHold to) {
-        p.getShip().unloadCargo(c, from);
-        if (to != null) {
-            p.getShip().loadCargo(c, to);
+    public void MoveCargo(Player p, CargoColor c, CargoHold from, CargoHold to) throws InvalidCargoException, CargoNotLoadable, CargoFullException {
+        if (to == null){
+            p.getShip().unloadCargo(c, from);
+            return;
         }
+        if (to.getAvailableSlots()==0){
+            throw new CargoFullException("CargoHold has not available slots");
+        }
+        p.getShip().loadCargo(c, to);
     }
 
     /**
@@ -458,8 +477,10 @@ public class GameModel {
      * @param p player that is adding the cargo
      * @param c  cargo to add
      * @param ch cargoHold to add the cargo it needs to be not full
+     * @throws CargoNotLoadable if the cargo is not loadable
+     * @throws CargoFullException if the cargoHold is full
      */
-    public void addCargo(Player p, CargoColor c, CargoHold ch) {
+    public void addCargo(Player p, CargoColor c, CargoHold ch)  throws CargoNotLoadable, CargoFullException {
         p.getShip().loadCargo(c, ch);
     }
 
@@ -468,8 +489,9 @@ public class GameModel {
      *
      * @param p player whose chose to activate the effect of the card
      * @param e energy to use
+     * @throws EnergyException if the energy is not enough
      */
-    public void useShield(Player p, Battery e) {
+    public void useShield(Player p, Battery e) throws EnergyException {
         p.getShip().useEnergy(e);
     }
 
@@ -588,67 +610,19 @@ public class GameModel {
      * @apiNote controller needs to verify how much energy the player has to remove, when cargo are insufficient
      * @param p player that needs to remove the energy
      * @param energy list of energy to remove from the ship
+     * @throws EnergyException if the energy is not enough
      */
-    public void removeEnergy (Player p, List<Battery> energy){
+    public void removeEnergy (Player p, List<Battery> energy) throws EnergyException{
+        for (Battery e: energy){
+            if (e.getAvailableEnergy() == 0) {
+                throw new EnergyException("Not enough energy");
+            }
+        }
         for (Battery e : energy){
             p.getShip().useEnergy(e);
         }
     }
 
-    /** function that verify if the cargo that the player want to remove are the most valued one
-     *
-     * @param p player that want to remove cargo
-     * @param l list of cargo to remove
-     * @return true if the list is valid, false if is not valid
-     */
-    public Boolean verifyCargo (Player p, List<CargoHold> l){
-        int redCounter = 0;
-        int blueCounter = 0;
-        int yellowCounter = 0;
-        int greenCounter = 0;
-
-        for (CargoHold cargohold : l){
-            int red = cargohold.getCargoHeld(CargoColor.RED);
-            int blue = cargohold.getCargoHeld(CargoColor.BLUE);
-            int yellow = cargohold.getCargoHeld(CargoColor.YELLOW);
-            int green = cargohold.getCargoHeld(CargoColor.GREEN);
-
-            if (red > 0) {
-                redCounter++;
-            } else if (blue > 0) {
-                blueCounter++;
-            } else if (yellow > 0) {
-                yellowCounter++;
-            } else if (green > 0) {
-                greenCounter++;
-            }
-        }
-        Map<CargoColor, Integer> totalCargo = p.getShip().getCargo();
-        int totalRed = totalCargo.getOrDefault(CargoColor.RED, 0);
-        int totalBlue = totalCargo.getOrDefault(CargoColor.BLUE, 0);
-        int totalYellow = totalCargo.getOrDefault(CargoColor.YELLOW, 0);
-        int totalGreen = totalCargo.getOrDefault(CargoColor.GREEN, 0);
-        for (int i=0; i<l.size(); i++){
-            if (totalRed>0){
-                totalRed--;
-                redCounter--;
-                if (redCounter<0) {return false;}
-            } else if (totalBlue>0) {
-                totalBlue--;
-                blueCounter--;
-                if (blueCounter<0) {return false;}
-            }else if (totalYellow>0){
-                totalYellow--;
-                yellowCounter--;
-                if (yellowCounter<0) {return false;}
-            } else if (totalGreen>0){
-                totalGreen--;
-                greenCounter--;
-                if (greenCounter<0) {return false;}
-            }
-        }
-        return true;
-    }
 
     /**
      * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
@@ -668,9 +642,9 @@ public class GameModel {
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
-     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     * @throws HourglassException if the hourglass is already turned 3 times or if the remaining time is not 0
      */
-    public void turnHourglass() throws IllegalArgumentException {
+    public void turnHourglass() throws HourglassException {
         Board board = this.game.getBoard();
         ((NormalBoard) board).turnHourglass();
     }

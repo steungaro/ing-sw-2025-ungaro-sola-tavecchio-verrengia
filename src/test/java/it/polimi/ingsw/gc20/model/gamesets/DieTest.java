@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.DieNotRolledException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,14 @@ class DieTest {
 
     @Test
     void getLastRolled() {
+        assertThrows(DieNotRolledException.class, ()->die.getLastRolled());
         die.rollDie();
-        int lastRolled = die.getLastRolled();
-        assertTrue(lastRolled >= 1 && lastRolled <= 6, "Last rolled value should be between 1 and 6");
+        try {
+            int lastRolled = die.getLastRolled();
+            assertTrue(lastRolled >= 1 && lastRolled <= 6, "Last rolled value should be between 1 and 6");
+        } catch (DieNotRolledException e) {
+            fail("Die should have been rolled, but exception was thrown: " + e.getMessage());
+        }
+
     }
 }

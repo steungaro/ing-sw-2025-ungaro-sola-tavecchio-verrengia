@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,14 +19,14 @@ public class StartingCabinTest {
     void alien(){
         try {
             cabin.setAlien(AlienColor.BROWN);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidAlienPlacement e) {
             assertEquals("Cannot set an alien in the starting cabin", e.getMessage());
         }
         assertFalse(cabin.getAlien());
         assertEquals(AlienColor.NONE, cabin.getAlienColor());
         try {
             cabin.unloadAlien();
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidAlienPlacement e) {
             assertEquals("Cannot unload an alien in the starting cabin", e.getMessage());
         }
     }

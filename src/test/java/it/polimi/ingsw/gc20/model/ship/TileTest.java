@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Component;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,11 @@ class TileTest {
     void getComponent() {
         Tile tile = new Tile();
         Component component = new Cabin();
-        tile.addComponent(component);
+        try {
+            tile.addComponent(component);
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
         assertEquals(component, tile.getComponent());
     }
 
@@ -20,12 +25,14 @@ class TileTest {
     void addComponent() {
         Tile tile = new Tile();
         Component component = new Cabin();
-        tile.addComponent(component);
+        try {
+            tile.addComponent(component);
+        } catch (InvalidTileException e){
+            fail("Unexpected exception: " + e.getMessage());
+        }
         assertEquals(component, tile.getComponent());
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            tile.addComponent(new Cabin());
-        });
+        assertThrows(InvalidTileException.class, () -> tile.addComponent(new Cabin()));
     }
 
     @Test
@@ -34,7 +41,11 @@ class TileTest {
         assertTrue(tile.getAvailability());
 
         Component component = new Cabin();
-        tile.addComponent(component);
+        try {
+            tile.addComponent(component);
+        } catch (InvalidTileException e){
+            fail("Unexpected exception: " + e.getMessage());
+        }
         assertFalse(tile.getAvailability());
     }
 
@@ -52,15 +63,19 @@ class TileTest {
     void removeComponent() {
         Tile tile = new Tile();
         Component component = new Cabin();
-        tile.addComponent(component);
-        assertEquals(component, tile.getComponent());
+        try {
+            tile.addComponent(component);
+            assertEquals(component, tile.getComponent());
 
-        tile.removeComponent();
+            tile.removeComponent();
+        } catch (InvalidTileException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
         assertNull(tile.getComponent());
         assertTrue(tile.getAvailability());
         try {
             tile.removeComponent();
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidTileException e) {
             assertEquals("Component does not exist", e.getMessage());
         }
     }
