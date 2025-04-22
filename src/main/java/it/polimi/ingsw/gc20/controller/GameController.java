@@ -11,6 +11,8 @@ import org.javatuples.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -23,6 +25,7 @@ public class GameController implements GameControllerInterface {
     private final String gameID;
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
+    private final Logger logger = Logger.getLogger(GameController.class.getName());
 
     /**
      * Default constructor
@@ -46,7 +49,7 @@ public class GameController implements GameControllerInterface {
             connectedPlayers.addAll(usernames);
             //TODO: notify players of game start
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error starting game", e);
         }
     }
 
@@ -59,7 +62,7 @@ public class GameController implements GameControllerInterface {
             this.state = state;
             //TODO: notify players of state change
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error setting state", e);
         }
     }
 
@@ -71,7 +74,7 @@ public class GameController implements GameControllerInterface {
             return gameID;
         }
         catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting game ID", e);
         }
         return null;
     }
@@ -87,7 +90,7 @@ public class GameController implements GameControllerInterface {
                     .findFirst()
                     .orElse(null);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting first online player", e);
         }
         return null;
     }
@@ -106,7 +109,7 @@ public class GameController implements GameControllerInterface {
                 state = new EndgameState(state.getController());
             }
         } catch(Exception e){
-            handleException(e);
+            logger.log(Level.SEVERE, "Error drawing card", e);
         }
     }
 
@@ -118,7 +121,7 @@ public class GameController implements GameControllerInterface {
         try{
             return state.toString();
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting state", e);
         }
         return null;
     }
@@ -136,7 +139,7 @@ public class GameController implements GameControllerInterface {
             state.landOnPlanet(getPlayerByID(username), planetIndex);
         }
         catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error landing on planet", e);
         }
 
     }
@@ -154,7 +157,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.shootEnemy(getPlayerByID(username), cannons, batteries);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error shooting enemy", e);
         }
     }
 
@@ -173,7 +176,7 @@ public class GameController implements GameControllerInterface {
             Player player = getPlayerByID(username);
             state.loadCargo(player, loaded, ch);
         } catch (Exception e){
-            handleException(e);
+            logger.log(Level.SEVERE, "Error loading cargo", e);
         }
     }
 
@@ -191,7 +194,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.unloadCargo(getPlayerByID(username), lost, ch);
         } catch (Exception e){
-            handleException(e);
+            logger.log(Level.SEVERE, "Error unloading cargo", e);
         }
     }
 
@@ -210,7 +213,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.moveCargo(getPlayerByID(username), cargo, from, to);
         } catch (Exception e){
-            handleException(e);
+            logger.log(Level.SEVERE, "Error moving cargo", e);
         }
     }
 
@@ -225,7 +228,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.acceptCard(getPlayerByID(username));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error accepting card", e);
         }
     }
 
@@ -233,8 +236,9 @@ public class GameController implements GameControllerInterface {
         try{
             return connectedPlayers.size();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, "Error getting online players", e);
         }
+        return 0;
     }
 
     /**
@@ -250,7 +254,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error activating cannons", e);
         }
     }
 
@@ -263,7 +267,7 @@ public class GameController implements GameControllerInterface {
         try{
             return state.getScore();
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting score", e);
         }
         return null;
     }
@@ -280,7 +284,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.loseCrew(getPlayerByID(username), cabins);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error losing crew", e);
         }
     }
 
@@ -297,7 +301,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error activating shield", e);
         }
     }
 
@@ -310,7 +314,7 @@ public class GameController implements GameControllerInterface {
         try{
             return model.getActiveCard();
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting active card", e);
         }
         return null;
     }
@@ -325,7 +329,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.endMove(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error ending move", e);
         }
     }
 
@@ -343,7 +347,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateEngines(getPlayerByID(username), engines, batteries);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error activating engines", e);
         }
     }
 
@@ -359,7 +363,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.chooseBranch(getPlayerByID(username), coordinates);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error choosing brance", e);
         }
     }
 
@@ -378,7 +382,7 @@ public class GameController implements GameControllerInterface {
                 return getPlayerByID(asked).getPublicData();
             }
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting player data", e);
         }
         return null;
     }
@@ -393,7 +397,7 @@ public class GameController implements GameControllerInterface {
         try{
             return state.getScore();
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting player score", e);
         }
         return null;
     }
@@ -408,7 +412,7 @@ public class GameController implements GameControllerInterface {
         try {
             model.giveUp(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error giving up", e);
         }
     }
 
@@ -434,7 +438,7 @@ public class GameController implements GameControllerInterface {
                 MatchController.getInstance().endGame(gameID);
             }
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error disconnecting player", e);
         }
     }
 
@@ -466,7 +470,7 @@ public class GameController implements GameControllerInterface {
             }
             return true;
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error reconnecting player", e);
         }
         return false;
     }
@@ -486,7 +490,7 @@ public class GameController implements GameControllerInterface {
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Player not found"));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting player by ID", e);
         }
         return null;
     }
@@ -504,7 +508,7 @@ public class GameController implements GameControllerInterface {
             }
             return usernames;
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting all usernames", e);
         }
         return null;
     }
@@ -518,7 +522,7 @@ public class GameController implements GameControllerInterface {
         try{
             return new ArrayList<>(disconnectedPlayers);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting disconnected players", e);
         }
         return null;
     }
@@ -533,7 +537,7 @@ public class GameController implements GameControllerInterface {
         try{
             return disconnectedPlayers.contains(username);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error checking if the player is disconnect", e);
         }
         return false;
     }
@@ -552,7 +556,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromUnviewed(getPlayerByID(username), index);
             // TODO: notify players of component taken
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error taking component from unviewed", e);
         }
     }
 
@@ -570,7 +574,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromViewed(getPlayerByID(username), index);
             // TODO: notify players of component taken
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error taking component from view", e);
         }
     }
 
@@ -591,7 +595,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromBooked(getPlayerByID(username), index);
             // TODO: notify players of component taken
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error taking componente from booked", e);
         }
     }
 
@@ -609,7 +613,7 @@ public class GameController implements GameControllerInterface {
             }
             state.addComponentToBooked(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error adding component to booked", e);
         }
     }
 
@@ -623,7 +627,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.addComponentToViewed(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error adding component to view", e);
         }
     }
 
@@ -640,7 +644,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.placeComponent(getPlayerByID(username), coordinates);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error placing component", e);
         }
     }
 
@@ -654,7 +658,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.rotateComponentClockwise(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error rotating component clockwise", e);
         }
     }
 
@@ -668,7 +672,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.rotateComponentCounterclockwise(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error rotating component clockwise", e);
         }
     }
 
@@ -685,7 +689,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.removeComp(getPlayerByID(username), component);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error removing component from ship", e);
         }
     }
 
@@ -703,7 +707,7 @@ public class GameController implements GameControllerInterface {
             state.isShipValid(getPlayerByID(username));
             // TODO: notify players of ship validation
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error validating ship", e);
         }
     }
 
@@ -722,7 +726,7 @@ public class GameController implements GameControllerInterface {
                 //TODO: notify players of state change
             }
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error stopping assembling", e);
         }
     }
 
@@ -745,7 +749,7 @@ public class GameController implements GameControllerInterface {
             }
             state.turnHourglass(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error turning hourglass", e);
         }
     }
 
@@ -767,7 +771,7 @@ public class GameController implements GameControllerInterface {
             }
             return state.getHourglassTime(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting hourglass", e);
         }
         return 0;
     }
@@ -792,7 +796,7 @@ public class GameController implements GameControllerInterface {
             state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error peeking deek", e);
         }
     }
 
@@ -814,7 +818,7 @@ public class GameController implements GameControllerInterface {
             }
             state.addAlien(getPlayerByID(username), color, cabin);
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error adding alien", e);
         }
     }
 
@@ -835,7 +839,7 @@ public class GameController implements GameControllerInterface {
                 //TODO: notify players of state change
             }
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error ready to fly", e);
         }
     }
 
@@ -843,7 +847,7 @@ public class GameController implements GameControllerInterface {
         try{
             model.giveUp(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error shooting enemy", e);
         }
     }
 
@@ -857,7 +861,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.rollDice(getPlayerByID(username));
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error rolling dice", e);
         }
     }
 
@@ -870,7 +874,7 @@ public class GameController implements GameControllerInterface {
         try{
             return model;
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting model", e);
         }
         return null;
     }
@@ -883,69 +887,8 @@ public class GameController implements GameControllerInterface {
                     .filter(connectedPlayers::contains)
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            handleException(e);
+            logger.log(Level.SEVERE, "Error getting in came connected players", e);
         }
         return null;
-    }
-
-    /**
-     * Manage Errors
-     * @param e exception
-     */
-    public void handleException(Exception e) {
-        // Log dell'errore con dettagli
-        System.err.println("Errore rilevato: " + e.getMessage());
-
-        // Gestione specifica in base al tipo di eccezione
-        if (e instanceof EmptyDeckException) {
-            System.err.println("Mazzo di carte vuoto: il gioco sta terminando");
-            state = new EndgameState(this);
-        } else if (e instanceof InvalidTurnException) {
-            System.err.println("Turno non valido: azione eseguita dal giocatore sbagliato");
-        } else if (e instanceof InvalidShipException) {
-            System.err.println("Nave non valida: la nave contiene errori di configurazione");
-        } else if (e instanceof InvalidCannonException) {
-            System.err.println("Cannone non valido: impossibile attivare questo cannone");
-        } else if (e instanceof InvalidEngineException) {
-            System.err.println("Motore non valido: impossibile attivare questo motore");
-        } else if (e instanceof EnergyException) {
-            System.err.println("Energia insufficiente: non ci sono abbastanza batterie");
-        } else if (e instanceof CargoException) {
-            System.err.println("Errore di carico generico");
-        } else if (e instanceof CargoNotLoadable) {
-            System.err.println("Carico non caricabile: tipo di carico non valido");
-        } else if (e instanceof CargoFullException) {
-            System.err.println("Vano di carico pieno: impossibile caricare altro");
-        } else if (e instanceof InvalidCargoException) {
-            System.err.println("Carico non valido: operazione non consentita");
-        } else if (e instanceof EmptyCabinException) {
-            System.err.println("Cabina vuota: richiesta azione su cabina senza equipaggio");
-        } else if (e instanceof DeadAlienException) {
-            System.err.println("Alieno morto: impossibile eseguire l'azione richiesta");
-        } else if (e instanceof DieNotRolledException) {
-            System.err.println("Dado non lanciato: necessario lanciare il dado prima");
-        } else if (e instanceof NoSpaceException) {
-            System.err.println("Spazio insufficiente: impossibile aggiungere altri componenti");
-        } else if (e instanceof DuplicateComponentException) {
-            System.err.println("Componente duplicato: questo componente esiste già");
-        } else if (e instanceof HourglassException) {
-            System.err.println("Errore clessidra: operazione non valida");
-        } else if (e instanceof InvalidAlienPlacement) {
-            System.err.println("Posizionamento alieno non valido: posizione non consentita");
-        } else if (e instanceof InvalidIndexException) {
-            System.err.println("Indice non valido: valore fuori intervallo");
-        } else if (e instanceof IllegalStateException) {
-            System.err.println("Stato non valido: operazione non consentita nello stato attuale");
-        } else if (e instanceof IllegalArgumentException) {
-            System.err.println("Argomento non valido: parametro errato");
-        } else if (e instanceof NoSuchElementException) {
-            System.err.println("Elemento non trovato: componente o risorsa inesistente");
-        } else {
-            System.err.println("Errore generico non categorizzato");
-            e.printStackTrace();
-        }
-
-        // Potenziale notifica ai client (da implementare)
-        // notifyClientsOfError(e.getMessage());
     }
 }
