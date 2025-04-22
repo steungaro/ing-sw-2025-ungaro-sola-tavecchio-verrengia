@@ -47,7 +47,7 @@ class GameControllerTest {
         adventureCard.setCrew(2);
         adventureCard.setCredits(3);
         adventureCard.setLostDays(1);
-        abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
+        abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
     }
 
     @Test
@@ -218,7 +218,7 @@ class GameControllerTest {
         adventureCard1.setCrew(2);
         adventureCard1.setCredits(3);
         adventureCard1.setLostDays(1);
-        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController, gameController.getModel(), adventureCard1);
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard1);
         gameController.setState(abandonedShipState1);
         gameController.getModel().setActiveCard(adventureCard);
 
@@ -272,7 +272,7 @@ class GameControllerTest {
     @Test
     void endMove() throws InvalidTurnException, InvalidShipException {
         // TODO -> Better test in State section
-        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController, gameController.getModel(), adventureCard);
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.endMove("player1");
     }

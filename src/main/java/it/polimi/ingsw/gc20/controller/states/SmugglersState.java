@@ -34,7 +34,7 @@ public class SmugglersState extends CargoState {
     /**
      * Default constructor
      */
-    public SmugglersState(GameController controller, GameModel model, AdventureCard card) {
+    public SmugglersState(GameModel model, GameController controller, AdventureCard card) {
         super(controller, model);
         this.lostCargo = card.getLostCargo();
         this.firePower = card.getFirePower();

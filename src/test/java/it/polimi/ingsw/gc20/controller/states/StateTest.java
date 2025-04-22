@@ -41,7 +41,7 @@ class StateTest {
         adventureCard.setCrew(2);
         adventureCard.setCredits(3);
         adventureCard.setLostDays(1);
-        abandonedShipState = new AbandonedShipState(gameController, model, adventureCard);
+        abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
     }
 
 
