@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.ComponentNotFoundException;
+import it.polimi.ingsw.gc20.exceptions.DuplicateComponentException;
 import it.polimi.ingsw.gc20.model.components.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,18 +42,36 @@ public class PileTest {
         components.add(component2);
         pile.addUnviewed(components);
         assertEquals(components, pile.getUnviewed());
-        pile.removeUnviewed(component1);
+        try {
+            pile.removeUnviewed(component1);
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
         assertFalse(pile.getUnviewed().contains(component1));
+        Component newComponent = new Cabin();
+        assertThrows(ComponentNotFoundException.class, () -> pile.removeUnviewed(newComponent));
+        assertThrows(ComponentNotFoundException.class, () -> pile.removeViewed(newComponent));
+        try {
+            pile.addViewed(newComponent);
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
+        assertThrows(DuplicateComponentException.class, () -> pile.addViewed(newComponent));
+
     }
 
     @Test
     void testGetAndAddAndRemoveViewed(){
-        pile.addViewed(component3);
-        pile.addViewed(component1);
-        assertTrue(pile.getViewed().contains(component1));
-        assertTrue(pile.getViewed().contains(component3));
-        pile.removeViewed(component1);
-        pile.removeViewed(component3);
-        assertTrue(pile.getViewed().isEmpty());
+        try {
+            pile.addViewed(component3);
+            pile.addViewed(component1);
+            assertTrue(pile.getViewed().contains(component1));
+            assertTrue(pile.getViewed().contains(component3));
+            pile.removeViewed(component1);
+            pile.removeViewed(component3);
+            assertTrue(pile.getViewed().isEmpty());
+        } catch (Exception _) {
+            fail("Exception should not be thrown");
+        }
     }
 }

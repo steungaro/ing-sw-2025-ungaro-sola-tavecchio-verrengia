@@ -176,10 +176,15 @@ public class MatchController implements MatchControllerInterface {
                 .orElseThrow(() -> new IllegalArgumentException("No such lobby"))
                 .createGameController());
         lobbies.removeIf(l -> l.getId().equals(id));
+        List<String> usersToRemove = new ArrayList<>();
         for (String user : playersInLobbies.keySet()) {
             if (playersInLobbies.get(user).getId().equals(id)) {
-                playersInLobbies.remove(user);
+                usersToRemove.add(user);
             }
+        }
+
+        for (String user : usersToRemove) {
+            playersInLobbies.remove(user);
         }
     }
 }

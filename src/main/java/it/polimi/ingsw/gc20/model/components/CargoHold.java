@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.CargoFullException;
+import it.polimi.ingsw.gc20.exceptions.CargoNotLoadable;
+import it.polimi.ingsw.gc20.exceptions.InvalidCargoException;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.model.ship.Ship;
+
 import java.util.*;
 
 public class CargoHold extends Component {
@@ -51,32 +56,19 @@ public class CargoHold extends Component {
         this.availableSlots = slots;
     }
 
-    /**
-     * Function that sets the cargo in the cargo hold.
-     * @param newCargoHeld the cargo to set
-     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
-     */
-    public void setCargoHeld(List<CargoColor> newCargoHeld) {
-        if (newCargoHeld.stream().anyMatch(c -> c == CargoColor.RED)) {
-            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
-        }
-        for (CargoColor c : newCargoHeld) {
-            cargoHeld.put(c, cargoHeld.getOrDefault(c, 0) + 1);
-        }
-        this.availableSlots -= newCargoHeld.size();
-    }
 
     /**
      * This method is used to load a cargo in the cargo hold
      * @param g the cargo to be loaded
-     * @throws IllegalArgumentException if the cargo hold cannot hold red cargo
+     * @throws CargoNotLoadable if the cargo hold cannot hold red cargo
+     * @throws CargoFullException if the cargo hold is full
      */
-    public void loadCargo(CargoColor g) {
+    public void loadCargo(CargoColor g) throws CargoFullException, CargoNotLoadable {
         if (g == CargoColor.RED) {
-            throw new IllegalArgumentException("CargoHold cannot hold red cargo");
+            throw new CargoNotLoadable("CargoHold cannot hold red cargo");
         }
         if (this.availableSlots == 0) {
-            throw new IllegalArgumentException("CargoHold is full");
+            throw new CargoFullException("CargoHold is full");
         }
         cargoHeld.put(g, cargoHeld.getOrDefault(g, 0) + 1);
         this.availableSlots--;
@@ -85,17 +77,32 @@ public class CargoHold extends Component {
     /**
      * This method is used to unload a cargo from the cargo hold
      * @param c the cargo to be unloaded
-     * @throws IllegalArgumentException if the cargo is not in the cargo hold
+     * @throws InvalidCargoException if the cargo is not in the cargo hold
      */
-    public void unloadCargo(CargoColor c) {
+    public void unloadCargo(CargoColor c) throws InvalidCargoException {
+        if (!cargoHeld.containsKey(c) || cargoHeld.get(c) == 0) {
+            throw new InvalidCargoException("Cargo not in cargo hold");
+        }
         cargoHeld.put(c, cargoHeld.get(c) - 1);
         this.availableSlots++;
     }
 
     /**
-     * This method is used to clean the cargo hold.
+     * Function to update the parameter of the ship
+     * @param ship ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
      */
-    public void cleanCargo() {
-        cargoHeld.clear();
+    @Override
+    public void updateParameter (Ship ship, int sign) {
+        if (sign < 0) {
+            for (CargoColor c : cargoHeld.keySet()) {
+                if (cargoHeld.get(c) > 0) {
+                    try {
+                        ship.unloadCargo(c, this);
+                    } catch (InvalidCargoException _) {}
+                }
+
+            }
+        }
     }
 }

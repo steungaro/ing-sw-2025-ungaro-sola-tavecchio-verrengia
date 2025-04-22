@@ -1,27 +1,45 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
+
 public class StartingCabin extends Cabin {
 
     public StartingCabin() {}
 
+    /** Function that try to set an alien in the cabin.
+     * @param color the color of the alien
+     * @throws InvalidAlienPlacement because the starting cabin cannot have an alien
+     */
     @Override
-    public void setAlien(AlienColor color) {
-        throw new IllegalArgumentException("Cannot set an alien in the starting cabin");
+    public void setAlien(AlienColor color) throws InvalidAlienPlacement {
+        throw new InvalidAlienPlacement("Cannot set an alien in the starting cabin");
     }
 
+    /**
+     * Function that returns the alien in the cabin.
+     * @return false because the starting cabin cannot have an alien
+     */
     @Override
     public boolean getAlien() {
         return false;
     }
 
+    /**
+     * Function that returns the color of the alien in the cabin.
+     * @return NONE because the starting cabin cannot have an alien
+     */
     @Override
     public AlienColor getAlienColor() {
         return AlienColor.NONE;
     }
 
+    /**
+     * Function that unload alien from the cabin.
+     * @throws InvalidAlienPlacement because the starting cabin cannot have an alien
+     */
     @Override
-    public void unloadAlien() {
-        throw new IllegalArgumentException("Cannot unload an alien in the starting cabin");
+    public void unloadAlien() throws InvalidAlienPlacement {
+        throw new InvalidAlienPlacement("Cannot unload an alien in the starting cabin");
     }
 
     /**
@@ -33,6 +51,10 @@ public class StartingCabin extends Cabin {
         super.setColor(AlienColor.NONE);
     }
 
+    /**
+     * Function that removes support from the cabin.
+     * @param ls the lifeSupport that's removed
+     */
     @Override
     public void removeSupport(LifeSupport ls) {
         super.setColor(AlienColor.NONE);

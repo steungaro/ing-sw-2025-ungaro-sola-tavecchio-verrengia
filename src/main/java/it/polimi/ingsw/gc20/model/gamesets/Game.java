@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.gamesets;
 
+import it.polimi.ingsw.gc20.exceptions.DieNotRolledException;
 import it.polimi.ingsw.gc20.model.player.Player;
 
 
@@ -10,7 +11,7 @@ import java.util.*;
  */
 public class Game {
 
-    private List<Player> players;
+    private final List<Player> players;
     private Board board;
     private String gameID;
     private Pile pile;
@@ -32,9 +33,7 @@ public class Game {
      * @param p player to add
      */
     public void addPlayer(Player p){
-
         players.add(p);
-        board.addPlayer(p);
     }
 
     /** get function for players
@@ -162,8 +161,9 @@ public class Game {
 
     /** function that returns the last rolled value of the dice without rolling them
      * @return int sum of the two dice
+     * @throws DieNotRolledException if the dice have not been rolled yet
      */
-    public int lastRolled() {
+    public int lastRolled() throws DieNotRolledException {
         return dice[0].getLastRolled() + dice[1].getLastRolled();
     }
 }

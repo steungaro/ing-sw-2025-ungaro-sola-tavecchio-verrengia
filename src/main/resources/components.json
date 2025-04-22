@@ -8,7 +8,7 @@
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -20,7 +20,7 @@
         "RIGHT": "D",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -32,7 +32,7 @@
         "RIGHT": "D",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -44,7 +44,7 @@
         "RIGHT": "S",
         "LEFT": "S"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -56,7 +56,7 @@
         "RIGHT": "ZERO",
         "LEFT": "S"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -68,7 +68,7 @@
         "RIGHT": "S",
         "LEFT": "S"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -80,7 +80,7 @@
         "RIGHT": "D",
         "LEFT": "D"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -92,7 +92,7 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -104,7 +104,7 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -116,7 +116,7 @@
         "RIGHT": "U",
         "LEFT": "U"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -128,7 +128,7 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "energy": "null",
+      "availableEnergy": "2",
       "slots": "2"
     },
     {
@@ -140,7 +140,7 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
     {
@@ -152,7 +152,7 @@
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
     {
@@ -164,7 +164,7 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
     {
@@ -176,7 +176,7 @@
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
     {
@@ -188,7 +188,7 @@
         "RIGHT": "D",
         "LEFT": "ZERO"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
     {
@@ -200,7 +200,7 @@
         "RIGHT": "ZERO",
         "LEFT": "S"
       },
-      "energy": "null",
+      "availableEnergy": "3",
       "slots": "3"
     },
 
@@ -760,7 +760,6 @@
             "RIGHT": "U",
             "LEFT": "ZERO"
         },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -772,7 +771,6 @@
         "RIGHT": "U",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -784,7 +782,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -796,7 +793,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -808,7 +804,6 @@
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -820,7 +815,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -832,7 +826,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -844,7 +837,6 @@
         "RIGHT": "U",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -856,7 +848,6 @@
         "RIGHT": "D",
         "LEFT": "ZERO"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -868,7 +859,6 @@
         "RIGHT": "U",
         "LEFT": "S"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -880,7 +870,6 @@
         "RIGHT": "S",
         "LEFT": "S"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -892,7 +881,6 @@
         "RIGHT": "ZERO",
         "LEFT": "S"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -904,7 +892,6 @@
         "RIGHT": "D",
         "LEFT": "S"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -916,7 +903,6 @@
         "RIGHT": "S",
         "LEFT": "D"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -928,7 +914,6 @@
         "RIGHT": "D",
         "LEFT": "D"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -940,7 +925,6 @@
         "RIGHT": "ZERO",
         "LEFT": "D"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -952,7 +936,6 @@
         "RIGHT": "S",
         "LEFT": "D"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -964,7 +947,6 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -976,7 +958,6 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -988,7 +969,6 @@
         "RIGHT": "D",
         "LEFT": "U"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -1000,7 +980,6 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "power": "1",
       "doublePower": "false"
     },
     {
@@ -1012,7 +991,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1024,7 +1002,6 @@
         "RIGHT": "D",
         "LEFT": "ZERO"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1036,7 +1013,6 @@
         "RIGHT": "ZERO",
         "LEFT": "ZERO"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1048,7 +1024,6 @@
         "RIGHT": "S",
         "LEFT": "ZERO"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1060,7 +1035,6 @@
         "RIGHT": "S",
         "LEFT": "S"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1072,7 +1046,6 @@
         "RIGHT": "D",
         "LEFT": "D"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1084,7 +1057,6 @@
         "RIGHT": "ZERO",
         "LEFT": "D"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1096,7 +1068,6 @@
         "RIGHT": "U",
         "LEFT": "U"
       },
-      "power": "2",
       "doublePower": "true"
     },
     {
@@ -1108,7 +1079,6 @@
         "RIGHT": "ZERO",
         "LEFT": "U"
       },
-      "power": "2",
       "doublePower": "true"
     },
 

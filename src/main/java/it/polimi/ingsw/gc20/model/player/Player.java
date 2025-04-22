@@ -66,7 +66,7 @@ public class Player {
     }
 
     /** get function for the ship of the player
-     * @return Ship ship
+     * @return ship of the player
      */
     public Ship getShip() {
         return this.ship;
@@ -112,7 +112,7 @@ public class Player {
      * @return Integer debit (the difference between the credits to remove and the credits of the player)
      */
     public Integer removeCredits(Integer c){
-        Integer debit = 0;
+        int debit = 0;
         this.credits -= c;
 
         //if the player doesn't have enough credits, the credits are set to 0 and the difference is returned

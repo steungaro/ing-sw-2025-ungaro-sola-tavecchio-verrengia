@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * @author GC20
@@ -33,7 +34,7 @@ public class LearnerBoard extends Board {
 
             cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error reading cards.json", e);
         }
         for (AdventureCard card : cards) {
             if (card.getLevel() == 0) {

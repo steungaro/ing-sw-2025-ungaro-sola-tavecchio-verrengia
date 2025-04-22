@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,13 +102,13 @@ public class FireManager {
         return fires.getFirst().getFireType() == FireType.HEAVY_FIRE;
     }
 
-    public void chooseBranch(Player p, Integer row, Integer col) throws InvalidTurnException {
+    public void chooseBranch(Player p, Pair<Integer, Integer> coordinates) throws InvalidTurnException {
         if (!p.equals(player)) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (!validator.isSplit()) {
             throw new IllegalStateException("Ship is valid.");
         }
-        validator.chooseBranch(p, row, col);
+        validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
     }
 }

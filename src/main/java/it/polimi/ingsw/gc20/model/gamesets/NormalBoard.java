@@ -2,21 +2,23 @@ package it.polimi.ingsw.gc20.model.gamesets;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import it.polimi.ingsw.gc20.exceptions.HourglassException;
+import it.polimi.ingsw.gc20.exceptions.InvalidIndexException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.gc20.model.components.Component;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * @author GC20
  */
 public class NormalBoard extends Board {
-    private List<AdventureCard> firstVisible;
-    private List<AdventureCard> secondVisible;
-    private List<AdventureCard> thirdVisible;
-    private List<AdventureCard> invisible;
-    private final Hourglass hourglass;
+    private final List<AdventureCard> firstVisible;
+    private final List<AdventureCard> secondVisible;
+    private final List<AdventureCard> thirdVisible;
+    private final List<AdventureCard> invisible;
+    protected final Hourglass hourglass;
 
     /**
      * Default constructor
@@ -28,11 +30,12 @@ public class NormalBoard extends Board {
         this.thirdVisible = new ArrayList<>();
         this.invisible = new ArrayList<>();
         this.setSpaces(24);
-        this.hourglass = new Hourglass(5);
+        this.hourglass = new Hourglass(90);
     }
 
     /** function that merges the decks and shuffles them
      */
+    @Override
     public void mergeDecks() {
         // deck merging
         List <AdventureCard> deck = new ArrayList<>();
@@ -56,14 +59,14 @@ public class NormalBoard extends Board {
     /** function that peek the numDeck deck and returns it
      * @param numDeck the deck to peek
      * @return List<AdventureCard>
-     * @throws IllegalArgumentException if numDeck is not 1, 2 or 3
+     * @throws InvalidIndexException if numDeck is not 1, 2 or 3
      */
-    public List<AdventureCard> peekDeck(Integer numDeck) throws IllegalArgumentException {
+    public List<AdventureCard> peekDeck(Integer numDeck) throws InvalidIndexException {
         return switch (numDeck) {
             case 1 -> this.firstVisible;
             case 2 -> this.secondVisible;
             case 3 -> this.thirdVisible;
-            default -> throw new IllegalArgumentException("Invalid numDeck");
+            default -> throw new InvalidIndexException("Invalid numDeck");
         };
     }
 
@@ -80,7 +83,7 @@ public class NormalBoard extends Board {
         try {
             cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error while reading the cards.json file", e);
         }
         for (AdventureCard card : cards) {
             if (card.getLevel() == 1 || card.getLevel() == 0) {
@@ -118,29 +121,29 @@ public class NormalBoard extends Board {
 
     }
 
-    /** getter funcion for one of the four decks
+    /** getter function for one of the four decks
      * @param numDeck the deck to get
      * @return List<AdventureCard>
-     * @throws IllegalArgumentException if numDeck is not 1, 2, 3 or 4
+     * @throws InvalidIndexException if numDeck is not 1, 2, 3 or 4
      */
-    public List<AdventureCard> getDeck(Integer numDeck) {
+    public List<AdventureCard> getDeck(Integer numDeck) throws InvalidIndexException {
         return switch (numDeck) {
             case 1 -> this.firstVisible;
             case 2 -> this.secondVisible;
             case 3 -> this.thirdVisible;
             case 4 -> this.invisible;
-            default -> throw new IllegalArgumentException("Invalid numDeck");
+            default -> throw new InvalidIndexException("Invalid numDeck");
         };
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
-     * @throws IllegalArgumentException if the hourglass is already turned 3 times or if the remaining time is not 0
+     * @throws HourglassException if the hourglass is already turned 3 times or if the remaining time is not 0
      */
-    public void turnHourglass() {
+    public void turnHourglass() throws HourglassException {
         if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 2) {
             this.hourglass.turn();
         } else {
-            throw new IllegalArgumentException("Cannot turn the hourglass when the remaining time is not 0 or when it has already been turned 2 times.");
+            throw new HourglassException("Cannot turn the hourglass when the remaining time is not 0 or when it has already been turned 2 times.");
         }
     }
 

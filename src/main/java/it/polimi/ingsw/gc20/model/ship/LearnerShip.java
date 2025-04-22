@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.EmptyCabinException;
+import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.*;
 
 import java.util.HashMap;
@@ -10,12 +12,11 @@ import java.util.Map;
  */
 public class LearnerShip extends Ship {
 
-    private Tile[][] table = new Tile[5][5];
 
 
     public LearnerShip() {
         super();
-
+        table = new Tile[5][7];
         // Init table
         for (int i=0; i<5; i++) {
             for (int j=0; j<5; j++) {
@@ -38,7 +39,9 @@ public class LearnerShip extends Ship {
         connectors.put(Direction.RIGHT, ConnectorEnum.U);
         Component sc = new StartingCabin();
         sc.setConnectors(connectors);
-        table[2][2].addComponent(sc);
+        try {
+            table[2][2].addComponent(sc);
+        } catch (InvalidTileException _) {}
         table[2][2].setAvailability(false);
     }
 
@@ -76,73 +79,27 @@ public class LearnerShip extends Ship {
      * @param c: the component to be added
      * @param row: position of the component
      * @param col: position of the component
+     * @throws  InvalidTileException if the tile is not available
      */
     @Override
-    protected void setComponentAt(Component c, int row, int col) {
+    protected void setComponentAt(Component c, int row, int col) throws InvalidTileException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             table[row][col].addComponent(c);
         }
     }
 
     /**
-     * Adds a component to the ship at the specified position and updates ship parameters
-     * @param c Component to add
-     * @param row Row position
-     * @param col Column position
+     * Function to unload a crew member from the ship
+     * @param c is the crew member to be unloaded
+     * @throws EmptyCabinException if the cabin is empty
      */
-    public void addComponent(Component c, int row, int col){
-        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
-            setComponentAt( c, row, col);
-            updateParametersSet(c);
-            c.setTile(table[row][col]);
-        }
-    }
-
     @Override
-    public void unloadCrew(Cabin c) {
+    public void unloadCrew(Cabin c) throws EmptyCabinException {
         if (c.getAstronauts() < 1) {
-            throw new IllegalArgumentException("Empty cabin");
+            throw new EmptyCabinException("Empty cabin");
         }
         c.unloadAstronaut();
         astronauts--;
     }
 
-    /**
-     * Updates ship parameters when components are removed
-     * @param c Component being removed
-     */
-    @Override
-    protected void updateParametersRemove(Component c){
-        if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()==Direction.UP){
-                if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower--;
-                }else{
-                    doubleCannonsPower -= 2;
-                }
-            }else{
-                if(((Cannon) c).getPower() == 2) {
-                    doubleCannons--;
-                    doubleCannonsPower--;
-                }else if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower -= 0.5f;
-                }
-            }
-        }else if(c instanceof Engine){
-            if(((Engine) c).getDoublePower()){
-                doubleEngines--;
-            }else{
-                singleEngines--;
-            }
-        }else if(c instanceof Battery){
-            totalEnergy -= ((Battery) c).getAvailableEnergy();
-        } else if (c instanceof Cabin) {
-            astronauts -= ((Cabin) c).getOccupants();
-        } else if (c instanceof CargoHold) {
-            ((CargoHold) c).getCargoHeld().forEach((k, v) -> {
-                Integer current = cargos.getOrDefault(k, 0);
-                cargos.put(k, current - v);
-            });
-        }
-    }
 }

@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc20.model.ship;
 
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-import org.javatuples.Tuple;
-
 import java.util.*;
 
 /**
@@ -21,7 +20,7 @@ public abstract class Ship {
     protected Integer totalEnergy;
     protected Map<CargoColor, Integer> cargos;
     protected Integer astronauts;
-    List<Component> trash = new ArrayList<>();
+    protected Tile[][] table;
     /**
      * Default constructor. Initializes default ship values.
      */
@@ -37,7 +36,23 @@ public abstract class Ship {
         astronauts = 0;
     }
 
-    public abstract void addComponent(Component c, int row, int col);
+    /**
+     * Function to add a component to the ship
+     * @param c component to add
+     * @param row where to add the component
+     * @param col where to add the component
+     */
+    public void addComponent(Component c, int row, int col) throws InvalidTileException {
+        if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
+            setComponentAt( c, row, col);
+            try {
+                c.updateParameter(this, 1);
+            } catch (DeadAlienException _) {}
+            c.setTile(table[row][col]);
+        } else {
+            throw new InvalidTileException("Position not valid");
+        }
+    }
 
     /**
      * Gets the total number of rows in the ship grid
@@ -65,7 +80,7 @@ public abstract class Ship {
      * @param row Row index
      * @param col Column index
      */
-    protected abstract void setComponentAt(Component c, int row, int col);
+    protected abstract void setComponentAt(Component c, int row, int col) throws InvalidTileException;
 
     /**
      * Function that determines the total firepower of the ship
@@ -74,13 +89,17 @@ public abstract class Ship {
      * it also checks if the ship has the necessary amount of batteries
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
-     * @throws IllegalArgumentException if the number of cannons is greater than the total energy of the ship
+     * @throws EnergyException if the number of cannons is greater than the total energy of the ship
+     * @throws InvalidCannonException if a cannon is a single cannon
      */
-    public float firePower(Set<Cannon> cannons, Integer energies) throws IllegalArgumentException {
+    public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
         if(energies > totalEnergy || cannons.size() != energies)
-            throw new IllegalArgumentException("cannon size too large");
+            throw new EnergyException("cannon size too large");
         float power  = singleCannonsPower;
         for(Cannon cannon : cannons){
+            if (cannon.getPower() == 1){
+                throw new InvalidCannonException("cannot select single cannon");
+            }
             if (cannon.getOrientation() == Direction.UP)
                 power += cannon.getPower();
             else {
@@ -93,8 +112,12 @@ public abstract class Ship {
     /**Function that determines the total engine power of the ship that the user wants to activate
      * @param doubleEnginesActivated: the number of double engines the user wants to activate => the number of battery cells consumed
      * @return power_of_the_ship
+     * @throws IllegalArgumentException if the number of double engines activated is greater than the total number of double engines
      */
-    public Integer enginePower(Integer doubleEnginesActivated) {
+    public Integer enginePower(Integer doubleEnginesActivated) throws InvalidEngineException {
+        if (doubleEnginesActivated > doubleEngines) {
+            throw new InvalidEngineException("not enough double engines");
+        }
         return doubleEnginesActivated * 2 + singleEngines;
     }
 
@@ -176,9 +199,11 @@ public abstract class Ship {
         //parse throw the component of the ship until it finds a shield that covers the direction d or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
+
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < cols; j++){
-                if(getComponentAt(i, j) != null && (getComponentAt(i, j) instanceof Shield) && Arrays.asList(((Shield) (getComponentAt(i, j))).getCoveredSides()).contains(d)){
+                Component component = getComponentAt(i, j);
+                if (component !=null && component.shieldIn(d)) {
                     return true;
                 }
             }
@@ -199,15 +224,17 @@ public abstract class Ship {
         if ((d == Direction.UP || d == Direction.DOWN) && (n >= 0 && n < cols)) {
             for(int row = 0; row < rows; row++){
                 Component component = getComponentAt(row, n);
-                if(component instanceof Cannon && ((Cannon) component).getOrientation() == d) {
-                    cannons.add((Cannon) component);
+                if(component != null && component.isCannon()) {
+                    if (((Cannon) component).getOrientation() == d){
+                        cannons.add((Cannon) component);
+                    }
                 }
             }
         }
         if((d == Direction.LEFT || d == Direction.RIGHT) && (n >= 0 && n < rows)){
             for(int col = 0; col < cols; col++){
                 Component component = getComponentAt(n, col);
-                if(component instanceof Cannon && ((Cannon) component).getOrientation() == d) {
+                if(component != null && component.hasValidOrientation(d) && component.isCannon()) {
                     cannons.add((Cannon) component);
                 }
             }
@@ -257,9 +284,8 @@ public abstract class Ship {
 
     /**
      * find all the valid components of the ship and kill the invalid ones
-     * @param row
-     * @param col
-     * @return
+     * @param row row of the component to start the search
+     * @param col col of the component to start the search
      * @apiNote Note tha with row=-1 and col=-1 the function will start with the starting cabin
      */
     public void findValid(int row, int col) {
@@ -270,21 +296,13 @@ public abstract class Ship {
         if (row < 0 || col < 0 || row >= getRows() || col >= getCols()) {
             throw new IndexOutOfBoundsException();
         }
-
         int rows = getRows();
         int cols = getCols();
-        int[][] visited = new int[rows][cols];
+        boolean[][] visited = new boolean[rows][cols];
 
         Queue<int[]> queue = new LinkedList<>();
         queue.add(new int[]{row, col});
-        visited[row][col] = 1;
-
-        // Set all the table to 1
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                visited[i][j] = 1;
-            }
-        }
+        visited[row][col] = true;
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
@@ -327,33 +345,28 @@ public abstract class Ship {
                 // Check if adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
-                    if (visited[adjRow][adjCol]==0) {
+                    if (!visited[adjRow][adjCol]) {
                         // Check if adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
-                            if(visited[adjRow][adjCol]!=-1){
-                                queue.add(new int[]{adjRow, adjCol});
-                                visited[adjRow][adjCol] = 1;
-                            }
-                        }else{
-                            visited[adjRow][adjCol] = -1; // Mark as invalid
-                        }
-                    }
-                }
-
-                // kill all the componente that have not been visited
-                for (int k = 0; k < rows; k++) {
-                    for (int l = 0; l < cols; l++) {
-                        if (visited[k][l] != 1) {
-                            Component c = getComponentAt(k, l);
-                            if (c != null) {
-                                killComponent(c);
-                            }
+                            queue.add(new int[]{adjRow, adjCol});
+                            visited[adjRow][adjCol] = true;
                         }
                     }
                 }
             }
         }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Component component = getComponentAt(i, j);
+                if (component != null && !visited[i][j]) {
+                    try {
+                        killComponent(component);
+                    } catch (DeadAlienException _) {}
+                }
+            }
+        }
+
     }
 
     /**
@@ -412,12 +425,6 @@ public abstract class Ship {
                 // Check if adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
-                    if(component instanceof Cannon && dir == ((Cannon) component).getOrientation()) {
-                        return false;
-                    }
-                    if((component instanceof Engine && dir == Direction.DOWN) || (component instanceof Engine && (((Engine) component).getOrientation() != Direction.DOWN))){
-                        return false;
-                    }
                     if (!visited[adjRow][adjCol]) {
                         // Check if adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
@@ -471,96 +478,79 @@ public abstract class Ship {
      * Removes a component from ship and adds it to waste
      * @param c Component to destroy
      * @return True if ship remains valid after removal
+     * @throws DeadAlienException if the component is a lifeSupport and the cabin near it has an alien
      */
-    public Boolean killComponent(Component c){
+    public Boolean killComponent(Component c) throws DeadAlienException{
         Tile t = c.getTile();
-        updateParametersRemove(c);
+        c.updateParameter(this, -1);
         waste.add(c);
-        t.removeComponent();
+        try {
+            t.removeComponent();
+        } catch (InvalidTileException _){
+        }
         return this.isValid();
     }
 
     /**
+     * Function to load a cargo in a cargo hold
      * @param cargo is the cargo to be loaded
+     * @param h cargo hold to load the cargo in
+     * @throws CargoFullException if the cargo hold is full
+     * @throws CargoNotLoadable if the cargo is not loadable in the cargo hold
      */
-    public void loadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
-        if (h.getAvailableSlots() < 1) {
-            throw new IllegalArgumentException("No available slots in cargo hold");
-        }
+    public void loadCargo(CargoColor cargo, CargoHold h) throws CargoFullException, CargoNotLoadable {
         h.loadCargo(cargo);
         cargos.put(cargo, cargos.getOrDefault(cargo, 0) + 1);
     }
 
     /**
+     * Function to unload a cargo from the ship
      * @param cargo is the cargo to be unloaded
+     * @param h is the cargo hold to unload the cargo from
+     * @throws IllegalArgumentException if there is no cargo of that type to unload
      */
-    public void unloadCargo(CargoColor cargo, CargoHold h) throws IllegalArgumentException{
-        if (cargos.getOrDefault(cargo, 0) < 1) {
-            throw new IllegalArgumentException("No cargo of that type to unload");
-        }
+    public void unloadCargo(CargoColor cargo, CargoHold h) throws InvalidCargoException {
         h.unloadCargo(cargo);
         cargos.put(cargo, cargos.get(cargo) - 1);
     }
 
     /**
-     * @param h is the cargo hold to unload the cargo from
-     * @implNote cargo is removed from the most valuable one first
+     * add single cannon power
+     * @param power is the power to add to singleCannonsPower
      */
-    public void unloadCargo(CargoHold h) {
-        int red = cargos.getOrDefault(CargoColor.RED, 0);
-        int blue = cargos.getOrDefault(CargoColor.BLUE, 0);
-        int yellow = cargos.getOrDefault(CargoColor.YELLOW, 0);
-        int green = cargos.getOrDefault(CargoColor.GREEN, 0);
-
-        if (red > 0) {
-            unloadCargo(CargoColor.RED, h);
-        } else if (blue > 0) {
-            unloadCargo(CargoColor.BLUE, h);
-        } else if (yellow > 0) {
-            unloadCargo(CargoColor.YELLOW, h);
-        } else if (green > 0) {
-            unloadCargo(CargoColor.GREEN, h);
-        }
+    public void addSingleCannonsPower(float power) {
+        singleCannonsPower += power;
     }
 
+    /**
+     * add double cannon power
+     * @param power is the power to add to doubleCannonsPower
+     */
+    public void addDoubleCannonsPower(int power) {
+        doubleCannonsPower += power;
+    }
 
     /**
-     * Updates ship parameters when components are removed
-     * @param c Component being removed
+     * add double engines
+     * @param power is the power to add to doubleEngines
      */
-    protected abstract void updateParametersRemove(Component c);
+    public void addDoubleEngines(int power) {
+        doubleEngines += power;
+    }
 
     /**
-     * Updates ship parameters when components are added
-     * @param c Component being added
+     * add single engines
+     * @param power is the power to add to singleEngines
      */
-    protected void updateParametersSet(Component c){
-        if(c instanceof Cannon){
-            if(((Cannon) c).getOrientation()==Direction.UP){
-                if(((Cannon) c).getPower() == 1){
-                    singleCannonsPower += 1;
-                }else{
-                    doubleCannonsPower += 2;
-                }
-            }else{
-                if(((Cannon) c).getPower() == 1) {
-                    doubleCannons += 1;
-                    doubleCannonsPower += 1;
-                }else if(((Cannon) c).getPower() == 0.5f){
-                    singleCannonsPower += 0.5f;
-                }
-            }
-        }else if(c instanceof Engine){
-            if(((Engine) c).getDoublePower()){
-                doubleEngines += 1;
-            }else{
-                singleEngines += 1;
-            }
-        }else if(c instanceof Battery){
-            ((Battery) c).fillBattery();
-            totalEnergy += ((Battery) c).getSlots();
-        }
-        // cargoHolds, cabins and shields are not counted in the updateParametersSet
+    public void addSingleEngines(int power) {
+        singleEngines += power;
+    }
+    /**
+     * add batteries
+     * @param batteries is the power to add to totalEnergy
+     */
+    public void addBatteries(int batteries) {
+        totalEnergy += batteries;
     }
 
     /**
@@ -572,9 +562,8 @@ public abstract class Ship {
         for(int i=0; i<row; i++){
             for(int j=0; j<col; j++){
                 Component c = getComponentAt(i, j);
-                if (c instanceof Cabin && !((Cabin) c).getAlien()){
-                    ((Cabin) c).setAstronauts(2);
-                    astronauts += 2;
+                if (c!= null){
+                    astronauts += c.initializeAstronauts();
                 }
             }
         }
@@ -591,7 +580,7 @@ public abstract class Ship {
         for(int i=0; i<rows; i++){
             for(int j=0; j<cols; j++){
                 Component c = getComponentAt(i, j);
-                if(c instanceof Cabin && ((Cabin) c).getOccupants() > 0){
+                if(c!= null && c.isCabin()){
                     for (int k = 0; k < 4; k++) {
                         if (c.getConnectors().get(Direction.values()[k]) != ConnectorEnum.ZERO) {
                             if (k == 0) {
@@ -603,12 +592,10 @@ public abstract class Ship {
                             } else {
                                 adj = getComponentAt(i + 1, j);
                             }
-                            if (adj instanceof Cabin && ((Cabin) adj).getOccupants() > 0) {
-                                if (((Cabin) c).getAlien()) {
-                                    ((Cabin) c).unloadAlien();
-                                } else {
-                                    ((Cabin) c).unloadAstronaut();
-                                }
+                            if (adj.isCabin()) {
+                                try {
+                                    unloadCrew((Cabin) c);
+                                } catch (EmptyCabinException _) {}
                                 break;
                             }
                         }
@@ -619,32 +606,62 @@ public abstract class Ship {
     }
 
     /**
+     * Function that removes energy from the battery
      * @param battery is the battery to remove energy from
+     * @throws EnergyException if the battery is empty
      */
-    public void useEnergy(Battery battery) {
+    public void useEnergy(Battery battery) throws EnergyException {
         if (battery.getAvailableEnergy() < 1) {
-            throw new IllegalArgumentException("Battery is empty");
+            throw new EnergyException("Battery is empty");
         }
         battery.useEnergy();
         totalEnergy--;
     }
 
     /**
+     * Function to unloadCrew from the ship
      * @param c is the crew member to be unloaded
      */
-    public abstract void unloadCrew(Cabin c);
+    public abstract void unloadCrew(Cabin c) throws EmptyCabinException;
+
 
     /**
-     * @return whether the ship has engines or not
-     */
-    public boolean hasEngines() {
-        return singleEngines > 0 || doubleEngines > 0;
-    }
-
-    /**
+     * Function that gets the cargo held by the ship
      * @return cargo held by the ship
      */
     public Map<CargoColor, Integer> getCargo() {
         return cargos;
     }
+
+    /**
+     * Function that finds the component in the ship
+     * @param c component to find
+     * @return the position of the component in the ship
+     */
+    public int[] findComponent (Component c) {
+        int rows = getRows();
+        int cols = getCols();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (getComponentAt(i, j) == c) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Function that verify is the ship is a normal ship
+     * @return true if the ship is a normal ship, false otherwise
+     */
+    public boolean isNormal (){
+        return false; //default implementation
+    }
+
+    public void addBookedToWaste() {
+        //default implementation
+    }
+
+
 }

@@ -27,6 +27,25 @@ public class PlayerTest {
         assertFalse(player.isLeader());
         assertFalse(player.isInGame());
     }
+    @Test
+    void getPublicData(){
+        player.setColor(PlayerColor.GREEN);
+        player.setUsername("player");
+        Ship ship = new NormalShip();
+        player.setShip(ship);
+        player.setLeader();
+        player.addCredits(10);
+        player.setPosition(5);
+        player.setGameStatus(true);
+        Player publicPlayer = player.getPublicData();
+        assertEquals(PlayerColor.GREEN, publicPlayer.getColor());
+        assertEquals("player", publicPlayer.getUsername());
+        assertEquals(ship, publicPlayer.getShip());
+        assertTrue(publicPlayer.isLeader());
+        assertEquals(0, publicPlayer.getCredits());
+        assertEquals(5, publicPlayer.getPosition());
+        assertTrue(publicPlayer.isInGame());
+    }
 
     @Test
     public void testSetAndGetColor (){
@@ -57,7 +76,7 @@ public class PlayerTest {
 
     @Test
     public void testSetAndGetUsername (){
-        String username = "Nasone";
+        String username = "BigNose";
         player.setUsername(username);
         assertEquals(username, player.getUsername());
     }

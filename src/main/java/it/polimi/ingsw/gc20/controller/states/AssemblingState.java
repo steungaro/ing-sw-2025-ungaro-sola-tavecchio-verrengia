@@ -1,10 +1,12 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.controller.managers.Translator;
 import it.polimi.ingsw.gc20.exceptions.HourglassException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import java.util.NoSuchElementException;
 
 public class AssemblingState extends State {
     private final Map<Player, Boolean> assembled = new HashMap<>();
+    private final Map<Player, Component> componentsInHand = new HashMap<>();
     
     /**
      * Default constructor
@@ -22,6 +25,7 @@ public class AssemblingState extends State {
         super(model);
         for (Player player : getModel().getInGamePlayers()) {
             assembled.put(player, false);
+            componentsInHand.put(player, null);
         }
         getModel().initCountdown();
     }
@@ -34,61 +38,92 @@ public class AssemblingState extends State {
     }
 
     @Override
-    public Component takeComponentFromUnviewed(Player player, Component component) {
+    public void takeComponentFromUnviewed(Player player, int index) {
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidParameterException("Player already has a component in hand");
+        }
         try {
+            Component component =Translator.getFromUnviewed(getModel(), index);
             getModel().componentFromUnviewed(component);
-            // Add component to viewed pile so other players can see it
-            getModel().componentToViewed(component);
-            return component;
+            // Add component to player's hand
+            componentsInHand.put(player, component);
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Component not found in unviewed pile");
         }
     }
     @Override
-    public Component takeComponentFromViewed(Player player, Component component) {
+    public void takeComponentFromViewed(Player player, int index) {
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidParameterException("Player already has a component in hand");
+        }
         try {
+            Component component =Translator.getFromViewed(getModel(), index);
             getModel().componentFromViewed(component);
-            return component;
+            // Add component to player's hand
+            componentsInHand.put(player, component);
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Component not found in viewed pile");
         }
     }
     @Override
-    public Component takeComponentFromBooked(Player player, Component component) {
+    public void takeComponentFromBooked(Player player, int index) {
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidParameterException("Player already has a component in hand");
+        }
         try {
+            Component component =Translator.getFromBooked(player, index);
             getModel().componentFromBooked(component, player);
-            return component;
+            // Add component to player's hand
+            componentsInHand.put(player, component);
         } catch (IllegalArgumentException e) {
             throw new NoSuchElementException("Component not found in player's booked list");
         }
     }
     @Override
-    public void addComponentToBooked(Player player, Component component) {
-        getModel().componentToBooked(component, player);
+    public void addComponentToBooked(Player player) {
+        if (componentsInHand.get(player) == null) {
+            throw new InvalidParameterException("Player does not have a component in hand");
+        }
+        getModel().componentToBooked(componentsInHand.get(player), player);
+        // Remove component from player's hand
+        componentsInHand.put(player, null);
     }
     @Override
-    public void addComponentToViewed(Component component) {
-        getModel().componentToViewed(component);
+    public void addComponentToViewed(Player player) {
+        if (componentsInHand.get(player) == null) {
+            throw new InvalidParameterException("Player does not have a component in hand");
+        }
+        getModel().componentToViewed(componentsInHand.get(player));
+        // Remove component from player's hand
+        componentsInHand.put(player, null);
     }
     @Override
-    public void placeComponent(Player player, Component component, int x, int y) {
+    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) {
+        if (componentsInHand.get(player) == null) {
+            throw new InvalidParameterException("Player does not have a component in hand");
+        }
         try {
-            getModel().addToShip(component, player, x, y);
+            getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
+            // Remove component from player's hand
+            componentsInHand.put(player, null);
         } catch (Exception e) {
             // Ship implementation will throw appropriate exceptions if placement is invalid
             throw new InvalidParameterException("Cannot place component at specified location: " + e.getMessage());
         }
     }
     @Override
-    public void rotateComponentClockwise(Component component) {
-        getModel().RotateClockwise(component);
+    public void rotateComponentClockwise(Player player) {
+        getModel().RotateClockwise(componentsInHand.get(player));
     }
     @Override
-    public void rotateComponentCounterclockwise(Component component) {
-        getModel().RotateCounterclockwise(component);
+    public void rotateComponentCounterclockwise(Player player) {
+        getModel().RotateCounterclockwise(componentsInHand.get(player));
     }
     @Override
     public void stopAssembling(Player player, int position) {
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidParameterException("Place component somewhere before stopping assembling");
+        }
         getModel().stopAssembling(player, position);
         assembled.put(player, true);
     }
@@ -100,6 +135,9 @@ public class AssemblingState extends State {
 
     @Override
     public List<AdventureCard> peekDeck(Player player, int num) {
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidParameterException("Player has a component in hand, cannot peek deck");
+        }
         return getModel().viewDeck(num);
     }
 

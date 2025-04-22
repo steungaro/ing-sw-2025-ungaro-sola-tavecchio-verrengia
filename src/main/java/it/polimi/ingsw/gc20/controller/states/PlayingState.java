@@ -37,10 +37,10 @@ public abstract class PlayingState extends State {
                 .findFirst().orElse(null);
     }
 
-    public void rollDice(Player player) throws InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws InvalidTurnException, InvalidShipException {
         if (!currentPlayer.equals(player.getUsername())) {
             throw new InvalidTurnException("Not your turn.");
         }
-        getModel().getGame().rollDice();
+        return getModel().getGame().rollDice();
     }
 }

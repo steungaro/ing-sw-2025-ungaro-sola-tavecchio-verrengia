@@ -4,6 +4,8 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.model.ship.Ship;
 import it.polimi.ingsw.gc20.model.ship.Tile;
 
 @JsonTypeInfo(
@@ -129,5 +131,64 @@ public abstract class Component {
             return true;
         }
         return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(opposite) != ConnectorEnum.ZERO;
+    }
+
+    /**
+     * Function to update the parameter of the ship
+     * @param s ship that is updating his parameter
+     * @param sign integer that indicate if the parameter is increasing or decreasing
+     */
+    public void updateParameter(Ship s, int sign) throws DeadAlienException {}
+
+
+    /** Function that returns true if the component is a shield and cover the direction d
+     *
+     * @param d direction of the shield
+     * @return true if the component is a shield and cover the direction d, false otherwise
+     */
+    public boolean shieldIn (Direction d){
+        return false; //default implementation
+    }
+
+    /** Function that returns true if the component has a valid orientation
+     *
+     * @param d direction of the component
+     * @return true if the component has a valid orientation, false otherwise
+     */
+    public boolean hasValidOrientation (Direction d){
+        return true; //default implementation
+    }
+
+    /**
+     * Function that returns the number of astronauts that can be initialized in the component
+     * @return the number of astronauts that can be initialized in the component
+     */
+    public int initializeAstronauts (){
+        return 0; //default implementation
+    }
+
+    /**
+     * Function that returns true if the component is a cabin
+     * @return true if the component is a cabin, false otherwise
+     */
+    public boolean isCabin(){
+        return false; //default implementation
+    }
+
+    /** Function that returns true if the component is a life support
+     *
+     * @return true if the component is a life support, false otherwise
+     */
+    public boolean isLifeSupport(){
+        return false; //default implementation
+    }
+
+    /**
+     * Function that returns true if the component is a cannon
+     * @return true if the component is a cannon, false otherwise
+     *
+     */
+    public boolean isCannon() {
+        return false; //default implementation
     }
 }

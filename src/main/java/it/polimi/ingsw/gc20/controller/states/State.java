@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public abstract class State{
         this.controller = controller;
     }
     public State(GameController controller) {
-        this.model = null;
+        this.model = controller.getModel();
         this.controller = controller;
     }
     public State(GameModel model) {
@@ -46,31 +47,28 @@ public abstract class State{
         throw new IllegalStateException("Cannot perform this action in " + this + " state");
     }
     
-    public Component takeComponentFromUnviewed(Player player, Component component) {
-        exception();
-        return null;
-    }
-    public Component takeComponentFromViewed(Player player, Component component) {
-        exception();
-        return null;
-    }
-    public Component takeComponentFromBooked(Player player, Component component) {
-        exception();
-        return null;
-    }
-    public void addComponentToBooked(Player player, Component component) {
+    public void takeComponentFromUnviewed(Player player, int index) {
         exception();
     }
-    public void addComponentToViewed(Component component) {
+    public void takeComponentFromViewed(Player player, int index) {
         exception();
     }
-    public void placeComponent(Player player, Component component, int x, int y) {
+    public void takeComponentFromBooked(Player player, int index) {
         exception();
     }
-    public void rotateComponentClockwise(Component component) {
+    public void addComponentToBooked(Player player) {
         exception();
     }
-    public void rotateComponentCounterclockwise(Component component) {
+    public void addComponentToViewed(Player player) {
+        exception();
+    }
+    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) {
+        exception();
+    }
+    public void rotateComponentClockwise(Player player) {
+        exception();
+    }
+    public void rotateComponentCounterclockwise(Player player) {
         exception();
     }
     public void stopAssembling(Player player, int position) {
@@ -95,7 +93,7 @@ public abstract class State{
         exception();
     }
 
-    public boolean allShipsValidated() {;
+    public boolean allShipsValidated() {
         exception();
         return false;
     }
@@ -107,16 +105,16 @@ public abstract class State{
         exception();
     }
 
-    public void loadCargo(Player player, CargoColor loaded, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
-    public void unloadCargo(Player player, CargoColor lost, CargoHold ch) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor lost, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
-    public void moveCargo(Player player, CargoColor cargo, CargoHold from, CargoHold to) throws IllegalStateException, InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws IllegalStateException, InvalidTurnException, CargoException {
         exception();
     }
-    public void loseEnergy(Player player, Battery battery) throws IllegalStateException, InvalidTurnException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException {
         exception();
     }
     public void landOnPlanet(Player player, int planetIndex) throws IllegalStateException, InvalidTurnException {
@@ -125,24 +123,24 @@ public abstract class State{
     public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void loseCrew(Player player, List<Cabin> cabins) throws IllegalStateException, InvalidTurnException {
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException {
         exception();
     }
     public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 
-    public void activateEngines(Player player, List<Engine> engines, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
-    public void activateShield(Player player, Shield shield, Battery battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
-    public int shootEnemy(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException {
         exception();
         return 0;
     }
-    public void activateCannons(Player player, List<Cannon> cannons, List<Battery> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 
@@ -173,11 +171,12 @@ public abstract class State{
         return null;
     }
 
-    public void chooseBranch(Player player, int col, int row) throws InvalidTurnException, InvalidShipException {
+    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidShipException {
         exception();
     }
 
-    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
+        return 0;
     }
 }
