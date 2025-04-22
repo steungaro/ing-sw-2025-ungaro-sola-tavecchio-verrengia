@@ -301,7 +301,7 @@ public class GameController implements GameControllerInterface {
     @Override
     public void giveUp(String username) {
         //TODO
-        //model.giveUp(getPlayerByID(username));
+        model.giveUp(getPlayerByID(username));
     }
 
     /**
@@ -335,7 +335,7 @@ public class GameController implements GameControllerInterface {
      */
     public boolean reconnectPlayer(String username) {
         // Check if player was originally in this game
-        if (getPlayerByID(username) != null) {
+        if (getPlayerByID(username) == null) {
             throw new IllegalArgumentException("Player was never part of this game");
         }
 
@@ -649,6 +649,15 @@ public class GameController implements GameControllerInterface {
     @Override
     public void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         state.rollDice(getPlayerByID(username));
+    }
+
+    /*
+     * @param username is the username of the player that wants to roll the dice
+     * @throws IllegalStateException if the game is not in the correct phase
+     * @throws InvalidTurnException  if it is not the player's turn
+     */
+    public GameModel getModel() {
+        return model;
     }
 
 

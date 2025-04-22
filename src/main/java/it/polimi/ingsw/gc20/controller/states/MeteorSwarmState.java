@@ -53,14 +53,14 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (manager == null || manager.finished()) {
             throw new IllegalStateException("Cannot roll dice when not firing");
         }
-        getModel().getGame().rollDice();
+        return getModel().getGame().rollDice();
     }
 
     @Override

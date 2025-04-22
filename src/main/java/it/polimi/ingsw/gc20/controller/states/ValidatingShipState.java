@@ -58,9 +58,6 @@ public class ValidatingShipState extends State {
 
     @Override
     public void addAlien(Player player, AlienColor color, Cabin cabin) {
-        if (!allShipsValidated()) {
-            throw new IllegalArgumentException("Cannot add alien: some ships are not validated");
-        }
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }

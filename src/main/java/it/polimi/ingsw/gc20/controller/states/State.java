@@ -27,7 +27,7 @@ public abstract class State{
         this.controller = controller;
     }
     public State(GameController controller) {
-        this.model = null;
+        this.model = controller.getModel();
         this.controller = controller;
     }
     public State(GameModel model) {
@@ -175,7 +175,8 @@ public abstract class State{
         exception();
     }
 
-    public void rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
+        return 0;
     }
 }
