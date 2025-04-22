@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.model.components.ConnectorEnum;
 import it.polimi.ingsw.gc20.model.components.Direction;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import it.polimi.ingsw.gc20.model.components.Component;
@@ -21,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StateTest {
 
-    GameController gameController;
-    GameModel model;
-    AbandonedShipState abandonedShipState;
-    AdventureCard adventureCard;
-    String id = "0";
+    static GameController gameController;
+    static GameModel model;
+    static AbandonedShipState abandonedShipState;
+    static AdventureCard adventureCard;
+    static String id = "0";
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         String player1 = "player1";
         String player2 = "player2";
         String player3 = "player3";
@@ -41,6 +42,7 @@ class StateTest {
         int level = 2;
 
         gameController = new GameController(id, players, level);
+        model = gameController.getModel(); // Inizializzazione mancante
         adventureCard = new AdventureCard();
         adventureCard.setCrew(2);
         adventureCard.setCredits(3);
@@ -155,6 +157,11 @@ class StateTest {
 
     @Test
     void stopAssembling() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assemblingState.stopAssembling(gameController.getPlayerByID("player1"), 0);
+        assertTrue(assemblingState.allAssembled());
     }
 
     @Test
