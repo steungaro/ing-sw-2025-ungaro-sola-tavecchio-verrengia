@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
+import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.model.components.AlienColor;
 import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Component;
@@ -39,7 +41,7 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public void removeComp(Player player, Component component) {
+    public void removeComp(Player player, Component component) throws DeadAlienException {
         if (validShips.get(player)) {
             throw new IllegalArgumentException("Cannot remove component from valid ship");
         }
@@ -57,7 +59,7 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public void addAlien(Player player, AlienColor color, Cabin cabin) {
+    public void addAlien(Player player, AlienColor color, Cabin cabin) throws InvalidAlienPlacement {
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }

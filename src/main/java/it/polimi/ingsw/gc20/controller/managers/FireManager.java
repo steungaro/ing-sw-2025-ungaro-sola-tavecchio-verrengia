@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.controller.managers;
 
-import it.polimi.ingsw.gc20.exceptions.InvalidShipException;
-import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.FireType;
 import it.polimi.ingsw.gc20.model.cards.Projectile;
 import it.polimi.ingsw.gc20.model.components.*;
@@ -27,7 +26,7 @@ public class FireManager {
         this.validator = new Validator();
     }
 
-    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException {
+    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
         if (fires.getFirst().getFireType() != FireType.HEAVY_METEOR) {
             throw new IllegalStateException("Cannot activate cannon in this state");
         }
@@ -46,7 +45,7 @@ public class FireManager {
         }
     }
 
-    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException {
+    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
         if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
             throw new IllegalStateException("Cannot activate shield in this state");
         }
@@ -63,7 +62,7 @@ public class FireManager {
         }
     }
 
-    public void fire() throws InvalidShipException {
+    public void fire() throws InvalidShipException, DieNotRolledException, DeadAlienException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -81,7 +80,7 @@ public class FireManager {
         }
         try {
             gm.Fire(player, dice, fire);
-        } catch (InvalidShipException e) {
+        } catch (InvalidShipException | DeadAlienException e) {
             validator.setSplit();
             throw e;
         }

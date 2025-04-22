@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.managers.Translator;
-import it.polimi.ingsw.gc20.exceptions.HourglassException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
@@ -49,6 +49,8 @@ public class AssemblingState extends State {
             componentsInHand.put(player, component);
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("Component not found in unviewed pile");
+        } catch (ComponentNotFoundException e){
+            throw new NoSuchElementException("Component not found in unviewed pile");
         }
     }
     @Override
@@ -62,6 +64,8 @@ public class AssemblingState extends State {
             // Add component to player's hand
             componentsInHand.put(player, component);
         } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("No component found in viewed pile");
+        } catch (ComponentNotFoundException e) {
             throw new NoSuchElementException("Component not found in viewed pile");
         }
     }
@@ -75,12 +79,14 @@ public class AssemblingState extends State {
             getModel().componentFromBooked(component, player);
             // Add component to player's hand
             componentsInHand.put(player, component);
-        } catch (IllegalArgumentException e) {
+        } catch (ComponentNotFoundException e) {
             throw new NoSuchElementException("Component not found in player's booked list");
+        } catch (NoSuchElementException e) {
+            throw new NoSuchElementException("No component found in player's booked list");
         }
     }
     @Override
-    public void addComponentToBooked(Player player) {
+    public void addComponentToBooked(Player player) throws NoSpaceException {
         if (componentsInHand.get(player) == null) {
             throw new InvalidParameterException("Player does not have a component in hand");
         }
@@ -89,7 +95,7 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
     }
     @Override
-    public void addComponentToViewed(Player player) {
+    public void addComponentToViewed(Player player) throws DuplicateComponentException {
         if (componentsInHand.get(player) == null) {
             throw new InvalidParameterException("Player does not have a component in hand");
         }
@@ -134,7 +140,7 @@ public class AssemblingState extends State {
     }
 
     @Override
-    public List<AdventureCard> peekDeck(Player player, int num) {
+    public List<AdventureCard> peekDeck(Player player, int num) throws InvalidIndexException {
         if (componentsInHand.get(player) != null) {
             throw new InvalidParameterException("Player has a component in hand, cannot peek deck");
         }
