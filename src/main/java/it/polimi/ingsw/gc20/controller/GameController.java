@@ -8,8 +8,6 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.interfaces.*;
 import org.javatuples.Pair;
-
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -130,11 +128,9 @@ public class GameController implements GameControllerInterface {
      * Accepts a planet card and lands on the planet
      * @param username is the username of the player that wants to land on the planet
      * @param planetIndex is the index of the planet card in the player's hand
-     * @throws IllegalStateException if the game is not in the planet phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException, IllegalStateException {
+    public void landOnPlanet(String username, int planetIndex) {
         try{
             state.landOnPlanet(getPlayerByID(username), planetIndex);
         }
@@ -149,11 +145,9 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to shoot the enemy
      * @param cannons is the list of coordinates of the cannons that the player wants to use to shoot
      * @param batteries is the list of coordinates of the batteries that the player wants to use to shoot
-     * @throws IllegalStateException if the game is not in the shooting phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException {
+    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
             state.shootEnemy(getPlayerByID(username), cannons, batteries);
         } catch (Exception e) {
@@ -166,12 +160,10 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to load the cargo
      * @param loaded is the cargo that the player wants to load
      * @param ch are the coordinates of the cargo hold where the player wants to load the cargo
-     * @throws IllegalStateException if the game is not in the cargo loading phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
      */
     @Override
-    public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
+    public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) {
         try {
             Player player = getPlayerByID(username);
             state.loadCargo(player, loaded, ch);
@@ -185,12 +177,10 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to unload the cargo
      * @param lost is the cargo that the player wants to unload
      * @param ch are the coordinates of the cargo hold where the player wants to unload the cargo
-     * @throws IllegalStateException if the game is not in the cargo unloading phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combat zone (to remove most valuable one)
      */
     @Override
-    public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) {
         try{
             state.unloadCargo(getPlayerByID(username), lost, ch);
         } catch (Exception e){
@@ -204,12 +194,10 @@ public class GameController implements GameControllerInterface {
      * @param cargo is the cargo that the player wants to move
      * @param from are the coordinates of the cargo hold where the player wants to move the cargo from
      * @param to are the coordinates of the cargo hold where the player wants to move the cargo to
-     * @throws IllegalStateException if the game is not in the cargo moving phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used in losing/gaining cargo
      */
     @Override
-    public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
         try{
             state.moveCargo(getPlayerByID(username), cargo, from, to);
         } catch (Exception e){
@@ -220,11 +208,9 @@ public class GameController implements GameControllerInterface {
     /**
      * Accepts a card and performs the action associated with it
      * @param username is the username of the player that wants to accept the card
-     * @throws IllegalStateException if the game is not in the card phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void acceptCard(String username) throws IllegalStateException, InvalidTurnException, EmptyDeckException {
+    public void acceptCard(String username) {
         try{
             state.acceptCard(getPlayerByID(username));
         } catch (Exception e) {
@@ -246,11 +232,9 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate their cannons
      * @param cannons is the list of coordinates of the cannons that the player wants to activate
      * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the cannons
-     * @throws IllegalStateException if the game is not in the cannon activation phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, EmptyDeckException {
+    public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
         } catch (Exception e) {
@@ -260,10 +244,9 @@ public class GameController implements GameControllerInterface {
 
     /**
      * @return the score of the game
-     * @throws IllegalStateException if the game is not in the endgame phase
      */
     @Override
-    public Map<String, Integer> getScore() throws IllegalStateException {
+    public Map<String, Integer> getScore() {
         try{
             return state.getScore();
         } catch (Exception e) {
@@ -276,11 +259,9 @@ public class GameController implements GameControllerInterface {
      * To be called when a player wants to lose crew
      * @param username is the username of the player that wants to lose crew
      * @param cabins is the list of coordinates of the cabins that the player wants to lose crew from
-     * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyDeckException, EmptyCabinException {
+    public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) {
         try{
             state.loseCrew(getPlayerByID(username), cabins);
         } catch (Exception e) {
@@ -293,11 +274,9 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate the shield
      * @param shieldComp are the coordinates of the shield component that the player wants to activate
      * @param batteryComp are the coordinates of the energy component that the player wants to use to activate the shield
-     * @throws IllegalStateException if the game is not in the meteor swarm phase
-     * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) throws InvalidTurnException, InvalidShipException, EmptyDeckException, DeadAlienException, DieNotRolledException, EnergyException {
+    public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) {
         try{
             state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
         } catch (Exception e) {
@@ -322,10 +301,8 @@ public class GameController implements GameControllerInterface {
     /**
      * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
      * @param username is the username of the player that wants to terminate their turn
-     * @throws IllegalStateException if the game is not in the card phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
-    public void endMove(String username) throws InvalidTurnException, InvalidShipException, EmptyDeckException {
+    public void endMove(String username) {
         try{
             state.endMove(getPlayerByID(username));
         } catch (Exception e) {
@@ -338,12 +315,9 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate their engines
      * @param engines is the list of coordinates of the engines that the player wants to activate
      * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the engines
-     * @throws IllegalStateException if the game is not in the engine activation phase
-     * @throws InvalidTurnException if it is not the player's turn
-     * @throws InvalidShipException if the ship is not valid
      */
     @Override
-    public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DeadAlienException, DieNotRolledException, EmptyDeckException {
+    public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
         try{
             state.activateEngines(getPlayerByID(username), engines, batteries);
         } catch (Exception e) {
@@ -355,11 +329,9 @@ public class GameController implements GameControllerInterface {
      * To be called when a player needs to chose one of the two branches a ship is divided into after a fire.
      * @param username is the username of the player that wants to choose a branch
      * @param coordinates are the coordinates of the branch that the player wants to choose
-     * @throws InvalidTurnException if it is not the player's turn
-     * @throws InvalidShipException if the ship is not valid (in case a new heavyFire is shot right after choosing)
      */
     @Override
-    public void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidShipException, EmptyDeckException {
+    public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
         try{
             state.chooseBranch(getPlayerByID(username), coordinates);
         } catch (Exception e) {
@@ -420,7 +392,6 @@ public class GameController implements GameControllerInterface {
      * Handles a player leaving the game mid-session
      *
      * @param username Username of the exiting player
-     * @throws IllegalArgumentException if player was not in game or not connected
      */
     public void disconnectPlayer(String username) {
         try{
@@ -447,7 +418,6 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player attempting to reconnect
      * @return true if reconnection was successful, false otherwise
-     * @throws IllegalArgumentException if the player was never part of this game
      */
     public boolean reconnectPlayer(String username) {
         try{
@@ -480,7 +450,6 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player
      * @return Player object containing player data
-     * @throws IllegalArgumentException if the player is not found
      */
     public Player getPlayerByID(String username){
         try{
@@ -583,9 +552,6 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player taking the component
      * @param index Index of the component in the booked list
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if the component is not in the player's booked list
-     * @throws IllegalArgumentException if the player already has a component in hand
      */
     public void takeComponentFromBooked(String username, int index) {
         try{
@@ -603,10 +569,8 @@ public class GameController implements GameControllerInterface {
      * Adds the component in hand to player's booked list (Level 2 only)
      *
      * @param username Username of the player booking the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if there aren't enough available spaces in the player's booked list
      */
-    public void addComponentToBooked(String username) throws NoSpaceException {
+    public void addComponentToBooked(String username) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Booking components is only available in level 2 games");
@@ -621,9 +585,8 @@ public class GameController implements GameControllerInterface {
      * Adds the component in hand to the viewed pile so other players can see it
      *
      * @param username Username of the player adding the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
-    public synchronized void addComponentToViewed(String username) throws DuplicateComponentException {
+    public synchronized void addComponentToViewed(String username) {
         try{
             state.addComponentToViewed(getPlayerByID(username));
         } catch (Exception e) {
@@ -636,9 +599,6 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player placing the component
      * @param coordinates Coordinates where the component will be placed
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws InvalidParameterException if placement is invalid (handled by ship implementation)
-     * @throws IllegalArgumentException if the player does not have a component in hand
      */
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
         try{
@@ -652,7 +612,6 @@ public class GameController implements GameControllerInterface {
      * Rotates the component in hand clockwise
      *
      * @param username Username of the player rotating the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentClockwise(String username) {
         try{
@@ -666,7 +625,6 @@ public class GameController implements GameControllerInterface {
      * Rotates the component in hand counterclockwise
      *
      * @param username Username of the player rotating the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentCounterclockwise(String username) {
         try{
@@ -681,11 +639,10 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player removing the component
      * @param component Component to remove
-     * @throws IllegalStateException if game is not in VALIDATING state
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
-    public void removeComponentFromShip(String username, Component component) throws DeadAlienException {
+    public void removeComponentFromShip(String username, Component component) {
         try{
             state.removeComp(getPlayerByID(username), component);
         } catch (Exception e) {
@@ -715,7 +672,6 @@ public class GameController implements GameControllerInterface {
      * Stops the assembling phase for a player
      * @param username is the username of the player that wants to stop assembling
      * @param position is the relative position on board where the player wants to put their rocket
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      * @implNote performs state change to VALIDATING when all players have completed assembling
      */
     public void stopAssembling(String username, int position) {
@@ -734,12 +690,8 @@ public class GameController implements GameControllerInterface {
      * Turns the hourglass for a player
      *
      * @param username Username of the player turning the hourglass
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if the player is not connected
-     * @throws HourglassException if the hourglass time is not 0
-     * @throws HourglassException if the player has not completed assembling yet when turning last time
      */
-    public void turnHourglass(String username) throws HourglassException {
+    public void turnHourglass(String username) {
         try{
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot turn hourglass for not connected player");
@@ -758,8 +710,6 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player checking the hourglass
      * @return Remaining time in seconds
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws IllegalArgumentException if the game is not in level 2 or the player is disconnected
      */
     public int getHourglassTime(String username) {
         try {
@@ -781,11 +731,8 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player peeking at the deck
      * @param num number of the deck to peek at
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws IllegalArgumentException if player is not connected or has already completed assembling
-     * @throws IllegalArgumentException if the game is not in level 2
      */
-    public void peekDeck(String username, int num) throws InvalidIndexException {
+    public void peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -806,12 +753,8 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player adding the alien
      * @param color Color of the alien
      * @param cabin Cabin where the alien will be placed
-     * @throws IllegalStateException if game is not in VALIDATING state
-     * @throws IllegalArgumentException if ship is invalid or component is not a cabin
-     * @throws IllegalArgumentException if the game is not in level 2
-     * @throws IllegalArgumentException if the cabin provided is a StartingCabin
      */
-    public void addAlien(String username, AlienColor color, Cabin cabin) throws InvalidAlienPlacement {
+    public void addAlien(String username, AlienColor color, Cabin cabin) {
         try{
             if(model.getLevel() != 2){
                 throw new IllegalArgumentException("Aliens are only available in level 2 games");
@@ -825,11 +768,9 @@ public class GameController implements GameControllerInterface {
     /**
      * Sets the player to be ready to fly
      * @param username is the username of the player that wants to fly
-     * @throws IllegalStateException if game is not in VALIDATING state
-     * @throws IllegalArgumentException if the player's ship is not valid
      * @apiNote be careful to add aliens before calling this function
      */
-    public void readyToFly(String username) throws EmptyDeckException {
+    public void readyToFly(String username) {
         try{
             state.readyToFly(getPlayerByID(username));
             if (state.allShipsReadyToFly()) {
@@ -853,11 +794,9 @@ public class GameController implements GameControllerInterface {
 
     /**
      * @param username is the username of the player that wants to roll the dice
-     * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException  if it is not the player's turn
      */
     @Override
-    public void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DeadAlienException, DieNotRolledException {
+    public void rollDice(String username) {
         try{
             state.rollDice(getPlayerByID(username));
         } catch (Exception e) {
