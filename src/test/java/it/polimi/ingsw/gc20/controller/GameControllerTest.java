@@ -143,7 +143,6 @@ class GameControllerTest {
 
     @Test
     void moveCargo() throws InvalidTurnException, CargoException {
-        // TODO -> Better test in State section
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -172,7 +171,6 @@ class GameControllerTest {
 
     @Test
     void acceptCard() throws InvalidTurnException {
-        // TODO -> Better test in State section
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -199,21 +197,33 @@ class GameControllerTest {
 
     @Test
     void getOnlinePlayers() {
-        // TODO -> int or list ????
         int size = gameController.getOnlinePlayers();
         assertEquals(4, size);
     }
 
     @Test
     void activateCannons() {
-        // TODO -> Better test in State section
-        // TODO -> First FIX the cannon
+        /*MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(meteorSwarmState);
+        Cannon cannon1 = new Cannon();
+        List<Cannon> cannons = new ArrayList<>();
+        cannons.add(cannon1);
+        Battery battery = new Battery();
+        battery.setSlots(3);
+        battery.fillBattery();
+        List<Battery> batteries = new ArrayList<>();
+        batteries.add(battery);*/
+        // TODO: Implement the test for activateCannons
+    }
+
+    @Test
+    void getModel() {
+        GameModel model = gameController.getModel();
+        assertNotNull(model);
     }
 
     @Test
     void loseCrew() throws InvalidTurnException {
-        // TODO -> Better test in State section
-
         AdventureCard adventureCard1 = new AdventureCard();
         adventureCard1.setCrew(2);
         adventureCard1.setCredits(3);
@@ -238,7 +248,6 @@ class GameControllerTest {
 
     @Test
     void activateShield() throws InvalidTurnException, InvalidShipException {
-        // TODO -> Better test in State section
         AdventureCard adventureCard1 = new AdventureCard();
         List<Projectile> projectiles = new ArrayList<>();
         Projectile projectile1 = new Projectile();
@@ -271,7 +280,6 @@ class GameControllerTest {
 
     @Test
     void endMove() throws InvalidTurnException, InvalidShipException {
-        // TODO -> Better test in State section
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.endMove("player1");
@@ -279,7 +287,6 @@ class GameControllerTest {
 
     @Test
     void activateEngines() throws InvalidTurnException, InvalidShipException {
-        // TODO -> Better test in State section
         CombatZone0State combatZone0State = new CombatZone0State(gameController, gameController.getModel(), adventureCard);
         gameController.setState(combatZone0State);
 
@@ -300,7 +307,6 @@ class GameControllerTest {
 
     @Test
     void getPlayerData() {
-        // TODO -> Better test in State section
         Player player = gameController.getPlayerByID("player1");
         assertNotNull(player);
         assertEquals("player1", player.getUsername());
@@ -482,7 +488,6 @@ class GameControllerTest {
 
     @Test
     void rotateComponentClockwise() {
-        // TODO -> Better test in State section
         Cabin cabin = new Cabin();
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
         connectors.put(Direction.UP, ConnectorEnum.S);
@@ -498,7 +503,6 @@ class GameControllerTest {
 
     @Test
     void rotateComponentCounterclockwise() {
-        // TODO -> Better test in State section
         Cabin cabin = new Cabin();
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
         connectors.put(Direction.UP, ConnectorEnum.S);
@@ -530,12 +534,10 @@ class GameControllerTest {
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         gameController.setState(validatingShipState);
 
-        // TODO -> Better test in State section
     }
 
     @Test
     void stopAssembling() {
-        // TODO -> Better test in State section
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
         gameController.stopAssembling("player1", 1);

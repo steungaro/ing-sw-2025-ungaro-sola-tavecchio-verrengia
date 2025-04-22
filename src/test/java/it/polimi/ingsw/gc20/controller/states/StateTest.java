@@ -2,15 +2,19 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.model.components.ConnectorEnum;
+import it.polimi.ingsw.gc20.model.components.Direction;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import it.polimi.ingsw.gc20.model.components.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.InvalidParameterException;
+import java.util.*;
 import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,18 +102,55 @@ class StateTest {
 
     @Test
     void addComponentToViewed() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        assemblingState.addComponentToViewed(comp);
+
+        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
     void placeComponent() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        assertThrows(InvalidParameterException.class, () -> assemblingState.placeComponent(gameController.getPlayerByID("player1"), comp, 0, 0));
+        assemblingState.placeComponent(gameController.getPlayerByID("player1"), comp, 2, 2);
+
+        assertEquals(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2), comp);
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
     void rotateComponentClockwise() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.RIGHT, comp.getConnectors().get(Direction.UP));
+        connectors.put(Direction.LEFT, comp.getConnectors().get(Direction.DOWN));
+        connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.RIGHT));
+        connectors.put(Direction.UP, comp.getConnectors().get(Direction.LEFT));
+
+        assemblingState.rotateComponentClockwise(comp);
+
+        assertEquals(connectors, comp.getConnectors());
     }
 
     @Test
     void rotateComponentCounterclockwise() {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.LEFT, comp.getConnectors().get(Direction.UP));
+        connectors.put(Direction.RIGHT, comp.getConnectors().get(Direction.DOWN));
+        connectors.put(Direction.UP, comp.getConnectors().get(Direction.RIGHT));
+        connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.LEFT));
+
+        assemblingState.rotateComponentCounterclockwise(comp);
+
+        assertEquals(connectors, comp.getConnectors());
     }
 
     @Test
