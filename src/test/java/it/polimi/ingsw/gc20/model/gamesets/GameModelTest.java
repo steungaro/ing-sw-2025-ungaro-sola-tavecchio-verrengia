@@ -205,13 +205,13 @@ class GameModelTest {
     }
 
     @Test
-    void defaultContrsuctor() {
+    void defaultConstructor() {
         assertNotNull(gameModel);
         assertNull(gameModel.getGame());
     }
 
     @Test
-    void setlevel(){
+    void setLevel(){
         gameModel.setLevel(level);
         assertEquals(level, gameModel.getLevel());
     }
@@ -251,60 +251,51 @@ class GameModelTest {
 
     @Test
     void assembling() {
-        // Inizializza il gioco
+        // init game
         gameModel.startGame(level, players, gameId);
 
-        // Ottieni il primo player e verifica che sia stato creato correttamente
         Player player = gameModel.getGame().getPlayers().getFirst();
         assertNotNull(player);
 
-        // Ottieni un componente dalla lista unviewed
         Component component = gameModel.getGame().getPile().getUnviewed().getFirst();
         assertNotNull(component);
 
         try {
-            // Test componentFromUnviewed
             gameModel.componentFromUnviewed(component);
             assertFalse(gameModel.getGame().getPile().getUnviewed().contains(component));
 
-            // Test componentToViewed
             gameModel.componentToViewed(component);
             assertTrue(gameModel.getGame().getPile().getViewed().contains(component));
 
-            // Test RotateClockwise
             gameModel.RotateClockwise(component);
 
             gameModel.RotateCounterclockwise(component);
 
-            // Test componentFromViewed
+
             gameModel.componentFromViewed(component);
             assertFalse(gameModel.getGame().getPile().getViewed().contains(component));
 
-            // Test componentToBooked (solo per NormalShip)
             gameModel.componentToBooked(component, player);
             assertTrue(((NormalShip)player.getShip()).getBooked().contains(component));
 
-            // Test componentFromBooked
             gameModel.componentFromBooked(component, player);
             assertFalse(((NormalShip)player.getShip()).getBooked().contains(component));
 
-            // Test addToShip - aggiungi il componente in una posizione libera (ad esempio 1,1)
+
             gameModel.addToShip(component, player, 1, 1);
             assertEquals(component, player.getShip().getComponentAt(1, 1));
 
-            // Test stopAssembling - posizione 2
             gameModel.stopAssembling(player, 2);
             assertEquals(2, player.getPosition());
             assertFalse(player.isLeader());
 
-            // Testa anche la posizione leader (1)
             Player secondPlayer = gameModel.getGame().getPlayers().get(1);
             gameModel.stopAssembling(secondPlayer, 1);
             assertEquals(1, secondPlayer.getPosition());
             assertTrue(secondPlayer.isLeader());
 
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("exception should not be thrown " + e.getMessage());
         }
     }
 
@@ -411,7 +402,6 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni batterie e cannoni dalla nave
         List<Battery> batteries = new ArrayList<>();
         batteries.add((Battery)ship.getComponentAt(2, 2));
 
@@ -424,7 +414,7 @@ class GameModelTest {
             assertEquals(ship.firePower(cannons, batteries.size()), power);
             assertEquals(1, ((Battery)ship.getComponentAt(2, 2)).getAvailableEnergy());
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("Exceptions should not be thrown: " + e.getMessage());
         }
     }
 
@@ -442,7 +432,7 @@ class GameModelTest {
             assertEquals(ship.enginePower(1), power);
             assertEquals(1, ((Battery)ship.getComponentAt(2, 2)).getAvailableEnergy());
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -465,8 +455,6 @@ class GameModelTest {
     void testAutoValidation() {
         gameModel.startGame(level, players, gameId);
         Player player = gameModel.getGame().getPlayers().getFirst();
-
-        // Testa che l'autovalidation non lanci eccezioni
         assertDoesNotThrow(() -> gameModel.autoValidation(player));
     }
 
@@ -476,14 +464,12 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Crea un proiettile di tipo heavy meteor
         Projectile meteor = new Projectile();
         meteor.setFireType(FireType.HEAVY_METEOR);
         meteor.setDirection(Direction.UP);
 
         List<Cannon> cannons = gameModel.heavyMeteorCannon(player, 7, meteor);
 
-        // Verifica che ci sia almeno un cannone puntato nella direzione del meteorite
         assertFalse(cannons.isEmpty());
     }
 
@@ -493,13 +479,10 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni i CargoHold dalla nave
         CargoHold cargoHold1 = (CargoHold) ship.getComponentAt(1, 2);
-        CargoHold cargoHold2 = null;
+        CargoHold cargoHold2;
 
-        // Cerca un altro CargoHold sulla nave o creane uno
         try {
-            // Aggiungi un nuovo CargoHold alla nave
             cargoHold2 = new CargoHold();
             cargoHold2.setSlots(3);
             Map<Direction, ConnectorEnum> connectorsCargoHold2 = new HashMap<>();
@@ -510,20 +493,17 @@ class GameModelTest {
             cargoHold2.setConnectors(connectorsCargoHold2);
             ship.addComponent(cargoHold2, 1, 4);
 
-            // Verifica presenza di cargo (già caricati nel setUp)
             assertNotNull(ship.getCargo().get(CargoColor.GREEN));
             assertEquals(1, ship.getCargo().get(CargoColor.GREEN));
 
-            // Test MoveCargo tra due CargoHold
             gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold1, cargoHold2);
             assertEquals(2, ship.getCargo().get(CargoColor.GREEN));
 
-            // Test rimozione cargo
             gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold2, null);
             assertEquals(1, ship.getCargo().getOrDefault(CargoColor.GREEN, 0));
 
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -533,15 +513,15 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni un CargoHold
+
         CargoHold cargoHold = (CargoHold) ship.getComponentAt(1, 2);
 
         try {
-            // Rimuovi i cargo esistenti per un test pulito
+
             gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold, null);
             gameModel.MoveCargo(player, CargoColor.BLUE, cargoHold, null);
 
-            // Aggiungi cargo
+
             gameModel.addCargo(player, CargoColor.YELLOW, cargoHold);
             assertEquals(1, ship.getCargo().getOrDefault(CargoColor.YELLOW, 0));
 
@@ -551,12 +531,12 @@ class GameModelTest {
             gameModel.addCargo(player, CargoColor.BLUE, cargoHold);
             assertEquals(1, ship.getCargo().getOrDefault(CargoColor.YELLOW, 0));
 
-            // Verifica che il CargoHold sia pieno (ha 3 slot)
+
             assertThrows(CargoFullException.class, () ->
                     gameModel.addCargo(player, CargoColor.BLUE, cargoHold)
             );
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -566,16 +546,14 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni un CargoHold dalla nave
+
         CargoHold cargoHold = (CargoHold) ship.getComponentAt(1, 2);
 
-        // Test eccezione per cargo inesistente
-        assertThrows(InvalidCargoException.class, () -> {
-            gameModel.MoveCargo(player, CargoColor.RED, cargoHold, null);
-        });
+
+        assertThrows(InvalidCargoException.class, () -> gameModel.MoveCargo(player, CargoColor.RED, cargoHold, null));
 
         try {
-            // Crea un CargoHold con un solo slot
+
             CargoHold smallCargoHold = new CargoHold();
             smallCargoHold.setSlots(1);
             Map<Direction, ConnectorEnum> connectors = new HashMap<>();
@@ -586,15 +564,13 @@ class GameModelTest {
             smallCargoHold.setConnectors(connectors);
             ship.addComponent(smallCargoHold, 3, 1);
 
-            // Riempi il CargoHold piccolo
+
             gameModel.addCargo(player, CargoColor.BLUE, smallCargoHold);
 
-            // Test eccezione per CargoHold pieno
-            assertThrows(CargoFullException.class, () -> {
-                gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold, smallCargoHold);
-            });
+
+            assertThrows(CargoFullException.class, () -> gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold, smallCargoHold));
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni durante la preparazione: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -602,15 +578,14 @@ class GameModelTest {
     void testViewDeck() {
         gameModel.startGame(level, players, gameId);
         try {
-            // Verifica che il metodo restituisca una lista di carte
+
             List<AdventureCard> cards = gameModel.viewDeck(1);
             assertNotNull(cards);
             assertFalse(cards.isEmpty());
 
-            // Verifica eccezione con indice invalido
             assertThrows(InvalidIndexException.class, () -> gameModel.viewDeck(4));
         } catch (InvalidIndexException e) {
-            fail("Non dovrebbe lanciare eccezioni con indice valido");
+            fail("InvalidIndexException should not be thrown: " + e.getMessage());
         }
     }
 
@@ -620,16 +595,16 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni un componente dalla nave (scegli un componente che non è una cabina con alieni)
+
         Component component = ship.getComponentAt(1, 3); // Cannone
         try {
-            // Rimuovi il componente dalla nave
+
             gameModel.removeComponent(component, player);
 
-            // Verifica che il componente sia stato rimosso
+
             assertNull(player.getShip().getComponentAt(1, 3));
         } catch (ComponentNotFoundException e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -639,23 +614,22 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni una cabina dalla nave
         Cabin cabin = (Cabin) ship.getComponentAt(2, 4);
 
         try {
-            // Aggiungi un alieno alla cabina
+
             cabin.setColor(AlienColor.PURPLE);
             gameModel.setAlien(AlienColor.PURPLE, cabin, player);
 
-            // Verifica che l'alieno sia stato aggiunto
+
             assertEquals(AlienColor.PURPLE, cabin.getAlienColor());
 
-            // Verifica eccezione quando si prova ad aggiungere un altro alieno
+
             assertThrows(InvalidAlienPlacement.class, () ->
                     gameModel.setAlien(AlienColor.BROWN, cabin, player)
             );
         } catch (InvalidAlienPlacement e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("InvalidAlienPlacement should not be thrown: " + e.getMessage());
         }
     }
 
@@ -665,24 +639,19 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Aggiungi un componente alla lista booked
         Component component = new Battery();
         try {
             gameModel.componentToBooked(component, player);
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
 
-        // Verifica che la lista booked contenga il componente
         assertTrue(((NormalShip)player.getShip()).getBooked().contains(component));
 
-        // Chiama il metodo addPieces
         gameModel.addPieces(player);
 
-        // Verifica che la lista booked sia vuota e che il componente sia passato a waste
         assertTrue(player.getShip().getWaste().contains(component));
 
-        // Verifica che gli astronauti siano stati inizializzati
         assertNotEquals(0, player.getShip().getAstronauts());
     }
 
@@ -690,10 +659,8 @@ class GameModelTest {
     void testCreateDeck() {
         gameModel.startGame(level, players, gameId);
 
-        // Chiama il metodo createDeck
         gameModel.createDeck();
 
-        // Verifica che il mazzo contenga delle carte
         assertFalse(gameModel.getGame().getBoard().getDeck().isEmpty());
     }
 
@@ -703,24 +670,21 @@ class GameModelTest {
         Player player1 = gameModel.getGame().getPlayers().getFirst();
         Player player2 = gameModel.getGame().getPlayers().get(1);
 
-        // Imposta le posizioni dei giocatori
         player1.setPosition(20);
         player2.setPosition(2);
 
         try {
-            // Pesca una carta
+
             AdventureCard card = gameModel.drawCard();
 
-            // Verifica che la carta sia stata pescata e impostata come attiva
             assertNotNull(card);
             assertEquals(card, gameModel.getActiveCard());
 
-            // Verifica che il giocatore molto indietro sia stato escluso
             if (player1.getPosition() - player2.getPosition() >= gameModel.getGame().getBoard().getSpaces()) {
                 assertFalse(player2.isInGame());
             }
         } catch (EmptyDeckException e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("EmptyDeckException should not be thrown: " + e.getMessage());
         }
     }
 
@@ -730,27 +694,22 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Imposta un alieno in una cabina
         Cabin cabin = (Cabin) ship.getComponentAt(2, 4);
         try {
             cabin.setColor(AlienColor.PURPLE);
             gameModel.setAlien(AlienColor.PURPLE, cabin, player);
 
-            // Verifica che l'alieno sia stato aggiunto
             assertTrue(cabin.getAlien());
 
-            // Crea lista con la cabina
             List<Cabin> cabins = new ArrayList<>();
             cabins.add(cabin);
 
-            // Chiama il metodo loseCrew
             gameModel.loseCrew(player, cabins);
 
-            // Verifica che l'alieno sia stato rimosso
             assertEquals(AlienColor.NONE, cabin.getAlienColor());
 
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -760,26 +719,22 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni una batteria dalla nave
         Battery battery = (Battery) ship.getComponentAt(2, 2);
         int initialEnergy = battery.getAvailableEnergy();
 
         try {
-            // Usa lo scudo
+
             gameModel.useShield(player, battery);
 
-            // Verifica che l'energia sia stata consumata
             assertEquals(initialEnergy - 1, battery.getAvailableEnergy());
 
-            // Consuma tutta l'energia rimanente
             while (battery.getAvailableEnergy() > 0) {
                 gameModel.useShield(player, battery);
             }
 
-            // Verifica che venga lanciata un'eccezione quando l'energia è esaurita
             assertThrows(EnergyException.class, () -> gameModel.useShield(player, battery));
         } catch (EnergyException e) {
-            fail("Non dovrebbe lanciare eccezioni con energia sufficiente: " + e.getMessage());
+            fail("EnergyException should not be thrown: " + e.getMessage());
         }
     }
 
@@ -790,21 +745,22 @@ class GameModelTest {
         player.setShip(ship);
 
         try {
-            // Imposta un alieno in una cabina
+
             Cabin cabin = (Cabin) ship.getComponentAt(2, 4);
             cabin.setColor(AlienColor.PURPLE);
+            gameModel.setAlien(AlienColor.PURPLE, cabin, player);
 
-            // Crea un proiettile direzionato verso la cabina
+
             Projectile heavyProjectile = new Projectile();
             heavyProjectile.setDirection(Direction.UP);
             heavyProjectile.setFireType(FireType.HEAVY_FIRE);
 
-            // Il test potrebbe lanciare DeadAlienException se l'alieno muore
-            gameModel.Fire(player, 10, heavyProjectile);
+
+            gameModel.Fire(player, 8, heavyProjectile);
             assertFalse(cabin.getAlien());
 
         } catch (Exception e) {
-            fail("Non dovrebbe lanciare eccezioni inattese: " + e.getMessage());
+            fail("Exception should not be thrown: " + e.getMessage());
         }
     }
 
@@ -814,7 +770,6 @@ class GameModelTest {
         Player player = gameModel.getGame().getPlayers().getFirst();
         player.setShip(ship);
 
-        // Ottieni batterie dalla nave
         List<Battery> batteries = new ArrayList<>();
         Battery battery = (Battery) ship.getComponentAt(2, 2);
         batteries.add(battery);
@@ -822,22 +777,19 @@ class GameModelTest {
         int initialEnergy = battery.getAvailableEnergy();
 
         try {
-            // Rimuovi energia
+
             gameModel.removeEnergy(player, batteries);
 
-            // Verifica che l'energia sia stata rimossa
             assertEquals(initialEnergy - 1, battery.getAvailableEnergy());
 
-            // Consuma tutta l'energia rimanente
             while (battery.getAvailableEnergy() > 0) {
                 gameModel.removeEnergy(player, batteries);
             }
 
-            // Verifica che venga lanciata un'eccezione quando l'energia è esaurita
             assertThrows(EnergyException.class, () ->
                     gameModel.removeEnergy(player, batteries));
         } catch (EnergyException e) {
-            fail("Non dovrebbe lanciare eccezioni con energia sufficiente: " + e.getMessage());
+            fail("EnergyException should not be thrown: " + e.getMessage());
         }
     }
 }

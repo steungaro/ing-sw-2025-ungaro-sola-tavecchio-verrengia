@@ -36,7 +36,7 @@ public abstract class PlayingState extends State {
                 .findFirst().orElse(null);
     }
 
-    public int rollDice(Player player) throws InvalidTurnException, InvalidShipException, EmptyDeckException, DeadAlienException, DieNotRolledException {
+    public int rollDice(Player player) throws InvalidTurnException, InvalidShipException, EmptyDeckException, DieNotRolledException {
         if (!currentPlayer.equals(player.getUsername())) {
             throw new InvalidTurnException("Not your turn.");
         }

@@ -147,7 +147,7 @@ public class GameModel {
     }
 
     /**
-     * function when a component is taken from the unViewed list
+     * function when a component is taken from the unViewed list,
      * it removes the component from the unViewed list
      *
      *
@@ -159,7 +159,7 @@ public class GameModel {
     }
 
     /**
-     * function when a component is taken from the viewed list
+     * function when a component is taken from the viewed list,
      * it removes it from the viewed list
      * @param c component to remove
      * @throws ComponentNotFoundException if the component is not present in the viewed list
@@ -172,7 +172,7 @@ public class GameModel {
      * function when a component is taken from the booked list
      * remove the component from the booked list of the player
      *
-     * @apiNote this method is called only in level 2 games, and the component in booked list cannot be moved in the viewed list
+     * @apiNote this method is called only in level 2 games, and the component in the booked list cannot be moved in the viewed list
      * @param c component to remove
      * @param p player that takes the component
      * @throws ComponentNotFoundException the component is not present in the booked list
@@ -291,7 +291,7 @@ public class GameModel {
      *
      * @param c component to remove
      * @param p player that removes the component
-     * @throws DeadAlienException if the component is a life support and an alien die
+     * @throws ComponentNotFoundException if the component is not present in the ship
      */
     public void removeComponent(Component c, Player p) throws ComponentNotFoundException {
         Ship s = p.getShip();
@@ -299,7 +299,7 @@ public class GameModel {
     }
 
     /**
-     * function that sets the alien in the ship
+     * function that sets the alien on the ship
      * it creates a new alien and call the method of the ship to add an alien to the ship
      *
      * @apiNote controller has to find a condition till the player can add alien to a ship (based on what it can host)
@@ -317,7 +317,7 @@ public class GameModel {
     }
 
     /**
-     * function that sets the astronaut in the ship and move the component from the booked list to the waste
+     * function that sets the astronaut on the ship and move the component from the booked list to the waste
      *
      * @param p player that adds the astronaut
      */
@@ -328,7 +328,7 @@ public class GameModel {
     }
 
     /**
-     * merge the four deck and create the deck to use in the game
+     * merge the four decks and create the deck to use in the game
      * @apiNote only called in level 2 games
      */
     public void createDeck() {
@@ -338,8 +338,8 @@ public class GameModel {
 
     /**
      * function that automatically draw the first card of the deck and set it as active
-     * it sort the player by position in the board and verify if the player is a lap behind or if the player don't have any astronaut
-     *  if so the player is set as not in game
+     * it sorts the player by position in the board and verifies if the player is a lap behind or if the player doesn't have any astronaut
+     *  if so the player is set as not in the game
      *
      * @return the card drawn
      * @throws EmptyDeckException if the deck is empty
@@ -363,8 +363,8 @@ public class GameModel {
     }
 
 
-    /** Function to call when the player lose some member of the crew
-     * @param p player that lose the crew
+    /** Function to call when the player loses some member of the crew
+     * @param p player that loses the crew
      * @param l list of crew member to remove
      * @throws EmptyCabinException if the cabin is empty
      */
@@ -391,7 +391,7 @@ public class GameModel {
     }
 
     /** function to get the number of astronauts and alien for certain condition of some cards
-     * @param p player whose chose to activate the effect of the card
+     * @param p player who chose to activate the effect of the card
      * @return the number of astronauts and alien
      */
     public int getCrew (Player p) {
@@ -400,9 +400,9 @@ public class GameModel {
 
     /**
      * function to call when is needed to calculate the firepower of the ship
-     * based on the base firepower of a ship and the double cannons that the player activate
+     * based on the base firepower of a ship and the double cannons that the player activates
      *
-     * @param p       player whose chose to activate the effect of the card
+     * @param p       player who chose to activate the effect of the card
      * @param cannons double cannons to activate
      * @param energy  energy to use
      * @throws EnergyException if the energy is not enough
@@ -426,7 +426,7 @@ public class GameModel {
     /**
      * function to call when is needed to calculate the firepower of the ship
      *
-     * @param p             player whose chose to activate the effect of the card
+     * @param p             player who chose to activate the effect of the card
      * @param doubleEngines number of double engines to activate
      * @param energy        list of energy to use
      * @return the engine power of the ship
@@ -456,7 +456,7 @@ public class GameModel {
      * @param c    cargo to move
      * @param from cargoHold from
      * @param to   cargoHold to
-     * @throws InvalidCargoException if there are no cargo of that type to unload
+     * @throws InvalidCargoException if there is no cargo of that type to unload
      * @throws CargoNotLoadable if the cargo is not loadable
      * @throws CargoFullException if the cargoHold is full
      */
@@ -485,9 +485,9 @@ public class GameModel {
     }
 
     /**
-     * method to remove a battery when  a shield is utilized
+     * method to remove a battery when a shield is used
      *
-     * @param p player whose chose to activate the effect of the card
+     * @param p player who chose to activate the effect of the card
      * @param e energy to use
      * @throws EnergyException if the energy is not enough
      */
@@ -546,24 +546,34 @@ public class GameModel {
         return score;
     }
 
-    /** function that return the number of astronauts of one ship
+    /** function that returns the number of astronauts of one ship
      *
-     * @param p player which number of astronauts need to be returned
+     * @param p player which number of astronauts needs to be returned
      */
     public int getAstronauts(Player p) {
         return p.getShip().getAstronauts();
     }
 
     /** function to call when a projectile is fired and hit the ship
-     * @param p player who get hit
+     * @param p player who gets hit
      * @param diceResult result of the dice throw that indicates the row or column hit
      * @throws InvalidShipException if the ship is invalid
-     * @apiNote controller utilize this method only if the projectile hit the ship
+     * @apiNote controller uses this method only if the projectile hit the ship
      */
-    public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException, DeadAlienException {
+    public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
         Component c;
         if (fire.getFireType() == FireType.LIGHT_METEOR) {
-            c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);
+            if (fire.getDirection() == Direction.UP || fire.getDirection() == Direction.DOWN) {
+                if (level == 2) {
+                    c = p.getShip().getFirstComponent(fire.getDirection(), diceResult-4);
+                } else {
+                    c = p.getShip().getFirstComponent(fire.getDirection(), diceResult-5);
+                }
+            } else {
+                c = p.getShip().getFirstComponent(fire.getDirection(), diceResult-5);
+            }
+
+
             if (c==null) {
                 return;
             }
@@ -579,7 +589,7 @@ public class GameModel {
      * @param p player
      * @param diceResult result of the dice throw
      * @param fire projectile
-     * @return list of cannon which point the same direction of the meteor
+     * @return list of cannon which point in the same direction of the meteor
      */
     public List<Cannon> heavyMeteorCannon (Player p, int diceResult, Projectile fire) {
         List<Cannon> cannons;
@@ -610,8 +620,8 @@ public class GameModel {
             }
     }
 
-    /** function to removeEnergy to utilize in case of not having enough cargo
-     * @apiNote controller needs to verify how much energy the player has to remove, when cargo are insufficient
+    /** function to removeEnergy to use it in case of not having enough cargo
+     * @apiNote controller needs to verify how much energy the player has to remove when cargo is not enough
      * @param p player that needs to remove the energy
      * @param energy list of energy to remove from the ship
      * @throws EnergyException if the energy is not enough
@@ -638,9 +648,9 @@ public class GameModel {
         }
     }
 
-    /** function that return the number of time the hourglass has been turned
+    /** function that return the amount of time the hourglass has been turned
      *
-     * @return the number of time the hourglass has been turned
+     * @return the amount of time the hourglass has been turned
      */
     public int getTurnedHourglass() {
         Board board = this.game.getBoard();
@@ -648,7 +658,7 @@ public class GameModel {
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
-     * @throws HourglassException if the hourglass is already turned 3 times or if the remaining time is not 0
+     * @throws HourglassException if the hourglass is already turned 3 times, or if the remaining time is not 0
      */
     public void turnHourglass() throws HourglassException {
         Board board = this.game.getBoard();
@@ -671,7 +681,7 @@ public class GameModel {
         return ((NormalBoard) board).getTotalRemainingTime();
     }
 
-    /** Function that returns a list of the player that are actually in the game
+    /** Function that returns a list of the player that is actually in the game
      * @return List of the player that are in the game
      */
     public List<Player> getInGamePlayers () {
@@ -685,8 +695,8 @@ public class GameModel {
         return inGamePlayers;
     }
 
-    /** Function that set the player status to false if the choose to give up
-     * @param p player that choose to give up
+    /** Function that set the player status to false if the choice to give up
+     * @param p player that chooses to give up
      */
     public void giveUp (Player p) {
         p.setGameStatus(false);

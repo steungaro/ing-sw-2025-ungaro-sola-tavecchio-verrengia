@@ -86,7 +86,7 @@ public abstract class State{
         exception();
         return false;
     }
-    public void removeComp(Player player, Component component) throws DeadAlienException, ComponentNotFoundException {
+    public void removeComp(Player player, Component component) throws ComponentNotFoundException {
         exception();
     }
 
@@ -128,10 +128,10 @@ public abstract class State{
         exception();
     }
 
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DeadAlienException, DieNotRolledException, EmptyDeckException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException, EmptyDeckException {
         exception();
     }
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, EnergyException, DeadAlienException, DieNotRolledException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, EnergyException, DieNotRolledException {
         exception();
     }
     public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException, EmptyDeckException {
@@ -173,7 +173,7 @@ public abstract class State{
         exception();
     }
 
-    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DeadAlienException, DieNotRolledException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DieNotRolledException {
         exception();
         return 0;
     }

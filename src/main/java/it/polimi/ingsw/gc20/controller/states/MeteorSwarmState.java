@@ -36,7 +36,7 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException, EmptyDeckException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException{
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -63,7 +63,7 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, DeadAlienException, DieNotRolledException, EmptyDeckException, EnergyException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, DieNotRolledException, EmptyDeckException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -81,7 +81,7 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, EmptyDeckException {
+    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

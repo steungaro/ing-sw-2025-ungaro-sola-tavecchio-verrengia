@@ -211,10 +211,9 @@ public class NormalShip extends Ship {
     /**
      * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
      * @param c: the component that was removed from the ship
-     * @throws DeadAlienException if in the cabin there was an alien and it died
      */
     public void updateLifeSupportRemoved(Component c) {
-        //Find if is there a Cabin connected to the LifeSupport
+        //Find if there is a Cabin connected to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
             return;

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.exceptions.ComponentNotFoundException;
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.model.components.AlienColor;
 import it.polimi.ingsw.gc20.model.components.Cabin;

@@ -82,9 +82,9 @@ public abstract class Ship {
 
     /**
      * Function that determines the total firepower of the ship
-     * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half power)
+     * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half-power)
      * the user will select one by one the cannons he wants to use (single cannons automatically selected) every time he selects a cannon the power of the ship will be recalculated
-     * it also checks if the ship has the necessary amount of batteries
+     * it also checks if the ship has the necessary number of batteries
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
      * @throws EnergyException if the number of cannons is greater than the total energy of the ship
@@ -146,7 +146,7 @@ public abstract class Ship {
     /**
      * Function that gets the first component of the ship from a certain direction to determine what component will be hit
      * @param d Direction: the direction from which the component will be hit
-     * @param n Integer: row or column of the component ATTENTION it is the row or colum get from the dice NOT the row or column of the ship
+     * @param n Integer: row or column of the component ATTENTION it is the row or colum of the ship
      * @return component_hit
      */
     public Component getFirstComponent(Direction d, Integer n) {
@@ -191,10 +191,10 @@ public abstract class Ship {
     /**
      * Check if the ship is shielded from a certain direction
      * @param d Direction: the direction from which the ship is being attacked
-     * @return if side is shielded
+     * @return if the side is shielded
      */
     public Boolean getShield(Direction d) {
-        //parse throw the component of the ship until it finds a shield that covers the direction d or until all pieces are checked
+        //parse throws the component of the ship until it finds a shield that covers the direction or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
 
@@ -284,7 +284,7 @@ public abstract class Ship {
      * find all the valid components of the ship and kill the invalid ones
      * @param row row of the component to start the search
      * @param col col of the component to start the search
-     * @apiNote Note tha with row=-1 and col=-1 the function will start with the starting cabin
+     * @apiNote Note that with row=-1 and col=-1 the function will start with the starting cabin
      */
     public void findValid(int row, int col) {
         if(row == -1 && col == -1){
@@ -340,11 +340,11 @@ public abstract class Ship {
                         break;
                 }
 
-                // Check if adjacent cell is within bounds and has a component
+                // Check if the adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
                     if (!visited[adjRow][adjCol]) {
-                        // Check if adjacent component has a matching connector
+                        // Check if the adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
                             queue.add(new int[]{adjRow, adjCol});
@@ -375,7 +375,7 @@ public abstract class Ship {
      * Validates if all components are connected to the starting position
      * @param startRow Starting row for validation
      * @param startCol Starting column for validation
-     * @return True if ship is valid, false otherwise
+     * @return True if a ship is valid, false otherwise
      */
     public boolean isValid(int startRow, int startCol) {
         int rows = getRows();
@@ -424,11 +424,11 @@ public abstract class Ship {
                         break;
                 }
 
-                // Check if adjacent cell is within bounds and has a component
+                // Check if the adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
                     if (!visited[adjRow][adjCol]) {
-                        // Check if adjacent component has a matching connector
+                        // Check if the adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
                             queue.add(new int[]{adjRow, adjCol});
@@ -454,7 +454,7 @@ public abstract class Ship {
 
     /**
      * Validates if the ship structure is valid (all components connected) starting from the starting cabin
-     * @return True if ship is valid, false otherwise
+     * @return True if a ship is valid, false otherwise
      */
     public boolean isValid() {
         return isValid(getRows()/2, getCols()/2);
@@ -477,11 +477,14 @@ public abstract class Ship {
     }
 
     /**
-     * Removes a component from ship and adds it to waste
+     * Removes a component from the ship and adds it to waste
      * @param c Component to destroy
-     * @return True if ship remains valid after removal
+     * @return True if the ship remains valid after removal
      */
     public Boolean killComponent(Component c) throws ComponentNotFoundException {
+        if (c == null) {
+            throw new ComponentNotFoundException("Component not found in ship");
+        }
         int[] position = findComponent(c);
         if (position == null) {
             throw new ComponentNotFoundException("Component not found in ship");
@@ -496,7 +499,7 @@ public abstract class Ship {
 
     /**
      * Function to load a cargo in a cargo hold
-     * @param cargo is the cargo to be loaded
+     * @param cargo cargo to be loaded
      * @param h cargo hold to load the cargo in
      * @throws CargoFullException if the cargo hold is full
      * @throws CargoNotLoadable if the cargo is not loadable in the cargo hold
@@ -508,8 +511,8 @@ public abstract class Ship {
 
     /**
      * Function to unload a cargo from the ship
-     * @param cargo is the cargo to be unloaded
-     * @param h is the cargo hold to unload the cargo from
+     * @param cargo cargo to be unloaded
+     * @param h cargo hold to unload the cargo from
      * @throws IllegalArgumentException if there is no cargo of that type to unload
      */
     public void unloadCargo(CargoColor cargo, CargoHold h) throws InvalidCargoException {
@@ -519,7 +522,7 @@ public abstract class Ship {
 
     /**
      * add single cannon power
-     * @param power is the power to add to singleCannonsPower
+     * @param power power to add to singleCannonsPower
      */
     public void addSingleCannonsPower(float power) {
         singleCannonsPower += power;
@@ -527,7 +530,7 @@ public abstract class Ship {
 
     /**
      * add double cannon power
-     * @param power is the power to add to doubleCannonsPower
+     * @param power power to add to doubleCannonsPower
      */
     public void addDoubleCannonsPower(int power) {
         doubleCannonsPower += power;
@@ -535,7 +538,7 @@ public abstract class Ship {
 
     /**
      * add double engines
-     * @param power is the power to add to doubleEngines
+     * @param power power to add to doubleEngines
      */
     public void addDoubleEngines(int power) {
         doubleEngines += power;
@@ -543,14 +546,14 @@ public abstract class Ship {
 
     /**
      * add single engines
-     * @param power is the power to add to singleEngines
+     * @param power power to add to singleEngines
      */
     public void addSingleEngines(int power) {
         singleEngines += power;
     }
     /**
      * add batteries
-     * @param batteries is the power to add to totalEnergy
+     * @param batteries power to add to totalEnergy
      */
     public void addBatteries(int batteries) {
         totalEnergy += batteries;
@@ -610,7 +613,7 @@ public abstract class Ship {
 
     /**
      * Function that removes energy from the battery
-     * @param battery is the battery to remove energy from
+     * @param battery battery to remove energy from
      * @throws EnergyException if the battery is empty
      */
     public void useEnergy(Battery battery) throws EnergyException {
@@ -623,7 +626,7 @@ public abstract class Ship {
 
     /**
      * Function to unloadCrew from the ship
-     * @param c is the crew member to be unloaded
+     * @param c the crew member to be unloaded
      */
     public abstract void unloadCrew(Cabin c) throws EmptyCabinException;
 

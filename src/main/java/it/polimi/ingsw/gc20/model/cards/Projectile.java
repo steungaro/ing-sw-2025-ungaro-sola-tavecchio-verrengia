@@ -26,7 +26,7 @@ public class Projectile {
     }
 
     /**
-     * @param fireType is the type of the projectile
+     * @param fireType type of the projectile
      */
     public void setFireType(FireType fireType) {
         this.fireType = fireType;
@@ -47,17 +47,17 @@ public class Projectile {
     }
 
     /**
-     * @param s is the ship fired at
-     * @param diceResult is the result of the dice
+     * @param s ship fired at
+     * @param diceResult result of the dice
      * @implNote ships cannot resist a heavy fire
      * @throws InvalidShipException if the ship is invalid
      * @see Ship
      * @apiNote Controller must ask getCannons (for HeavyMeteor) to know whether a cannon is active or not, then it must invoke Fire if and only if the given cannons(s) cannot protect the ship catch the exception and ask the player to validate the ship
      * @apiNote Controller must ask getShields and getFirstComponent (for LightMeteor) to know whether a shield is active or not or if the component has connectors exposed, then it must invoke Fire if and only if the given shields(s) cannot protect the ship catch the exception and ask the player to validate the ship
      * @apiNote Controller must activate Fire without any checks (for HeavyFire)
-     * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship catch the exception and ask the player to validate the ship
+     * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship, catch the exception and ask the player to validate the ship
      */
-    public void Fire(Ship s, int diceResult) throws InvalidShipException, DeadAlienException {
+    public void Fire(Ship s, int diceResult) throws InvalidShipException {
         try {
             if (direction == Direction.UP || direction == Direction.DOWN) {
                 if (s instanceof NormalShip) {

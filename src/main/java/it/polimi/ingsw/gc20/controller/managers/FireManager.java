@@ -62,7 +62,7 @@ public class FireManager {
         }
     }
 
-    public void fire() throws InvalidShipException, DieNotRolledException, DeadAlienException {
+    public void fire() throws InvalidShipException, DieNotRolledException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -80,7 +80,7 @@ public class FireManager {
         }
         try {
             gm.Fire(player, dice, fire);
-        } catch (InvalidShipException | DeadAlienException e) {
+        } catch (InvalidShipException e) {
             validator.setSplit();
             throw e;
         }

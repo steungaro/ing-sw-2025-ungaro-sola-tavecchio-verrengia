@@ -82,7 +82,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, DeadAlienException, DieNotRolledException, EmptyDeckException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, DieNotRolledException, EmptyDeckException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -123,7 +123,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException, DeadAlienException, DieNotRolledException, EmptyDeckException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException, DieNotRolledException, EmptyDeckException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.model.components;
 
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

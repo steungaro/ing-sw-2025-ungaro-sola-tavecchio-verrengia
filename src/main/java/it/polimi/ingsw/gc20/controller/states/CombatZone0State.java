@@ -73,7 +73,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DeadAlienException, DieNotRolledException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DieNotRolledException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -126,7 +126,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DeadAlienException, DieNotRolledException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -146,7 +146,7 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, EnergyException, DeadAlienException, DieNotRolledException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, EnergyException, DieNotRolledException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

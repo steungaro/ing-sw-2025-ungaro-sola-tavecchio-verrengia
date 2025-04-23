@@ -4,7 +4,6 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import it.polimi.ingsw.gc20.exceptions.DeadAlienException;
 import it.polimi.ingsw.gc20.model.ship.Ship;
 import it.polimi.ingsw.gc20.model.ship.Tile;
 
