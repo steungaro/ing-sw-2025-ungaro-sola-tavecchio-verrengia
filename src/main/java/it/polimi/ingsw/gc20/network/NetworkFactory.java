@@ -14,13 +14,12 @@ public class NetworkFactory {
         NetworkManager.getInstance(); // Ensure singleton is created
     }
 
-    public Server createServer(ServerType type) {
+    public void createServer(ServerType type) {
         Server server = switch (type) {
             case RMI -> new RMIServer();
             case SOCKET -> new SocketServer();
         };
         servers.add(server);
-        return server;
     }
 
     public void startAllServers() {

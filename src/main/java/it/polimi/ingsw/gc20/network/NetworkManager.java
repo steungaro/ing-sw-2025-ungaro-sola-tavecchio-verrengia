@@ -38,13 +38,13 @@ public class NetworkManager {
     public void sendToClient(String username, Message message) {
         ClientHandler client = clients.get(username);
         if (client != null) {
-            client.sendMessage(message);
+            client.sendToClient(message);
         }
     }
 
     public void broadcastMessage(Message message) {
         for (ClientHandler client : clients.values()) {
-            client.sendMessage(message);
+            client.sendToClient(message);
         }
     }
 }

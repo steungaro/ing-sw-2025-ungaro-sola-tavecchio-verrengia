@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.network.message_protocol.toserver.game.*;
 import org.javatuples.Pair;
 
+import java.io.Serial;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
@@ -20,8 +21,10 @@ import java.util.logging.Logger;
 public class RMIGameControllerService extends UnicastRemoteObject implements GameControllerInterface {
     private static final Logger LOGGER = Logger.getLogger(RMIGameControllerService.class.getName());
     private final QueueHandler queueHandler;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    public RMIGameControllerService() throws RemoteException {
+    public RMIGameControllerService(RMIAuthService authService) throws RemoteException {
         super();
         this.queueHandler = QueueHandler.getInstance();
     }
