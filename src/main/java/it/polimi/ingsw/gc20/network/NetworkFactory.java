@@ -18,7 +18,6 @@ public class NetworkFactory {
         Server server = switch (type) {
             case RMI -> new RMIServer();
             case SOCKET -> new SocketServer();
-            default -> throw new IllegalArgumentException("Not a valid server type");
         };
         servers.add(server);
         return server;

@@ -343,20 +343,18 @@ public class GameController implements GameControllerInterface {
     /**
      * @param asker is the username of the player asking for data
      * @param asked is the username of the player being asked for data
-     * @return player data, if the asker is the same as the asked, return the full data, otherwise return only public data
      */
     @Override
-    public Player getPlayerData(String asker, String asked) {
+    public void getPlayerData(String asker, String asked) {
         try{
             if (asker.equals(asked)) {
-                return getPlayerByID(asker);
+                // TODO notify getPlayerByID(asker);
             } else {
-                return getPlayerByID(asked).getPublicData();
+                // TODO notify getPlayerByID(asked).getPublicData();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error getting player data", e);
         }
-        return null;
     }
 
 

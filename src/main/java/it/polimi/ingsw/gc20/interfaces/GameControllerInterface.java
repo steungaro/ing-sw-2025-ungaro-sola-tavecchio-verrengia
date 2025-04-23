@@ -8,67 +8,58 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import org.javatuples.Pair;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
 public interface GameControllerInterface extends Remote {
-
-    // Player management
-    void giveUp(String username);
-    void disconnectPlayer(String username);
-    boolean reconnectPlayer(String username);
-    List<String> getAllUsernames();
-    List<String> getDisconnectedPlayers();
-    boolean isPlayerDisconnected(String username);
-
-
-    Player getPlayerData(String asker, String asked);
+    void getPlayerData(String asker, String asked) throws RemoteException;
 
     // Game state
-    String getState();
-    Map<String, Integer> getPlayerScores();
+    String getState() throws RemoteException;
+    Map<String, Integer> getPlayerScores() throws RemoteException;
 
     // Ship assembly
-    void takeComponentFromUnviewed(String username, int index);
-    void takeComponentFromViewed(String username, int index);
-    void takeComponentFromBooked(String username, int index);
-    void addComponentToBooked(String username);
-    void addComponentToViewed(String username);
-    void placeComponent(String username, Pair<Integer, Integer> coordinates);
+    void takeComponentFromUnviewed(String username, int index) throws RemoteException;
+    void takeComponentFromViewed(String username, int index) throws RemoteException;
+    void takeComponentFromBooked(String username, int index) throws RemoteException;
+    void addComponentToBooked(String username) throws RemoteException;
+    void addComponentToViewed(String username) throws RemoteException;
+    void placeComponent(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
 
-    void rotateComponentClockwise(String username);
-    void rotateComponentCounterclockwise(String username);
+    void rotateComponentClockwise(String username) throws RemoteException;
+    void rotateComponentCounterclockwise(String username) throws RemoteException;
 
-    void stopAssembling(String username, int position);
-    void peekDeck(String username, int num);
-    int getHourglassTime(String username);
-    void turnHourglass(String username);
+    void stopAssembling(String username, int position) throws RemoteException;
+    void peekDeck(String username, int num) throws RemoteException;
+    int getHourglassTime(String username) throws RemoteException;
+    void turnHourglass(String username) throws RemoteException;
 
     // Ship validating
-    void validateShip(String username);
-    void removeComponentFromShip(String username, Component component);
-    void addAlien(String username, AlienColor color, Cabin cabin);
-    void readyToFly(String username) throws EmptyDeckException;
+    void validateShip(String username) throws RemoteException;
+    void removeComponentFromShip(String username, Component component) throws RemoteException;
+    void addAlien(String username, AlienColor color, Cabin cabin) throws RemoteException;
+    void readyToFly(String username) throws RemoteException;
 
     // Gameplay
-    void chooseBranch(String username, Pair<Integer, Integer> coordinates);
-    void rollDice(String username);
-    AdventureCard getActiveCard();
-    void landOnPlanet(String username, int planetIndex);
-    void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch);
-    void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch);
-    void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to);
-    void acceptCard(String username);
-    void loseCrew(String username, List<Pair<Integer, Integer>> cabins);
-    void endMove(String username);
-    void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries);
+    void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
+    void rollDice(String username) throws RemoteException;
+    AdventureCard getActiveCard() throws RemoteException;
+    void landOnPlanet(String username, int planetIndex) throws RemoteException;
+    void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) throws RemoteException;
+    void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) throws RemoteException;
+    void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws RemoteException;
+    void acceptCard(String username) throws RemoteException;
+    void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws RemoteException;
+    void endMove(String username) throws RemoteException;
+    void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
 
     // Activate ship components
-    void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries);
-    void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery);
-    void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries);
+    void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws RemoteException;
+    void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws RemoteException;
+    void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
 
     // Game end
-    Map<String, Integer> getScore();
+    Map<String, Integer> getScore() throws RemoteException;
 }

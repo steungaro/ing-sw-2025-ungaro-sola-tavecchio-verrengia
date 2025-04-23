@@ -13,6 +13,7 @@ public class MatchController implements MatchControllerInterface {
     private final List<GameController> games;
     private final List<Lobby> lobbies;
     private final Map<String, Lobby> playersInLobbies;
+    private final Map<String, GameController> playersInGames;
     private int maxMatches;
     private int maxLobbies;
     private static MatchController instance;
@@ -24,6 +25,7 @@ public class MatchController implements MatchControllerInterface {
         this.games = new ArrayList<>();
         this.playersInLobbies = new HashMap<>();
         this.lobbies = new ArrayList<>();
+        this.playersInGames = new HashMap<>();
     }
 
     /**
@@ -175,6 +177,7 @@ public class MatchController implements MatchControllerInterface {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("No such lobby"))
                 .createGameController());
+        playersInGames.putAll(playersInLobbies.get());
         lobbies.removeIf(l -> l.getId().equals(id));
         List<String> usersToRemove = new ArrayList<>();
         for (String user : playersInLobbies.keySet()) {
@@ -186,5 +189,20 @@ public class MatchController implements MatchControllerInterface {
         for (String user : usersToRemove) {
             playersInLobbies.remove(user);
         }
+    }
+
+    public List<String> getAllUsers() {
+        List<String> allUsers = new ArrayList<>();
+        allUsers.addAll(playersInGames.keySet());
+        allUsers.addAll(playersInLobbies.keySet());
+        return allUsers;
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return !playersInGames.containsKey(username) && !playersInLobbies.containsKey(username);
+    }
+
+    public GameController getGameControllerForPlayer(String username) {
+        return playersInGames.getOrDefault(username, null);
     }
 }

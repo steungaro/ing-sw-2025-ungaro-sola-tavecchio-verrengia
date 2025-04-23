@@ -26,12 +26,12 @@ public class SocketServer implements Server {
         try {
             serverSocket = new ServerSocket(DEFAULT_PORT);
             running = true;
-            LOGGER.info("Socket server avviato sulla porta " + DEFAULT_PORT);
+            LOGGER.info("Socket server set up on port: " + DEFAULT_PORT);
 
-            // Thread per accettare nuove connessioni
+            // Thread to accept connections
             new Thread(this::acceptConnections).start();
         } catch (IOException e) {
-            LOGGER.severe("Errore nell'avvio del server Socket: " + e.getMessage());
+            LOGGER.severe("Error while setting up socket server: " + e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class SocketServer implements Server {
                 registerClient(handler);
             } catch (IOException e) {
                 if (running) {
-                    LOGGER.warning("Errore nell'accettare connessioni: " + e.getMessage());
+                    LOGGER.warning("Error while accepting connections: " + e.getMessage());
                 }
             }
         }
@@ -59,9 +59,9 @@ public class SocketServer implements Server {
         executor.shutdown();
         try {
             serverSocket.close();
-            LOGGER.info("Socket server fermato");
+            LOGGER.info("Socket server stopped.");
         } catch (IOException e) {
-            LOGGER.warning("Errore nella chiusura del server Socket: " + e.getMessage());
+            LOGGER.warning("Error while stopping socket server: " + e.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public class SocketServer implements Server {
     public void registerClient(ClientHandler client) {
         clients.add(client);
         NetworkManager.getInstance().registerClient(client);
-        LOGGER.info("Client registrato: " + client.getClientUsername());
+        LOGGER.info("Client registered through socket: " + client.getClientUsername());
     }
 
     @Override
@@ -82,6 +82,6 @@ public class SocketServer implements Server {
     public void removeClient(ClientHandler client) {
         clients.remove(client);
         NetworkManager.getInstance().removeClient(client.getClientUsername());
-        LOGGER.info("Client rimosso: " + client.getClientUsername());
+        LOGGER.info("Client removed from socket server: " + client.getClientUsername());
     }
 }

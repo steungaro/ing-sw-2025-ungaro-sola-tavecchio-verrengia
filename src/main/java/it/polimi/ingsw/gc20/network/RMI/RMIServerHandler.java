@@ -80,7 +80,7 @@ public class RMIServerHandler {
         }
 
         // export the object and obtain the stub
-       Remote stub = UnicastRemoteObject.exportObject(obj, 0);
+        Remote stub = UnicastRemoteObject.exportObject(obj, 0);
 
         // Bind the stub to the registry
         Naming.rebind("rmi://localhost:" + currentPort + "/" + name, stub);

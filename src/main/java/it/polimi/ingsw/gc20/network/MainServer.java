@@ -5,12 +5,12 @@ public class  MainServer {
         NetworkFactory networkFactory = new NetworkFactory();
         networkFactory.initialize();
 
-        // Crea e avvia entrambi i tipi di server
+        // Create servers
         networkFactory.createServer(NetworkFactory.ServerType.RMI);
         networkFactory.createServer(NetworkFactory.ServerType.SOCKET);
         networkFactory.startAllServers();
 
-        // Aggiungi un shutdown hook per terminare i server correttamente
+        // Add shutdown hook to stop servers on exit
         Runtime.getRuntime().addShutdownHook(new Thread(networkFactory::stopAllServers));
     }
 }
