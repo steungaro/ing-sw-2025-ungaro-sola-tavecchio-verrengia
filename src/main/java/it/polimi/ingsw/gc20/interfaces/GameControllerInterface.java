@@ -43,32 +43,32 @@ public interface GameControllerInterface extends Remote {
     void stopAssembling(String username, int position);
     void peekDeck(String username, int num);
     int getHourglassTime(String username);
-    void turnHourglass(String username) throws HourglassException;
+    void turnHourglass(String username);
 
     // Ship validating
     void validateShip(String username);
     void removeComponentFromShip(String username, Component component);
     void addAlien(String username, AlienColor color, Cabin cabin);
-    void readyToFly(String username);
+    void readyToFly(String username) throws EmptyDeckException;
 
     // Gameplay
-    void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidShipException;
-    void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    void chooseBranch(String username, Pair<Integer, Integer> coordinates);
+    void rollDice(String username);
     AdventureCard getActiveCard();
-    void landOnPlanet(String username, int planetIndex) throws IllegalStateException, InvalidTurnException;
-    void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoException;
-    void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoException;
-    void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws IllegalStateException, InvalidTurnException, CargoException;
-    void acceptCard(String username) throws IllegalStateException, InvalidTurnException;
-    void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException;
-    void endMove(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException;
-    void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    void landOnPlanet(String username, int planetIndex);
+    void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch);
+    void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch);
+    void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to);
+    void acceptCard(String username);
+    void loseCrew(String username, List<Pair<Integer, Integer>> cabins);
+    void endMove(String username);
+    void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries);
 
     // Activate ship components
-    void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
-    void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException;
-    void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException;
+    void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries);
+    void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery);
+    void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries);
 
     // Game end
-    Map<String, Integer> getScore() throws IllegalStateException;
+    Map<String, Integer> getScore();
 }

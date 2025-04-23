@@ -2,8 +2,7 @@ package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.controller.managers.Translator;
-import it.polimi.ingsw.gc20.exceptions.CargoException;
-import it.polimi.ingsw.gc20.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.Battery;
 import it.polimi.ingsw.gc20.model.components.CargoHold;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
@@ -28,7 +27,7 @@ public abstract class CargoState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
@@ -43,7 +42,7 @@ public abstract class CargoState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
@@ -59,7 +58,7 @@ public abstract class CargoState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException {
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new IllegalArgumentException("It's not your turn");
         }
@@ -73,7 +72,7 @@ public abstract class CargoState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      * @throws IllegalStateException if the player has cargo available
      */
-    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

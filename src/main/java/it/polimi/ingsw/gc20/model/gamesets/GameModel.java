@@ -556,7 +556,7 @@ public class GameModel {
      * @throws InvalidShipException if the ship is invalid
      * @apiNote controller utilize this method only if the projectile hit the ship
      */
-    public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException {
+    public void Fire (Player p, int diceResult, Projectile fire) throws InvalidShipException, DeadAlienException {
         Component c;
         if (fire.getFireType() == FireType.LIGHT_METEOR) {
             c = p.getShip().getFirstComponent(fire.getDirection(), diceResult);

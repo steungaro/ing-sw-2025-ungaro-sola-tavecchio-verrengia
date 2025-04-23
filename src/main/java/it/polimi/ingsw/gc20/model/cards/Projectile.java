@@ -57,7 +57,7 @@ public class Projectile {
      * @apiNote Controller must activate Fire without any checks (for HeavyFire)
      * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship catch the exception and ask the player to validate the ship
      */
-    public void Fire(Ship s, int diceResult) throws InvalidShipException {
+    public void Fire(Ship s, int diceResult) throws InvalidShipException, DeadAlienException {
         if (direction == Direction.UP || direction == Direction.DOWN) {
             if (s instanceof NormalShip) {
                 if(!s.killComponent(s.getFirstComponent(direction, diceResult - 4))){

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 
@@ -14,10 +15,18 @@ public class StardustState extends PlayingState {
     /**
      * Default constructor
      */
-    public StardustState(GameModel model, GameController controller, AdventureCard card) {
+    public StardustState(GameModel model, GameController controller, AdventureCard card) throws EmptyDeckException {
         super(model, controller);
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.schedule(this::automaticAction, 5, TimeUnit.SECONDS);
+        scheduler.schedule(() -> {
+            try {
+                automaticAction();
+            } catch (EmptyDeckException e) {
+                e.printStackTrace();
+            } finally {
+                scheduler.shutdown();
+            }
+        }, 5, TimeUnit.SECONDS);
     }
 
     @Override
@@ -26,7 +35,7 @@ public class StardustState extends PlayingState {
     }
 
     @Override
-    public void automaticAction() {
+    public void automaticAction() throws EmptyDeckException {
         getController().getInGameConnectedPlayers().stream()
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));

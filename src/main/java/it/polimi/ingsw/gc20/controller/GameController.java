@@ -8,9 +8,9 @@ import it.polimi.ingsw.gc20.model.gamesets.*;
 import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.interfaces.*;
 import org.javatuples.Pair;
-
-import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -21,9 +21,9 @@ public class GameController implements GameControllerInterface {
     private final GameModel model;
     private State state;
     private final String gameID;
-
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
+    private final Logger logger = Logger.getLogger(GameController.class.getName());
 
     /**
      * Default constructor
@@ -37,12 +37,18 @@ public class GameController implements GameControllerInterface {
         if(usernames.size() > 4 || usernames.size() < 2) {
             throw new IllegalArgumentException("The number of players must be between 2 and 4");
         }
-        gameID = id;
-        model = new GameModel();
-        model.startGame(level, usernames, gameID);
-        state = new AssemblingState(model);
-        connectedPlayers.addAll(usernames);
-        //TODO: notify players of game start
+
+        this.gameID = id;
+        this.model = new GameModel();
+
+        try {
+            model.startGame(level, usernames, gameID);
+            state = new AssemblingState(model);
+            connectedPlayers.addAll(usernames);
+            //TODO: notify players of game start
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error starting game", e);
+        }
     }
 
     /**
@@ -50,26 +56,41 @@ public class GameController implements GameControllerInterface {
      * @param state is the new state of the game
      */
     public void setState(State state) {
-        this.state = state;
-        //TODO: notify players of state change
+        try{
+            this.state = state;
+            //TODO: notify players of state change
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error setting state", e);
+        }
     }
 
     /** Getter method for the gameID
      * @return game id
      */
     public String getGameID() {
-        return gameID;
+        try{
+            return gameID;
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting game ID", e);
+        }
+        return null;
     }
 
     /**
      * @return the first player in the list of players that is online
      */
     public String getFirstOnlinePlayer() {
-        return model.getInGamePlayers().stream()
-                .map(Player::getUsername)
-                .filter(connectedPlayers::contains)
-                .findFirst()
-                .orElse(null);
+        try{
+            return model.getInGamePlayers().stream()
+                    .map(Player::getUsername)
+                    .filter(connectedPlayers::contains)
+                    .findFirst()
+                    .orElse(null);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting first online player", e);
+        }
+        return null;
     }
 
 
@@ -77,11 +98,11 @@ public class GameController implements GameControllerInterface {
      * Handles the card drawing phase of the game
      */
     public void drawCard() {
-        AdventureCard card = model.drawCard();
-        if (card == null) {
-            state = new EndgameState(state.getController());
-        } else {
+        try {
+            AdventureCard card = model.drawCard();
             card.setState(this, model);
+        } catch (EmptyDeckException e) {
+            state = new EndgameState(state.getController());
         }
     }
 
@@ -90,19 +111,28 @@ public class GameController implements GameControllerInterface {
      * @return the current game state
      */
     public String getState() {
-        return state.toString();
+        try{
+            return state.toString();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting state", e);
+        }
+        return null;
     }
 
     /**
      * Accepts a planet card and lands on the planet
      * @param username is the username of the player that wants to land on the planet
      * @param planetIndex is the index of the planet card in the player's hand
-     * @throws IllegalStateException if the game is not in the planet phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(String username, int planetIndex) throws InvalidTurnException, IllegalStateException {
-        state.landOnPlanet(getPlayerByID(username), planetIndex);
+    public void landOnPlanet(String username, int planetIndex) {
+        try{
+            state.landOnPlanet(getPlayerByID(username), planetIndex);
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE, "Error landing on planet", e);
+        }
+
     }
 
     /**
@@ -110,12 +140,14 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to shoot the enemy
      * @param cannons is the list of coordinates of the cannons that the player wants to use to shoot
      * @param batteries is the list of coordinates of the batteries that the player wants to use to shoot
-     * @throws IllegalStateException if the game is not in the shooting phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException {
-        state.shootEnemy(getPlayerByID(username), cannons, batteries);
+    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
+        try{
+            state.shootEnemy(getPlayerByID(username), cannons, batteries);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error shooting enemy", e);
+        }
     }
 
     /**
@@ -123,14 +155,16 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to load the cargo
      * @param loaded is the cargo that the player wants to load
      * @param ch are the coordinates of the cargo hold where the player wants to load the cargo
-     * @throws IllegalStateException if the game is not in the cargo loading phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
      */
     @Override
-    public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException {
-        Player player = getPlayerByID(username);
-        state.loadCargo(player, loaded, ch);
+    public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) {
+        try {
+            Player player = getPlayerByID(username);
+            state.loadCargo(player, loaded, ch);
+        } catch (Exception e){
+            logger.log(Level.SEVERE, "Error loading cargo", e);
+        }
     }
 
     /**
@@ -138,13 +172,15 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to unload the cargo
      * @param lost is the cargo that the player wants to unload
      * @param ch are the coordinates of the cargo hold where the player wants to unload the cargo
-     * @throws IllegalStateException if the game is not in the cargo unloading phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combat zone (to remove most valuable one)
      */
     @Override
-    public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException {
-        state.unloadCargo(getPlayerByID(username), lost, ch);
+    public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) {
+        try{
+            state.unloadCargo(getPlayerByID(username), lost, ch);
+        } catch (Exception e){
+            logger.log(Level.SEVERE, "Error unloading cargo", e);
+        }
     }
 
     /**
@@ -153,28 +189,37 @@ public class GameController implements GameControllerInterface {
      * @param cargo is the cargo that the player wants to move
      * @param from are the coordinates of the cargo hold where the player wants to move the cargo from
      * @param to are the coordinates of the cargo hold where the player wants to move the cargo to
-     * @throws IllegalStateException if the game is not in the cargo moving phase
-     * @throws InvalidTurnException if it is not the player's turn
      * @apiNote To be used in losing/gaining cargo
      */
     @Override
-    public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException {
-        state.moveCargo(getPlayerByID(username), cargo, from, to);
+    public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
+        try{
+            state.moveCargo(getPlayerByID(username), cargo, from, to);
+        } catch (Exception e){
+            logger.log(Level.SEVERE, "Error moving cargo", e);
+        }
     }
 
     /**
      * Accepts a card and performs the action associated with it
      * @param username is the username of the player that wants to accept the card
-     * @throws IllegalStateException if the game is not in the card phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void acceptCard(String username) throws IllegalStateException, InvalidTurnException {
-        state.acceptCard(getPlayerByID(username));
+    public void acceptCard(String username) {
+        try{
+            state.acceptCard(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error accepting card", e);
+        }
     }
 
     public int getOnlinePlayers() {
-        return connectedPlayers.size();
+        try{
+            return connectedPlayers.size();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting online players", e);
+        }
+        return 0;
     }
 
     /**
@@ -182,33 +227,41 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate their cannons
      * @param cannons is the list of coordinates of the cannons that the player wants to activate
      * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the cannons
-     * @throws IllegalStateException if the game is not in the cannon activation phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidShipException {
-        state.activateCannons(getPlayerByID(username), cannons, batteries);
+    public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
+        try{
+            state.activateCannons(getPlayerByID(username), cannons, batteries);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error activating cannons", e);
+        }
     }
 
     /**
      * @return the score of the game
-     * @throws IllegalStateException if the game is not in the endgame phase
      */
     @Override
-    public Map<String, Integer> getScore() throws IllegalStateException {
-        return state.getScore();
+    public Map<String, Integer> getScore() {
+        try{
+            return state.getScore();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting score", e);
+        }
+        return null;
     }
 
     /**
      * To be called when a player wants to lose crew
      * @param username is the username of the player that wants to lose crew
      * @param cabins is the list of coordinates of the cabins that the player wants to lose crew from
-     * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException {
-        state.loseCrew(getPlayerByID(username), cabins);
+    public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) {
+        try{
+            state.loseCrew(getPlayerByID(username), cabins);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error losing crew", e);
+        }
     }
 
     /**
@@ -216,12 +269,14 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate the shield
      * @param shieldComp are the coordinates of the shield component that the player wants to activate
      * @param batteryComp are the coordinates of the energy component that the player wants to use to activate the shield
-     * @throws IllegalStateException if the game is not in the meteor swarm phase
-     * @throws IllegalArgumentException if it is not the player's turn
      * @apiNote Ship may need to be validated
      */
-    public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) throws InvalidTurnException, InvalidShipException {
-        state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
+    public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) {
+        try{
+            state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error activating shield", e);
+        }
     }
 
     /**
@@ -230,17 +285,24 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public AdventureCard getActiveCard() {
-        return model.getActiveCard();
+        try{
+            return model.getActiveCard();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting active card", e);
+        }
+        return null;
     }
 
     /**
      * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
      * @param username is the username of the player that wants to terminate their turn
-     * @throws IllegalStateException if the game is not in the card phase
-     * @throws InvalidTurnException if it is not the player's turn
      */
-    public void endMove(String username) throws InvalidTurnException, InvalidShipException {
-        state.endMove(getPlayerByID(username));
+    public void endMove(String username) {
+        try{
+            state.endMove(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error ending move", e);
+        }
     }
 
     /**
@@ -248,25 +310,28 @@ public class GameController implements GameControllerInterface {
      * @param username is the username of the player that wants to activate their engines
      * @param engines is the list of coordinates of the engines that the player wants to activate
      * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the engines
-     * @throws IllegalStateException if the game is not in the engine activation phase
-     * @throws InvalidTurnException if it is not the player's turn
-     * @throws InvalidShipException if the ship is not valid
      */
     @Override
-    public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidShipException {
-        state.activateEngines(getPlayerByID(username), engines, batteries);
+    public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
+        try{
+            state.activateEngines(getPlayerByID(username), engines, batteries);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error activating engines", e);
+        }
     }
 
     /**
      * To be called when a player needs to chose one of the two branches a ship is divided into after a fire.
      * @param username is the username of the player that wants to choose a branch
      * @param coordinates are the coordinates of the branch that the player wants to choose
-     * @throws InvalidTurnException if it is not the player's turn
-     * @throws InvalidShipException if the ship is not valid (in case a new heavyFire is shot right after choosing)
      */
     @Override
-    public void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidShipException {
-        state.chooseBranch(getPlayerByID(username), coordinates);
+    public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
+        try{
+            state.chooseBranch(getPlayerByID(username), coordinates);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error choosing brance", e);
+        }
     }
 
 
@@ -277,11 +342,17 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public Player getPlayerData(String asker, String asked) {
-        if (asker.equals(asked)) {
-            return getPlayerByID(asker);
-        } else {
-            return getPlayerByID(asked).getPublicData();
+        try{
+            if (asker.equals(asked)) {
+                return getPlayerByID(asker);
+            } else {
+                return getPlayerByID(asked).getPublicData();
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting player data", e);
         }
+
+        return null;
     }
 
 
@@ -291,7 +362,12 @@ public class GameController implements GameControllerInterface {
      * @return Map associating each player with their score
      */
     public Map<String, Integer> getPlayerScores(){
-        return state.getScore();
+        try{
+            return state.getScore();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting player score", e);
+        }
+        return null;
     }
 
     /**
@@ -301,28 +377,35 @@ public class GameController implements GameControllerInterface {
     @Override
     public void giveUp(String username) {
         //TODO
-        model.giveUp(getPlayerByID(username));
+        try {
+            model.giveUp(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error giving up", e);
+        }
     }
 
     /**
      * Handles a player leaving the game mid-session
      *
      * @param username Username of the exiting player
-     * @throws IllegalArgumentException if player was not in game or not connected
      */
     public void disconnectPlayer(String username) {
-        // Find player with matching username
-        if (connectedPlayers.contains(username)) {
-            connectedPlayers.remove(username);
-            disconnectedPlayers.add(username);
-        } else {
-            throw new IllegalArgumentException("Player not found in game, not connected or never joined");
-        }
-        if(connectedPlayers.size() == 1){
-            state = new PausedState(state, model, this);
-        }else if(connectedPlayers.isEmpty()){
-            state = new EndgameState(this);
-            MatchController.getInstance().endGame(gameID);
+        try{
+            // Find player with matching username
+            if (connectedPlayers.contains(username)) {
+                connectedPlayers.remove(username);
+                disconnectedPlayers.add(username);
+            } else {
+                throw new IllegalArgumentException("Player not found in game, not connected or never joined");
+            }
+            if(connectedPlayers.size() == 1){
+                state = new PausedState(state, model, this);
+            }else if(connectedPlayers.isEmpty()){
+                state = new EndgameState(this);
+                MatchController.getInstance().endGame(gameID);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error disconnecting player", e);
         }
     }
 
@@ -331,27 +414,31 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player attempting to reconnect
      * @return true if reconnection was successful, false otherwise
-     * @throws IllegalArgumentException if the player was never part of this game
      */
     public boolean reconnectPlayer(String username) {
-        // Check if player was originally in this game
-        if (getPlayerByID(username) == null) {
-            throw new IllegalArgumentException("Player was never part of this game");
-        }
+        try{
+            // Check if player was originally in this game
+            if (getPlayerByID(username) == null) {
+                throw new IllegalArgumentException("Player was never part of this game");
+            }
 
-        // Check if player is in the disconnected list
-        if (!isPlayerDisconnected(username)) {
-            return false; // Player isn't disconnected, nothing to do
-        }
+            // Check if player is in the disconnected list
+            if (!isPlayerDisconnected(username)) {
+                return false; // Player isn't disconnected, nothing to do
+            }
 
-        // Remove player from disconnected list
-        disconnectedPlayers.remove(username);
-        connectedPlayers.add(username);
+            // Remove player from disconnected list
+            disconnectedPlayers.remove(username);
+            connectedPlayers.add(username);
 
-        if(connectedPlayers.size() == 2){
-            state.resume();
+            if(connectedPlayers.size() == 2){
+                state.resume();
+            }
+            return true;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error reconnecting player", e);
         }
-        return true;
+        return false;
     }
 
     /**
@@ -359,14 +446,18 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player
      * @return Player object containing player data
-     * @throws IllegalArgumentException if the player is not found
      */
     public Player getPlayerByID(String username){
-        return model.getGame().getPlayers()
-                .stream()
-                .filter(player -> player.getUsername().equals(username))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Player not found"));
+        try{
+            return model.getGame().getPlayers()
+                    .stream()
+                    .filter(player -> player.getUsername().equals(username))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Player not found"));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting player by ID", e);
+        }
+        return null;
     }
 
     /**
@@ -375,11 +466,16 @@ public class GameController implements GameControllerInterface {
      * @return List of player usernames
      */
     public List<String> getAllUsernames() {
-        List<String> usernames = new ArrayList<>();
-        for (Player p : model.getGame().getPlayers()) {
-            usernames.add(p.getUsername());
+        try{
+            List<String> usernames = new ArrayList<>();
+            for (Player p : model.getGame().getPlayers()) {
+                usernames.add(p.getUsername());
+            }
+            return usernames;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting all usernames", e);
         }
-        return usernames;
+        return null;
     }
 
     /**
@@ -388,7 +484,12 @@ public class GameController implements GameControllerInterface {
      * @return List of disconnected player usernames
      */
     public List<String> getDisconnectedPlayers() {
-        return new ArrayList<>(disconnectedPlayers);
+        try{
+            return new ArrayList<>(disconnectedPlayers);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting disconnected players", e);
+        }
+        return null;
     }
 
     /**
@@ -398,7 +499,12 @@ public class GameController implements GameControllerInterface {
      * @return true if player is disconnected, false otherwise
      */
     public boolean isPlayerDisconnected(String username) {
-        return disconnectedPlayers.contains(username);
+        try{
+            return disconnectedPlayers.contains(username);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error checking if the player is disconnect", e);
+        }
+        return false;
     }
 
     /**
@@ -411,8 +517,12 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the player already has a component in hand
      */
     public synchronized void takeComponentFromUnviewed(String username, int index) {
-        state.takeComponentFromUnviewed(getPlayerByID(username), index);
-        // TODO: notify players of component taken
+        try{
+            state.takeComponentFromUnviewed(getPlayerByID(username), index);
+            // TODO: notify players of component taken
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error taking component from unviewed", e);
+        }
     }
 
     /**
@@ -425,8 +535,12 @@ public class GameController implements GameControllerInterface {
      * @throws IllegalArgumentException if the player already has a component in hand
      */
     public synchronized void takeComponentFromViewed(String username, int index) {
-        state.takeComponentFromViewed(getPlayerByID(username), index);
-        // TODO: notify players of component taken
+        try{
+            state.takeComponentFromViewed(getPlayerByID(username), index);
+            // TODO: notify players of component taken
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error taking component from view", e);
+        }
     }
 
     /**
@@ -434,40 +548,46 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player taking the component
      * @param index Index of the component in the booked list
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if the component is not in the player's booked list
-     * @throws IllegalArgumentException if the player already has a component in hand
      */
     public void takeComponentFromBooked(String username, int index) {
-        if (model.getLevel() != 2) {
-            throw new IllegalStateException("Booking components is only available in level 2 games");
+        try{
+            if (model.getLevel() != 2) {
+                throw new IllegalStateException("Booking components is only available in level 2 games");
+            }
+            state.takeComponentFromBooked(getPlayerByID(username), index);
+            // TODO: notify players of component taken
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error taking componente from booked", e);
         }
-        state.takeComponentFromBooked(getPlayerByID(username), index);
-        // TODO: notify players of component taken
     }
 
     /**
      * Adds the component in hand to player's booked list (Level 2 only)
      *
      * @param username Username of the player booking the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if there aren't enough available spaces in the player's booked list
      */
     public void addComponentToBooked(String username) {
-        if (model.getLevel() != 2) {
-            throw new IllegalStateException("Booking components is only available in level 2 games");
+        try{
+            if (model.getLevel() != 2) {
+                throw new IllegalStateException("Booking components is only available in level 2 games");
+            }
+            state.addComponentToBooked(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error adding component to booked", e);
         }
-        state.addComponentToBooked(getPlayerByID(username));
     }
 
     /**
      * Adds the component in hand to the viewed pile so other players can see it
      *
      * @param username Username of the player adding the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public synchronized void addComponentToViewed(String username) {
-        state.addComponentToViewed(getPlayerByID(username));
+        try{
+            state.addComponentToViewed(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error adding component to view", e);
+        }
     }
 
     /**
@@ -475,32 +595,39 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player placing the component
      * @param coordinates Coordinates where the component will be placed
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws InvalidParameterException if placement is invalid (handled by ship implementation)
-     * @throws IllegalArgumentException if the player does not have a component in hand
      */
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
-        state.placeComponent(getPlayerByID(username), coordinates);
+        try{
+            state.placeComponent(getPlayerByID(username), coordinates);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error placing component", e);
+        }
     }
 
     /**
      * Rotates the component in hand clockwise
      *
      * @param username Username of the player rotating the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentClockwise(String username) {
-        state.rotateComponentClockwise(getPlayerByID(username));
+        try{
+            state.rotateComponentClockwise(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error rotating component clockwise", e);
+        }
     }
 
     /**
      * Rotates the component in hand counterclockwise
      *
      * @param username Username of the player rotating the component
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      */
     public void rotateComponentCounterclockwise(String username) {
-        state.rotateComponentCounterclockwise(getPlayerByID(username));
+        try{
+            state.rotateComponentCounterclockwise(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error rotating component clockwise", e);
+        }
     }
 
     /**
@@ -508,12 +635,15 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player removing the component
      * @param component Component to remove
-     * @throws IllegalStateException if game is not in VALIDATING state
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
     public void removeComponentFromShip(String username, Component component) {
-        state.removeComp(getPlayerByID(username), component);
+        try{
+            state.removeComp(getPlayerByID(username), component);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error removing component from ship", e);
+        }
     }
 
     /**
@@ -526,22 +656,29 @@ public class GameController implements GameControllerInterface {
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public void validateShip(String username) {
-        state.isShipValid(getPlayerByID(username));
-        // TODO: notify players of ship validation
+        try{
+            state.isShipValid(getPlayerByID(username));
+            // TODO: notify players of ship validation
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error validating ship", e);
+        }
     }
 
     /**
      * Stops the assembling phase for a player
      * @param username is the username of the player that wants to stop assembling
      * @param position is the relative position on board where the player wants to put their rocket
-     * @throws IllegalStateException if game is not in ASSEMBLING state
      * @implNote performs state change to VALIDATING when all players have completed assembling
      */
     public void stopAssembling(String username, int position) {
-        state.stopAssembling(getPlayerByID(username), position);
-        if (state.allAssembled()) {
-            state = new ValidatingShipState(model);
-            //TODO: notify players of state change
+        try{
+            state.stopAssembling(getPlayerByID(username), position);
+            if (state.allAssembled()) {
+                state = new ValidatingShipState(model);
+                //TODO: notify players of state change
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error stopping assembling", e);
         }
     }
 
@@ -549,19 +686,19 @@ public class GameController implements GameControllerInterface {
      * Turns the hourglass for a player
      *
      * @param username Username of the player turning the hourglass
-     * @throws IllegalStateException if game is not in ASSEMBLING state or not level 2
-     * @throws IllegalArgumentException if the player is not connected
-     * @throws HourglassException if the hourglass time is not 0
-     * @throws HourglassException if the player has not completed assembling yet when turning last time
      */
-    public void turnHourglass(String username) throws HourglassException {
-        if (isPlayerDisconnected(username)) {
-            throw new IllegalArgumentException("Cannot turn hourglass for not connected player");
+    public void turnHourglass(String username) {
+        try{
+            if (isPlayerDisconnected(username)) {
+                throw new IllegalArgumentException("Cannot turn hourglass for not connected player");
+            }
+            if (model.getLevel() != 2) {
+                throw new IllegalStateException("Hourglass is only available in level 2 games");
+            }
+            state.turnHourglass(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error turning hourglass", e);
         }
-        if (model.getLevel() != 2) {
-            throw new IllegalStateException("Hourglass is only available in level 2 games");
-        }
-        state.turnHourglass(getPlayerByID(username));
     }
 
     /**
@@ -569,17 +706,20 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player checking the hourglass
      * @return Remaining time in seconds
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws IllegalArgumentException if the game is not in level 2 or the player is disconnected
      */
     public int getHourglassTime(String username) {
-        if (model.getLevel() != 2) {
-            throw new IllegalStateException("Hourglass is only available in level 2 games");
+        try {
+            if (model.getLevel() != 2) {
+                throw new IllegalStateException("Hourglass is only available in level 2 games");
+            }
+            if (isPlayerDisconnected(username)) {
+                throw new IllegalArgumentException("Player disconnected");
+            }
+            return state.getHourglassTime(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting hourglass", e);
         }
-        if (isPlayerDisconnected(username)) {
-            throw new IllegalArgumentException("Player disconnected");
-        }
-        return state.getHourglassTime(getPlayerByID(username));
+        return 0;
     }
 
     /**
@@ -587,19 +727,20 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player peeking at the deck
      * @param num number of the deck to peek at
-     * @throws IllegalStateException if game is not in ASSEMBLING state
-     * @throws IllegalArgumentException if player is not connected or has already completed assembling
-     * @throws IllegalArgumentException if the game is not in level 2
      */
-    public void peekDeck(String username, int num){
-        if (model.getLevel() != 2) {
-            throw new IllegalStateException("Decks are only available in level 2 games");
+    public void peekDeck(String username, int num) {
+        try{
+            if (model.getLevel() != 2) {
+                throw new IllegalStateException("Decks are only available in level 2 games");
+            }
+            if (isPlayerDisconnected(username)) {
+                throw new IllegalArgumentException("Cannot view deck for not connected player");
+            }
+            state.peekDeck(getPlayerByID(username), num);
+            // TODO: notify players of deck peek
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error peeking deek", e);
         }
-        if (isPlayerDisconnected(username)) {
-            throw new IllegalArgumentException("Cannot view deck for not connected player");
-        }
-        state.peekDeck(getPlayerByID(username), num);
-        // TODO: notify players of deck peek
     }
 
     /**
@@ -608,47 +749,55 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player adding the alien
      * @param color Color of the alien
      * @param cabin Cabin where the alien will be placed
-     * @throws IllegalStateException if game is not in VALIDATING state
-     * @throws IllegalArgumentException if ship is invalid or component is not a cabin
-     * @throws IllegalArgumentException if the game is not in level 2
-     * @throws IllegalArgumentException if the cabin provided is a StartingCabin
      */
     public void addAlien(String username, AlienColor color, Cabin cabin) {
-        if(model.getLevel() != 2){
-            throw new IllegalArgumentException("Aliens are only available in level 2 games");
+        try{
+            if(model.getLevel() != 2){
+                throw new IllegalArgumentException("Aliens are only available in level 2 games");
+            }
+            state.addAlien(getPlayerByID(username), color, cabin);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error adding alien", e);
         }
-        state.addAlien(getPlayerByID(username), color, cabin);
     }
 
     /**
      * Sets the player to be ready to fly
      * @param username is the username of the player that wants to fly
-     * @throws IllegalStateException if game is not in VALIDATING state
-     * @throws IllegalArgumentException if the player's ship is not valid
      * @apiNote be careful to add aliens before calling this function
      */
     public void readyToFly(String username) {
-        state.readyToFly(getPlayerByID(username));
-        if (state.allShipsReadyToFly()) {
-            state.initAllShips();
-            model.createDeck();
-            drawCard();
-            //TODO: notify players of state change
+        try{
+            state.readyToFly(getPlayerByID(username));
+            if (state.allShipsReadyToFly()) {
+                state.initAllShips();
+                model.createDeck();
+                drawCard();
+                //TODO: notify players of state change
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error ready to fly", e);
         }
     }
 
     public void defeated(String username) {
-        model.giveUp(getPlayerByID(username));
+        try{
+            model.giveUp(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error shooting enemy", e);
+        }
     }
 
     /**
      * @param username is the username of the player that wants to roll the dice
-     * @throws IllegalStateException if the game is not in the correct phase
-     * @throws InvalidTurnException  if it is not the player's turn
      */
     @Override
-    public void rollDice(String username) throws IllegalStateException, InvalidTurnException, InvalidShipException {
-        state.rollDice(getPlayerByID(username));
+    public void rollDice(String username) {
+        try{
+            state.rollDice(getPlayerByID(username));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error rolling dice", e);
+        }
     }
 
     /*
@@ -657,14 +806,24 @@ public class GameController implements GameControllerInterface {
      * @throws InvalidTurnException  if it is not the player's turn
      */
     public GameModel getModel() {
-        return model;
+        try{
+            return model;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting model", e);
+        }
+        return null;
     }
 
 
     public List<String> getInGameConnectedPlayers() {
-        return model.getInGamePlayers().stream()
-                .map(Player::getUsername)
-                .filter(connectedPlayers::contains)
-                .collect(Collectors.toList());
+        try{
+            return model.getInGamePlayers().stream()
+                    .map(Player::getUsername)
+                    .filter(connectedPlayers::contains)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting in came connected players", e);
+        }
+        return null;
     }
 }

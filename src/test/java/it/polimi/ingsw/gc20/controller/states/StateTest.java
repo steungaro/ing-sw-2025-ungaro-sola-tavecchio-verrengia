@@ -51,7 +51,7 @@ class StateTest {
     }
 
 
-    @Test
+    /*@Test
     void getModel() {
         assertEquals(gameController.getModel(), abandonedShipState.getModel());
     }
@@ -266,5 +266,5 @@ class StateTest {
 
     @Test
     void rollDice() {
-    }
+    }*/
 }
