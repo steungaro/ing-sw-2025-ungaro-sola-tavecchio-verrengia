@@ -114,7 +114,7 @@ class AdventureCardTest {
     void testSetState() {
         List<String> players = List.of("Player1", "Player2");
         GameController controller = new GameController("1234", players, 2);
-        GameModel model = new GameModel();
+        GameModel model = controller.getModel();
 
         adventureCard.setName("Stardust");
 
@@ -142,5 +142,10 @@ class AdventureCardTest {
         adventureCard.setLostDays(2);
         adventureCard.setState(controller, model);
         assertEquals("AbandonedShipState{ lostCrew=5, credits=100, lostDays=2}", controller.getState());
+
+
+        adventureCard.setName("CombatZone");
+        assertEquals("CombatZoneState1", controller.getState());
+
     }
 }
