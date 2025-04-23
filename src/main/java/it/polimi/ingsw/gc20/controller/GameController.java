@@ -97,17 +97,12 @@ public class GameController implements GameControllerInterface {
     /**
      * Handles the card drawing phase of the game
      */
-    public void drawCard() throws EmptyDeckException {
-        try{
-            try{
-                AdventureCard card = model.drawCard();
-                card.setState(this, model);
-            }
-            catch (EmptyDeckException e) {
-                state = new EndgameState(state.getController());
-            }
-        } catch(Exception e){
-            logger.log(Level.SEVERE, "Error drawing card", e);
+    public void drawCard() {
+        try {
+            AdventureCard card = model.drawCard();
+            card.setState(this, model);
+        } catch (EmptyDeckException e) {
+            state = new EndgameState(state.getController());
         }
     }
 
@@ -356,6 +351,7 @@ public class GameController implements GameControllerInterface {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error getting player data", e);
         }
+
         return null;
     }
 

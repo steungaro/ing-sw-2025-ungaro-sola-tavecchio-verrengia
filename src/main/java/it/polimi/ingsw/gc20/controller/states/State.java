@@ -120,7 +120,8 @@ public abstract class State{
     public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException, EmptyDeckException {
         exception();
     }
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException, EmptyDeckException {
+
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException {
         exception();
     }
     public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException {
