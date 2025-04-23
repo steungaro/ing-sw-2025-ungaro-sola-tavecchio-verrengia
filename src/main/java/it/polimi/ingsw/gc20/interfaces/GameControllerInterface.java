@@ -14,6 +14,7 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public interface GameControllerInterface extends Remote {
+    public void giveUp(String username) throws RemoteException;
     void getPlayerData(String asker, String asked) throws RemoteException;
 
     // Game state
