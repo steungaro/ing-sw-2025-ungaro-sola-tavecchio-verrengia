@@ -113,9 +113,8 @@ public class Cabin extends Component {
     /**
      * Function that removes support to the cabin.
      * @param ls the lifeSupport that's removed
-     * @throws DeadAlienException if the alien dies because of lack of support
      */
-    public void removeSupport(LifeSupport ls) throws DeadAlienException {
+    public void removeSupport(LifeSupport ls){
         if (cabinColor == AlienColor.BOTH) {
             cabinColor = ls.getColor() == AlienColor.BROWN ? AlienColor.PURPLE : AlienColor.BROWN;
         } else {
@@ -123,7 +122,6 @@ public class Cabin extends Component {
         }
         if (alien && cabinColor != alienColor ) {
             alien = false;
-            throw new DeadAlienException("Alien died because of lack of support");
         }
     }
 

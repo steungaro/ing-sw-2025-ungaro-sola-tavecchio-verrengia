@@ -239,7 +239,7 @@ class NormalShipTest {
             assertEquals(0, ship.enginePower(0));
             ship.brownAlien = true;
             assertEquals(2, ship.enginePower(0));
-        } catch (DeadAlienException e){
+        } catch (ComponentNotFoundException e){
             throw new RuntimeException();
         }
     }
@@ -320,7 +320,7 @@ class NormalShipTest {
         //Remove lifeSupport
         try {
             ship.killComponent(lifeSupport);
-        } catch (DeadAlienException e){
+        } catch (ComponentNotFoundException e){
             throw new RuntimeException();
         }
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
@@ -414,7 +414,7 @@ class NormalShipTest {
         // Test removing life support
         try {
             ship.killComponent(lifeSupport);
-        } catch (DeadAlienException e){
+        } catch (ComponentNotFoundException e){
             throw new RuntimeException();
         }
         assertEquals(AlienColor.NONE, Cabin1.getCabinColor());
@@ -475,7 +475,7 @@ class NormalShipTest {
         }
         try {
             ship.killComponent(lifeSupport);
-        } catch (DeadAlienException e) {
+        } catch (ComponentNotFoundException e) {
             throw new RuntimeException();
         }
         lifeSupport.setColor(AlienColor.PURPLE);

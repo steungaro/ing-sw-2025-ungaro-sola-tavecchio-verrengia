@@ -36,7 +36,7 @@ public class LifeSupport extends Component {
      * @throws DeadAlienException if the alien die for lack of support
      */
     @Override
-    public void updateParameter(Ship ship, int sign) throws DeadAlienException {
+    public void updateParameter(Ship ship, int sign) {
         if (sign < 0) {
             ((NormalShip) ship).updateLifeSupportRemoved(this);
         } else if (sign > 0) {

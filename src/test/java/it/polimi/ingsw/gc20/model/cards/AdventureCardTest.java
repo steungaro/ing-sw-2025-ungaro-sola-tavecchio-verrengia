@@ -145,6 +145,7 @@ class AdventureCardTest {
 
 
         adventureCard.setName("CombatZone");
+        adventureCard.setState(controller, model);
         assertEquals("CombatZoneState1", controller.getState());
 
     }

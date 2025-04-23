@@ -68,7 +68,7 @@ public abstract class State{
     public void rotateComponentCounterclockwise(Player player) {
         exception();
     }
-    public void stopAssembling(Player player, int position) {
+    public void stopAssembling(Player player, int position) throws InvalidIndexException {
         exception();
     }
     public List<AdventureCard> peekDeck(Player player, int num) throws InvalidIndexException {
@@ -86,7 +86,7 @@ public abstract class State{
         exception();
         return false;
     }
-    public void removeComp(Player player, Component component) throws DeadAlienException {
+    public void removeComp(Player player, Component component) throws DeadAlienException, ComponentNotFoundException {
         exception();
     }
 

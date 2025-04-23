@@ -45,9 +45,7 @@ public abstract class Ship {
     public void addComponent(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            try {
-                c.updateParameter(this, 1);
-            } catch (DeadAlienException _) {}
+            c.updateParameter(this, 1);
             c.setTile(table[row][col]);
         } else {
             throw new InvalidTileException("Position not valid");
@@ -362,7 +360,11 @@ public abstract class Ship {
                 if (component != null && !visited[i][j]) {
                     try {
                         killComponent(component);
-                    } catch (DeadAlienException _) {}
+                    } catch (ComponentNotFoundException _) {
+                        // This should never happen, but just in case
+                        System.out.println("Component not found in ship");
+
+                    }
                 }
             }
         }
@@ -478,16 +480,17 @@ public abstract class Ship {
      * Removes a component from ship and adds it to waste
      * @param c Component to destroy
      * @return True if ship remains valid after removal
-     * @throws DeadAlienException if the component is a lifeSupport and the cabin near it has an alien
      */
-    public Boolean killComponent(Component c) throws DeadAlienException{
-        Tile t = c.getTile();
-        c.updateParameter(this, -1);
-        waste.add(c);
-        try {
-            t.removeComponent();
-        } catch (InvalidTileException _){
+    public Boolean killComponent(Component c) throws ComponentNotFoundException {
+        int[] position = findComponent(c);
+        if (position == null) {
+            throw new ComponentNotFoundException("Component not found in ship");
         }
+        c.updateParameter(this, -1);
+        try {
+            table[position[0]][position[1]].removeComponent();
+            waste.add(c);
+        } catch (InvalidTileException _){}
         return this.isValid();
     }
 

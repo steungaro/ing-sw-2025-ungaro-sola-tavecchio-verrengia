@@ -138,7 +138,7 @@ public abstract class Component {
      * @param s ship that is updating his parameter
      * @param sign integer that indicate if the parameter is increasing or decreasing
      */
-    public void updateParameter(Ship s, int sign) throws DeadAlienException {}
+    public void updateParameter(Ship s, int sign) {}
 
 
     /** Function that returns true if the component is a shield and cover the direction d

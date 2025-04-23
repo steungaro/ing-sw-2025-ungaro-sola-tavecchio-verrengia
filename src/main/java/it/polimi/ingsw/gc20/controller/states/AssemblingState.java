@@ -126,7 +126,7 @@ public class AssemblingState extends State {
         getModel().RotateCounterclockwise(componentsInHand.get(player));
     }
     @Override
-    public void stopAssembling(Player player, int position) {
+    public void stopAssembling(Player player, int position) throws InvalidIndexException {
         if (componentsInHand.get(player) != null) {
             throw new InvalidParameterException("Place component somewhere before stopping assembling");
         }

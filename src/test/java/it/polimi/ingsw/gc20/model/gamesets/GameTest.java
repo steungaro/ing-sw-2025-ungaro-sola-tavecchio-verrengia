@@ -31,7 +31,7 @@ public class GameTest {
     @Test
     void testDefaultConstructor (){
         assertNotNull (game.getPlayers());
-        assertNull (game.getBoard());
+        assertNotNull (game.getBoard());
         assertNull (game.getID());
         assertNull (game.getPile());
     }

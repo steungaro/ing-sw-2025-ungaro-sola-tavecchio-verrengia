@@ -53,7 +53,7 @@ public class AbandonedShipState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException, EmptyDeckException {
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }

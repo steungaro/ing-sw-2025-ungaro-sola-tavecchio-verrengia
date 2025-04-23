@@ -1,9 +1,13 @@
 package it.polimi.ingsw.gc20.controller;
 
+import it.polimi.ingsw.gc20.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.model.lobby.Lobby;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -16,6 +20,7 @@ public class MatchController implements MatchControllerInterface {
     private int maxMatches;
     private int maxLobbies;
     private static MatchController instance;
+    private final Logger logger = Logger.getLogger(MatchController.class.getName());
 
     /**
      * Default constructor
@@ -111,9 +116,13 @@ public class MatchController implements MatchControllerInterface {
     public Lobby joinLobby(String id, String user) {
         for(Lobby l: lobbies){
             if(l.getId().equals(id)){
-                l.addPlayer(user);
-                playersInLobbies.put(user, l);
-                return l;
+                try {
+                    l.addPlayer(user);
+                    playersInLobbies.put(user, l);
+                    return l;
+                } catch (FullLobbyException e) {
+                    logger.log(Level.WARNING, "Lobby is full", e);
+                }
             }
         }
         return null;
@@ -129,27 +138,34 @@ public class MatchController implements MatchControllerInterface {
     public Lobby createLobby(String name, String user, int maxPlayers, int level) {
         String id = UUID.randomUUID().toString();
         if (lobbies.size() >= maxLobbies) {
-            throw new IllegalArgumentException("Max lobbies reached");
+            logger.log(Level.WARNING, "Max lobbies reached");
+            return null;
+        } else {
+            Lobby l = new Lobby(id, name, user, maxPlayers, level);
+            playersInLobbies.put(user, l);
+            lobbies.add(l);
+            return l;
         }
-        Lobby l = new Lobby(id, name, user, maxPlayers, level);
-        playersInLobbies.put(user, l);
-        lobbies.add(l);
-        return l;
     }
 
     /**
      * @param userid is the id of the lobby to leave, if the lobby is empty it is removed
-     * @throws IllegalArgumentException if the user is not in any lobby
      */
     public void leaveLobby(String userid) {
-        if (!playersInLobbies.containsKey(userid)) {
-            throw new IllegalArgumentException("User not in any lobby");
+        if (playersInLobbies.containsKey(userid)) {
+            if (playersInLobbies.get(userid).getUsers().isEmpty()) {
+                lobbies.remove(playersInLobbies.get(userid));
+            }
+            try {
+                playersInLobbies.get(userid).removePlayer(userid);
+                playersInLobbies.remove(userid);
+            } catch (LobbyException e) {
+                logger.log(Level.WARNING, "Owner of the lobby can't leave the lobby", e);
+            }
+        }else {
+            logger.log(Level.WARNING, "User not found in lobbies");
         }
-        if (playersInLobbies.get(userid).getUsers().isEmpty()) {
-            lobbies.remove(playersInLobbies.get(userid));
-        }
-        playersInLobbies.get(userid).removePlayer(userid);
-        playersInLobbies.remove(userid);
+
     }
 
     /**
@@ -161,30 +177,33 @@ public class MatchController implements MatchControllerInterface {
 
     /**
      * @param id is the id of the lobby to start
-     * @throws IllegalArgumentException if the lobby is not found or if the max number of matches is reached
      */
     public void startLobby(String id) {
         if (lobbies.isEmpty()) {
-            throw new IllegalArgumentException("No lobbies available");
-        }
-        if (games.size() >= maxMatches) {
-            throw new IllegalArgumentException("Max matches reached");
-        }
-        games.add(lobbies.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No such lobby"))
-                .createGameController());
-        lobbies.removeIf(l -> l.getId().equals(id));
-        List<String> usersToRemove = new ArrayList<>();
-        for (String user : playersInLobbies.keySet()) {
-            if (playersInLobbies.get(user).getId().equals(id)) {
-                usersToRemove.add(user);
-            }
-        }
+            logger.log(Level.WARNING, "No lobbies available");
+        } else if (games.size() >= maxMatches) {
+            logger.log(Level.WARNING, "Max matches reached");
+        } else {
+            try {
+                games.add(lobbies.stream()
+                        .filter(l -> l.getId().equals(id))
+                        .findFirst()
+                        .orElseThrow(() -> new LobbyException("No such lobby"))
+                        .createGameController());
+                lobbies.removeIf(l -> l.getId().equals(id));
+                List<String> usersToRemove = new ArrayList<>();
+                for (String user : playersInLobbies.keySet()) {
+                    if (playersInLobbies.get(user).getId().equals(id)) {
+                        usersToRemove.add(user);
+                    }
+                }
 
-        for (String user : usersToRemove) {
-            playersInLobbies.remove(user);
+                for (String user : usersToRemove) {
+                    playersInLobbies.remove(user);
+                }
+            } catch (LobbyException e) {
+                logger.log(Level.WARNING, "No such Lobby", e);
+            }
         }
     }
 }

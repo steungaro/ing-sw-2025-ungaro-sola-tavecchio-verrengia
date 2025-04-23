@@ -47,18 +47,14 @@ public class CabinTest {
         cabin.addSupport(lifeSupport);
         assertEquals(AlienColor.BROWN, cabin.getCabinColor());
         cabin.setAlien(AlienColor.BROWN);
-        assertThrows(DeadAlienException.class, ()-> cabin.removeSupport(lifeSupport));
+        cabin.removeSupport(lifeSupport);
         assertFalse(cabin.getAlien());
         LifeSupport lifeSupport2 = new LifeSupport();
         lifeSupport2.setColor(AlienColor.PURPLE);
         cabin.addSupport(lifeSupport2);
         cabin.addSupport(lifeSupport);
         assertEquals(AlienColor.BOTH, cabin.getCabinColor());
-        try {
-            cabin.removeSupport(lifeSupport);
-        } catch (DeadAlienException _){
-            fail("Should not throw DeadAlienException");
-        }
+        cabin.removeSupport(lifeSupport);
         assertEquals (AlienColor.PURPLE, cabin.getCabinColor());
     }
 

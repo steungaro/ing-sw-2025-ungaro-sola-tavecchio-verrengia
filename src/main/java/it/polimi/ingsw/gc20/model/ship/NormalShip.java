@@ -213,7 +213,7 @@ public class NormalShip extends Ship {
      * @param c: the component that was removed from the ship
      * @throws DeadAlienException if in the cabin there was an alien and it died
      */
-    public void updateLifeSupportRemoved(Component c) throws DeadAlienException {
+    public void updateLifeSupportRemoved(Component c) {
         //Find if is there a Cabin connected to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
@@ -248,11 +248,7 @@ public class NormalShip extends Ship {
 
             if (c.isValid(table[row][col].getComponent(), entry.getKey())) {
                 Cabin comp = (Cabin) table[row][col].getComponent();
-                try {
-                    comp.removeSupport((LifeSupport) c);
-                } catch (Exception e) {
-                    c.updateParameter(this, -1);
-                }
+                comp.removeSupport((LifeSupport) c);
             }
         }
     }
@@ -344,9 +340,7 @@ public class NormalShip extends Ship {
     public void addComponent(Component c, int row, int col) throws InvalidTileException{
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            try {
-                c.updateParameter(this, 1);
-            } catch (DeadAlienException _) {}
+            c.updateParameter(this, 1);
         }
         else
             throw new InvalidTileException("Invalid position");

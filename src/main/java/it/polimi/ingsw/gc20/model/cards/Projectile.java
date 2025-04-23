@@ -58,20 +58,24 @@ public class Projectile {
      * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship catch the exception and ask the player to validate the ship
      */
     public void Fire(Ship s, int diceResult) throws InvalidShipException, DeadAlienException {
-        if (direction == Direction.UP || direction == Direction.DOWN) {
-            if (s instanceof NormalShip) {
-                if(!s.killComponent(s.getFirstComponent(direction, diceResult - 4))){
-                    throw new InvalidShipException("Invalid ship");
+        try {
+            if (direction == Direction.UP || direction == Direction.DOWN) {
+                if (s instanceof NormalShip) {
+                    if (!s.killComponent(s.getFirstComponent(direction, diceResult - 4))) {
+                        throw new InvalidShipException("Invalid ship");
+                    }
+                } else {
+                    if (!s.killComponent(s.getFirstComponent(direction, diceResult - 5))) {
+                        throw new InvalidShipException("Invalid ship");
+                    }
                 }
             } else {
-                if(!s.killComponent(s.getFirstComponent(direction, diceResult - 5))){
+                if (!s.killComponent(s.getFirstComponent(direction, diceResult - 5))) {
                     throw new InvalidShipException("Invalid ship");
                 }
             }
-        } else {
-            if(!s.killComponent(s.getFirstComponent(direction, diceResult - 5))){
-                throw new InvalidShipException("Invalid ship");
-            }
+        } catch (ComponentNotFoundException _) {
+            //this should never happen
         }
     }
 

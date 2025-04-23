@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.model.lobby;
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.exceptions.LobbyException;
 
 import java.util.*;
 
@@ -67,9 +69,6 @@ public class Lobby {
         this.id = id;
     }
 
-    public void setUsers(List<String> users) {
-        this.users = users;
-    }
 
     public boolean containsUser(String user) {
         return users.contains(user);
@@ -79,9 +78,9 @@ public class Lobby {
      * @param user is the username of the player that wants to leave the lobby
      *             the owner of the lobby can't leave the lobby
      */
-    public void removePlayer(String user) {
+    public void removePlayer(String user) throws LobbyException{
         if (user.equals(ownerUsername)) {
-            throw new IllegalArgumentException("The owner of the lobby can't leave the lobby");
+            throw new LobbyException("The owner of the lobby can't leave the lobby");
         } else {
             this.users.remove(user);
         }
@@ -90,11 +89,11 @@ public class Lobby {
     /**
      * @param user is the username of the player that wants to join the lobby
      */
-    public void addPlayer(String user) {
+    public void addPlayer(String user) throws FullLobbyException{
         if (!users.contains(user) && users.size() < maxPlayers) {
             this.users.add(user);
         } else {
-            throw new IllegalArgumentException("The lobby is full");
+            throw new FullLobbyException("The lobby is full");
         }
     }
 

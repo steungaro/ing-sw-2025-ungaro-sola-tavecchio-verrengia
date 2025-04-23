@@ -258,10 +258,10 @@ public class GameModel {
      * @param position position chosen by the player (1-4)
      * @throws IllegalArgumentException if the position is already occupied
      */
-    public void stopAssembling(Player p, int position) throws IllegalArgumentException {
+    public void stopAssembling(Player p, int position) throws InvalidIndexException {
         game.getBoard().removePlayer(p);
         if (game.isOccupied(position)) {
-            throw new IllegalArgumentException("Position already occupied");
+            throw new InvalidIndexException("Position already occupied");
         } else {
             for (Player player : game.getPlayers()) {
                 if (player == p) {
@@ -293,7 +293,7 @@ public class GameModel {
      * @param p player that removes the component
      * @throws DeadAlienException if the component is a life support and an alien die
      */
-    public void removeComponent(Component c, Player p) throws DeadAlienException {
+    public void removeComponent(Component c, Player p) throws ComponentNotFoundException {
         Ship s = p.getShip();
         s.killComponent(c);
     }
@@ -517,18 +517,22 @@ public class GameModel {
                     score.put(p, points);
                 }
                 points --;
-            }
-            else{
-                continue;
+                for (Map.Entry<CargoColor, Integer> e : p.getShip().getCargo().entrySet()) {
+                    CargoColor color = e.getKey();
+                    int quantity = e.getValue();
+                    score.put (p, score.get(p) + color.value()*quantity);
+                }
+            } else {
+                for (Map.Entry<CargoColor, Integer> e : p.getShip().getCargo().entrySet()) {
+                    CargoColor color = e.getKey();
+                    int quantity = e.getValue();
+                    score.put (p, score.get(p) + color.value()*quantity);
+                }
+                score.put(p, (score.get(p)+1)/2);
             }
             waste = p.getShip().getWaste().size();
 
             score.put(p, score.get(p) - waste);
-            for (Map.Entry<CargoColor, Integer> e : p.getShip().getCargo().entrySet()) {
-                CargoColor color = e.getKey();
-                int quantity = e.getValue();
-                score.put (p, score.get(p) + color.value()*quantity);
-            }
         }
         for (Player g : game.getPlayers()) {
             if (g.getShip().getAllExposed() == min && g.isInGame()) {
@@ -582,13 +586,13 @@ public class GameModel {
         Ship s = p.getShip();
         Direction direction = fire.getDirection();
         if (direction == Direction.UP) {
-            if (s instanceof NormalShip) {
+            if (level == 2) {
                 return s.getCannons(direction, diceResult - 4);
             } else {
                 return s.getCannons(direction, diceResult - 5);
             }
             } else if (direction == Direction.DOWN) {
-                if (s instanceof NormalShip) {
+                if (level == 2) {
                     cannons = s.getCannons(direction, diceResult - 4);
                     cannons.addAll(s.getCannons(direction, diceResult - 5));
                     cannons.addAll(s.getCannons(direction, diceResult - 3));
@@ -628,8 +632,10 @@ public class GameModel {
      * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
      */
     public void initCountdown (){
-        Board board = this.game.getBoard();
-        ((NormalBoard) board).initCountdown();
+        if (level == 2) {
+            Board board = this.game.getBoard();
+            ((NormalBoard) board).initCountdown();
+        }
     }
 
     /** function that return the number of time the hourglass has been turned
@@ -703,6 +709,8 @@ public class GameModel {
 
         p.getShip().findValid(row, column);
     }
+
+
 }
 
 

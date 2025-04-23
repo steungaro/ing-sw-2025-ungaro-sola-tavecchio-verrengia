@@ -527,7 +527,7 @@ class LearnerShipTest {
         try {
             assertTrue(ship.killComponent(downCannon));
             assertFalse(ship.killComponent(battery));
-        } catch (DeadAlienException e) {
+        } catch (ComponentNotFoundException e) {
             throw new RuntimeException(e);
         }
         assertEquals(2, ship.getWaste().size());
@@ -653,7 +653,7 @@ class LearnerShipTest {
         try {
             ship.killComponent(downCannon);
             ship.killComponent(battery);
-        } catch (DeadAlienException _) {
+        } catch (ComponentNotFoundException _) {
             fail("Dead alien exception should not be thrown");
         }
         assertFalse(ship.isValid());
@@ -668,7 +668,7 @@ class LearnerShipTest {
         try {
             ship.killComponent(downCannon);
             ship.killComponent(battery);
-        } catch (DeadAlienException e) {
+        } catch (ComponentNotFoundException e) {
             throw new RuntimeException();
         }
         assertFalse(ship.isValid());

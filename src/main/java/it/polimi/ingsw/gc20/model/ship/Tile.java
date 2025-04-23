@@ -67,6 +67,7 @@ public class Tile {
      */
     public void removeComponent() throws InvalidTileException {
         if(component != null){
+            component.setTile(null);
             component = null;
             availability = true;
         }else{

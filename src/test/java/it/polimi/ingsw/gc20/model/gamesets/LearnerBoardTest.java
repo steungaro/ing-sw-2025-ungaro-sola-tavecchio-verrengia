@@ -58,6 +58,7 @@ public class LearnerBoardTest {
             fail("Exception should not be thrown");
         }
         assertThrows(EmptyDeckException.class, ()->board.drawCard());
+        board.mergeDecks();
     }
 
 
