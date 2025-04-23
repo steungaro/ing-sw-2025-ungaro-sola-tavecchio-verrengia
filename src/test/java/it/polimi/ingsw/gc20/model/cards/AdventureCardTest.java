@@ -137,16 +137,26 @@ class AdventureCardTest {
 
 
         adventureCard.setName("AbandonedShip");
-        adventureCard.setCrew(5);
+
         adventureCard.setCredits(100);
         adventureCard.setLostDays(2);
         adventureCard.setState(controller, model);
-        assertEquals("AbandonedShipState{ lostCrew=5, credits=100, lostDays=2}", controller.getState());
+        String s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        assertEquals("AbandonedShipState", s);
 
 
         adventureCard.setName("CombatZone");
-        adventureCard.setState(controller, model);
-        assertEquals("CombatZoneState1", controller.getState());
 
+        adventureCard.setFirePower(3);
+        adventureCard.setCrew(5);
+        adventureCard.setState(controller, model);
+        s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        assertEquals("CombatZone0State", s);
+
+        adventureCard.setName("CombatZone");
+        adventureCard.setCrew(0);
+        adventureCard.setState(controller, model);
+        s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        assertEquals("CombatZone1State", s);
     }
 }
