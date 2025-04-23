@@ -784,7 +784,7 @@ public class GameController implements GameControllerInterface {
         try{
             model.giveUp(getPlayerByID(username));
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error shooting enemy", e);
+            logger.log(Level.SEVERE, "Error defeating enemy", e);
         }
     }
 

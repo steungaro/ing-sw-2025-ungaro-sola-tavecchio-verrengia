@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller;
 
 import it.polimi.ingsw.gc20.controller.event.game.PlaceComponentEvent;
+import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,7 +57,7 @@ class GameControllerTest {
         assertEquals(abandonedShipState.toString(), gameController.getState());
     }
 
-    /*@Test
+    @Test
     void getGameID() {
         assertEquals(id, gameController.getGameID());
     }
@@ -102,7 +103,7 @@ class GameControllerTest {
     }
 
     @Test
-    void loadCargo() throws InvalidTurnException, CargoException {
+    void loadCargo() throws InvalidTurnException, CargoException, InvalidTileException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -113,14 +114,16 @@ class GameControllerTest {
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
 
-        CargoHold CargoHold = new CargoHold();
-        CargoHold.setSlots(3);
+        CargoHold cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
+        gameController.getPlayerByID("player1").getShip().addComponent(cargoHold, 2, 2);
         gameController.getModel().setActiveCard(abandonedStationCard);
-        gameController.loadCargo("player1", loaded, CargoHold);
+        Pair<Integer, Integer> position = new Pair<>(2, 2);
+        gameController.loadCargo("player1", loaded, position);
     }
 
     @Test
-    void unloadCargo() throws InvalidTurnException, CargoException {
+    void unloadCargo() throws InvalidTurnException, CargoException, InvalidTileException, CargoNotLoadable, CargoFullException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -135,14 +138,20 @@ class GameControllerTest {
         CargoHold.setSlots(3);
         List<CargoColor> cargoHeld = new ArrayList<>();
         cargoHeld.add(loaded);
-        CargoHold.setCargoHeld(cargoHeld);
+        gameController.getPlayerByID("player1").getShip().addComponent(CargoHold, 2, 2);
+
+        for(int i=0; i<cargoHeld.size(); i++) {
+            CargoHold.loadCargo(cargoHeld.get(i));
+        }
+
+        Pair<Integer, Integer> position = new Pair<>(2, 2);
         gameController.getModel().setActiveCard(abandonedStationCard);
-        gameController.loadCargo("player1", loaded, CargoHold);
-        gameController.unloadCargo("player1", loaded, CargoHold);
+        gameController.loadCargo("player1", loaded, position);
+        gameController.unloadCargo("player1", loaded, position);
     }
 
     @Test
-    void moveCargo() throws InvalidTurnException, CargoException {
+    void moveCargo() throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidTileException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -157,20 +166,27 @@ class GameControllerTest {
         CargoHoldFrom.setSlots(3);
         List<CargoColor> cargoHeldFrom = new ArrayList<>();
         cargoHeldFrom.add(loaded);
-        CargoHoldFrom.setCargoHeld(cargoHeldFrom);
+        for(int i=0; i<cargoHeldFrom.size(); i++) {
+            CargoHoldFrom.loadCargo(cargoHeldFrom.get(i));
+        }
+
+        gameController.getPlayerByID("player1").getShip().addComponent(CargoHoldFrom, 2, 2);
 
         CargoHold CargoHoldTo = new CargoHold();
         CargoHoldTo.setSlots(3);
         List<CargoColor> cargoHeldTo = new ArrayList<>();
         gameController.getModel().setActiveCard(abandonedStationCard);
-        gameController.loadCargo("player1", loaded, CargoHoldTo);
-        CargoHoldTo.setCargoHeld(cargoHeldTo);
+        Pair<Integer, Integer> position = new Pair<>(2, 2);
+        gameController.loadCargo("player1", loaded, position);
+        for(int i=0; i<cargoHeldTo.size(); i++) {
+            CargoHoldTo.loadCargo(cargoHeldTo.get(i));
+        }
 
-        gameController.unloadCargo("player1", loaded, CargoHoldFrom);
+        gameController.unloadCargo("player1", loaded, position);
     }
 
     @Test
-    void acceptCard() throws InvalidTurnException {
+    void acceptCard() throws InvalidTurnException, CargoNotLoadable, CargoFullException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -185,7 +201,9 @@ class GameControllerTest {
         CargoHoldFrom.setSlots(3);
         List<CargoColor> cargoHeldFrom = new ArrayList<>();
         cargoHeldFrom.add(loaded);
-        CargoHoldFrom.setCargoHeld(cargoHeldFrom);
+        for(int i=0; i<cargoHeldFrom.size(); i++) {
+            CargoHoldFrom.loadCargo(cargoHeldFrom.get(i));
+        }
 
         CargoHold CargoHoldTo = new CargoHold();
         CargoHoldTo.setSlots(3);
@@ -202,18 +220,52 @@ class GameControllerTest {
     }
 
     @Test
-    void activateCannons() {
+    void activateCannons() throws InvalidTileException {
+        // Configurazione dello stato di sciame meteoriti
+
+
+        List<Projectile> projectiles = new ArrayList<>();
+        Projectile projectile1 = new Projectile();
+        projectile1.setDirection(Direction.DOWN);
+        projectile1.setFireType(FireType.HEAVY_METEOR);
+        Projectile projectile2 = new Projectile();
+        projectile2.setDirection(Direction.LEFT);
+        projectile2.setFireType(FireType.LIGHT_METEOR);
+        Projectile projectile3 = new Projectile();
+        projectile3.setDirection(Direction.RIGHT);
+        projectile3.setFireType(FireType.LIGHT_METEOR);
+        projectiles.add(projectile1);
+        projectiles.add(projectile2);
+        projectiles.add(projectile3);
+        adventureCard.setProjectiles(projectiles);
+
         MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(meteorSwarmState);
-        Cannon cannon1 = new Cannon();
-        List<Cannon> cannons = new ArrayList<>();
-        cannons.add(cannon1);
+
+        // Aggiungo un cannone alla nave del giocatore
+        Cannon cannon = new Cannon();
+        gameController.getPlayerByID("player1").getShip().addComponent(cannon, 1, 1);
+        Pair<Integer, Integer> cannonCoord = new Pair<>(1, 1);
+        List<Pair<Integer, Integer>> cannons = new ArrayList<>();
+        cannons.add(cannonCoord);
+
+        // Aggiungo una batteria carica alla nave
         Battery battery = new Battery();
         battery.setSlots(3);
-        battery.fillBattery();
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
-        // TODO: Implement the test for activateCannons
+        battery.setAvailableEnergy(3);
+        gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
+        Pair<Integer, Integer> batteryCoord = new Pair<>(2, 2);
+        List<Pair<Integer, Integer>> batteries = new ArrayList<>();
+        batteries.add(batteryCoord);
+
+        // Attivo il cannone
+        gameController.activateCannons("player1", cannons, batteries);
+
+        // Verifico che l'energia della batteria sia diminuita (il cannone ha consumato energia)
+        Battery usedBattery = (Battery) gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2);
+        assertEquals(2, usedBattery.getAvailableEnergy());
+
+        // NOTE: can't confirm the cannon was activated, as it depends on the game logic
     }
 
     @Test
@@ -223,7 +275,7 @@ class GameControllerTest {
     }
 
     @Test
-    void loseCrew() throws InvalidTurnException {
+    void loseCrew() throws InvalidTurnException, InvalidTileException {
         AdventureCard adventureCard1 = new AdventureCard();
         adventureCard1.setCrew(2);
         adventureCard1.setCredits(3);
@@ -238,16 +290,21 @@ class GameControllerTest {
         Cabin cabin2 = new Cabin();
         cabin2.setAstronauts(1);
 
-        List<Cabin> cabins = new ArrayList<>();
-        cabins.add(cabin1);
-        cabins.add(cabin2);
 
-        gameController.loseCrew("player1", cabins);
+        gameController.getPlayerByID("player1").getShip().addComponent(cabin1, 2, 2);
+        gameController.getPlayerByID("player1").getShip().addComponent(cabin2, 1, 1);
+
+        Pair<Integer, Integer> position = new Pair<>(2, 2);
+        Pair<Integer, Integer> position2 = new Pair<>(1, 1);
+        List<Pair<Integer, Integer>> positions = new ArrayList<>();
+        positions.add(position);
+        positions.add(position2);
+        gameController.loseCrew("player1", positions);
         assertEquals(cabin1.getAstronauts() + cabin2.getAstronauts(), 1);
     }
 
     @Test
-    void activateShield() throws InvalidTurnException, InvalidShipException {
+    void activateShield() throws InvalidTurnException, InvalidShipException, InvalidTileException {
         AdventureCard adventureCard1 = new AdventureCard();
         List<Projectile> projectiles = new ArrayList<>();
         Projectile projectile1 = new Projectile();
@@ -261,15 +318,20 @@ class GameControllerTest {
         Shield shield = new Shield();
         Direction[] directions = {Direction.UP, Direction.RIGHT};
         shield.setCoveredSides(directions);
+        gameController.getPlayerByID("player1").getShip().addComponent(shield, 1, 1);
+        Pair<Integer, Integer> shieldCoord = new Pair<>(1, 1);
 
         Battery battery = new Battery();
         battery.setSlots(3);
-        battery.fillBattery();
+        battery.setAvailableEnergy(3);
+        gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
+        Pair<Integer, Integer> batteryCoord = new Pair<>(2, 2);
 
         gameController.getModel().setActiveCard(adventureCard1);
         gameController.setState(meteorSwarmState);
         gameController.rollDice("player1");
-        gameController.activateShield("player1", shield, battery);
+        gameController.activateShield("player1", shieldCoord, batteryCoord);
+        assertEquals(2, battery.getAvailableEnergy());
     }
 
     @Test
@@ -287,7 +349,7 @@ class GameControllerTest {
 
     @Test
     void activateEngines() throws InvalidTurnException, InvalidShipException, InvalidTileException {
-        CombatZone0State combatZone0State = new CombatZone0State(gameController, gameController.getModel(), adventureCard);
+        CombatZone0State combatZone0State = new CombatZone0State(gameController.getModel(), gameController, adventureCard);
         gameController.setState(combatZone0State);
 
         Engine engine1 = new Engine();
@@ -302,9 +364,19 @@ class GameControllerTest {
         List<Battery> batteries = new ArrayList<>();
         batteries.add(battery);
 
-        gameController.activateEngines("player1", batteries, engines);
-    }
+        gameController.getPlayerByID("player1").getShip().addComponent(engine1, 1, 1);
+        gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
+        Pair<Integer, Integer> engineCoord1 = new Pair<>(1, 1);
+        Pair<Integer, Integer> batteryCoord2 = new Pair<>(2, 2);
+        List<Pair<Integer, Integer>> engineCoords = new ArrayList<>();
+        engineCoords.add(engineCoord1);
+        List<Pair<Integer, Integer>> batteryCoords = new ArrayList<>();
+        batteryCoords.add(batteryCoord2);
 
+        gameController.activateEngines("player1", engineCoords, batteryCoords);
+        // TODO : to-fix
+    }
+/*
     @Test
     void getPlayerData() {
         Player player = gameController.getPlayerByID("player1");
