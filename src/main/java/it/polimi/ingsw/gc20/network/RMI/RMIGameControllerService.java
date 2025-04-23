@@ -24,7 +24,7 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public RMIGameControllerService(RMIAuthService authService) throws RemoteException {
+    public RMIGameControllerService() throws RemoteException {
         super();
         this.queueHandler = QueueHandler.getInstance();
     }
