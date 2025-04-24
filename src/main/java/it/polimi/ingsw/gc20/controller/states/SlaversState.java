@@ -57,7 +57,7 @@ public class SlaversState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getController().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             }
             return 0;
         } else {
@@ -82,7 +82,7 @@ public class SlaversState extends PlayingState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             getController().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 
@@ -97,6 +97,6 @@ public class SlaversState extends PlayingState {
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
         getController().getActiveCard().playCard();
-        getController().drawCard();
+        getController().setState(new PreDrawState(getController()));
     }
 }

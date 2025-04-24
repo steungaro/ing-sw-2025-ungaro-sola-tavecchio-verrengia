@@ -86,7 +86,7 @@ public class CombatZone0State extends PlayingState {
         }
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
         return getModel().getGame().rollDice();
     }
@@ -154,7 +154,7 @@ public class CombatZone0State extends PlayingState {
         manager.fire();
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 
@@ -166,7 +166,7 @@ public class CombatZone0State extends PlayingState {
         manager.chooseBranch(player, coordinates);
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 }

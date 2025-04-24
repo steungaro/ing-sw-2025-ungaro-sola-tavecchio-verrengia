@@ -72,7 +72,7 @@ public class PiratesState extends PlayingState {
         } else if (firePower == this.firePower) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             }
             return 0;
         } else {
@@ -97,7 +97,8 @@ public class PiratesState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getModel().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
+
             } else {
                 manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
             }
@@ -115,7 +116,7 @@ public class PiratesState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getModel().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             } else {
                 manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
             }
@@ -133,7 +134,7 @@ public class PiratesState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getModel().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             } else {
                 manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
             }
@@ -155,6 +156,6 @@ public class PiratesState extends PlayingState {
             throw new IllegalStateException("Card not defeated");
         }
         getModel().getActiveCard().playCard();
-        getController().drawCard();
+        getController().setState(new PreDrawState(getController()));
     }
 }

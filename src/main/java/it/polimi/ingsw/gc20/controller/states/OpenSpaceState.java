@@ -45,7 +45,7 @@ public class OpenSpaceState extends PlayingState {
                 }
             });
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 }

@@ -105,7 +105,7 @@ public class PlanetsState extends CargoState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 }

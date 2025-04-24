@@ -376,7 +376,9 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void giveUp(String username) {
-        //TODO
+        if(!Objects.equals(state.toString(), "PreDrawState")){
+            throw new IllegalStateException("Can only give up when the turn has ended");
+        }
         try {
             model.giveUp(getPlayerByID(username));
         } catch (Exception e) {
