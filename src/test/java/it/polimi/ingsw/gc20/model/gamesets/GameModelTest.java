@@ -599,7 +599,7 @@ class GameModelTest {
         Component component = ship.getComponentAt(1, 3); // Cannone
         try {
 
-            gameModel.removeComponent(component, player);
+            gameModel.removeComponent(1, 3, player);
 
 
             assertNull(player.getShip().getComponentAt(1, 3));

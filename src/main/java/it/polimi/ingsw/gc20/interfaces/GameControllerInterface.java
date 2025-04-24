@@ -47,7 +47,7 @@ public interface GameControllerInterface extends Remote {
 
     // Ship validating
     void validateShip(String username);
-    void removeComponentFromShip(String username, Component component);
+    void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates);
     void addAlien(String username, AlienColor color, Cabin cabin);
     void readyToFly(String username) throws EmptyDeckException;
 

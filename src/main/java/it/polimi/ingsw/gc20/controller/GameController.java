@@ -636,13 +636,13 @@ public class GameController implements GameControllerInterface {
      * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
-     * @param component Component to remove
+     * @param coordinates Coordinates of the component to be removed
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
-    public void removeComponentFromShip(String username, Component component) {
+    public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
-            state.removeComp(getPlayerByID(username), component);
+            state.removeComp(getPlayerByID(username), coordinates);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error removing component from ship", e);
         }
