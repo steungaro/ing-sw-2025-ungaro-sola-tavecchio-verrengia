@@ -86,7 +86,7 @@ public abstract class State{
         exception();
         return false;
     }
-    public void removeComp(Player player, Component component) throws ComponentNotFoundException {
+    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException {
         exception();
     }
 

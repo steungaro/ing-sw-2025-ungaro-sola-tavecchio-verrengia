@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.controller;
 
 import it.polimi.ingsw.gc20.controller.event.game.PlaceComponentEvent;
+import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -376,7 +377,7 @@ class GameControllerTest {
         gameController.activateEngines("player1", engineCoords, batteryCoords);
         // TODO : to-fix
     }
-/*
+
     @Test
     void getPlayerData() {
         Player player = gameController.getPlayerByID("player1");
@@ -476,10 +477,10 @@ class GameControllerTest {
 
         assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
 
-        gameController.takeComponentFromUnviewed("player1", comp);
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToViewed("player1");
 
-        assertFalse(gameController.getModel().getGame().getPile().getUnviewed().contains(comp));
-        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+        assertTrue(gameController.getModel().getGame().getPile().getUnviewed().contains(comp));
     }
 
     @Test
@@ -487,16 +488,13 @@ class GameControllerTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
 
-        assertNotNull(assemblingState.getModel());
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToViewed("player1");
+        gameController.takeComponentFromViewed("player1", 0);
+        gameController.addComponentToBooked("player1");
 
-        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
-
-        gameController.addComponentToViewed("player1", comp);
-
-        Component comp2 = gameController.takeComponentFromViewed("player1", comp);
-
-        assertEquals(comp, comp2);
+        assertTrue(((NormalShip)(gameController.getPlayerByID("player1").getShip())).getBooked().contains(comp));
     }
 
     @Test
@@ -506,14 +504,12 @@ class GameControllerTest {
 
         assertNotNull(assemblingState.getModel());
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToBooked("player1");
+        gameController.takeComponentFromBooked("player1", 0);
+        gameController.addComponentToViewed("player1");
 
-        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
-
-        gameController.addComponentToBooked("player1", comp);
-
-        Component comp2 = gameController.takeComponentFromBooked("player1", comp);
-
-        assertEquals(comp, comp2);
+        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
@@ -521,16 +517,11 @@ class GameControllerTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
 
-        assertNotNull(assemblingState.getModel());
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToBooked("player1");
 
-        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
-
-        gameController.addComponentToBooked("player1", comp);
-
-        Component comp2 = gameController.takeComponentFromBooked("player1", comp);
-
-        assertEquals(comp, comp2);
+        assertTrue(((NormalShip)(gameController.getPlayerByID("player1").getShip())).getBooked().contains(comp));
     }
 
     @Test
@@ -541,62 +532,69 @@ class GameControllerTest {
         assertNotNull(assemblingState.getModel());
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
 
-        assertThrows(NoSuchElementException.class, () -> gameController.takeComponentFromViewed("player1", comp));
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToViewed("player1");
 
-        gameController.addComponentToViewed("player1", comp);
-
-        Component comp2 = gameController.takeComponentFromViewed("player1", comp);
-
-        assertEquals(comp, comp2);
+        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
     void placeComponent() {
-        Cabin cabin = new Cabin();
-        PlaceComponentEvent event = new PlaceComponentEvent("player1", 1, 2, 2);
-        gameController.placeComponent("player1", cabin, 2, 2);
-        assertEquals(cabin, gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2));
+
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+
+        Pair<Integer, Integer> position = new Pair<>(1, 1);
+        Component component = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.placeComponent("player1", position);
+        assertEquals(component, gameController.getPlayerByID("player1").getShip().getComponentAt(1, 1));
     }
 
     @Test
     void rotateComponentClockwise() {
-        Cabin cabin = new Cabin();
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
-        connectors.put(Direction.UP, ConnectorEnum.S);
-        connectors.put(Direction.RIGHT, ConnectorEnum.ZERO);
-        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
-        connectors.put(Direction.LEFT, ConnectorEnum.ZERO);
-        cabin.setConnectors(connectors);
-        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
-        gameController.rotateComponentClockwise(cabin);
-        assertEquals(ConnectorEnum.S, cabin.getConnectors().get(Direction.RIGHT));
-        assertEquals(ConnectorEnum.ZERO, cabin.getConnectors().get(Direction.DOWN));
+        connectors.put(Direction.UP, comp.getConnectors().get(Direction.UP));
+        connectors.put(Direction.RIGHT, comp.getConnectors().get(Direction.RIGHT));
+        connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.DOWN));
+        connectors.put(Direction.LEFT, comp.getConnectors().get(Direction.LEFT));
+
+        gameController.rotateComponentClockwise("player1");
+        assertEquals(connectors.get(Direction.UP), comp.getConnectors().get(Direction.RIGHT));
+        assertEquals(connectors.get(Direction.RIGHT), comp.getConnectors().get(Direction.DOWN));
+        assertEquals(connectors.get(Direction.DOWN), comp.getConnectors().get(Direction.LEFT));
+        assertEquals(connectors.get(Direction.LEFT), comp.getConnectors().get(Direction.UP));
     }
 
     @Test
     void rotateComponentCounterclockwise() {
-        Cabin cabin = new Cabin();
+        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
-        connectors.put(Direction.UP, ConnectorEnum.S);
-        connectors.put(Direction.RIGHT, ConnectorEnum.ZERO);
-        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
-        connectors.put(Direction.LEFT, ConnectorEnum.ZERO);
-        cabin.setConnectors(connectors);
-        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
-        gameController.rotateComponentCounterclockwise(cabin);
-        assertEquals(ConnectorEnum.S, cabin.getConnectors().get(Direction.LEFT));
-        assertEquals(ConnectorEnum.ZERO, cabin.getConnectors().get(Direction.UP));
+        connectors.put(Direction.UP, comp.getConnectors().get(Direction.UP));
+        connectors.put(Direction.RIGHT, comp.getConnectors().get(Direction.RIGHT));
+        connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.DOWN));
+        connectors.put(Direction.LEFT, comp.getConnectors().get(Direction.LEFT));
+
+        gameController.rotateComponentCounterclockwise("player1");
+        assertEquals(connectors.get(Direction.DOWN), comp.getConnectors().get(Direction.RIGHT));
+        assertEquals(connectors.get(Direction.LEFT), comp.getConnectors().get(Direction.DOWN));
+        assertEquals(connectors.get(Direction.UP), comp.getConnectors().get(Direction.LEFT));
+        assertEquals(connectors.get(Direction.RIGHT), comp.getConnectors().get(Direction.UP));
     }
 
     @Test
     void removeComponentFromShip() {
-        Cabin cabin = new Cabin();
-        PlaceComponentEvent event = new PlaceComponentEvent("player1", 1, 2, 2);
-        gameController.placeComponent("player1", cabin, 2, 2);
+        Component component = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        Pair<Integer, Integer> position = new Pair<>(1, 1);
+        gameController.placeComponent("player1", position);
 
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         gameController.setState(validatingShipState);
-        gameController.removeComponentFromShip("player1", cabin);
+        gameController.removeComponentFromShip("player1", position);
 
         assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2));
     }
@@ -671,7 +669,7 @@ class GameControllerTest {
 
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
-        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+        gameController.placeComponent("player1", new Pair<>(2, 2));
 
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
         gameController.addAlien("player1", alienColor, cabin);
@@ -716,7 +714,7 @@ class GameControllerTest {
     }
 
     @Test
-    void rollDice() throws InvalidTurnException, InvalidShipException {
+    void rollDice() throws InvalidTurnException, InvalidShipException, DieNotRolledException {
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
 
@@ -729,7 +727,7 @@ class GameControllerTest {
     }
 
     @Test
-    void lastRolledDice() throws InvalidTurnException, InvalidShipException {
+    void lastRolledDice() throws InvalidTurnException, InvalidShipException, DieNotRolledException {
         assertThrows(ArithmeticException.class, () -> gameController.getModel().getGame().lastRolled());
 
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
@@ -762,5 +760,5 @@ class GameControllerTest {
         assertTrue(inGameConnectedPlayers.contains("player2"));
         assertTrue(inGameConnectedPlayers.contains("player3"));
         assertTrue(inGameConnectedPlayers.contains("player4"));
-    }*/
+    }
 }

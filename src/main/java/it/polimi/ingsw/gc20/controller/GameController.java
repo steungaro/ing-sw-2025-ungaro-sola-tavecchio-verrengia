@@ -634,13 +634,13 @@ public class GameController implements GameControllerInterface {
      * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
-     * @param component Component to remove
+     * @param coordinates Component to remove
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
-    public void removeComponentFromShip(String username, Component component) {
+    public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
-            state.removeComp(getPlayerByID(username), component);
+            state.removeComp(getPlayerByID(username), coordinates);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error removing component from ship", e);
         }
@@ -726,9 +726,10 @@ public class GameController implements GameControllerInterface {
      * Peeks at the selected deck
      *
      * @param username Username of the player peeking at the deck
-     * @param num number of the deck to peek at
+     * @param num      number of the deck to peek at
+     * @return
      */
-    public void peekDeck(String username, int num) {
+    public List<AdventureCard> peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -736,11 +737,12 @@ public class GameController implements GameControllerInterface {
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot view deck for not connected player");
             }
-            state.peekDeck(getPlayerByID(username), num);
+            return state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error peeking deek", e);
         }
+        return null;
     }
 
     /**
