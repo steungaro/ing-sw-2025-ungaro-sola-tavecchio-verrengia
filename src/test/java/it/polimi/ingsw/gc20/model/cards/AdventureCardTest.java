@@ -104,10 +104,10 @@ class AdventureCardTest {
     @Test
     void testCombatType() {
         adventureCard.setCrew(5);
-        assertEquals(1, adventureCard.combatType());
+        assertEquals(0, adventureCard.combatType());
 
         adventureCard.setCrew(0);
-        assertEquals(0, adventureCard.combatType());
+        assertEquals(1, adventureCard.combatType());
     }
 
     @Test

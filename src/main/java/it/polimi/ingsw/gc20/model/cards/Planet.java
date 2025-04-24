@@ -36,13 +36,10 @@ public class Planet {
         this.available = available;
     }
 
-    public void setUnavailable() {
-        this.available = false;
-    }
     
     public List<CargoColor> land (Player player) {
         this.player = player;
-        this.setUnavailable();
+        this.setAvailable(false);
         return reward;
     }
 

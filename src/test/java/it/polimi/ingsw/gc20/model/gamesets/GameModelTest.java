@@ -792,4 +792,49 @@ class GameModelTest {
             fail("EnergyException should not be thrown: " + e.getMessage());
         }
     }
+
+    @Test
+    void testHourglass1 () throws InterruptedException {
+        gameModel.startGame(level, players, gameId);
+        NormalBoard board= (NormalBoard) gameModel.getGame().getBoard();
+        board.hourglass.setPeriod(5);
+        gameModel.initCountdown();
+        assertEquals(5, gameModel.getRemainingTime());
+        Thread.sleep(2900);
+        assertEquals(2, gameModel.getRemainingTime());
+        assertEquals(12, gameModel.getTotalRemainingTime());
+        Thread.sleep(2000);
+        try {
+            gameModel.turnHourglass();
+        } catch (Exception e) {
+            fail("Exception should not be thrown");
+        }
+        assertEquals(5, gameModel.getRemainingTime());
+        board.stopHourglass();
+    }
+
+    @Test
+    void testHourglass2 () throws InterruptedException {
+        gameModel.startGame(level, players, gameId);
+        NormalBoard board= (NormalBoard) gameModel.getGame().getBoard();
+        board.hourglass.setPeriod(5);
+        gameModel.initCountdown();
+        assertThrows(HourglassException.class, () -> gameModel.turnHourglass());
+        Thread.sleep(5100);
+        try {
+            gameModel.turnHourglass();
+        } catch (Exception e) {
+            fail("Exception should not be thrown"+ e.getMessage());
+        }
+        Thread.sleep(5100);
+        try {
+            gameModel.turnHourglass();
+        } catch (HourglassException e) {
+            fail("Exception should not be thrown");
+        }
+        Thread.sleep(5100);
+        assertEquals(0, gameModel.getRemainingTime());
+        assertEquals(2, gameModel.getTurnedHourglass());
+        assertThrows(HourglassException.class, () -> gameModel.turnHourglass());
+    }
 }
