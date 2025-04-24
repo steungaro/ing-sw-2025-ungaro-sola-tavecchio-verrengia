@@ -132,11 +132,12 @@ public class AbandonedStationState extends CargoState {
         }
         if (getController().getActiveCard().isPlayed()) {
             getModel().movePlayer(player, -lostDays);
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
+
         } else {
             nextPlayer();
             if (getCurrentPlayer() == null) {
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             }
         }
     }

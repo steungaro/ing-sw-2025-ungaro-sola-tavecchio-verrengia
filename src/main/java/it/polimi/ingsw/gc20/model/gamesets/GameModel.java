@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.ship.*;
+import org.javatuples.Pair;
 
 
 import java.util.*;
@@ -293,8 +294,9 @@ public class GameModel {
      * @param p player that removes the component
      * @throws ComponentNotFoundException if the component is not present in the ship
      */
-    public void removeComponent(Component c, Player p) throws ComponentNotFoundException {
+    public void removeComponent(Integer x, Integer y, Player p) throws ComponentNotFoundException {
         Ship s = p.getShip();
+        Component c = s.getComponentAt(x, y);
         s.killComponent(c);
     }
 

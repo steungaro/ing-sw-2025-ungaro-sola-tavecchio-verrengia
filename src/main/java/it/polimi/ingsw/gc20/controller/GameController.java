@@ -376,7 +376,9 @@ public class GameController implements GameControllerInterface {
      */
     @Override
     public void giveUp(String username) {
-        //TODO
+        if(!Objects.equals(state.toString(), "PreDrawState")){
+            throw new IllegalStateException("Can only give up when the turn has ended");
+        }
         try {
             model.giveUp(getPlayerByID(username));
         } catch (Exception e) {
@@ -634,7 +636,7 @@ public class GameController implements GameControllerInterface {
      * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
-     * @param coordinates Component to remove
+     * @param coordinates Coordinates of the component to be removed
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
@@ -726,10 +728,9 @@ public class GameController implements GameControllerInterface {
      * Peeks at the selected deck
      *
      * @param username Username of the player peeking at the deck
-     * @param num      number of the deck to peek at
-     * @return
+     * @param num number of the deck to peek at
      */
-    public List<AdventureCard> peekDeck(String username, int num) {
+    public void peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -737,12 +738,11 @@ public class GameController implements GameControllerInterface {
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot view deck for not connected player");
             }
-            return state.peekDeck(getPlayerByID(username), num);
+            state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error peeking deek", e);
         }
-        return null;
     }
 
     /**

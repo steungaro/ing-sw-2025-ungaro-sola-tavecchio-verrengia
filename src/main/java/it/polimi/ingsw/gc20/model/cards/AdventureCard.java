@@ -173,13 +173,13 @@ public class AdventureCard {
 
     /**
      * @return the type of combat
-     * @implNote if the card has lostCrew > 0, the method returns 1, else 0
+     * @implNote if the card has lostCrew > 0, the method returns 0, else 1
      */
     public int combatType() {
         if (crew > 0) {
-            return 1;
-        } else {
             return 0;
+        } else {
+            return 1;
         }
     }
 

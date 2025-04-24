@@ -135,7 +135,7 @@ public class SmugglersState extends CargoState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getController().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             }
             currentLostCargo = 0;
             return 0;
@@ -153,7 +153,7 @@ public class SmugglersState extends CargoState {
         if (defeated) {
             getModel().movePlayer(player, -lostDays);
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         } else {
             if (currentLostCargo > 0) {
                 throw new IllegalStateException("Lose all your cargo before ending move");
@@ -161,7 +161,7 @@ public class SmugglersState extends CargoState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getController().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             }
         }
     }

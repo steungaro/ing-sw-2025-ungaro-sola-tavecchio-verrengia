@@ -40,6 +40,6 @@ public class EpidemicState extends PlayingState {
                 .filter(p -> getController().isPlayerDisconnected(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
         getModel().getActiveCard().playCard();
-        getController().drawCard();
+        getController().setState(new PreDrawState(getController()));
     }
 }

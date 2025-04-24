@@ -81,7 +81,7 @@ public class CombatZone1State extends PlayingState {
 
         @Override
     public String toString() {
-        return "CombatZone0State{" +
+        return "CombatZone1State{" +
                 "lostDays=" + lostDays +
                 ", lostCargo=" + lostCargo +
                 ", cannonFires=" + cannonFires +
@@ -123,7 +123,7 @@ public class CombatZone1State extends PlayingState {
         }
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
         return getModel().getGame().rollDice();
     }
@@ -137,7 +137,7 @@ public class CombatZone1State extends PlayingState {
         manager.fire();
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 
@@ -202,7 +202,7 @@ public class CombatZone1State extends PlayingState {
         manager.chooseBranch(player, coordinates);
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 }

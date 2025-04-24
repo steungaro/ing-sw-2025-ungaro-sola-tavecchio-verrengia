@@ -41,13 +41,13 @@ public interface GameControllerInterface extends Remote {
     void rotateComponentCounterclockwise(String username);
 
     void stopAssembling(String username, int position);
-    List<AdventureCard> peekDeck(String username, int num);
+    void peekDeck(String username, int num);
     int getHourglassTime(String username);
     void turnHourglass(String username);
 
     // Ship validating
     void validateShip(String username);
-    public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates);
+    void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates);
     void addAlien(String username, AlienColor color, Cabin cabin);
     void readyToFly(String username) throws EmptyDeckException;
 

@@ -44,7 +44,7 @@ public class MeteorSwarmState extends PlayingState {
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             } else {
                 manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
             }
@@ -73,7 +73,7 @@ public class MeteorSwarmState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getModel().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             } else {
                 manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
             }
@@ -90,7 +90,7 @@ public class MeteorSwarmState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 getModel().getActiveCard().playCard();
-                getController().drawCard();
+                getController().setState(new PreDrawState(getController()));
             } else {
                 manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
             }

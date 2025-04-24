@@ -40,6 +40,6 @@ public class StardustState extends PlayingState {
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         getController().getActiveCard().playCard();
-        getController().drawCard();
+        getController().setState(new PreDrawState(getController()));
     }
 }

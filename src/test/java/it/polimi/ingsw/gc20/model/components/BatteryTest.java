@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.model.ship.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,5 +26,12 @@ public class BatteryTest {
         battery.useEnergy();
         //ship will assert that no battery is going to be used if there is no energy
         assertEquals(-1, battery.getAvailableEnergy());
+    }
+
+    @Test
+    void testsetGetTile(){
+        Tile tile = new Tile();
+        battery.setTile(tile);
+        assertEquals(tile, battery.getTile());
     }
 }

@@ -177,4 +177,8 @@ public abstract class State{
         exception();
         return 0;
     }
+    public void nextRound(Player player){
+        exception();
+    }
+
 }

@@ -64,7 +64,7 @@ public class AbandonedShipState extends PlayingState {
         getModel().addCredits(player, credits);
         getModel().movePlayer(player, -lostDays);
         getController().getActiveCard().playCard();
-        getController().drawCard();
+        getController().setState(new PreDrawState(getController()));
     }
 
     /**
@@ -79,7 +79,7 @@ public class AbandonedShipState extends PlayingState {
         }
         nextPlayer();
         if (getCurrentPlayer() == null) {
-            getController().drawCard();
+            getController().setState(new PreDrawState(getController()));
         }
     }
 }
