@@ -46,8 +46,7 @@ public class ValidatingShipState extends State {
         if (validShips.get(player)) {
             throw new IllegalArgumentException("Cannot remove component from valid ship");
         }
-        Component component = player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1());
-        getModel().removeComponent(component, player);
+        getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
     }
 
     @Override

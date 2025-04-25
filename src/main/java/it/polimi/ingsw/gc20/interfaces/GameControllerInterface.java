@@ -41,7 +41,7 @@ public interface GameControllerInterface extends Remote {
     void rotateComponentCounterclockwise(String username);
 
     void stopAssembling(String username, int position);
-    void peekDeck(String username, int num);
+    List<AdventureCard> peekDeck(String username, int num);
     int getHourglassTime(String username);
     void turnHourglass(String username);
 

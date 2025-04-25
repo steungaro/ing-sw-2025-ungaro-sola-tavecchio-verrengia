@@ -290,7 +290,8 @@ public class GameModel {
     /**
      * function to remove a component from the ship
      *
-     * @param c component to remove
+     * @param x x coordinate of the component
+     * @param y y coordinate of the component
      * @param p player that removes the component
      * @throws ComponentNotFoundException if the component is not present in the ship
      */
