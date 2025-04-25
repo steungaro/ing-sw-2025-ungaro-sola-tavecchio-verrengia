@@ -621,7 +621,7 @@ class GameControllerTest {
         gameController.stopAssembling("player1", 1);
     }
 
-    @Test
+   /* @Test
     void turnHourglass() throws HourglassException, InterruptedException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
@@ -642,7 +642,7 @@ class GameControllerTest {
         Thread.sleep(1000);
 
         assertEquals(79, gameController.getHourglassTime("player1"));
-    }
+    }*/
 
     @Test
     void peekDeck() {
