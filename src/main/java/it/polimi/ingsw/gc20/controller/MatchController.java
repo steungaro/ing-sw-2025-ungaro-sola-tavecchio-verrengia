@@ -17,6 +17,7 @@ public class MatchController implements MatchControllerInterface {
     private final List<GameController> games;
     private final List<Lobby> lobbies;
     private final Map<String, Lobby> playersInLobbies;
+    private final Map<String, GameController> playersInGames;
     private int maxMatches;
     private int maxLobbies;
     private static MatchController instance;
@@ -29,6 +30,7 @@ public class MatchController implements MatchControllerInterface {
         this.games = new ArrayList<>();
         this.playersInLobbies = new HashMap<>();
         this.lobbies = new ArrayList<>();
+        this.playersInGames = new HashMap<>();
     }
 
     /**
@@ -111,40 +113,34 @@ public class MatchController implements MatchControllerInterface {
     /**
      * @param id is the id of the lobby
      * @param user is the user that wants to join
-     * @return the lobby with the given id
      */
-    public Lobby joinLobby(String id, String user) {
+    public void joinLobby(String id, String user) {
         for(Lobby l: lobbies){
             if(l.getId().equals(id)){
                 try {
                     l.addPlayer(user);
                     playersInLobbies.put(user, l);
-                    return l;
                 } catch (FullLobbyException e) {
                     logger.log(Level.WARNING, "Lobby is full", e);
                 }
             }
         }
-        return null;
     }
 
     /**
      * @param name is the name of the lobby
      * @param maxPlayers is the max number of players
      * @param user is the owner of the lobby that joins automatically
-     * @return the lobby created
      * @throws IllegalArgumentException if the max number of lobbies is reached
      */
-    public Lobby createLobby(String name, String user, int maxPlayers, int level) {
+    public void createLobby(String name, String user, int maxPlayers, int level) {
         String id = UUID.randomUUID().toString();
         if (lobbies.size() >= maxLobbies) {
             logger.log(Level.WARNING, "Max lobbies reached");
-            return null;
         } else {
             Lobby l = new Lobby(id, name, user, maxPlayers, level);
             playersInLobbies.put(user, l);
             lobbies.add(l);
-            return l;
         }
     }
 
@@ -197,13 +193,28 @@ public class MatchController implements MatchControllerInterface {
                         usersToRemove.add(user);
                     }
                 }
-
                 for (String user : usersToRemove) {
+                    playersInGames.put(user, games.getLast());
                     playersInLobbies.remove(user);
                 }
             } catch (LobbyException e) {
                 logger.log(Level.WARNING, "No such Lobby", e);
             }
         }
+    }
+
+    public List<String> getAllUsers() {
+        List<String> allUsers = new ArrayList<>();
+        allUsers.addAll(playersInGames.keySet());
+        allUsers.addAll(playersInLobbies.keySet());
+        return allUsers;
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return !playersInGames.containsKey(username) && !playersInLobbies.containsKey(username);
+    }
+
+    public GameController getGameControllerForPlayer(String username) {
+        return playersInGames.getOrDefault(username, null);
     }
 }

@@ -1,8 +1,11 @@
 package it.polimi.ingsw.gc20.network.RMI;
 
 import it.polimi.ingsw.gc20.exceptions.ServerCriticalError;
+import it.polimi.ingsw.gc20.interfaces.GameControllerInterface;
+import it.polimi.ingsw.gc20.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.network.NetworkManager;
 import it.polimi.ingsw.gc20.network.common.*;
+import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
 
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
@@ -41,15 +44,20 @@ public class RMIServer implements Server {
             running = true;
 
             // creation of the gameService
-            //RMIGAmeInterface will be the interface that the controller will expose
+            GameControllerInterface gameService = new RMIGameControllerService();
+
+            // creation of the matchService
+            MatchControllerInterface matchService = new RMIMatchControllerService();
 
             // creating the authService
             RMIAuthInterface authService = new RMIAuthService(this);
             rmiServerHandler.exportObject(authService, "AuthService");
 
-            RMIGameInterface gameService = new TestRMIGameService(authService);
             // Export the gameService object
             rmiServerHandler.exportObject(gameService, "GameService");
+
+            // Export the matchService object
+            rmiServerHandler.exportObject(matchService, "MatchService");
 
             LOGGER.info(String.format("RMI Server started at port %d", DEFAULT_PORT));
         } catch (ServerCriticalError e) {
@@ -102,10 +110,10 @@ public class RMIServer implements Server {
      *
      * @param message message to broadcast
      */
-    public void broadcastMessage(Object message) {
+    public void broadcastMessage(Message message) {
         //maybe better synchronized than copying the list
         for (ClientHandler client : new ArrayList<>(clients)) {
-            executor.submit(() -> client.sendMessage(message));
+            executor.submit(() -> client.sendToClient(message));
         }
     }
 
