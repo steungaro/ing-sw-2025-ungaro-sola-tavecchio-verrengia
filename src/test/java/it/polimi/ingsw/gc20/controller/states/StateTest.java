@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc20.controller.states;
 
 import it.polimi.ingsw.gc20.controller.GameController;
+import it.polimi.ingsw.gc20.exceptions.DuplicateComponentException;
+import it.polimi.ingsw.gc20.exceptions.InvalidIndexException;
+import it.polimi.ingsw.gc20.exceptions.NoSpaceException;
 import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.ConnectorEnum;
 import it.polimi.ingsw.gc20.model.components.Direction;
@@ -17,8 +20,10 @@ import java.io.ObjectOutputStream;
 import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.function.BooleanSupplier;
+import org.javatuples.Pair;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 
 class StateTest {
 
@@ -51,7 +56,7 @@ class StateTest {
     }
 
 
-    /*@Test
+    @Test
     void getModel() {
         assertEquals(gameController.getModel(), abandonedShipState.getModel());
     }
@@ -66,7 +71,7 @@ class StateTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
 
-        assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), comp);
+        assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), 0);
         assertEquals(comp, gameController.getModel().getGame().getPile().getViewed().getFirst());
     }
 
@@ -77,8 +82,8 @@ class StateTest {
 
         gameController.getModel().getGame().getPile().getViewed().add(comp);
 
-        assemblingState.takeComponentFromViewed(gameController.getPlayerByID("player1"), comp);
-        assertThrows(NoSuchElementException.class,  () -> gameController.takeComponentFromViewed("player1", comp));
+        assemblingState.takeComponentFromViewed(gameController.getPlayerByID("player1"), 0);
+        assertThrows(NoSuchElementException.class,  () -> gameController.takeComponentFromViewed("player1", 0));
     }
 
     @Test
@@ -86,28 +91,29 @@ class StateTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
 
-        assertThrows(IllegalArgumentException.class,  () -> gameController.takeComponentFromBooked("player1", comp));
+        assertThrows(IllegalArgumentException.class,  () -> gameController.takeComponentFromBooked("player1", 0));
 
-        gameController.addComponentToBooked("player1", comp);
+        gameController.addComponentToBooked("player1");
 
-        assemblingState.takeComponentFromBooked(gameController.getPlayerByID("player1"), comp);
+        assemblingState.takeComponentFromBooked(gameController.getPlayerByID("player1"), 0);
     }
 
     @Test
-    void addComponentToBooked() {
+    void addComponentToBooked() throws NoSpaceException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
 
-        assemblingState.addComponentToBooked(gameController.getPlayerByID("player1"), comp);
+        assemblingState.addComponentToBooked(gameController.getPlayerByID("player1"));
         assertTrue( ((NormalShip) (gameController.getModel().getInGamePlayers().getFirst().getShip())).getBooked().contains(comp));
     }
 
     @Test
-    void addComponentToViewed() {
+    void addComponentToViewed() throws DuplicateComponentException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), 0);
 
-        assemblingState.addComponentToViewed(comp);
+        assemblingState.addComponentToViewed(gameController.getPlayerByID("player1"));
 
         assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
@@ -116,8 +122,10 @@ class StateTest {
     void placeComponent() {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
-        assertThrows(InvalidParameterException.class, () -> assemblingState.placeComponent(gameController.getPlayerByID("player1"), comp, 0, 0));
-        assemblingState.placeComponent(gameController.getPlayerByID("player1"), comp, 2, 2);
+        Pair <Integer, Integer> coordinates = new Pair<>(0, 0);
+        assertThrows(InvalidParameterException.class, () -> assemblingState.placeComponent(gameController.getPlayerByID("player1"), coordinates));
+        Pair <Integer, Integer> coordinates2 = new Pair<>(2, 2);
+        assemblingState.placeComponent(gameController.getPlayerByID("player1"), coordinates2);
 
         assertEquals(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2), comp);
         assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
@@ -134,7 +142,8 @@ class StateTest {
         connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.RIGHT));
         connectors.put(Direction.UP, comp.getConnectors().get(Direction.LEFT));
 
-        assemblingState.rotateComponentClockwise(comp);
+        assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), 0);
+        assemblingState.rotateComponentClockwise(gameController.getPlayerByID("player1"));
 
         assertEquals(connectors, comp.getConnectors());
     }
@@ -150,13 +159,14 @@ class StateTest {
         connectors.put(Direction.UP, comp.getConnectors().get(Direction.RIGHT));
         connectors.put(Direction.DOWN, comp.getConnectors().get(Direction.LEFT));
 
-        assemblingState.rotateComponentCounterclockwise(comp);
+        assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), 0);
+        assemblingState.rotateComponentCounterclockwise(gameController.getPlayerByID("player1"));
 
         assertEquals(connectors, comp.getConnectors());
     }
 
     @Test
-    void stopAssembling() {
+    void stopAssembling() throws InvalidIndexException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
 
@@ -266,5 +276,5 @@ class StateTest {
 
     @Test
     void rollDice() {
-    }*/
+    }
 }
