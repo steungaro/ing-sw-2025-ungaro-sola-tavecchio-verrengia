@@ -17,6 +17,7 @@ public class MatchController implements MatchControllerInterface {
     private final List<GameController> games;
     private final List<Lobby> lobbies;
     private final Map<String, Lobby> playersInLobbies;
+    private final Map<String, GameController> playersInGames;
     private int maxMatches;
     private int maxLobbies;
     private static MatchController instance;
@@ -29,6 +30,7 @@ public class MatchController implements MatchControllerInterface {
         this.games = new ArrayList<>();
         this.playersInLobbies = new HashMap<>();
         this.lobbies = new ArrayList<>();
+        this.playersInGames = new HashMap<>();
     }
 
     /**
@@ -205,5 +207,20 @@ public class MatchController implements MatchControllerInterface {
                 logger.log(Level.WARNING, "No such Lobby", e);
             }
         }
+    }
+
+    public List<String> getAllUsers() {
+        List<String> allUsers = new ArrayList<>();
+        allUsers.addAll(playersInGames.keySet());
+        allUsers.addAll(playersInLobbies.keySet());
+        return allUsers;
+    }
+
+    public boolean isUsernameAvailable(String username) {
+        return !playersInGames.containsKey(username) && !playersInLobbies.containsKey(username);
+    }
+
+    public GameController getGameControllerForPlayer(String username) {
+        return playersInGames.getOrDefault(username, null);
     }
 }

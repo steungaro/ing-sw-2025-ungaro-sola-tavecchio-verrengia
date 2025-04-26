@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.network.socket;
 
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
+import it.polimi.ingsw.gc20.network.common.QueueHandler;
+import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,11 +21,11 @@ public class SocketClientHandler implements ClientHandler {
     public SocketClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
-            // Importante: creare prima l'output stream per evitare deadlock
+            // Creating input and output streams (output first to avoid deadlock)
             out = new ObjectOutputStream(clientSocket.getOutputStream());
             in = new ObjectInputStream(clientSocket.getInputStream());
         } catch (IOException e) {
-            LOGGER.severe("Errore nell'inizializzazione degli stream: " + e.getMessage());
+            LOGGER.severe("Error while initializing streams: " + e.getMessage());
             disconnect();
         }
     }
@@ -31,23 +33,24 @@ public class SocketClientHandler implements ClientHandler {
     @Override
     public void handleRequest() {
         try {
-            // Prima ricezione è tipicamente l'autenticazione
+            // First message is the login request
             Object loginRequest = in.readObject();
-            // Gestisci autenticazione
+            // Authentication logic here (e.g., check username, password, etc.)
+            // TODO
 
-            // Loop principale di ascolto
+            // Loop to handle incoming messages
             while (connected) {
-                Object message = in.readObject();
+                Message message = (Message) in.readObject();
                 processMessage(message);
             }
         } catch (IOException | ClassNotFoundException e) {
-            LOGGER.warning("Errore nella gestione della richiesta: " + e.getMessage());
+            LOGGER.warning("Error while handling request: " + e.getMessage());
             disconnect();
         }
     }
 
-    private void processMessage(Object message) {
-        // Delega alle classi appropriate in base al tipo di messaggio
+    private void processMessage(Message message) {
+        QueueHandler.getInstance().enqueue(message);
     }
 
     @Override
@@ -57,14 +60,14 @@ public class SocketClientHandler implements ClientHandler {
     }
 
     @Override
-    public void sendMessage(Object message) {
+    public void sendToClient(Message message) {
         if (!connected) return;
 
         try {
             out.writeObject(message);
             out.flush();
         } catch (IOException e) {
-            LOGGER.warning("Errore nell'invio del messaggio: " + e.getMessage());
+            LOGGER.warning("Error while sending message to client: " + e.getMessage());
             disconnect();
         }
     }
@@ -80,7 +83,7 @@ public class SocketClientHandler implements ClientHandler {
             if (clientSocket != null && !clientSocket.isClosed())
                 clientSocket.close();
         } catch (IOException e) {
-            LOGGER.warning("Errore nella disconnessione: " + e.getMessage());
+            LOGGER.warning("Error on disconnection: " + e.getMessage());
         }
     }
 
@@ -92,4 +95,6 @@ public class SocketClientHandler implements ClientHandler {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    //TODO heartbeat mechanism?
 }
