@@ -37,7 +37,7 @@ public class RMIAuthService implements RMIAuthInterface {
             tokenToUsername.put(token, username);
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
-            LOGGER.info(String.format("Utente Registrato via RMI: " + username));
+            LOGGER.info(String.format("User logged via RMI: " + username));
             return token;
         }
         // Case 2: if the username is already in use -- verify if is connected
@@ -51,13 +51,13 @@ public class RMIAuthService implements RMIAuthInterface {
             // Update the client handler
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.updateClient(username, clientHandler);
-            LOGGER.info(String.format("Utente riconnesso via RMI: " + username));
+            LOGGER.info(String.format("User reconnected via RMI: " + username));
             return token;
         }
         // Case 3: if the username is already in use and connected
         else {
-            LOGGER.warning("Username già in uso");
-            throw new IllegalArgumentException("Username già in uso");
+            LOGGER.warning("Username already taken");
+            throw new IllegalArgumentException("Username already taken");
         }
     }
 
@@ -71,14 +71,14 @@ public class RMIAuthService implements RMIAuthInterface {
     public boolean logout(String token) throws RemoteException {
         String username = tokenToUsername.remove(token);
         if (username != null) {
-            LOGGER.info(String.format("Utente disconnesso: " + username));
+            LOGGER.info(String.format("User disconnected: " + username));
             ClientHandler client = NetworkManager.getInstance().getClient(username);
             if (client != null) {
                 client.disconnect();
             }
             return true;
         } else {
-            LOGGER.warning("Token non valido");
+            LOGGER.warning("Token not found");
             return false;
         }
     }
