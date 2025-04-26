@@ -1,26 +1,15 @@
 package it.polimi.ingsw.gc20.interfaces;
 
-import it.polimi.ingsw.gc20.exceptions.*;
-import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
 import org.javatuples.Pair;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public interface GameControllerInterface extends Remote {
-    public void giveUp(String username) throws RemoteException;
-    void getPlayerData(String asker, String asked) throws RemoteException;
-
-    // Game state
-    String getState() throws RemoteException;
-    Map<String, Integer> getPlayerScores() throws RemoteException;
-
     // Ship assembly
     void takeComponentFromUnviewed(String username, int index) throws RemoteException;
     void takeComponentFromViewed(String username, int index) throws RemoteException;
@@ -34,7 +23,6 @@ public interface GameControllerInterface extends Remote {
 
     void stopAssembling(String username, int position) throws RemoteException;
     void peekDeck(String username, int num) throws RemoteException;
-    int getHourglassTime(String username) throws RemoteException;
     void turnHourglass(String username) throws RemoteException;
 
     // Ship validating
@@ -46,7 +34,6 @@ public interface GameControllerInterface extends Remote {
     // Gameplay
     void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
     void rollDice(String username) throws RemoteException;
-    AdventureCard getActiveCard() throws RemoteException;
     void landOnPlanet(String username, int planetIndex) throws RemoteException;
     void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) throws RemoteException;
     void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) throws RemoteException;
@@ -55,12 +42,10 @@ public interface GameControllerInterface extends Remote {
     void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws RemoteException;
     void endMove(String username) throws RemoteException;
     void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
+    void giveUp(String username) throws RemoteException;
 
     // Activate ship components
     void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws RemoteException;
     void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws RemoteException;
     void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
-
-    // Game end
-    Map<String, Integer> getScore() throws RemoteException;
 }
