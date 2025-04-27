@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.model.ship;
 import it.polimi.ingsw.gc20.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,10 @@ public class LearnerShip extends Ship {
                 table[i][j] = new Tile();
             }
         }
+
+        cargos.put(CargoColor.BLUE, 0);
+        cargos.put(CargoColor.GREEN, 0);
+        cargos.put(CargoColor.YELLOW, 0);
 
         table[0][0].setAvailability(false);
         table[0][1].setAvailability(false);

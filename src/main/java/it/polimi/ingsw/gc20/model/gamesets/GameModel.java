@@ -443,7 +443,7 @@ public class GameModel {
                 throw new EnergyException("Not enough energy");
             }
         }
-        if (doubleEngines <= energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
+        if (doubleEngines <= energy.size() && energy.size() <= p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Battery e : energy) {
                 p.getShip().useEnergy(e);
@@ -471,6 +471,7 @@ public class GameModel {
         if (to.getAvailableSlots()==0){
             throw new CargoFullException("CargoHold has not available slots");
         }
+        p.getShip().unloadCargo(c, from);
         p.getShip().loadCargo(c, to);
     }
 

@@ -399,13 +399,119 @@ class StateTest {
     }
 
     @Test
-    void unloadCargo() {
-        // Classi da testare: AbandonedStationState, SmugglersState, PlanetsState, CombactZone1
+    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidEngineException {
+        // Classi da testare: AbandonedStationState, SmugglersState, PlanetsState, CombactZone1, CargoState
+        CargoHold cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
+        cargoHold.loadCargo(CargoColor.BLUE);
+        model.addToShip(cargoHold, gameController.getPlayerByID("player1"), 1, 2);
+
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        CargoColor unloaded = CargoColor.BLUE;
+        Pair<Integer, Integer> coordinates = new Pair<>(1, 2);
+        gameController.setState(abandonedStationState);
+        model.setActiveCard(adventureCard);
+
+        abandonedStationState.unloadCargo(gameController.getPlayerByID("player1"), unloaded, coordinates);
+        assertEquals(0, cargoHold.getCargoHeld().get(CargoColor.BLUE));
+        adventureCard.setFirePower(-1);
+
+        // SmugglersState
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        model.setActiveCard(adventureCard);
+        smugglersState.setCurrentPlayer("player1");
+        smugglersState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        smugglersState.setCurrentPlayer("player1");
+        smugglersState.acceptCard(gameController.getPlayerByID("player1"));
+        cargoHold.loadCargo(CargoColor.BLUE);
+        smugglersState.unloadCargo(gameController.getPlayerByID("player1"), unloaded, coordinates);
+        assertEquals(0, cargoHold.getCargoHeld().get(CargoColor.BLUE));
+
+        // PlanetsState
+        List<CargoColor> cargo = new ArrayList<>();
+        cargo.add(CargoColor.BLUE);
+        Planet planet = new Planet();
+        List<Planet> planets = new ArrayList<>();
+        planets.add(planet);
+        adventureCard.setPlanets(planets);
+
+        adventureCard.setReward(cargo);
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        model.setActiveCard(adventureCard);
+        planetsState.setCurrentPlayer("player1");
+        cargoHold.loadCargo(CargoColor.BLUE);
+        planetsState.landOnPlanet(gameController.getPlayerByID("player1"), 0);
+        planetsState.unloadCargo(gameController.getPlayerByID("player1"), unloaded, coordinates);
+        assertEquals(0, cargoHold.getCargoHeld().get(CargoColor.BLUE));
+
+        // CombactZone1
+        cargoHold.loadCargo(CargoColor.BLUE);
+        CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combactZone1);
+        combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+        model.setActiveCard(adventureCard);
+        combactZone1.setCurrentPlayer("player1");
+        combactZone1.unloadCargo(gameController.getPlayerByID("player1"), unloaded, coordinates);
+
     }
 
     @Test
-    void moveCargo() {
-        // Classi da testare: AbandonedStationState, PlanetsState, CombactZone1
+    void moveCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, InvalidEngineException, EnergyException {
+        // Classi da testare: AbandonedStationState, PlanetsState, CombatZone1
+
+        // AbandonedStationState
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        Pair<Integer, Integer> coordinatesFrom = new Pair<>(1, 2);
+        Pair<Integer, Integer> coordinatesTo = new Pair<>(1, 3);
+        CargoColor loaded = CargoColor.BLUE;
+        CargoHold cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
+        cargoHold.loadCargo(loaded);
+        model.addToShip(cargoHold, gameController.getPlayerByID("player1"), coordinatesFrom.getValue0(), coordinatesFrom.getValue1());
+        gameController.setState(abandonedStationState);
+        model.setActiveCard(adventureCard);
+
+        CargoHold cargoHold2 = new CargoHold();
+        cargoHold2.setSlots(3);
+        cargoHold2.loadCargo(loaded);
+        model.addToShip(cargoHold2, gameController.getPlayerByID("player1"), coordinatesTo.getValue0(), coordinatesTo.getValue1());
+
+        abandonedStationState.moveCargo(gameController.getPlayerByID("player1"), loaded, coordinatesFrom, coordinatesTo);
+        assertEquals(0, cargoHold.getCargoHeld().get(loaded));
+        assertEquals(2, cargoHold2.getCargoHeld().get(loaded));
+
+        // PlanetsState
+        Planet planet = new Planet();
+        List<Planet> planets = new ArrayList<>();
+        planets.add(planet);
+        adventureCard.setPlanets(planets);
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        model.setActiveCard(adventureCard);
+
+        planetsState.landOnPlanet(gameController.getPlayerByID("player1"), 0);
+        planetsState.moveCargo(gameController.getPlayerByID("player1"), loaded, coordinatesTo, coordinatesFrom);
+
+        assertEquals(1, cargoHold.getCargoHeld().get(loaded));
+        assertEquals(1, cargoHold2.getCargoHeld().get(loaded));
+
+        CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combactZone1);
+        model.setActiveCard(adventureCard);
+        combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+        combactZone1.setCurrentPlayer("player1");
+
+        combactZone1.moveCargo(gameController.getPlayerByID("player1"), loaded, coordinatesFrom, coordinatesTo);
+        assertEquals(0, cargoHold.getCargoHeld().get(loaded));
+        assertEquals(2, cargoHold2.getCargoHeld().get(loaded));
     }
 
     @Test
