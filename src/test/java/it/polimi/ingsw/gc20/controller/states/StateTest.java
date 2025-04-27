@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.model.cards.Planet;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.model.player.Player;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import javafx.scene.control.Alert;
 import org.junit.jupiter.api.BeforeAll;
@@ -326,74 +327,252 @@ class StateTest {
     }
 
     @Test
-    void loadCargo() {
+    void loadCargo() throws InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, CargoException, CargoNotLoadable, CargoFullException {
+        CargoHold cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
+        Pair<Integer, Integer> coordinates = new Pair<>(1, 2);
+        try {
+            gameController.getModel().addToShip(cargoHold, gameController.getPlayerByID("player1"), coordinates.getValue0(), coordinates.getValue1());
+        } catch (InvalidTileException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+        List<CargoColor> cargo = new ArrayList<>();
+        cargo.add(CargoColor.BLUE);
+        cargo.add(CargoColor.GREEN);
+        adventureCard.setReward(cargo);
+
+        // CargoState: AbandonedStationState, Smugglers, PlanetsState,
+        adventureCard.setPlayed(false);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        Player player = gameController.getPlayerByID("player1");
+        CargoColor loaded = CargoColor.BLUE;
+        gameController.setState(abandonedStationState);
+        model.setActiveCard(adventureCard);
+        try {
+            abandonedStationState.loadCargo(player, loaded, coordinates);
+        }catch (IllegalArgumentException | CargoException | InvalidTurnException | CargoNotLoadable | CargoFullException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+        assertEquals(1, cargoHold.getCargoHeld().get(CargoColor.BLUE));
+
+        adventureCard.setPlayed(false);
+        adventureCard.setFirePower(-1);
+        cargo.add(CargoColor.BLUE);
+        adventureCard.setReward(cargo);
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        model.setActiveCard(adventureCard);
+
+        smugglersState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        smugglersState.acceptCard(gameController.getPlayerByID("player1"));
+
+        smugglersState.loadCargo(player, loaded, coordinates);
+
+        assertEquals(2, cargoHold.getCargoHeld().get(CargoColor.BLUE));
+
+        List<Planet> planets = new ArrayList<>();
+        Planet planet = new Planet();
+        planets.add(planet);
+        cargo.add(CargoColor.BLUE);
+        cargo.add(CargoColor.GREEN);
+        planet.setReward(cargo);
+        adventureCard.setPlanets(planets);
+
+        adventureCard.setPlayed(false);
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        model.setActiveCard(adventureCard);
+
+        // Prima atterrare sul pianeta
+        try {
+            planetsState.landOnPlanet(player, 0);
+        } catch (InvalidParameterException | InvalidTurnException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        try {
+            planetsState.loadCargo(player, loaded, coordinates);
+        } catch (IllegalArgumentException | CargoException | InvalidTurnException | CargoNotLoadable | CargoFullException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+        assertEquals(3, cargoHold.getCargoHeld().get(CargoColor.BLUE));
     }
 
     @Test
     void unloadCargo() {
+        // Classi da testare: AbandonedStationState, SmugglersState, PlanetsState, CombactZone1
     }
 
     @Test
     void moveCargo() {
+        // Classi da testare: AbandonedStationState, PlanetsState, CombactZone1
     }
 
     @Test
     void loseEnergy() {
+        // Classe da testare: CombactZone1
     }
 
     @Test
     void testLandOnPlanet() {
+        // Classe da testare: PlanetsState
     }
 
     @Test
     void acceptCard() {
+        // Classe da testare: AdventureState
     }
 
     @Test
     void loseCrew() {
+        // Classi da testare: CombactZone1, SmugglersState
     }
 
     @Test
     void endMove() {
+        // Classi da testare: tutti gli stati che implementano metodi di azione
     }
 
     @Test
     void activateEngines() {
+        // Classe da testare: FlightState
     }
 
     @Test
     void activateShield() {
+        // Classe da testare: CombactZone1
     }
 
     @Test
-    void shootEnemy() {
+    void shootEnemy() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException {
+        // Classi da testare: SmugglersState, SlaversState, PirateState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+            // ==
+            assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+            // Ship più potente
+        Cannon cannon = new Cannon();
+        cannon.setPower(2);
+        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+
+        Battery battery = new Battery();
+        battery.setSlots(2);
+        battery.setAvailableEnergy(1);
+
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
+
+        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
+        coordinatesBat.add(new Pair<>(1, 3));
+
+        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
+        coordinatesCan.add(new Pair<>(1, 2));
+        piratesState.setCurrentPlayer("player1");
+
+        model.setActiveCard(adventureCard);
+        assertEquals(1, piratesState.shootEnemy(gameController.getPlayerByID("player1"), coordinatesCan, coordinatesBat));
+
+        // --------------------------
+
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        // ==
+        assertEquals(0, slaversState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        // Ship più potente
+        List<Pair<Integer, Integer>> coordinatesBat2 = new ArrayList<>();
+        coordinatesBat2.add(new Pair<>(1, 4));
+        List<Pair<Integer, Integer>> coordinatesCan2 = new ArrayList<>();
+        coordinatesCan2.add(new Pair<>(1, 2));
+        slaversState.setCurrentPlayer("player1");
+        model.setActiveCard(adventureCard);
+
+        Battery battery2 = new Battery();
+        battery2.setSlots(2);
+        battery2.setAvailableEnergy(1);
+        model.addToShip(battery2, gameController.getPlayerByID("player1"), 1, 4);
+        assertEquals(1, slaversState.shootEnemy(gameController.getPlayerByID("player1"), coordinatesCan2, coordinatesBat2));
+
+        // --------------------------
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        // ==
+        assertEquals(0, smugglersState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        // Ship più potente
+        Battery battery3 = new Battery();
+        battery3.setSlots(2);
+        battery3.setAvailableEnergy(1);
+        model.addToShip(battery3, gameController.getPlayerByID("player1"), 2, 1);
+
+
+        List<Pair<Integer, Integer>> coordinatesBat3 = new ArrayList<>();
+        coordinatesBat3.add(new Pair<>(2, 1));
+        List<Pair<Integer, Integer>> coordinatesCan3 = new ArrayList<>();
+        coordinatesCan3.add(new Pair<>(1, 2));
+        smugglersState.setCurrentPlayer("player1");
+        model.setActiveCard(adventureCard);
+        assertEquals(1, smugglersState.shootEnemy(gameController.getPlayerByID("player1"), coordinatesCan3, coordinatesBat3));
+
     }
 
     @Test
     void activateCannons() {
+        // Classe da testare: CombactZone1, MeteorSwarm, CombactZone0
+
     }
 
     @Test
     void allAssembled() {
+        // Classe da testare: AssemblingState
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        assertFalse(assemblingState.allAssembled());
+        try {
+            assemblingState.stopAssembling(gameController.getPlayerByID("player1"), 1);
+            assemblingState.stopAssembling(gameController.getPlayerByID("player2"), 2);
+            assemblingState.stopAssembling(gameController.getPlayerByID("player3"), 3);
+            assemblingState.stopAssembling(gameController.getPlayerByID("player4"), 4);
+        } catch (Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        assertTrue(assemblingState.allAssembled());
     }
 
     @Test
     void allShipsReady() {
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        assertFalse(validatingShipState.allShipsReadyToFly());
+
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+
+        validatingShipState.readyToFly(gameController.getPlayerByID("player1"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player2"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player3"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player4"));
+
+        assertTrue(validatingShipState.allShipsReadyToFly());
+        // Classe da testare: ValidatingShipState
     }
 
     @Test
     void readyToFly() {
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        assertThrows(IllegalArgumentException.class, () -> validatingShipState.readyToFly(gameController.getPlayerByID("player1")));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player1"));
+        // Classe da testare: ValidatingShipState
     }
 
     @Test
     void automaticAction() {
+        // Classe da testare: Epidemic, Stardust, ComactZone1, ComactZone0
     }
 
     @Test
     void resume() {
+        // Classi da testare: tutti gli stati che implementano questo metodo
     }
 
     @Test
     void rollDice() {
+        // Classi da testare: CombactZone1, SmugglersState
     }
 }

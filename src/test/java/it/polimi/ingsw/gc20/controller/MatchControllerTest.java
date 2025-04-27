@@ -15,14 +15,14 @@ class MatchControllerTest {
     static void setUp() {
         // Initialize the MatchController instance before each test
         MatchController matchController = MatchController.getInstance(3, 3);
-
+/*
         Lobby lobby = matchController.createLobby("lobby1", "player1", 4, 2);
         matchController.joinLobby(lobby.getId(), "player2");
         matchController.joinLobby(lobby.getId(), "player3");
         matchController.joinLobby(lobby.getId(), "player4");
         matchController.startLobby(lobby.getId());
         matchController.setMaxMatches(3);
-        matchController.setMaxLobbies(3);
+        matchController.setMaxLobbies(3);*/
     }
 
     @Test

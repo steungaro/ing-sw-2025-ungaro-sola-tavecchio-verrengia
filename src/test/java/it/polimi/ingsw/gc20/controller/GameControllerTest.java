@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.controller;
 
-import it.polimi.ingsw.gc20.controller.event.game.PlaceComponentEvent;
 import it.polimi.ingsw.gc20.model.ship.NormalShip;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
@@ -593,8 +592,6 @@ class GameControllerTest {
 
     @Test
     void removeComponentFromShip() {
-        PlaceComponentEvent event = new PlaceComponentEvent("player1", 1, 2, 2);
-
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
         gameController.takeComponentFromUnviewed("player1", 0);
         Pair<Integer, Integer> coordinates = new Pair<>(2, 2);

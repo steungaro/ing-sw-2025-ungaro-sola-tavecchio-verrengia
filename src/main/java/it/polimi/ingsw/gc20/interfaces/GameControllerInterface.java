@@ -1,12 +1,15 @@
 package it.polimi.ingsw.gc20.interfaces;
 
+import it.polimi.ingsw.gc20.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.gamesets.*;
+import it.polimi.ingsw.gc20.model.player.Player;
 import org.javatuples.Pair;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused")
 public interface GameControllerInterface extends Remote {
@@ -22,12 +25,12 @@ public interface GameControllerInterface extends Remote {
     void rotateComponentCounterclockwise(String username) throws RemoteException;
 
     void stopAssembling(String username, int position) throws RemoteException;
-    void peekDeck(String username, int num) throws RemoteException;
+    List<AdventureCard> peekDeck(String username, int num) throws RemoteException;
     void turnHourglass(String username) throws RemoteException;
 
     // Ship validating
     void validateShip(String username) throws RemoteException;
-    void removeComponentFromShip(String username, Component component) throws RemoteException;
+    void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
     void addAlien(String username, AlienColor color, Cabin cabin) throws RemoteException;
     void readyToFly(String username) throws RemoteException;
 
@@ -43,6 +46,9 @@ public interface GameControllerInterface extends Remote {
     void endMove(String username) throws RemoteException;
     void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
     void giveUp(String username) throws RemoteException;
+    Map<String, Integer> getScore();
+    AdventureCard getActiveCard();
+    Player getPlayerData(String asker, String asked);
 
     // Activate ship components
     void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws RemoteException;
