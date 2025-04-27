@@ -1,65 +1,47 @@
 package it.polimi.ingsw.gc20.network.RMI;
 
-import it.polimi.ingsw.gc20.controller.GameController;
 import it.polimi.ingsw.gc20.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.model.lobby.Lobby;
+import it.polimi.ingsw.gc20.network.common.QueueHandler;
+import it.polimi.ingsw.gc20.network.message_protocol.toserver.game.EndGameMessage;
+import it.polimi.ingsw.gc20.network.message_protocol.toserver.lobby.*;
 
+import java.io.Serial;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Logger;
 
-public class RMIMatchControllerService implements MatchControllerInterface {
-    @Override
-    public GameController getGameController(String id) throws RemoteException {
-        return null;
+public class RMIMatchControllerService extends UnicastRemoteObject implements MatchControllerInterface {
+    private static final Logger LOGGER = Logger.getLogger(RMIMatchControllerService.class.getName());
+    private final QueueHandler queueHandler;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public RMIMatchControllerService() throws RemoteException {
+        super();
+        this.queueHandler = QueueHandler.getInstance();
     }
 
     @Override
-    public List<String> getPlayersInLobbies() throws RemoteException {
-        return List.of();
+    public void joinLobby(String id, String user) throws RemoteException {
+        LOGGER.fine("Received RMI call: joinLobby from " + user);
+        queueHandler.enqueue(new JoinLobbyMessage(user, id));
     }
 
     @Override
-    public void setMaxLobbies(int maxLobbies) throws RemoteException {
-
-    }
-
-    @Override
-    public void setMaxMatches(int maxMatches) throws RemoteException {
-
-    }
-
-    @Override
-    public List<Lobby> getLobbies() throws RemoteException {
-        return List.of();
-    }
-
-    @Override
-    public Lobby getLobby(String id) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public Lobby joinLobby(String id, String user) throws RemoteException {
-        return null;
-    }
-
-    @Override
-    public Lobby createLobby(String name, String user, int maxPlayers, int level) throws RemoteException {
-        return null;
+    public void createLobby(String name, String user, int maxPlayers, int level) throws RemoteException {
+        LOGGER.fine("Received RMI call: createLobby from " + user);
+        queueHandler.enqueue(new CreateLobbyMessage(name, user, maxPlayers, level));
     }
 
     @Override
     public void leaveLobby(String userid) throws RemoteException {
-
-    }
-
-    @Override
-    public void endGame(String id) throws RemoteException {
-
+        LOGGER.fine("Received RMI call: leaveLobby from " + userid);
+        queueHandler.enqueue(new LeaveLobbyMessage(userid));
     }
 
     @Override
     public void startLobby(String id) throws RemoteException {
-
+        LOGGER.fine("Received RMI call: startLobby from " + id);
+        queueHandler.enqueue(new StartLobbyMessage(id));
     }
 }

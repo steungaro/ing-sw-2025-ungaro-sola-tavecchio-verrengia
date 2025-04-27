@@ -169,6 +169,11 @@ public class MatchController implements MatchControllerInterface {
      */
     public void endGame(String id) {
         games.removeIf(g -> g.getGameID().equals(id));
+        for (String user : playersInGames.keySet()) {
+            if (playersInGames.get(user).getGameID().equals(id)) {
+                playersInGames.remove(user);
+            }
+        }
     }
 
     /**

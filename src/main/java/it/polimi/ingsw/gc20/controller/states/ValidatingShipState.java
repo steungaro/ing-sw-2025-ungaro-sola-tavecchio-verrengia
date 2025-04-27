@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.controller.states;
 
+import it.polimi.ingsw.gc20.controller.managers.Translator;
 import it.polimi.ingsw.gc20.exceptions.ComponentNotFoundException;
 import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.model.components.AlienColor;
@@ -60,14 +61,14 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public void addAlien(Player player, AlienColor color, Cabin cabin) throws InvalidAlienPlacement {
+    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement {
         if (!validShips.get(player)) {
             throw new IllegalArgumentException("Cannot add alien to invalid ship");
         }
         if (getModel().getLevel() < 2) {
             throw new IllegalArgumentException("Aliens can only be added in level 2");
         }
-        getModel().setAlien(color, cabin, player);
+        getModel().setAlien(color, Translator.getComponentAt(player, cabin, Cabin.class), player);
     }
 
     @Override

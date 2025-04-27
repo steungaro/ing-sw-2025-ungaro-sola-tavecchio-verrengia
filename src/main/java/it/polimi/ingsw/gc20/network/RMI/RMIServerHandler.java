@@ -3,32 +3,15 @@ package it.polimi.ingsw.gc20.network.RMI;
 import it.polimi.ingsw.gc20.exceptions.ServerCriticalError;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 
 public class RMIServerHandler {
     private Registry registry;
     private boolean registryCreated = false;
-    private static final int DEFAULT_PORT = 1099;
-    private int currentPort = DEFAULT_PORT;
-
-    /**
-     * Function to create the RMI registry.
-     *
-     * @throws ServerCriticalError if the registry cannot be created.
-     */
-    public void createRegistry() throws ServerCriticalError {
-        try {
-            registry = LocateRegistry.createRegistry(DEFAULT_PORT);
-            registryCreated = true;
-        } catch (RemoteException e) {
-            throw new ServerCriticalError("Unable to create RMI registry");
-        }
-    }
+    private int currentPort;
 
     /**
      * Function to create the RMI registry on a specific port.
@@ -42,17 +25,8 @@ public class RMIServerHandler {
             registryCreated = true;
             currentPort = port;
         } catch (RemoteException e) {
-            throw new ServerCriticalError("Unable to create RMI registry on port ");
+            throw new ServerCriticalError("Unable to create RMI registry on port: " + port);
         }
-    }
-
-    /**
-     * Function to get the RMI registry.
-     *
-     * @return the RMI registry.
-     */
-    public Registry getRegistry() {
-        return registry;
     }
 
     /**
@@ -79,10 +53,7 @@ public class RMIServerHandler {
             throw new RemoteException("RMI registry not created");
         }
 
-        // export the object and obtain the stub
-        Remote stub = UnicastRemoteObject.exportObject(obj, 0);
-
         // Bind the stub to the registry
-        Naming.rebind("rmi://localhost:" + currentPort + "/" + name, stub);
+        registry.rebind(name, obj);
     }
 }

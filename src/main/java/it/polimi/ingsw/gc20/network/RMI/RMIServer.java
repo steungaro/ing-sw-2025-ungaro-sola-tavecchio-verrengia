@@ -40,7 +40,7 @@ public class RMIServer implements Server {
     public void start() {
         try {
             // Create the RMI registry
-            rmiServerHandler.createRegistry();
+            rmiServerHandler.createRegistry(DEFAULT_PORT);
             running = true;
 
             // creation of the gameService
@@ -59,7 +59,7 @@ public class RMIServer implements Server {
             // Export the matchService object
             rmiServerHandler.exportObject(matchService, "MatchService");
 
-            LOGGER.info(String.format("RMI Server started at port %d", DEFAULT_PORT));
+            LOGGER.info(String.format("RMI Server started at port %d", rmiServerHandler.getCurrentPort()));
         } catch (ServerCriticalError e) {
             // Error in the creation of the registry
             LOGGER.severe("Error in the creation of the RMI registry: " + e.getMessage());

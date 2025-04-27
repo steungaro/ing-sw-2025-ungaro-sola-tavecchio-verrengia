@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.network.RMI;
 
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.view.interfaces.ViewInterface;
 
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
@@ -53,10 +54,10 @@ public class RMIClientHandler implements ClientHandler {
      */
     public void disconnect() {
         if (connected) {
-            connected = false;
             if (view != null) {
                 try {
                     view.notifyDisconnection();
+                    connected = false;
                 } catch (RemoteException e) {
                     LOGGER.warning("Error while disconnecting the client: " + e.getMessage());
                 }
