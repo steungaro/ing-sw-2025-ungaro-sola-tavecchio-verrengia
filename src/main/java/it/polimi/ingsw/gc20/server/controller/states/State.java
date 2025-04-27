@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -118,28 +117,28 @@ public abstract class State{
     public void landOnPlanet(Player player, int planetIndex) throws IllegalStateException, InvalidTurnException {
         exception();
     }
-    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException, EmptyDeckException {
+    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
         exception();
     }
 
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException {
         exception();
     }
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException {
+    public void endMove(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
 
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException, EmptyDeckException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
         exception();
     }
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, EnergyException, DieNotRolledException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException, DieNotRolledException {
         exception();
     }
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException, EmptyDeckException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
         exception();
         return 0;
     }
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, EmptyDeckException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException {
         exception();
     }
 
@@ -157,7 +156,7 @@ public abstract class State{
         exception();
     }
 
-    public void automaticAction() throws EmptyDeckException {
+    public void automaticAction() {
         exception();
     }
 
@@ -170,11 +169,11 @@ public abstract class State{
         return null;
     }
 
-    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidShipException, EmptyDeckException {
+    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException {
         exception();
     }
 
-    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, EmptyDeckException, DieNotRolledException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, DieNotRolledException {
         exception();
         return 0;
     }

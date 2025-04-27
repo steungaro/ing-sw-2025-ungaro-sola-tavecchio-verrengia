@@ -2,12 +2,9 @@ module it.polimi.ingsw.gc20 {
     requires javafx.controls;
     requires javafx.fxml;
 
-    requires org.controlsfx.controls;
-    requires org.kordamp.bootstrapfx.core;
-    requires jdk.jfr;
+    requires javafx.graphics;
     requires com.fasterxml.jackson.databind;
     requires javatuples;
-    requires java.smartcardio;
     requires java.rmi;
     requires java.logging;
     opens it.polimi.ingsw.gc20 to javafx.fxml;

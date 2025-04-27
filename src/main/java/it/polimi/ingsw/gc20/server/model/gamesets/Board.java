@@ -1,8 +1,6 @@
 package it.polimi.ingsw.gc20.server.model.gamesets;
 
 import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
-import it.polimi.ingsw.gc20.model.cards.*;
-import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 

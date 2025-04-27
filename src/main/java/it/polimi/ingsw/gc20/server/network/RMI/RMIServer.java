@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc20.server.exceptions.ServerCriticalError;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.network.NetworkManager;
-import it.polimi.ingsw.gc20.network.common.*;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -68,10 +67,8 @@ public class RMIServer implements Server {
         } catch (RemoteException e) {
             // Error in the export of the object
             LOGGER.severe("Error in the export of the RMI object: " + e.getMessage());
-        } catch (MalformedURLException e) {
-            // Error in the formation of the RMI URL
-            LOGGER.severe("Malformed URL during service exportation: " + e.getMessage());
-        }
+        } // Error in the formation of the RMI URL
+
     }
 
     /**

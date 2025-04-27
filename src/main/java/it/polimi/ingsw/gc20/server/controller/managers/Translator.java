@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;

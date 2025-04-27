@@ -1,10 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller;
 
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
-import it.polimi.ingsw.gc20.controller.states.*;
-import it.polimi.ingsw.gc20.model.cards.*;
-import it.polimi.ingsw.gc20.model.components.*;
-import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -333,7 +329,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.chooseBranch(getPlayerByID(username), coordinates);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error choosing brance", e);
+            logger.log(Level.SEVERE, "Error choosing branch", e);
         }
     }
 
@@ -564,7 +560,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromBooked(getPlayerByID(username), index);
             // TODO: notify players of component taken
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error taking componente from booked", e);
+            logger.log(Level.SEVERE, "Error taking component from booked", e);
         }
     }
 
@@ -745,7 +741,7 @@ public class GameController implements GameControllerInterface {
             state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error peeking deek", e);
+            logger.log(Level.SEVERE, "Error peeking deck", e);
         }
     }
 

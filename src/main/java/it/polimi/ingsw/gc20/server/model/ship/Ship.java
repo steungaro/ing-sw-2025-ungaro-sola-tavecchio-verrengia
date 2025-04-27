@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.model.ship;
 
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -12,14 +11,14 @@ import java.util.*;
 public abstract class Ship {
 
 
-    protected Set<Component> waste;
+    protected final Set<Component> waste;
     protected Integer singleEngines;
-    protected Integer doubleCannons;
+    protected final Integer doubleCannons;
     protected Integer doubleEngines;
     protected Integer doubleCannonsPower;
     protected Float singleCannonsPower;
     protected Integer totalEnergy;
-    protected Map<CargoColor, Integer> cargos;
+    protected final Map<CargoColor, Integer> cargos;
     protected Integer astronauts;
     protected Tile[][] table;
     /**

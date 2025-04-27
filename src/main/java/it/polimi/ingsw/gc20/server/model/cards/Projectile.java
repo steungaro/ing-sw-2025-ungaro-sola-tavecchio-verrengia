@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.server.model.cards;
 
-import it.polimi.ingsw.gc20.model.ship.*;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.server.model.components.Direction;

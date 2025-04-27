@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.server.model.ship;
 
 import java.util.*;
 
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;

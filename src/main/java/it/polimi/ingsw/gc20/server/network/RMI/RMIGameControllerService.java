@@ -2,11 +2,9 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
-import it.polimi.ingsw.gc20.network.message_protocol.toserver.game.*;
 import org.javatuples.Pair;
 
 import java.io.Serial;

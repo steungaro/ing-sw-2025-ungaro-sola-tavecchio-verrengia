@@ -9,7 +9,7 @@ import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import java.util.*;
 
 public class CargoHold extends Component {
-    protected Map<CargoColor, Integer> cargoHeld = new HashMap<>();
+    protected final Map<CargoColor, Integer> cargoHeld = new HashMap<>();
     protected int slots;
     protected int availableSlots;
 

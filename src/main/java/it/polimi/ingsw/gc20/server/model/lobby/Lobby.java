@@ -9,7 +9,7 @@ import java.util.*;
  * 
  */
 public class Lobby {
-    private List<String> users;
+    private final List<String> users;
     private String id;
     private int maxPlayers;
     private String ownerUsername;

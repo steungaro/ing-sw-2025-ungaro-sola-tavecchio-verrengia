@@ -1,10 +1,8 @@
 package it.polimi.ingsw.gc20.server.model.ship;
 
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTileException;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 
-import java.lang.*;
 import java.security.*;
 
 /**

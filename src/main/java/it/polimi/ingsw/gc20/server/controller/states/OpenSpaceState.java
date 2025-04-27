@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
-import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidEngineException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
@@ -31,7 +30,7 @@ public class OpenSpaceState extends PlayingState {
     }
 
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidEngineException, EnergyException, EmptyDeckException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidEngineException, EnergyException {
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }

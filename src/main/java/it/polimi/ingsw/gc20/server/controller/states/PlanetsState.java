@@ -96,7 +96,7 @@ public class PlanetsState extends CargoState {
     }
 
     @Override
-    public void endMove(Player player) throws InvalidTurnException, EmptyDeckException {
+    public void endMove(Player player) throws InvalidTurnException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidTurnException("It's not your turn");
         }

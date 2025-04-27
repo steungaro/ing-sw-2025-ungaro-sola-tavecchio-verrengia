@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.cards;
 
 import java.util.*;
-import it.polimi.ingsw.gc20.model.player.*;
-import it.polimi.ingsw.gc20.model.gamesets.*;
+
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 

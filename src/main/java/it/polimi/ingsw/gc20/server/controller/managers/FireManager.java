@@ -6,7 +6,6 @@ import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.components.ConnectorEnum;
@@ -23,7 +22,7 @@ public class FireManager {
     private boolean skipNextFire;
     private final GameModel gm;
     private final Validator validator;
-    Player player;
+    final Player player;
 
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
         this.fires = fires;

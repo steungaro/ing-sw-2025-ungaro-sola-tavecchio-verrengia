@@ -47,9 +47,7 @@ public class AssemblingState extends State {
             getModel().componentFromUnviewed(component);
             // Add component to player's hand
             componentsInHand.put(player, component);
-        } catch (NoSuchElementException e) {
-            throw new NoSuchElementException("Component not found in unviewed pile");
-        } catch (ComponentNotFoundException e){
+        } catch (NoSuchElementException | ComponentNotFoundException e) {
             throw new NoSuchElementException("Component not found in unviewed pile");
         }
     }

@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 
 public class PausedState extends State {
-    State previousState;
+    final State previousState;
     /**
      * Default constructor
      */

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
-import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 
@@ -20,8 +19,6 @@ public class EpidemicState extends PlayingState {
         scheduler.schedule(() -> {
             try {
                 automaticAction();
-            } catch (EmptyDeckException e) {
-                e.printStackTrace();
             } finally {
                 scheduler.shutdown();
             }
@@ -35,7 +32,7 @@ public class EpidemicState extends PlayingState {
 
 
     @Override
-    public void automaticAction() throws EmptyDeckException {
+    public void automaticAction() {
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().isPlayerDisconnected(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());

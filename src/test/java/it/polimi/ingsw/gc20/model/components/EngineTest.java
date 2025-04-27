@@ -17,7 +17,7 @@ public class EngineTest {
     @BeforeEach
     void setUp() {
         engine = new Engine();
-        Map<Direction, ConnectorEnum> connectors = new HashMap<Direction, ConnectorEnum>();
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
         connectors.put(Direction.RIGHT, ConnectorEnum.S);
         connectors.put(Direction.LEFT, ConnectorEnum.D);
         connectors.put(Direction.DOWN, ConnectorEnum.ZERO);

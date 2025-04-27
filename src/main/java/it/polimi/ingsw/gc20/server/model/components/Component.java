@@ -26,7 +26,7 @@ import it.polimi.ingsw.gc20.server.model.ship.Tile;
 
 public abstract class Component {
 
-    protected Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+    protected final Map<Direction, ConnectorEnum> connectors = new HashMap<>();
     protected int ID;
     private Tile tile = null;
 

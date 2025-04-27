@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.DieNotRolledException;
-import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -39,7 +38,7 @@ public abstract class PlayingState extends State {
                 .findFirst().orElse(null);
     }
 
-    public int rollDice(Player player) throws InvalidTurnException, InvalidShipException, EmptyDeckException, DieNotRolledException {
+    public int rollDice(Player player) throws InvalidTurnException, InvalidShipException, DieNotRolledException {
         if (!currentPlayer.equals(player.getUsername())) {
             throw new InvalidTurnException("Not your turn.");
         }

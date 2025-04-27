@@ -14,6 +14,7 @@ import org.javatuples.Pair;
 import java.util.HashSet;
 import java.util.List;
 
+@SuppressWarnings("unused") // dynamically created by Cards
 public class SlaversState extends PlayingState {
     private final int firePower;
     private final int lostMembers;
@@ -44,7 +45,7 @@ public class SlaversState extends PlayingState {
     }
 
     @Override
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException, EmptyDeckException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -87,7 +88,7 @@ public class SlaversState extends PlayingState {
     }
 
     @Override
-    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException, EmptyDeckException {
+    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
