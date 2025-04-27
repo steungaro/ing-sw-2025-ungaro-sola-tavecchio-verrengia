@@ -7,8 +7,6 @@ import it.polimi.ingsw.gc20.server.network.NetworkManager;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;

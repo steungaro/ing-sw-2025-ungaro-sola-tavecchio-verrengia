@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
-import it.polimi.ingsw.gc20.network.*;
 import it.polimi.ingsw.gc20.server.network.NetworkManager;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 
