@@ -4,21 +4,18 @@ import it.polimi.ingsw.gc20.controller.MatchController;
 import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
 import org.javatuples.Pair;
 
-import java.io.Serializable;
-
 // Message generated when a player places the component in their hand on the ship
 public record PlaceComponentMessage(
         String username, // username of the player
-        String gameId, // id of the game
         Pair<Integer, Integer> coordinates // coordinates of the component
-) implements Message, Serializable {
+) implements Message {
     @Override
     public String toString() {
-        return "PlaceComponentMessage {username = " + username + ", gameId = " + gameId + ", coordinates = " + coordinates + "}";
+        return "PlaceComponentMessage {username = " + username + ", coordinates = " + coordinates + "}";
     }
 
     @Override
-    public void handleMessage(MatchController matchController) {
-        matchController.getGameController(gameId).placeComponent(username, coordinates);
+    public void handleMessage() {
+        MatchController.getInstance().getGameControllerForPlayer(username).placeComponent(username, coordinates);
     }
 }
