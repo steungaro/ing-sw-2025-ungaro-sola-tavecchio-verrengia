@@ -95,7 +95,7 @@ public abstract class State{
         return false;
     }
 
-    public void addAlien(Player player, AlienColor color, Cabin cabin) throws InvalidAlienPlacement {
+    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement {
         exception();
     }
     public void initAllShips() {
