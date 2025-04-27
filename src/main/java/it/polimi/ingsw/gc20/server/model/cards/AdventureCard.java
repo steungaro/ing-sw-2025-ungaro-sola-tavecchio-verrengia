@@ -141,7 +141,7 @@ public class AdventureCard {
                 name = name + combatType();
             }
             // Construct the full class name with package
-            String stateClassName = "it.polimi.ingsw.gc20.controller.states." + name + "State";
+            String stateClassName = "it.polimi.ingsw.gc20.server.controller.states." + name + "State";
             // Get the class object for the state
             Class<?> stateClass = Class.forName(stateClassName);
 
