@@ -96,4 +96,19 @@ public class MeteorSwarmState extends PlayingState {
             }
         }
     }
+
+    public void currQuit(Player player){
+        try {
+            chooseBranch(player, new Pair<>(-1, -1));
+        } catch (InvalidTurnException e) {
+            throw new RuntimeException(e);
+        }
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
+            getModel().getActiveCard().playCard();
+            getController().setState(new PreDrawState(getController()));
+        } else {
+            manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+        }
+    }
 }

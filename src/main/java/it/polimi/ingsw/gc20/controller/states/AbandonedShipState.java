@@ -73,11 +73,20 @@ public class AbandonedShipState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void endMove(Player player) throws InvalidTurnException, EmptyDeckException {
+    public void endMove(Player player) throws InvalidTurnException{
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         nextPlayer();
+        if (getCurrentPlayer() == null) {
+            getController().setState(new PreDrawState(getController()));
+        }
+    }
+
+    public void currentQuit(Player player) throws InvalidTurnException {
+        if (player.getUsername().equals(getCurrentPlayer())) {
+            endMove(player);
+        }
         if (getCurrentPlayer() == null) {
             getController().setState(new PreDrawState(getController()));
         }

@@ -20,8 +20,17 @@ public class CombatZone0State extends PlayingState {
     private final List<Projectile> cannonFires;
     private final Map<Player, Float> declaredFirepower;
     private final Map<Player, Integer> declaredEnginePower;
-    private boolean removingCrew;
     private FireManager manager;
+    //enumeration that represents the state of the game
+    private enum phase {
+        CANNON,
+        CREW,
+        ENGINE,
+        SHIELD,
+        FIRE,
+        BRANCH
+    }
+    private phase currentPhase;
     /**
      * Default constructor
      */
@@ -36,7 +45,7 @@ public class CombatZone0State extends PlayingState {
         for (Player player : getModel().getInGamePlayers()) {
             declaredFirepower.put(player, 0f);
         }
-        this.removingCrew = false;
+        currentPhase = phase.ENGINE;
         this.manager = null;
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
@@ -57,18 +66,21 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
+        if(currentPhase != phase.CANNON) {
+            throw new IllegalStateException("You cannot activate cannons now");
+        }
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class)));
         if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
-            removingCrew = true;
-            super.setCurrentPlayer(declaredFirepower.entrySet()
+            Player p = declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
-                    .getKey()
-                    .getUsername());
+                    .getKey();
+            currentPhase = phase.FIRE;
+            manager = new FireManager(getModel(), cannonFires, p);
         }
     }
 
@@ -93,19 +105,19 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException {
-        if (!removingCrew) {
+        if (currentPhase != phase.CREW) {
             throw new IllegalStateException("You cannot remove crew now");
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
             if (player.getShip().crew() == 0) {
                 lostCrew = 0;
-                removingCrew = false;
+                currentPhase = phase.CANNON;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
             }
             if (lostCrew == 0) {
-                removingCrew = false;
+                currentPhase = phase.CANNON;
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
             }
         } else {
@@ -121,12 +133,14 @@ public class CombatZone0State extends PlayingState {
                 ", cannonFires=" + cannonFires +
                 ", declaredFirepower=" + declaredFirepower +
                 ", declaredEnginePower=" + declaredEnginePower +
-                ", removingCrew=" + removingCrew +
                 '}';
     }
 
     @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
+        if(currentPhase != phase.ENGINE) {
+            throw new IllegalStateException("You cannot activate engines now");
+        }
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -137,7 +151,7 @@ public class CombatZone0State extends PlayingState {
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            manager = new FireManager(getModel(), cannonFires, p);
+            currentPhase = phase.CREW;
             setCurrentPlayer(p.getUsername());
             while (manager.isFirstHeavyFire()) {
                 manager.fire();
@@ -168,5 +182,9 @@ public class CombatZone0State extends PlayingState {
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         }
+    }
+
+    public void currQuit(Player player) {
+        nextPlayer();
     }
 }

@@ -38,14 +38,25 @@ public class OpenSpaceState extends PlayingState {
         declaredEngines.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
         nextPlayer();
         if (getCurrentPlayer() == null) {
-            declaredEngines.forEach((key, value) -> {
-                getModel().movePlayer(key, value);
-                if (value == 0) {
-                    getController().defeated(key.getUsername());
-                }
-            });
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+            endTurn();
         }
+    }
+
+    private void endTurn(){
+        declaredEngines.forEach((key, value) -> {
+            getModel().movePlayer(key, value);
+            if (value == 0) {
+                getController().defeated(key.getUsername());
+            }
+        });
+        getModel().getActiveCard().playCard();
+        getController().setState(new PreDrawState(getController()));
+    }
+
+    public void currQuit(Player player) {
+            nextPlayer();
+            if(getCurrentPlayer() == null) {
+                endTurn();
+            }
     }
 }

@@ -395,6 +395,9 @@ public class GameController implements GameControllerInterface {
         try{
             // Find player with matching username
             if (connectedPlayers.contains(username)) {
+                if(state.getCurrentPlayer().equals(username)){
+                    state.currentQuit(getPlayerByID(username));
+                }
                 connectedPlayers.remove(username);
                 disconnectedPlayers.add(username);
             } else {

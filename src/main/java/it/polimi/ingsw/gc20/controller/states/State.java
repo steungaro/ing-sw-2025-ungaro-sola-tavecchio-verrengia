@@ -181,4 +181,11 @@ public abstract class State{
         exception();
     }
 
+    public String getCurrentPlayer() {
+        return null;
+    }
+
+    public void currentQuit(Player playerByID) throws InvalidTurnException {
+        exception();
+    }
 }
