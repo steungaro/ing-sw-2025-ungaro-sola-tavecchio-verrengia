@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc20.model.lobby;
 
-import it.polimi.ingsw.gc20.controller.GameController;
-import it.polimi.ingsw.gc20.exceptions.FullLobbyException;
-import it.polimi.ingsw.gc20.exceptions.LobbyException;
+import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
+import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

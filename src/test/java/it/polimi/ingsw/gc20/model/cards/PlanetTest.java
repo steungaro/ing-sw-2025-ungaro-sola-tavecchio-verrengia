@@ -1,7 +1,8 @@
 package it.polimi.ingsw.gc20.model.cards;
 
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
-import it.polimi.ingsw.gc20.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

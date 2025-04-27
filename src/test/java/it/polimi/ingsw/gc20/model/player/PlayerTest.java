@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.model.player;
 
 
-import it.polimi.ingsw.gc20.model.ship.LearnerShip;
-import it.polimi.ingsw.gc20.model.ship.NormalShip;
-import it.polimi.ingsw.gc20.model.ship.Ship;
+import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
+import it.polimi.ingsw.gc20.server.model.ship.LearnerShip;
+import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

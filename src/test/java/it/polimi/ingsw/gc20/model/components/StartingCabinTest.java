@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc20.model.components;
 
-import it.polimi.ingsw.gc20.exceptions.InvalidAlienPlacement;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
+import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import it.polimi.ingsw.gc20.server.model.components.LifeSupport;
+import it.polimi.ingsw.gc20.server.model.components.StartingCabin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

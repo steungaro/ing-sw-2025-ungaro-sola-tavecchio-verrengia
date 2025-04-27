@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.model.components;
 
-import it.polimi.ingsw.gc20.model.ship.Tile;
+import it.polimi.ingsw.gc20.server.model.components.Battery;
+import it.polimi.ingsw.gc20.server.model.ship.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,10 @@
 package it.polimi.ingsw.gc20.model.components;
 
-import it.polimi.ingsw.gc20.exceptions.CargoFullException;
-import it.polimi.ingsw.gc20.exceptions.CargoNotLoadable;
-import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.server.exceptions.CargoFullException;
+import it.polimi.ingsw.gc20.server.exceptions.CargoNotLoadable;
+import it.polimi.ingsw.gc20.server.model.components.CargoHold;
+import it.polimi.ingsw.gc20.server.model.components.SpecialCargoHold;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

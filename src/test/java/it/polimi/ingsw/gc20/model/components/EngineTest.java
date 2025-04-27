@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.model.components;
 
+import it.polimi.ingsw.gc20.server.model.components.ConnectorEnum;
+import it.polimi.ingsw.gc20.server.model.components.Direction;
+import it.polimi.ingsw.gc20.server.model.components.Engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
