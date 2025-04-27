@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.network.common;
 
-import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -11,13 +10,11 @@ public class QueueHandler {
     private static final Logger LOGGER = Logger.getLogger(QueueHandler.class.getName());
     private final BlockingQueue<Message> messageQueue;
     private static QueueHandler instance;
-    private final MatchController matchController;
     private final Thread dequeuerThread;
     private volatile boolean running = true;
 
     private QueueHandler() {
         this.messageQueue = new LinkedBlockingQueue<>();
-        this.matchController = MatchController.getInstance();
         this.dequeuerThread = new Thread(this::processMessages);
         this.dequeuerThread.setName("MessageDequeuer");
         this.dequeuerThread.setDaemon(true);
@@ -55,7 +52,7 @@ public class QueueHandler {
                 Message message = messageQueue.take();
                 LOGGER.fine("Processing message: " + message);
                 // Delegate to appropriate controller method based on message type
-                message.handleMessage(matchController);
+                message.handleMessage();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 LOGGER.log(Level.WARNING, "Dequeuer thread interrupted", e);
