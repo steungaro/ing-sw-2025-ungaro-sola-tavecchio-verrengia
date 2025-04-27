@@ -617,9 +617,24 @@ class StateTest {
     }
 
     @Test
-    void activateCannons() {
+    void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException {
         // Classe da testare: CombactZone1, MeteorSwarm, CombactZone0
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        combatZone0State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        // NOTE -> se uguagliamo giocatore scelto a caso
 
+        // CombatZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+
+        // MeteorSwarmState
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        meteorSwarmState.setCurrentPlayer("player1");
+        meteorSwarmState.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+
+        // Maybe can be tested in other ways
     }
 
     @Test

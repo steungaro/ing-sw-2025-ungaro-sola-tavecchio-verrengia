@@ -40,6 +40,9 @@ public class MeteorSwarmState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (cannons.isEmpty() || batteries.isEmpty()) {
+            return;
+        }
         manager.activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
         if (manager.finished()) {
             nextPlayer();
