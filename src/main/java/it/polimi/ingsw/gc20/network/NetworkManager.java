@@ -1,11 +1,8 @@
 package it.polimi.ingsw.gc20.network;
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
-import it.polimi.ingsw.gc20.network.common.Server;
 import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class NetworkManager {

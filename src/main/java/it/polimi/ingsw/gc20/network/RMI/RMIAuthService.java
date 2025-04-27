@@ -3,22 +3,26 @@ package it.polimi.ingsw.gc20.network.RMI;
 import it.polimi.ingsw.gc20.network.*;
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
 
+import java.io.Serial;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public class RMIAuthService implements RMIAuthInterface {
+public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterface {
     private static final Logger LOGGER = Logger.getLogger(RMIAuthService.class.getName());
     private final Map<String, String> tokenToUsername = new HashMap<>();
     private final RMIServer server;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructor for the RMIAuthService class.
      * @param server The RMIServer instance.
      */
-    public RMIAuthService(RMIServer server) {
+    public RMIAuthService(RMIServer server) throws RemoteException {
         this.server = server;
     }
 
