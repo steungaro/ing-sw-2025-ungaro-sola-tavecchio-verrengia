@@ -240,7 +240,6 @@ public class GameController implements GameControllerInterface {
     /**
      * @return the score of the game
      */
-    @Override
     public Map<String, Integer> getScore() {
         try{
             return state.getScore();
@@ -283,7 +282,6 @@ public class GameController implements GameControllerInterface {
      * Returns the active adventure card
      * @return the active adventure card
      */
-    @Override
     public AdventureCard getActiveCard() {
         try{
             return model.getActiveCard();
@@ -340,7 +338,6 @@ public class GameController implements GameControllerInterface {
      * @param asked is the username of the player being asked for data
      * @return player data, if the asker is the same as the asked, return the full data, otherwise return only public data
      */
-    @Override
     public Player getPlayerData(String asker, String asked) {
         try{
             if (asker.equals(asked)) {
@@ -729,7 +726,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player peeking at the deck
      * @param num number of the deck to peek at
      */
-    public List<AdventureCard> peekDeck(String username, int num) {
+    public void peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -737,12 +734,11 @@ public class GameController implements GameControllerInterface {
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot view deck for not connected player");
             }
-            return state.peekDeck(getPlayerByID(username), num);
+            state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error peeking deek", e);
         }
-        return null;
     }
 
     /**
@@ -750,9 +746,10 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player adding the alien
      * @param color Color of the alien
-     * @param cabin Cabin where the alien will be placed
+     * @param cabin Cabin where the alien will be placed (coordinates)
      */
-    public void addAlien(String username, AlienColor color, Cabin cabin) {
+    @Override
+    public void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) {
         try{
             if(model.getLevel() != 2){
                 throw new IllegalArgumentException("Aliens are only available in level 2 games");
@@ -827,5 +824,14 @@ public class GameController implements GameControllerInterface {
             logger.log(Level.SEVERE, "Error getting in came connected players", e);
         }
         return null;
+    }
+
+    @Override
+    public void killGame(String username) {
+        if (connectedPlayers.contains(username)) {
+            MatchController.getInstance().endGame(this.getGameID());
+        } else {
+            logger.log(Level.SEVERE, "Player " + username + " is not connected to the game but tried to kill it");
+        }
     }
 }

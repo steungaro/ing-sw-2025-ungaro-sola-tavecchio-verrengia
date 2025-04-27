@@ -7,11 +7,8 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface MatchControllerInterface extends Remote {
-    void setMaxLobbies(int maxLobbies) throws RemoteException;
-    void setMaxMatches(int maxMatches) throws RemoteException;
     void joinLobby(String id, String user) throws RemoteException;
     void createLobby(String name, String user, int maxPlayers, int level) throws RemoteException;
     void leaveLobby(String userid) throws RemoteException;
-    void endGame(String id) throws RemoteException;
     void startLobby(String id) throws RemoteException;
 }

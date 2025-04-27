@@ -10,6 +10,8 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public interface GameControllerInterface extends Remote {
+    void killGame(String username) throws RemoteException;
+
     // Ship assembly
     void takeComponentFromUnviewed(String username, int index) throws RemoteException;
     void takeComponentFromViewed(String username, int index) throws RemoteException;
@@ -27,8 +29,8 @@ public interface GameControllerInterface extends Remote {
 
     // Ship validating
     void validateShip(String username) throws RemoteException;
-    void removeComponentFromShip(String username, Component component) throws RemoteException;
-    void addAlien(String username, AlienColor color, Cabin cabin) throws RemoteException;
+    void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
+    void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) throws RemoteException;
     void readyToFly(String username) throws RemoteException;
 
     // Gameplay
