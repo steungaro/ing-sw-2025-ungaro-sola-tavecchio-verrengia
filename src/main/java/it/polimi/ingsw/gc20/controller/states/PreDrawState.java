@@ -20,4 +20,9 @@ public class PreDrawState extends State{
         }
     }
 
+    @Override
+    public String toString() {
+        return "PreDrawState";
+    }
+
 }

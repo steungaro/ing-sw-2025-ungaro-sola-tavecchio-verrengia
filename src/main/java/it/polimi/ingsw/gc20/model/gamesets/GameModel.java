@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.model.player.*;
 import it.polimi.ingsw.gc20.model.cards.*;
 import it.polimi.ingsw.gc20.model.components.*;
 import it.polimi.ingsw.gc20.model.ship.*;
+import org.javatuples.Pair;
 
 
 import java.util.*;
@@ -289,12 +290,14 @@ public class GameModel {
     /**
      * function to remove a component from the ship
      *
-     * @param c component to remove
+     * @param x x coordinate of the component
+     * @param y y coordinate of the component
      * @param p player that removes the component
      * @throws ComponentNotFoundException if the component is not present in the ship
      */
-    public void removeComponent(Component c, Player p) throws ComponentNotFoundException {
+    public void removeComponent(Integer x, Integer y, Player p) throws ComponentNotFoundException {
         Ship s = p.getShip();
+        Component c = s.getComponentAt(x, y);
         s.killComponent(c);
     }
 
@@ -440,7 +443,7 @@ public class GameModel {
                 throw new EnergyException("Not enough energy");
             }
         }
-        if (doubleEngines <= energy.size() && energy.size() < p.getShip().getTotalEnergy()) {
+        if (doubleEngines <= energy.size() && energy.size() <= p.getShip().getTotalEnergy()) {
             power = p.getShip().enginePower(doubleEngines);
             for (Battery e : energy) {
                 p.getShip().useEnergy(e);
@@ -468,6 +471,7 @@ public class GameModel {
         if (to.getAvailableSlots()==0){
             throw new CargoFullException("CargoHold has not available slots");
         }
+        p.getShip().unloadCargo(c, from);
         p.getShip().loadCargo(c, to);
     }
 

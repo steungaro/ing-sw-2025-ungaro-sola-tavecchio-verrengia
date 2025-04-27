@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.network.RMI;
 
 import it.polimi.ingsw.gc20.network.common.ClientHandler;
+import it.polimi.ingsw.gc20.network.message_protocol.toserver.Message;
+
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
@@ -34,7 +36,7 @@ public class RMIClientHandler implements ClientHandler {
      * @param message The message to send.
      */
     @Override
-    public void sendMessage(Object message) {
+    public void sendToClient(Message message) {
         if (!connected || view == null) return;
 
         try {

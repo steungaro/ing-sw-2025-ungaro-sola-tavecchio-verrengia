@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.model.components.Cabin;
 import it.polimi.ingsw.gc20.model.components.Component;
 import it.polimi.ingsw.gc20.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.model.player.Player;
+import org.javatuples.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,11 +42,11 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public void removeComp(Player player, Component component) throws ComponentNotFoundException {
+    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException {
         if (validShips.get(player)) {
             throw new IllegalArgumentException("Cannot remove component from valid ship");
         }
-        getModel().removeComponent(component, player);
+        getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
     }
 
     @Override

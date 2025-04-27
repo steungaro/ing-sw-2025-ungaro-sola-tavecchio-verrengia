@@ -639,13 +639,13 @@ public class GameController implements GameControllerInterface {
      * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
-     * @param component Component to remove
+     * @param coordinates Coordinates of the component to be removed
      * @apiNote view must call this function until the ship is valid
      * @see #validateShip(String username)
      */
-    public void removeComponentFromShip(String username, Component component) {
+    public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
-            state.removeComp(getPlayerByID(username), component);
+            state.removeComp(getPlayerByID(username), coordinates);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error removing component from ship", e);
         }
@@ -657,7 +657,6 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player that wants to validate the ship
      * @throws IllegalStateException if game is not in VALIDATING state
      * @apiNote this function must be called in a loop from the view until the ship is valid
-     * @see #removeComponentFromShip(String, Component)
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */
     public void validateShip(String username) {
@@ -733,7 +732,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player peeking at the deck
      * @param num number of the deck to peek at
      */
-    public void peekDeck(String username, int num) {
+    public List<AdventureCard> peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -741,11 +740,12 @@ public class GameController implements GameControllerInterface {
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot view deck for not connected player");
             }
-            state.peekDeck(getPlayerByID(username), num);
+            return state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error peeking deek", e);
         }
+        return null;
     }
 
     /**

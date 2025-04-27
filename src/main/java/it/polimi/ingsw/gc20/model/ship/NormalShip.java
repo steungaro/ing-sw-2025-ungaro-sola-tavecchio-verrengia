@@ -4,6 +4,8 @@ import java.util.*;
 
 import it.polimi.ingsw.gc20.exceptions.*;
 import it.polimi.ingsw.gc20.model.components.*;
+import it.polimi.ingsw.gc20.model.gamesets.CargoColor;
+
 /**
  * @author GC20
  */
@@ -21,6 +23,11 @@ public class NormalShip extends Ship {
                 table[i][j] = new Tile();
             }
         }
+
+        cargos.put(CargoColor.BLUE, 0);
+        cargos.put(CargoColor.GREEN, 0);
+        cargos.put(CargoColor.YELLOW, 0);
+        cargos.put(CargoColor.RED, 0);
 
         table[0][0].setAvailability(false);
         table[0][1].setAvailability(false);
