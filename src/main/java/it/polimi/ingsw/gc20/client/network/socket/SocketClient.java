@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 public class SocketClient implements Client {
-    private String serverAddress;
-    private int serverPort;
+    private final String serverAddress;
+    private final int serverPort;
     private int port;
     private static final Logger LOGGER = Logger.getLogger(SocketClient.class.getName());
     private ServerSocket serverSocket;
