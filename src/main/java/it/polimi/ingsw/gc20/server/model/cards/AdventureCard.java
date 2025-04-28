@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 /**
  * @author GC20
@@ -27,6 +28,7 @@ public class AdventureCard {
     private List<Projectile> projectiles;
     private int firePower;
     private List<Planet> planets;
+    private final Logger logger = Logger.getLogger(AdventureCard.class.getName());
 
 
 
@@ -155,10 +157,10 @@ public class AdventureCard {
             // Set the state in the controller
             controller.setState((State) stateInstance);
         } catch (ClassNotFoundException e) {
-            System.out.println("State class not found for card: " + name);
+            logger.severe("Error: State class not found for card: " + name);
         } catch (NoSuchMethodException | IllegalAccessException |
                  InstantiationException | InvocationTargetException e) {
-            System.out.println("Error creating state for card: " + name);
+            logger.severe("Error: Unable to instantiate state for card: " + name);
         }
     }
 
