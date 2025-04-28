@@ -7,4 +7,5 @@ public interface Server {
     void stop();
     void registerClient(ClientHandler client);
     void broadcastMessage(Message message);
+    void updateClient(String username, ClientHandler client);
 }

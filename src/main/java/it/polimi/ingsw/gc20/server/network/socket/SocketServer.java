@@ -21,6 +21,7 @@ public class SocketServer implements Server {
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private boolean running;
     private static final int DEFAULT_PORT = 8080;
+    private final SocketAuthService authService = new SocketAuthService(this);
 
     @Override
     public void start() {
@@ -39,10 +40,17 @@ public class SocketServer implements Server {
     private void acceptConnections() {
         while (running) {
             try {
+                // Accept a new client connection
                 Socket clientSocket = serverSocket.accept();
-                SocketClientHandler handler = new SocketClientHandler(clientSocket);
-                executor.submit(handler::handleRequest);
-                registerClient(handler);
+                LOGGER.info("Client connected: " + clientSocket.getInetAddress());
+                // Create a new client handler through the authService (login request)
+                // if the client is not accepted, it will return null
+                ClientHandler client = authService.handleNewClient(clientSocket);
+                if (client == null) {
+                    LOGGER.warning("Client not accepted: " + clientSocket.getInetAddress());
+                } else {
+                    executor.submit(client::handleRequests);
+                }
             } catch (IOException e) {
                 if (running) {
                     LOGGER.warning("Error while accepting connections: " + e.getMessage());
@@ -78,6 +86,21 @@ public class SocketServer implements Server {
         for (ClientHandler client : new ArrayList<>(clients)) {
             executor.submit(() -> client.sendToClient(message));
         }
+    }
+
+    @Override
+    public void updateClient(String username, ClientHandler client) {
+        ClientHandler existingClient = NetworkService.getInstance().getClient(username);
+        if (existingClient != null) {
+            // Remove the old client
+            this.removeClient(existingClient);
+            // Add the new client
+            this.registerClient(client);
+        } else {
+            LOGGER.warning("Client not found: " + username);
+            return;
+        }
+        LOGGER.info("Client updated (Socket): " + client.getClientUsername());
     }
 
     public void removeClient(ClientHandler client) {

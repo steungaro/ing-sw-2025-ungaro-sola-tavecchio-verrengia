@@ -25,19 +25,19 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
     /**Function to log in a user
      * @param username The username of the user.
      * @return The session token for the user.
-     * @throws IllegalArgumentException if the username is invalid or already in use.
      */
-    public boolean login(String username) throws IllegalArgumentException {
+    @Override
+    public boolean login(String username) {
         ClientHandler existingClient = NetworkService.getInstance().getClient(username);
 
-        // Case 1: if it is a new username
+        // Case 1: it is a new username
         if (existingClient==null) {
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
             LOGGER.info(String.format("User logged via RMI: " + username));
             return true;
         }
-        // Case 2: if the username is already in use -- verify if is connected
+        // Case 2: the username is already in use -- verify if it is connected
         else if (!existingClient.isConnected()) {
             // Update the client handler
             RMIClientHandler clientHandler = new RMIClientHandler(username);

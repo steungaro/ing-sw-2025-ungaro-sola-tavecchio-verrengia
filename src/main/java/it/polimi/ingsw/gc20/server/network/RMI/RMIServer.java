@@ -19,7 +19,6 @@ public class RMIServer implements Server {
     private static RMIServerHandler rmiServerHandler = null;
     private final List<ClientHandler> clients;
     private final ExecutorService executor;
-    private boolean running;
     private static final int DEFAULT_PORT = 1099;
 
     /**
@@ -40,7 +39,6 @@ public class RMIServer implements Server {
         try {
             // Create the RMI registry
             rmiServerHandler.createRegistry(DEFAULT_PORT);
-            running = true;
 
             // creation of the gameService
             GameControllerInterface gameService = new RMIGameControllerService();
@@ -74,7 +72,6 @@ public class RMIServer implements Server {
      */
     @Override
     public void stop() {
-        running = false;
         //Disconnecting all the client, we copy the list clients
         for (ClientHandler client : new ArrayList<>(clients)){
             client.disconnect();
@@ -114,26 +111,8 @@ public class RMIServer implements Server {
         }
     }
 
-    /** Getter method for the boolean running
-     *
-     * @return boolean true if the server is running
-     */
-    public boolean isRunning() {
-        return running;
-    }
-
-
-     /** Getter method for the RMIServerHandler
-     *
-     * @return RMIServerHandler ServerHandler utilized from the server
-     */
-    public RMIServerHandler getRMIServerHandler() {
-        return rmiServerHandler;
-    }
-
     public void updateClient(String username, ClientHandler client) {
         ClientHandler existingClient = NetworkService.getInstance().getClient(username);
-
         if (existingClient != null) {
             // Remove the old client
             this.removeClient(existingClient);
@@ -143,6 +122,6 @@ public class RMIServer implements Server {
             LOGGER.warning("Client not found: " + username);
             return;
         }
-        LOGGER.info("Client updated: " + client.getClientUsername());
+        LOGGER.info("Client updated (RMI): " + client.getClientUsername());
     }
 }

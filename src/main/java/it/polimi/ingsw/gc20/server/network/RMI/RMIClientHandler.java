@@ -50,7 +50,7 @@ public class RMIClientHandler implements ClientHandler {
     }
 
     /**
-     * Function to disconnect the client.
+     * Function to disconnect the client (voluntary or involuntary).
      */
     public void disconnect() {
         if (connected) {
@@ -85,7 +85,7 @@ public class RMIClientHandler implements ClientHandler {
 
 
     @Override
-    public void handleRequest() {
+    public void handleRequests() {
         // Not implemented for RMI
     }
 }

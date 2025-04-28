@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LoginRequest;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -17,11 +15,12 @@ public class SocketClientHandler implements ClientHandler {
     private final Socket clientSocket;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private String username;
+    private final String username;
     private boolean connected = true;
 
-    public SocketClientHandler(Socket clientSocket) {
+    public SocketClientHandler(String username, Socket clientSocket) {
         this.clientSocket = clientSocket;
+        this.username = username;
         try {
             // Creating input and output streams (output first to avoid deadlock)
             out = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -32,35 +31,13 @@ public class SocketClientHandler implements ClientHandler {
         }
     }
 
+    /**
+     * Function to handle incoming requests from the client.
+     * This method runs in a separate thread looping to handle incoming messages.
+     */
     @Override
-    public void handleRequest() {
+    public void handleRequests() {
         try {
-            // First message is the login request
-            LoginRequest loginRequest = (LoginRequest) in.readObject();
-            // Authentication logic here (message contains only the username)
-            ClientHandler client = NetworkService.getInstance().getClient(loginRequest.username());
-
-            if (client == null) {
-                // Register the client
-                setUsername(loginRequest.username());
-                NetworkService.getInstance().registerClient(this);
-                LOGGER.info("Client " + loginRequest + " connected.");
-            } else {
-                if (client.isConnected()) {
-                    LOGGER.warning("Client " + loginRequest + " is already connected.");
-                    out.writeObject("Username already in use");
-                    out.flush();
-                    disconnect();
-                    return;
-                } else {
-                    // Reconnect the client
-                    setUsername(loginRequest.username());
-                    NetworkService.getInstance().removeClient(loginRequest.username());
-                    NetworkService.getInstance().registerClient(this);
-                    LOGGER.warning("Client " + loginRequest + " is not connected.");
-                }
-            }
-
             // Loop to handle incoming messages
             while (connected) {
                 Message message = (Message) in.readObject();
@@ -72,16 +49,27 @@ public class SocketClientHandler implements ClientHandler {
         }
     }
 
+    /**
+     * Function to process the incoming message.
+     * @param message The message to process.
+     */
     private void processMessage(Message message) {
         QueueHandler.getInstance().enqueue(message);
     }
 
+    /**
+     * Function to get the status of the connection.
+     * @return True if the client is connected, false otherwise.
+     */
     @Override
     public Boolean isConnected() {
-        // TODO
-        return false;
+        return connected;
     }
 
+    /**
+     * Function to send a message to the client.
+     * @param message The message to send.
+     */
     @Override
     public void sendToClient(Message message) {
         if (!connected) return;
@@ -95,6 +83,10 @@ public class SocketClientHandler implements ClientHandler {
         }
     }
 
+    /**
+     * Function to disconnect the client, closing the socket and streams.
+     * This method should be called when the client disconnects (voluntary or involuntary).
+     */
     @Override
     public void disconnect() {
         if (!connected) return;
@@ -110,14 +102,12 @@ public class SocketClientHandler implements ClientHandler {
         }
     }
 
+    /**
+     * Function to get the username of the client.
+     * @return The username of the client.
+     */
     @Override
     public String getClientUsername() {
         return username;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    //TODO heartbeat mechanism?
 }
