@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LoginRequest;
-import it.polimi.ingsw.gc20.server.network.NetworkManager;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -38,12 +38,12 @@ public class SocketClientHandler implements ClientHandler {
             // First message is the login request
             LoginRequest loginRequest = (LoginRequest) in.readObject();
             // Authentication logic here (message contains only the username)
-            ClientHandler client = NetworkManager.getInstance().getClient(loginRequest.username());
+            ClientHandler client = NetworkService.getInstance().getClient(loginRequest.username());
 
             if (client == null) {
                 // Register the client
                 setUsername(loginRequest.username());
-                NetworkManager.getInstance().registerClient(this);
+                NetworkService.getInstance().registerClient(this);
                 LOGGER.info("Client " + loginRequest + " connected.");
             } else {
                 if (client.isConnected()) {
@@ -55,8 +55,8 @@ public class SocketClientHandler implements ClientHandler {
                 } else {
                     // Reconnect the client
                     setUsername(loginRequest.username());
-                    NetworkManager.getInstance().removeClient(loginRequest.username());
-                    NetworkManager.getInstance().registerClient(this);
+                    NetworkService.getInstance().removeClient(loginRequest.username());
+                    NetworkService.getInstance().registerClient(this);
                     LOGGER.warning("Client " + loginRequest + " is not connected.");
                 }
             }

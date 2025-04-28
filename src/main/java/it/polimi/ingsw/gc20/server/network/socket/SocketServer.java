@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
-import it.polimi.ingsw.gc20.server.network.NetworkManager;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -69,7 +69,7 @@ public class SocketServer implements Server {
     @Override
     public void registerClient(ClientHandler client) {
         clients.add(client);
-        NetworkManager.getInstance().registerClient(client);
+        NetworkService.getInstance().registerClient(client);
         LOGGER.info("Client registered through socket: " + client.getClientUsername());
     }
 
@@ -82,7 +82,7 @@ public class SocketServer implements Server {
 
     public void removeClient(ClientHandler client) {
         clients.remove(client);
-        NetworkManager.getInstance().removeClient(client.getClientUsername());
+        NetworkService.getInstance().removeClient(client.getClientUsername());
         LOGGER.info("Client removed from socket server: " + client.getClientUsername());
     }
 }

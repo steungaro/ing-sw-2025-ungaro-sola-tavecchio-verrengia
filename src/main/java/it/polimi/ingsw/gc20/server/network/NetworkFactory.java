@@ -11,7 +11,7 @@ public class NetworkFactory {
     private final List<Server> servers = new ArrayList<>();
 
     public void initialize() {
-        NetworkManager.getInstance(); // Ensure singleton is created
+        NetworkService.getInstance(); // Ensure singleton is created
     }
 
     public void createServer(ServerType type) {

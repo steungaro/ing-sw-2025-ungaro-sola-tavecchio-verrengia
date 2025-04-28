@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.server.network.common;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.Ping;
-import it.polimi.ingsw.gc20.server.network.NetworkManager;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -45,7 +45,7 @@ public class HeartbeatService {
     }
 
     private void pingAllClients() {
-        NetworkManager.getInstance().broadcastMessage(new Ping(BROADCAST));
+        NetworkService.getInstance().broadcastMessage(new Ping(BROADCAST));
     }
 
     public void stop() {
@@ -64,7 +64,7 @@ public class HeartbeatService {
         }
 
         for (String clientUsername : offlineClients) {
-            NetworkManager.getInstance().removeClient(clientUsername);
+            NetworkService.getInstance().removeClient(clientUsername);
             LOGGER.info("Removed offline client: " + clientUsername);
         }
     }

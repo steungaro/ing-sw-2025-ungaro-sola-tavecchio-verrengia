@@ -5,17 +5,17 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NetworkManager {
-    private static NetworkManager instance;
+public class NetworkService {
+    private static NetworkService instance;
     private final Map<String, ClientHandler> clients = new HashMap<>();
 
-    private NetworkManager() {
+    private NetworkService() {
         // Private constructor to prevent instantiation
     }
 
-    public static NetworkManager getInstance() {
+    public static NetworkService getInstance() {
         if (instance == null) {
-            instance = new NetworkManager();
+            instance = new NetworkService();
         }
         return instance;
     }

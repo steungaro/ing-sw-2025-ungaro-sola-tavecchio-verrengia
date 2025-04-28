@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
-import it.polimi.ingsw.gc20.server.network.NetworkManager;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 
 import java.io.Serial;
@@ -28,7 +28,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
      * @throws IllegalArgumentException if the username is invalid or already in use.
      */
     public boolean login(String username) throws IllegalArgumentException {
-        ClientHandler existingClient = NetworkManager.getInstance().getClient(username);
+        ClientHandler existingClient = NetworkService.getInstance().getClient(username);
 
         // Case 1: if it is a new username
         if (existingClient==null) {
@@ -61,7 +61,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
      */
     public boolean logout(String username) throws RemoteException {
         LOGGER.info(String.format("User disconnected: " + username));
-        ClientHandler client = NetworkManager.getInstance().getClient(username);
+        ClientHandler client = NetworkService.getInstance().getClient(username);
         if (client != null) {
             client.disconnect();
             return true;

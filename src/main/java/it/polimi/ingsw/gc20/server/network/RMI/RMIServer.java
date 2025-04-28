@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 import it.polimi.ingsw.gc20.server.exceptions.ServerCriticalError;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.server.network.NetworkManager;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -89,7 +89,7 @@ public class RMIServer implements Server {
      */
     public void registerClient (ClientHandler client) {
         clients.add(client);
-        NetworkManager.getInstance().registerClient(client);
+        NetworkService.getInstance().registerClient(client);
         LOGGER.info("registered client: " + client.getClientUsername());
     }
 
@@ -99,7 +99,7 @@ public class RMIServer implements Server {
      */
     public void removeClient (ClientHandler client) {
         clients.remove(client);
-        NetworkManager.getInstance().removeClient(client.getClientUsername());
+        NetworkService.getInstance().removeClient(client.getClientUsername());
         LOGGER.info("removed client: " + client.getClientUsername());
     }
 
@@ -132,7 +132,7 @@ public class RMIServer implements Server {
     }
 
     public void updateClient(String username, ClientHandler client) {
-        ClientHandler existingClient = NetworkManager.getInstance().getClient(username);
+        ClientHandler existingClient = NetworkService.getInstance().getClient(username);
 
         if (existingClient != null) {
             // Remove the old client

@@ -2,9 +2,10 @@ package it.polimi.ingsw.gc20.server.network;
 
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.common.HeartbeatService;
+import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 
 public class  MainServer {
-    public static void main(String[] args) {
+    public static void main() {
         NetworkFactory networkFactory = new NetworkFactory();
         networkFactory.initialize();
 
@@ -18,7 +19,8 @@ public class  MainServer {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             networkFactory.stopAllServers();
             HeartbeatService.getInstance().stop();
-            System.out.println("Servers and heartbeat service stopped.");
+            QueueHandler.getInstance().shutdown();
+            System.out.println("Servers, queue handler and heartbeat service stopped.");
         }));
     }
 }
