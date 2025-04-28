@@ -88,7 +88,4 @@ public class RMIClientHandler implements ClientHandler {
     public void handleRequest() {
         // Not implemented for RMI
     }
-
-
-
 }
