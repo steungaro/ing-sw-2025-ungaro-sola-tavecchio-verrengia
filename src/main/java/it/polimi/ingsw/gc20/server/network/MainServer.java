@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.network;
 
 import it.polimi.ingsw.gc20.server.controller.MatchController;
+import it.polimi.ingsw.gc20.server.network.common.HeartbeatService;
 
 public class  MainServer {
     public static void main(String[] args) {
@@ -14,6 +15,10 @@ public class  MainServer {
         networkFactory.startAllServers();
 
         // Add shutdown hook to stop servers on exit
-        Runtime.getRuntime().addShutdownHook(new Thread(networkFactory::stopAllServers));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            networkFactory.stopAllServers();
+            HeartbeatService.getInstance().stop();
+            System.out.println("Servers and heartbeat service stopped.");
+        }));
     }
 }
