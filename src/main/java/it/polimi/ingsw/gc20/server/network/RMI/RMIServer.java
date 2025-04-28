@@ -8,10 +8,11 @@ import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class RMIServer implements Server {
@@ -26,7 +27,7 @@ public class RMIServer implements Server {
      */
     public RMIServer() {
         rmiServerHandler = new RMIServerHandler();
-        this.clients = new ArrayList<>();
+        this.clients = new CopyOnWriteArrayList<>();
         this.executor = Executors.newCachedThreadPool();
     }
 
@@ -72,11 +73,16 @@ public class RMIServer implements Server {
      */
     @Override
     public void stop() {
-        //Disconnecting all the client, we copy the list clients
-        for (ClientHandler client : new ArrayList<>(clients)){
-            client.disconnect();
-        }
+        clients.forEach(ClientHandler::disconnect);
         executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
         LOGGER.info("RMI Server stopped");
     }
 
@@ -105,8 +111,7 @@ public class RMIServer implements Server {
      * @param message message to broadcast
      */
     public void broadcastMessage(Message message) {
-        //maybe better synchronized than copying the list
-        for (ClientHandler client : new ArrayList<>(clients)) {
+        for (ClientHandler client : clients) { // No need to create a copy
             executor.submit(() -> client.sendToClient(message));
         }
     }

@@ -8,4 +8,5 @@ public interface Server {
     void registerClient(ClientHandler client);
     void broadcastMessage(Message message);
     void updateClient(String username, ClientHandler client);
+    void removeClient(ClientHandler client);
 }

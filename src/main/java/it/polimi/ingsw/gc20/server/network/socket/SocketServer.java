@@ -8,16 +8,17 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class SocketServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(SocketServer.class.getName());
     private ServerSocket serverSocket;
-    private final List<ClientHandler> clients = new ArrayList<>();
+    private final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private boolean running;
     private static final int DEFAULT_PORT = 8080;
@@ -62,10 +63,16 @@ public class SocketServer implements Server {
     @Override
     public void stop() {
         running = false;
-        for (ClientHandler client : new ArrayList<>(clients)) {
-            client.disconnect();
-        }
+        clients.forEach(ClientHandler::disconnect);
         executor.shutdown();
+        try {
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
         try {
             serverSocket.close();
             LOGGER.info("Socket server stopped.");
@@ -83,7 +90,7 @@ public class SocketServer implements Server {
 
     @Override
     public void broadcastMessage(Message message) {
-        for (ClientHandler client : new ArrayList<>(clients)) {
+        for (ClientHandler client : clients) { // No need to create a copy
             executor.submit(() -> client.sendToClient(message));
         }
     }
