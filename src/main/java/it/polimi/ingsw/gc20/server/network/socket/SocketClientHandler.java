@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LoginRequest;
+import it.polimi.ingsw.gc20.server.network.NetworkManager;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -34,9 +36,30 @@ public class SocketClientHandler implements ClientHandler {
     public void handleRequest() {
         try {
             // First message is the login request
-            Object loginRequest = in.readObject();
-            // Authentication logic here (e.g., check username, password, etc.)
-            // TODO
+            LoginRequest loginRequest = (LoginRequest) in.readObject();
+            // Authentication logic here (message contains only the username)
+            ClientHandler client = NetworkManager.getInstance().getClient(loginRequest.username());
+
+            if (client == null) {
+                // Register the client
+                setUsername(loginRequest.username());
+                NetworkManager.getInstance().registerClient(this);
+                LOGGER.info("Client " + loginRequest + " connected.");
+            } else {
+                if (client.isConnected()) {
+                    LOGGER.warning("Client " + loginRequest + " is already connected.");
+                    out.writeObject("Username already in use");
+                    out.flush();
+                    disconnect();
+                    return;
+                } else {
+                    // Reconnect the client
+                    setUsername(loginRequest.username());
+                    NetworkManager.getInstance().removeClient(loginRequest.username());
+                    NetworkManager.getInstance().registerClient(this);
+                    LOGGER.warning("Client " + loginRequest + " is not connected.");
+                }
+            }
 
             // Loop to handle incoming messages
             while (connected) {
