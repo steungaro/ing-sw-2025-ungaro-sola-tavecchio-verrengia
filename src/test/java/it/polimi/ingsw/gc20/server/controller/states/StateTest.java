@@ -521,18 +521,139 @@ class StateTest {
     }
 
     @Test
-    void loseEnergy() {
-        // Classe da testare: CombactZone1
+    void loseEnergy() throws InvalidTileException, InvalidTurnException, EnergyException, CargoNotLoadable, CargoFullException, InvalidCannonException, InvalidEngineException {
+        // Classe da testare: , CargoState, AbandonedStationState, CombactZone1
+        // Smugglers
+        adventureCard.setFirePower(-1);
+        List<CargoColor> cargo = new ArrayList<>();
+        cargo.add(CargoColor.BLUE);
+        cargo.add(CargoColor.BLUE);
+        adventureCard.setReward(new ArrayList<>(cargo));
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+
+        assertThrows(InvalidTurnException.class, () -> smugglersState.loseEnergy(gameController.getPlayerByID("player2"), new Pair<>(1, 2)));
+
+        CargoHold cargoHold = new CargoHold();
+        cargoHold.setSlots(3);
+        model.addToShip(cargoHold, gameController.getPlayerByID("player1"), 1, 2);
+
+        gameController.getPlayerByID("player1").getShip().loadCargo(CargoColor.BLUE, cargoHold);
+
+        assertThrows(IllegalStateException.class, () -> smugglersState.loseEnergy(gameController.getPlayerByID("player1"), new Pair<>(1, 2)));
+
+        gameController.unloadCargo("player1", CargoColor.BLUE, new Pair<>(1, 2));
+
+        Battery battery = new Battery();
+        battery.setSlots(2);
+        battery.setAvailableEnergy(1);
+
+        gameController.getModel().setActiveCard(adventureCard);
+        smugglersState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
+        Pair<Integer, Integer> coordinates = new Pair<>(1, 3);
+        smugglersState.loseEnergy(gameController.getPlayerByID("player1"), coordinates);
+
+        assertEquals(0, battery.getAvailableEnergy());
+
+        // CargoState
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+
+
+        assertThrows(InvalidTurnException.class, () -> abandonedStationState.loseEnergy(gameController.getPlayerByID("player2"), new Pair<>(1, 2)));
+        gameController.getActiveCard().setPlayed(false);
+        gameController.loadCargo("player1", CargoColor.BLUE, new Pair<>(1, 2));
+
+        assertThrows(IllegalStateException.class, () -> abandonedStationState.loseEnergy(gameController.getPlayerByID("player1"), new Pair<>(1, 3)));
+        gameController.unloadCargo("player1", CargoColor.BLUE, new Pair<>(1, 2));
+
+        battery.setAvailableEnergy(1);
+        smugglersState.loseEnergy(gameController.getPlayerByID("player1"), coordinates);
+
+        assertEquals(0, battery.getAvailableEnergy());
+
+        // CombactZone1
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+
+
+        assertThrows(InvalidTurnException.class, () -> combatZone1State.loseEnergy(gameController.getPlayerByID("player2"), new Pair<>(1, 2)));
+        gameController.getActiveCard().setPlayed(false);
+
+        assertThrows(IllegalStateException.class, () -> combatZone1State.loseEnergy(gameController.getPlayerByID("player1"), new Pair<>(1, 3)));
+        gameController.setState(abandonedStationState);
+        //gameController.unloadCargo("player1", CargoColor.BLUE, new Pair<>(1, 2));
+
+        battery.setAvailableEnergy(1);
+        gameController.getPlayerByID("player1").getShip().addBatteries(2);
+        combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.loseEnergy(gameController.getPlayerByID("player1"), coordinates);
+
+        assertEquals(0, battery.getAvailableEnergy());
+
+        // TODO -> combatZone1State
     }
 
     @Test
-    void testLandOnPlanet() {
+    void testLandOnPlanet() throws InvalidTurnException {
         // Classe da testare: PlanetsState
+        List<Planet> planets = new ArrayList<>();
+        Planet planet = new Planet();
+        List<CargoColor> cargo = new ArrayList<>();
+        cargo.add(CargoColor.BLUE);
+        cargo.add(CargoColor.GREEN);
+        planet.setReward(cargo);
+        planets.add(planet);
+        adventureCard.setPlanets(planets);
+
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+
+        assertThrows( InvalidTurnException.class, () -> planetsState.landOnPlanet(gameController.getPlayerByID("player2"), 0));
+
+        planetsState.landOnPlanet(gameController.getPlayerByID("player1"), 0);
+
+        assertThrows(IllegalStateException.class, () -> planetsState.landOnPlanet(gameController.getPlayerByID("player1"), 0));
     }
 
+
     @Test
-    void acceptCard() {
-        // Classe da testare: AdventureState
+    void acceptCard() throws InvalidTurnException, InvalidCannonException, EnergyException {
+        // Classe da testare: AbandonedStationState, PirateState, SlaversState, SmugglersState
+        // AbandonedStationState
+        adventureCard.setCrew(-1);
+        adventureCard.setFirePower(-1);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> abandonedStationState.acceptCard(gameController.getPlayerByID("player2")));
+        abandonedStationState.acceptCard(gameController.getPlayerByID("player1"));
+
+        adventureCard.setCrew(1);
+        AbandonedStationState abandonedStationState2 = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState2);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(IllegalStateException.class, () -> abandonedStationState2.acceptCard(gameController.getPlayerByID("player1")));
+
+        // PirateState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> piratesState.acceptCard(gameController.getPlayerByID("player2")));
+        piratesState.acceptCard(gameController.getPlayerByID("player1"));
+
+        // SlaversState
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        gameController.setState(slaversState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> slaversState.acceptCard(gameController.getPlayerByID("player3")));
+        assertThrows(IllegalStateException.class, () -> slaversState.acceptCard(gameController.getPlayerByID("player2")));
+        slaversState.shootEnemy(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        slaversState.acceptCard(gameController.getPlayerByID("player2"));
     }
 
     @Test
