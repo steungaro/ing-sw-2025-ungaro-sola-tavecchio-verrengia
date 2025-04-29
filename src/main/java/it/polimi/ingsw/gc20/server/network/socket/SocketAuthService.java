@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginFailedMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LoginRequest;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
@@ -25,43 +27,55 @@ public class SocketAuthService {
     /**
      * Function to handle a new client connection.
      * @param clientSocket The socket of the client.
-     * @return The client handler for the new client or null if the client is not accepted (already connected).
      */
-    public ClientHandler handleNewClient(Socket clientSocket) {
+    public void handleNewClient(Socket clientSocket) {
+        SocketClientHandler newClient = null;
+        LoginRequest loginRequest;
         try {
             // Create input and output streams
             ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
 
-            // First message is the login request
-            LoginRequest loginRequest = (LoginRequest) in.readObject();
 
-            // Authentication logic (message contains only the username)
-            ClientHandler client = NetworkService.getInstance().getClient(loginRequest.username());
+            do {
+                // First message is the login request
+                loginRequest = (LoginRequest) in.readObject();
 
-            if (client == null) { // If the client is not already registered
-                // Create a new client handler
-                SocketClientHandler newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
-                socketServer.registerClient(newClient);
-                LOGGER.info("Client " + loginRequest + " connected.");
-                return newClient;
-            } else { // If the client is already registered
-                if (client.isConnected()) {
-                    LOGGER.warning("Client " + loginRequest + " is already connected.");
-                    out.writeObject("Username already in use");
-                    out.flush();
-                    return null;
+                // Check if the username is associated with an existing client
+                ClientHandler existingClient = NetworkService.getInstance().getClient(loginRequest.username());
+
+                // If the client is not already registered
+                if (existingClient == null) {
+                    // Create a new client handler
+                    newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
+                    socketServer.registerClient(newClient);
+                    LOGGER.info("Client " + loginRequest + " connected.");
+
+                // If the client is already registered check if it is connected (reconnection)
                 } else {
-                    // Reconnect the client (maybe it was RMI)
-                    SocketClientHandler newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
-                    socketServer.updateClient(loginRequest.username(), newClient);
-                    LOGGER.info("Client " + loginRequest + " reconnected.");
-                    return newClient;
+                    // If the client is connected, refuse this connection and wait for a new username
+                    if (existingClient.isConnected()) {
+                        LOGGER.warning("Client " + loginRequest + " is already connected.");
+                        out.writeObject(new LoginFailedMessage(loginRequest.username()));
+                        out.flush();
+                        // newClient is still null, so the loop continues
+                    } else {
+                        // Reconnect the client (maybe it was RMI before or connection crashed)
+                        newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
+                        socketServer.updateClient(loginRequest.username(), newClient);
+                        LOGGER.info("Client " + loginRequest + " reconnected.");
+                    }
                 }
-            }
+            } while (newClient == null);
+
+            // Notify the client that the reconnection was successful
+            out.writeObject(new LoginSuccessfulMessage(loginRequest.username()));
+            out.flush();
+
+            // Start the handler thread
+            newClient.handleRequests();
         } catch (IOException | ClassNotFoundException e) {
             LOGGER.warning("Error while accepting connections: " + e.getMessage());
-            return null;
         }
     }
 

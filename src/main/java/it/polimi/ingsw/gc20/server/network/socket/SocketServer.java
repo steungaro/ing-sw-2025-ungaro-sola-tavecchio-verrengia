@@ -4,8 +4,11 @@ import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -44,14 +47,10 @@ public class SocketServer implements Server {
                 // Accept a new client connection
                 Socket clientSocket = serverSocket.accept();
                 LOGGER.info("Client connected: " + clientSocket.getInetAddress());
+
                 // Create a new client handler through the authService (login request)
                 // if the client is not accepted, it will return null
-                ClientHandler client = authService.handleNewClient(clientSocket);
-                if (client == null) {
-                    LOGGER.warning("Client not accepted: " + clientSocket.getInetAddress());
-                } else {
-                    executor.submit(client::handleRequests);
-                }
+                executor.submit(() -> authService.handleNewClient(clientSocket));
             } catch (IOException e) {
                 if (running) {
                     LOGGER.warning("Error while accepting connections: " + e.getMessage());
@@ -62,8 +61,8 @@ public class SocketServer implements Server {
 
     @Override
     public void stop() {
-        running = false;
         clients.forEach(ClientHandler::disconnect);
+        running = false;
         executor.shutdown();
         try {
             if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
