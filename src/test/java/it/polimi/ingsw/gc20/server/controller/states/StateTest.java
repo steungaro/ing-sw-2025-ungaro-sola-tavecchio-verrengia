@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -659,21 +660,25 @@ class StateTest {
     @Test
     void loseCrew() {
         // Classi da testare: AbandonedShipState, CombactZone0State, SlaversState
+        // TODO: CombactZone1, ComactZone0
     }
 
     @Test
     void endMove() {
         // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
+        // TODO: CombactZone1, ComactZone0
     }
 
     @Test
     void activateEngines() {
         // Classe da testare: OpenSpaceState, CombactZone1State, CombactZone0State
+        // TODO: CombactZone1, ComactZone0
     }
 
     @Test
     void activateShield() {
         // Classe da testare: CombactZone1, CombactZone0, MeteorSwarm, PirateState
+        // TODO: CombactZone1, ComactZone0
     }
 
     @Test
@@ -812,15 +817,70 @@ class StateTest {
     @Test
     void automaticAction() {
         // Classe da testare: Epidemic, Stardust, ComactZone1, ComactZone0
+        // TODO: CombactZone1, ComactZone0
     }
 
     @Test
     void resume() {
         // Classi da testare: PausedState
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+
+        PausedState pausedState = new PausedState(combatZone0State, gameController.getModel(), gameController);
+        gameController.setState(pausedState);
+
+        pausedState.resume();
+
+        assertEquals(combatZone0State.toString(), gameController.getState().toString());
     }
 
     @Test
-    void rollDice() {
+    void rollDice() throws InvalidTurnException, InvalidCannonException, EnergyException {
         // Classi da testare: CombactZone1, CombactZone0, MeteorSwarmState, PirateState, PlayingState
+        // TODO: CombatZone1, CombactZone0
+
+        // MeteorSwarmState
+        adventureCard.setFirePower(10);
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        assertThrows(InvalidTurnException.class, () -> meteorSwarmState.rollDice(gameController.getPlayerByID("player2")));
+        assertThrows(IllegalStateException.class, () -> meteorSwarmState.rollDice(gameController.getPlayerByID("player1")));
+        Projectile projectile = new Projectile();
+        List<Projectile> projectiles = new ArrayList<>();
+        projectiles.add(projectile);
+        adventureCard.setProjectiles(projectiles);
+        MeteorSwarmState meteorSwarmState2 = new MeteorSwarmState(model, gameController, adventureCard);
+        meteorSwarmState2.setCurrentPlayer("player1");
+
+        try {
+            int result = meteorSwarmState2.rollDice(gameController.getPlayerByID("player1"));
+            assertTrue(result >= 1 && result <= 12);
+        } catch (InvalidTurnException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        // PirateState
+        assertThrows(InvalidTurnException.class, () -> piratesState.rollDice(gameController.getPlayerByID("player2")));
+        assertThrows(IllegalStateException.class, () -> piratesState.rollDice(gameController.getPlayerByID("player1")));
+        PiratesState piratesState2 = new PiratesState(model, gameController, adventureCard);
+        piratesState2.setCurrentPlayer("player1");
+        piratesState2.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        try {
+            int result = piratesState2.rollDice(gameController.getPlayerByID("player1"));
+            assertTrue(result >= 1 && result <= 12);
+        } catch ( InvalidShipException | DieNotRolledException | InvalidTurnException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+
+        // PlayingState
+        EpidemicState epidemicState = new EpidemicState(model, gameController, adventureCard);
+        epidemicState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> epidemicState.rollDice(gameController.getPlayerByID("player2")));
+        try{
+            int result = epidemicState.rollDice(gameController.getPlayerByID("player1"));
+            assertTrue(result >= 1 && result <= 12);
+        } catch (InvalidShipException | DieNotRolledException | InvalidTurnException e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
     }
 }
