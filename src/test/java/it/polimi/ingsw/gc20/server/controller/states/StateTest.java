@@ -658,22 +658,22 @@ class StateTest {
 
     @Test
     void loseCrew() {
-        // Classi da testare: CombactZone1, SmugglersState
+        // Classi da testare: AbandonedShipState, CombactZone0State, SlaversState
     }
 
     @Test
     void endMove() {
-        // Classi da testare: tutti gli stati che implementano metodi di azione
+        // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
     }
 
     @Test
     void activateEngines() {
-        // Classe da testare: FlightState
+        // Classe da testare: OpenSpaceState, CombactZone1State, CombactZone0State
     }
 
     @Test
     void activateShield() {
-        // Classe da testare: CombactZone1
+        // Classe da testare: CombactZone1, CombactZone0, MeteorSwarm, PirateState
     }
 
     @Test
@@ -816,11 +816,11 @@ class StateTest {
 
     @Test
     void resume() {
-        // Classi da testare: tutti gli stati che implementano questo metodo
+        // Classi da testare: PausedState
     }
 
     @Test
     void rollDice() {
-        // Classi da testare: CombactZone1, SmugglersState
+        // Classi da testare: CombactZone1, CombactZone0, MeteorSwarmState, PirateState, PlayingState
     }
 }
