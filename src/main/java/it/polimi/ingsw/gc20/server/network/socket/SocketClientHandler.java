@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
+import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -94,6 +95,7 @@ public class SocketClientHandler implements ClientHandler {
         connected = false;
         try {
             if (in != null) in.close();
+            MatchController.getInstance().getGameControllerForPlayer(username).disconnectPlayer(username);
             if (out != null) out.close();
             if (clientSocket != null && !clientSocket.isClosed())
                 clientSocket.close();

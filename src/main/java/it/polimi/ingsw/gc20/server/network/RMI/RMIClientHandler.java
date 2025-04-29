@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
@@ -58,6 +59,7 @@ public class RMIClientHandler implements ClientHandler {
                 try {
                     view.notifyDisconnection();
                     connected = false;
+                    MatchController.getInstance().getGameControllerForPlayer(username).disconnectPlayer(username);
                 } catch (RemoteException e) {
                     LOGGER.warning("Error while disconnecting the client: " + e.getMessage());
                 }

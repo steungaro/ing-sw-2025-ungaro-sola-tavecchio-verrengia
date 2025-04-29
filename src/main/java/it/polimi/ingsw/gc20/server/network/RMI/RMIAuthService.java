@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 
@@ -42,6 +43,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             // Update the client handler
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.updateClient(username, clientHandler);
+            MatchController.getInstance().getGameControllerForPlayer(username).reconnectPlayer(username);
             LOGGER.info(String.format("User reconnected via RMI: " + username));
             return true;
         }
