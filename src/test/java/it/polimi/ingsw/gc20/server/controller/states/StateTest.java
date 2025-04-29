@@ -272,14 +272,25 @@ class StateTest {
     @Test
     void addAlien() {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        Cabin cabin = new Cabin();
+        cabin.setColor(AlienColor.BROWN);
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.D);
+        connectors.put(Direction.LEFT, ConnectorEnum.D);
+        connectors.put(Direction.RIGHT, ConnectorEnum.D);
+        cabin.setConnectors(connectors);
+
+        assemblingState.placeComponent(gameController.getPlayerByID("player1"), new Pair<>(2, 2));
 
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
-        Cabin cabin = new Cabin();
-        cabin.setColor(AlienColor.BROWN);
-        assertThrows(InvalidAlienPlacement.class, () -> validatingShipState.addAlien(gameController.getPlayerByID("player1"), AlienColor.PURPLE, cabin));
+
+        Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
+
+        assertThrows(InvalidAlienPlacement.class, () -> validatingShipState.addAlien(gameController.getPlayerByID("player1"), AlienColor.PURPLE, cabinCoord));
         try {
-            validatingShipState.addAlien(gameController.getPlayerByID("player1"), AlienColor.BROWN, cabin);
+            validatingShipState.addAlien(gameController.getPlayerByID("player1"), AlienColor.BROWN, cabinCoord);
         } catch (InvalidAlienPlacement e) {
             fail("Unexpected exception: " + e.getMessage());
         }

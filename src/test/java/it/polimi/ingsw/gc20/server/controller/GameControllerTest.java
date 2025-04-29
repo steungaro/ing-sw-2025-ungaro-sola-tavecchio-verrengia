@@ -413,6 +413,8 @@ class GameControllerTest {
 
     @Test
     void disconnectPlayer() {
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
         assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
@@ -426,6 +428,8 @@ class GameControllerTest {
     @Test
     void reconnectPlayer() {
         //assertThrows(IllegalArgumentException.class, () -> gameController.reconnectPlayer("player5")); // Invalid player
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         gameController.reconnectPlayer("player1");
         assertFalse(gameController.isPlayerDisconnected("player1"));
@@ -454,6 +458,8 @@ class GameControllerTest {
 
     @Test
     void getDisconnectedPlayers() {
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         gameController.disconnectPlayer("player2");
         List<String> disconnectedPlayers = gameController.getDisconnectedPlayers();
@@ -465,6 +471,8 @@ class GameControllerTest {
 
     @Test
     void isPlayerDisconnected() {
+        AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
         assertFalse(gameController.isPlayerDisconnected("player2"));
@@ -659,13 +667,21 @@ class GameControllerTest {
 
         Cabin cabin = new Cabin();
         cabin.setColor(alienColor);
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
+        cabin.setConnectors(connectors);
 
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
         gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
 
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
-        gameController.addAlien("player1", alienColor, cabin);
+
+        Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
+        gameController.addAlien("player1", alienColor, cabinCoord);
         gameController.readyToFly("player1");
         validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
         gameController.readyToFly("player2");

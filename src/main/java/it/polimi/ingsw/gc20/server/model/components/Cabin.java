@@ -178,7 +178,8 @@ public class Cabin extends Component {
                         case LEFT: col--; break;
                         case RIGHT: col++; break;
                     }
-                    LifeSupport comp = (LifeSupport) table[row][col].getComponent();
+
+                    Component comp = table[row][col].getComponent();
 
                     if (comp == null) {
                         continue;
@@ -187,8 +188,10 @@ public class Cabin extends Component {
                         continue;
                     }
 
-                    if (this.isValid(comp, entry.getKey())) {
-                        this.addSupport(comp);
+                    if (comp.isLifeSupport()) {
+                        if (this.isValid(comp, entry.getKey())) {
+                            this.addSupport((LifeSupport)(comp));
+                        }
                     }
                 }
             }
