@@ -85,6 +85,7 @@ public class SocketAuthService {
      * @param username The username of the user.
      * @return True if the user was logged out successfully, false otherwise.
      */
+    @Deprecated
     public boolean logout(String username) {
         ClientHandler client = NetworkService.getInstance().getClient(username);
         if (client != null) {

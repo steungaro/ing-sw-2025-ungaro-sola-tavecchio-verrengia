@@ -1,13 +1,17 @@
 package it.polimi.ingsw.gc20.client.network.common;
 
-public interface Client {
+import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
+import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
+
+public interface Client extends GameControllerInterface, MatchControllerInterface {
     void start();
 
     void stop();
 
     boolean isConnected();
 
-    boolean login(String username);
+    void login(String username);
 
-    boolean logout(String username);
+    @Deprecated
+    void logout(String username);
 }

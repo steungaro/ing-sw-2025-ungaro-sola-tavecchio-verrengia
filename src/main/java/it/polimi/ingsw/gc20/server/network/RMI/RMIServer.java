@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.server.exceptions.ServerCriticalError;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;

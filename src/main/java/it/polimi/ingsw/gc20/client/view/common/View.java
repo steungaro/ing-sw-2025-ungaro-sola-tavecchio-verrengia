@@ -1,11 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
-import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
-import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
+import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 
-public class View {
-    GameControllerInterface gameController;
-    MatchControllerInterface matchController;
-
+public abstract class View implements ViewInterface {
 
 }

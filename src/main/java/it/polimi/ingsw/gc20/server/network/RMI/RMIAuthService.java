@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
@@ -61,6 +62,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
      * @return True if the user was logged out successfully, false otherwise.
      * @throws RemoteException if the token is invalid.
      */
+    @Override
+    @Deprecated
     public boolean logout(String username) throws RemoteException {
         LOGGER.info(String.format("User disconnected: " + username));
         ClientHandler client = NetworkService.getInstance().getClient(username);

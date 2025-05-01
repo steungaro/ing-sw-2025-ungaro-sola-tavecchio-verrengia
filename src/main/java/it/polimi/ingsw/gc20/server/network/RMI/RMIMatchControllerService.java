@@ -42,8 +42,8 @@ public class RMIMatchControllerService extends UnicastRemoteObject implements Ma
     }
 
     @Override
-    public void startLobby(String id) throws RemoteException {
-        LOGGER.fine("Received RMI call: startLobby from " + id);
-        queueHandler.enqueue(new StartLobbyMessage(id));
+    public void startLobby(String userid) throws RemoteException {
+        LOGGER.fine("Received RMI call: startLobby from " + userid);
+        queueHandler.enqueue(new StartLobbyMessage(userid));
     }
 }

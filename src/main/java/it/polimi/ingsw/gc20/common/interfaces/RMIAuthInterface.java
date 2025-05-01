@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc20.server.network.RMI;
+package it.polimi.ingsw.gc20.common.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
