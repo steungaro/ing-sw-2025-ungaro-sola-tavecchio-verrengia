@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.network.RMI.RMIAuthInterface;
 
 import java.rmi.NotBoundException;
@@ -69,26 +70,27 @@ public class RMIClient implements Client {
 
     @Override
     public void stop() {
-        // Implementation for stopping the RMI client
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        // Not implemented for RMI
-    }
-
-    @Override
-    public void receiveMessage(String message) {
-        // Implementation for receiving a message via RMI
+        try {
+            if (registry != null) {
+                registry.unbind("AuthService");
+                registry.unbind("GameService");
+                registry.unbind("MatchService");
+            }
+            connected = false;
+            LOGGER.info("Disconnected from RMI server.");
+        } catch (RemoteException | NotBoundException e) {
+            LOGGER.warning("Error while stopping RMI client: " + e.getMessage());
+        }
     }
 
     @Override
     public boolean isConnected() {
-        return false;
+        return connected;
     }
 
     @Override
     public boolean logout(String username) {
+        // Logout logic not required for this project
         return false;
     }
 }

@@ -5,10 +5,6 @@ public interface Client {
 
     void stop();
 
-    void sendMessage(String message);
-
-    void receiveMessage(String message);
-
     boolean isConnected();
 
     boolean login(String username);
