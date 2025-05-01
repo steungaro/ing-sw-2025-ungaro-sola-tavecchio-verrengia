@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.interfaces;
 
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
@@ -24,7 +25,7 @@ public interface GameControllerInterface extends Remote {
     void rotateComponentCounterclockwise(String username) throws RemoteException;
 
     void stopAssembling(String username, int position) throws RemoteException;
-    void peekDeck(String username, int num) throws RemoteException;
+    List<AdventureCard> peekDeck(String username, int num) throws RemoteException;
     void turnHourglass(String username) throws RemoteException;
 
     // Ship validating

@@ -93,6 +93,8 @@ public class FireManager {
     }
 
     public boolean finished() {
+        if(fires == null)
+            return true;
         return fires.isEmpty();
     }
 
