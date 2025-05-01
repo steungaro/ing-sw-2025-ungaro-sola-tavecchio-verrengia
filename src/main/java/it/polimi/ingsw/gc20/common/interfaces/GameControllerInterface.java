@@ -25,7 +25,7 @@ public interface GameControllerInterface extends Remote {
     void rotateComponentCounterclockwise(String username) throws RemoteException;
 
     void stopAssembling(String username, int position) throws RemoteException;
-    List<AdventureCard> peekDeck(String username, int num) throws RemoteException;
+    void peekDeck(String username, int num) throws RemoteException;
     void turnHourglass(String username) throws RemoteException;
 
     // Ship validating

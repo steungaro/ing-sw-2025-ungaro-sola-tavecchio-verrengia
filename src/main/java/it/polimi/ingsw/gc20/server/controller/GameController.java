@@ -730,7 +730,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player peeking at the deck
      * @param num number of the deck to peek at
      */
-    public List<AdventureCard> peekDeck(String username, int num) {
+    public void peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
                 throw new IllegalStateException("Decks are only available in level 2 games");
@@ -738,12 +738,11 @@ public class GameController implements GameControllerInterface {
             if (isPlayerDisconnected(username)) {
                 throw new IllegalArgumentException("Cannot view deck for not connected player");
             }
-            return state.peekDeck(getPlayerByID(username), num);
+            state.peekDeck(getPlayerByID(username), num);
             // TODO: notify players of deck peek
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error peeking deck", e);
         }
-        return null;
     }
 
     /**
