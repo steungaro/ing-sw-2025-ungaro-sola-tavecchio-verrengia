@@ -187,7 +187,7 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
-    public void currQuit(Player player) {
+    public void currentQuit(Player player) {
         nextPlayer();
     }
 }

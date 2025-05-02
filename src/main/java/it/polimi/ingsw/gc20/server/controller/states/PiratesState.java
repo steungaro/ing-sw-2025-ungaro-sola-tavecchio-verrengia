@@ -159,7 +159,7 @@ public class PiratesState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
-    public void currQuit(Player player) throws InvalidTurnException, InvalidShipException {
+    public void currentQuit(Player player) throws InvalidTurnException, InvalidShipException {
         try {
             chooseBranch(player, new Pair<>(-1, -1));
         } catch (InvalidTurnException e) {

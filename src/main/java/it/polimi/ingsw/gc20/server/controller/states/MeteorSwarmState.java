@@ -100,7 +100,7 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
-    public void currQuit(Player player){
+    public void currentQuit(Player player){
         try {
             chooseBranch(player, new Pair<>(-1, -1));
         } catch (InvalidTurnException e) {

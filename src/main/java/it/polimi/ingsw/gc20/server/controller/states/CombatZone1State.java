@@ -231,7 +231,7 @@ public class CombatZone1State extends CargoState {
         }
     }
 
-    public void currQuit(Player player){
+    public void currentQuit(Player player){
         if(currentPhase.equals(phase.FIRE)) {
             try {
                 chooseBranch(player, new Pair<>(-1, -1));
