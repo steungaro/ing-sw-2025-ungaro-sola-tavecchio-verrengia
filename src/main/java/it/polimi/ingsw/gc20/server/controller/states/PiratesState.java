@@ -158,4 +158,13 @@ public class PiratesState extends PlayingState {
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
+
+    public void currQuit(Player player) throws InvalidTurnException, InvalidShipException {
+        try {
+            chooseBranch(player, new Pair<>(-1, -1));
+        } catch (InvalidTurnException e) {
+            throw new RuntimeException(e);
+        }
+        endMove(player);
+    }
 }

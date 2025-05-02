@@ -24,6 +24,7 @@ public class GameController implements GameControllerInterface {
     private final String gameID;
     private final List<String> connectedPlayers = new ArrayList<>();
     private final List<String> disconnectedPlayers = new ArrayList<>();
+    private final List<String> pendingPlayers = new ArrayList<>();
     private final Logger logger = Logger.getLogger(GameController.class.getName());
 
     /**
@@ -418,7 +419,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player attempting to reconnect
      * @return true if reconnection was successful, false otherwise
      */
-    public boolean reconnectPlayer(String username) {
+    public void reconnectPlayer(String username) {
         try{
             // Check if player was originally in this game
             if (getPlayerByID(username) == null) {
@@ -427,21 +428,25 @@ public class GameController implements GameControllerInterface {
 
             // Check if player is in the disconnected list
             if (!isPlayerDisconnected(username)) {
-                return false; // Player isn't disconnected, nothing to do
+                // Player isn't disconnected, nothing to do
+                return;
             }
 
             // Remove player from disconnected list
             disconnectedPlayers.remove(username);
-            connectedPlayers.add(username);
+            pendingPlayers.add(username);
 
-            if(connectedPlayers.size() == 2){
+            if(connectedPlayers.size() == 1){
+                connectedPlayers.add(username);
                 state.resume();
             }
-            return true;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error reconnecting player", e);
         }
-        return false;
+    }
+
+    public void preDrawConnect(){
+        pendingPlayers.forEach(connectedPlayers::addLast);
     }
 
     /**

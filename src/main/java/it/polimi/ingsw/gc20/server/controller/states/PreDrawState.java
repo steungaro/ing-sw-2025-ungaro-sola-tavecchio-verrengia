@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PreDrawState extends State{
@@ -11,6 +12,7 @@ public class PreDrawState extends State{
 
     public PreDrawState(GameController controller) {
         super(controller);
+        getController().preDrawConnect();
     }
 
     public void nextRound(Player player){

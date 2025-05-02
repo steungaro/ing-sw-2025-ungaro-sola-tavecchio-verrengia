@@ -100,4 +100,9 @@ public class SlaversState extends PlayingState {
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
+
+    public void currQuit(Player player){
+        getController().getActiveCard().playCard();
+        getController().setState(new PreDrawState(getController()));
+    }
 }

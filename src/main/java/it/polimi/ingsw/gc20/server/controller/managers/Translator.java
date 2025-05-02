@@ -11,10 +11,16 @@ import java.util.List;
 
 public class Translator {
     public static <T extends Component> T getComponentAt(Player player, Pair<Integer, Integer> coordinates, Class<T> classType) {
+        if(coordinates == null){
+            return null;
+        }
         return classType.cast(player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1()));
     }
 
     public static <T extends Component> List<T> getComponentAt(Player player, List<Pair<Integer, Integer>> coordinates, Class<T> classType) {
+        if(coordinates == null || coordinates.isEmpty()){
+            return null;
+        }
         List<T> components = new ArrayList<>();
         for (Pair<Integer, Integer> coordinate : coordinates) {
             components.add(getComponentAt(player, coordinate, classType));
