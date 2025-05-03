@@ -18,8 +18,8 @@ public class ClientFactory {
     }
 
     public Client createClient(String clientType, String serverAddress, int port) {
-        return switch (clientType) {
-            case "socket" -> new SocketClient(serverAddress, port);
+        return switch (clientType.toUpperCase()) {
+            case "SOCKET" -> new SocketClient(serverAddress, port);
             case "RMI" -> new RMIClient(serverAddress, port);
             default -> throw new IllegalArgumentException("Unknown client type: " + clientType);
         };

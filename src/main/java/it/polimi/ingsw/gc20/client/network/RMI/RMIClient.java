@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.network.RMI;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
@@ -12,6 +13,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -60,7 +62,13 @@ public class RMIClient implements Client {
         try {
             boolean result = authService.login(username);
             if (result) {
-                LOGGER.info("Successfully logged in as: " + username);
+                // Register the view with the server
+                registry.rebind("View " + username, UnicastRemoteObject.exportObject(View.getInstance(), 0));
+                if (authService.setView(username)) {
+                    LOGGER.info("Successfully logged in as: " + username);
+                } else {
+                    LOGGER.warning("Failed to login for user: " + username);
+                }
             }
         } catch (RemoteException e) {
             LOGGER.warning("Error during login: " + e.getMessage());
@@ -89,7 +97,7 @@ public class RMIClient implements Client {
 
     @Override
     public void logout(String username) {
-        // Logout logic not required for this project
+        // Logout logic is not required for this project
     }
 
     @Override

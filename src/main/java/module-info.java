@@ -7,6 +7,8 @@ module it.polimi.ingsw.gc20 {
     requires javatuples;
     requires java.rmi;
     requires java.logging;
+    requires com.googlecode.lanterna;
+    requires java.desktop;
     opens it.polimi.ingsw.gc20 to javafx.fxml;
     exports it.polimi.ingsw.gc20;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;

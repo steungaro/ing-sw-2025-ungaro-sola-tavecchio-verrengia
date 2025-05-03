@@ -34,7 +34,7 @@ public class NetworkManager {
         // Start the client
         client.start();
 
-        // Add shutdown hook to stop the client gracefully
+        // Add a shutdown hook to stop the client gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             client.stop();
             LOGGER.info("Client stopped.");
