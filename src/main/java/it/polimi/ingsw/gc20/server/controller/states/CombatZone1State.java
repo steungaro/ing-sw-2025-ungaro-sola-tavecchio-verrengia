@@ -18,7 +18,7 @@ import org.javatuples.Pair;
 import java.util.*;
 
 @SuppressWarnings("unused") // dynamically created by Cards
-public class CombatZone1State extends CargoState {
+public class    CombatZone1State extends CargoState {
     private final int lostDays;
     private int lostCargo;
     private final List<Projectile> cannonFires;
@@ -72,7 +72,13 @@ public class CombatZone1State extends CargoState {
         if(!currentPhase.equals(phase.CANNON)) {
             throw new IllegalStateException("Not in cannon phase");
         }
-        declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class)));
+        Set<Cannon> cannonsComponents = new HashSet<>();
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class)!=null)
+            cannonsComponents.addAll((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class));
+        if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
+        declaredFirepower.put(player, getModel().FirePower(player, cannonsComponents, batteriesComponents));
         nextPlayer();
         if (getCurrentPlayer() == null) {
             //remove from declaredFirePower the players that are not in getInGameConnectedPlayers

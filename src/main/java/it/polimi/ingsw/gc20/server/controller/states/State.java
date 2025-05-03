@@ -185,7 +185,7 @@ public abstract class State{
         return null;
     }
 
-    public void currentQuit(Player playerByID) throws InvalidTurnException {
+    public void currentQuit(Player playerByID) throws InvalidTurnException, InvalidShipException {
         exception();
     }
 }

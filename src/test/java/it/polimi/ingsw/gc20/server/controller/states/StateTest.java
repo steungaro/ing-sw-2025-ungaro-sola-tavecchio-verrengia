@@ -749,12 +749,56 @@ class StateTest {
     }
 
     @Test
-    void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException {
+    void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException, EmptyCabinException, DieNotRolledException, InvalidEngineException {
         // Classe da testare: CombactZone1, MeteorSwarm, CombactZone0
         // CombatZone0State
         CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        Pair<Integer, Integer> coordinate = new Pair<>(1, 2);
+        List<Pair<Integer, Integer>> coordinates = new ArrayList<>();
+        coordinates.add(coordinate);
+
+        Battery newBattery = new Battery();
+        newBattery.setSlots(4);
+        newBattery.setAvailableEnergy(4);
+        model.addToShip(newBattery, gameController.getPlayerByID("player1"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player2"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player3"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player4"), 1, 3);
+
+        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
+        coordinatesBat.add(new Pair<>(1, 3));
+
+        Cannon cannon = new Cannon();
+        cannon.setPower(2);
+        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player2"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player3"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player4"), 1, 2);
+
+        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
+        coordinatesCan.add(new Pair<>(1, 2));
+
+
+
+        combatZone0State.activateEngines(gameController.getPlayerByID("player1"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player2");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player2"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player3");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player3"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player4");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player4"), coordinatesCan, coordinatesBat);
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        Pair<Integer, Integer> coordinatesCabin = new Pair<>(3, 2);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"), coordinatesCabin.getValue0(), coordinatesCabin.getValue1());
+        List<Pair<Integer, Integer>> coordinatesCabin2 = new ArrayList<>();
+        coordinatesCabin2.add(coordinatesCabin);
+
+        combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinatesCabin2);
         combatZone0State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
-        // NOTE -> se uguagliamo giocatore scelto a caso
+        // NOTE -> se uguagliamo giocatore scelto a seconda della posizione
+        // TODO -> Poi da chiamare fire()
 
         // CombatZone1State
         CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
@@ -766,7 +810,7 @@ class StateTest {
         meteorSwarmState.setCurrentPlayer("player1");
         meteorSwarmState.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
 
-        // Maybe can be tested in other ways
+        // TODO: Maybe can be tested in other ways
     }
 
     @Test
