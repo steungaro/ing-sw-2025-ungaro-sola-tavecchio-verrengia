@@ -119,17 +119,17 @@ public class CombatZone0State extends PlayingState {
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-            if (player.getShip().crew() == 0) {
+            /*if (player.getShip().crew() == 0) {
                 lostCrew = 0;
                 currentPhase = phase.CANNON;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
                 currentPhase = phase.CANNON;
-            }
-            if (lostCrew == 0) {
+            }*/
+            //if (lostCrew == 0) {
                 currentPhase = phase.CANNON;
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
-            }
+            //}
         } else {
             throw new InvalidTurnException("It's not your turn");
         }

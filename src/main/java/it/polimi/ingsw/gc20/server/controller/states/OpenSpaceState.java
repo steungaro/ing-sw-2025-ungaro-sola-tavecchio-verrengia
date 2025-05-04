@@ -34,7 +34,12 @@ public class OpenSpaceState extends PlayingState {
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredEngines.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
+
+        List<Battery> energy = new ArrayList<>();
+        if (Translator.getComponentAt(player, batteries, Battery.class) != null)
+            energy.addAll(Translator.getComponentAt(player, batteries, Battery.class));
+
+        declaredEngines.put(player, getModel().EnginePower(player, engines.size(), energy));
         nextPlayer();
         if (getCurrentPlayer() == null) {
             endTurn();

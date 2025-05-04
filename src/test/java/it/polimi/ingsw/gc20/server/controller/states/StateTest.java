@@ -628,8 +628,6 @@ class StateTest {
         combatZone1State.loseEnergy(gameController.getPlayerByID("player1"), coordinates);
 
         assertEquals(0, battery.getAvailableEnergy());
-
-        // TODO -> combatZone1State
     }
 
     @Test
@@ -690,21 +688,209 @@ class StateTest {
     }
 
     @Test
-    void loseCrew() {
+    void loseCrew() throws InvalidTileException, InvalidTurnException, EmptyCabinException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedShipState, CombactZone0State, SlaversState
-        // TODO: CombactZone1, ComactZone0
+
+        // AbandonedShipState
+        adventureCard.setCrew(1);
+        adventureCard.setCredits(2);
+        adventureCard.setLostDays(3);
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        assertThrows(InvalidTurnException.class, () -> abandonedShipState.loseCrew(gameController.getPlayerByID("player2"), new ArrayList<>()));
+        assertThrows(IllegalStateException.class, () -> abandonedShipState.loseCrew(gameController.getPlayerByID("player1"), new ArrayList<>()));
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"),2, 2);
+
+        List<Pair<Integer, Integer>> coordinates = new ArrayList<>();
+        coordinates.add(new Pair<>(2, 2));
+
+        abandonedShipState.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(2, cabin.getAstronauts());
+        assertEquals(2, gameController.getPlayerByID("player1").getCredits());
+        assertEquals(-3, gameController.getPlayerByID("player1").getPosition());
+
+        // CombactZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+
+        Field currentPhaseField = CombatZone0State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone0State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combatZone0State);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "CREW");
+        currentPhaseField.set(combatZone0State, cannonPhase);
+
+        gameController.setState(combatZone0State);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(1, cabin.getAstronauts());
+
+        // SlaversState
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        gameController.setState(slaversState);
+        gameController.getModel().setActiveCard(adventureCard);
+        slaversState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> slaversState.loseCrew(gameController.getPlayerByID("player2"), new ArrayList<>()));
+
+        slaversState.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(0, cabin.getAstronauts());
+        assertEquals(4, gameController.getPlayerByID("player1").getCredits());
+        assertEquals(-9, gameController.getPlayerByID("player1").getPosition());
     }
 
     @Test
-    void endMove() {
+    void endMove() throws InvalidTurnException, NoSuchFieldException, IllegalAccessException, InvalidShipException {
         // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
-        // TODO: CombactZone1, ComactZone0
+
+        // AbandonedShipState
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> abandonedShipState.endMove(gameController.getPlayerByID("player2")));
+        abandonedShipState.endMove(gameController.getPlayerByID("player1"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player2"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player3"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player4"));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // AbandoneStationState
+        adventureCard.setLostDays(2);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+
+        gameController.getModel().setActiveCard(adventureCard);
+        abandonedStationState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> abandonedStationState.endMove(gameController.getPlayerByID("player2")));
+        abandonedStationState.endMove(gameController.getPlayerByID("player1"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player2"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player3"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player4"));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+        gameController.setState(abandonedStationState);
+
+        abandonedStationState.setCurrentPlayer("player1");
+        model.getActiveCard().playCard();
+        adventureCard.playCard();
+        abandonedStationState.endMove(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+        assertEquals(-2, gameController.getPlayerByID("player1").getPosition());
+
+        // CombatZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> combatZone1State.endMove(gameController.getPlayerByID("player2")));
+        assertThrows(IllegalStateException.class, () -> combatZone1State.endMove(gameController.getPlayerByID("player1")));
+
+        Field removingCargoField = CombatZone1State.class.getDeclaredField("removingCargo");
+        removingCargoField.setAccessible(true);
+        removingCargoField.setBoolean(combatZone1State, true);
+
+        combatZone1State.endMove(gameController.getPlayerByID("player1"));
+        assertFalse(removingCargoField.getBoolean(combatZone1State));
+
+        // PiratesState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> piratesState.endMove(gameController.getPlayerByID("player2")));
+        piratesState.endMove(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // PlatesState
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        gameController.getModel().setActiveCard(adventureCard);
+        planetsState.setCurrentPlayer("player1");
+
+        Field landedPlayerField = PlanetsState.class.getDeclaredField("landedPlayer");
+        landedPlayerField.setAccessible(true);
+        landedPlayerField.set(planetsState, "player1");
+
+        planetsState.endMove(gameController.getPlayerByID("player1"));
+        landedPlayerField.set(planetsState, "player2");
+        planetsState.endMove(gameController.getPlayerByID("player2"));
+        landedPlayerField.set(planetsState, "player3");
+        planetsState.endMove(gameController.getPlayerByID("player3"));
+        landedPlayerField.set(planetsState, "player4");
+        planetsState.endMove(gameController.getPlayerByID("player4"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        assertEquals(-2, gameController.getPlayerByID("player1").getPosition());
+
+        // SmugglersState
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        gameController.getModel().setActiveCard(adventureCard);
+        smugglersState.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> smugglersState.endMove(gameController.getPlayerByID("player2")));
+        smugglersState.endMove(gameController.getPlayerByID("player1"));
+        /*smugglersState.endMove(gameController.getPlayerByID("player2"));
+        smugglersState.endMove(gameController.getPlayerByID("player3"));
+        smugglersState.endMove(gameController.getPlayerByID("player4"));*/
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        gameController.setState(smugglersState);
+        smugglersState.setCurrentPlayer("player1");
+
+        Field defeatedField = SmugglersState.class.getDeclaredField("defeated");
+        defeatedField.setAccessible(true);
+        defeatedField.setBoolean(smugglersState, true);
+
+        smugglersState.endMove(gameController.getPlayerByID("player1"));
+        assertEquals(-4, gameController.getPlayerByID("player1").getPosition());
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
     }
 
     @Test
-    void activateEngines() {
+    void activateEngines() throws InvalidTurnException, InvalidEngineException, EnergyException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
         // Classe da testare: OpenSpaceState, CombactZone1State, CombactZone0State
-        // TODO: CombactZone1, ComactZone0
+        // OpenSpaceState
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.getModel().setActiveCard(adventureCard);
+        openSpaceState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> openSpaceState.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>()));
+
+        openSpaceState.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // CombactZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+
+        Class<?> phaseEnumClass = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Field phaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        phaseField.setAccessible(true);
+        Object engineEnum = Enum.valueOf((Class<Enum>) phaseEnumClass, "ENGINE");
+        phaseField.set(combatZone1State, engineEnum);
+
+        combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // TODO
     }
 
     @Test
