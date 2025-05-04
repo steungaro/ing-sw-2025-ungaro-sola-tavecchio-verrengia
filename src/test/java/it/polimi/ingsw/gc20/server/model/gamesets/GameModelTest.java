@@ -497,10 +497,10 @@ class GameModelTest {
             assertEquals(1, ship.getCargo().get(CargoColor.GREEN));
 
             gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold1, cargoHold2);
-            assertEquals(2, ship.getCargo().get(CargoColor.GREEN));
+            assertEquals(1, ship.getCargo().get(CargoColor.GREEN));
 
             gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold2, null);
-            assertEquals(1, ship.getCargo().getOrDefault(CargoColor.GREEN, 0));
+            assertEquals(0, ship.getCargo().getOrDefault(CargoColor.GREEN, 0));
 
         } catch (Exception e) {
             fail("exception should not be thrown: " + e.getMessage());

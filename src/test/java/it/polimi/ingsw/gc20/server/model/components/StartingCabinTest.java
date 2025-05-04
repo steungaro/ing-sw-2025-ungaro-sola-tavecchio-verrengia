@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class StartingCabinTest {
     StartingCabin cabin;
-
     @BeforeEach
     void setUp() {
         cabin = new StartingCabin();
