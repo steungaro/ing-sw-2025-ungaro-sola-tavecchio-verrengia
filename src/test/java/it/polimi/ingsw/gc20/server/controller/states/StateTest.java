@@ -915,7 +915,7 @@ class StateTest {
 
         assertThrows(InvalidTurnException.class, () -> combatZone0State.activateShield(gameController.getPlayerByID("player2"), new Pair<>(2,2), new Pair<>(2,2)));
         //combatZone0State.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
-        // TODO
+        // TODO wait for manager initialization
 
         // CombactZone1State
         List<Projectile> projectiles = new ArrayList<>();
@@ -941,16 +941,16 @@ class StateTest {
 
 
         // MeteorSwarmState
+        projectiles.add(projectile);
+        adventureCard.setProjectiles(projectiles);
         MeteorSwarmState meteorSwarm = new MeteorSwarmState(model, gameController, adventureCard);
         gameController.setState(meteorSwarm);
         gameController.getModel().setActiveCard(adventureCard);
         meteorSwarm.setCurrentPlayer("player1");
 
         meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
-        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
-        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
-        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
 
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
     }
 
     @Test
@@ -1071,7 +1071,6 @@ class StateTest {
         combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinatesCabin2);
         combatZone0State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         // NOTE -> se uguagliamo giocatore scelto a seconda della posizione
-        // TODO -> Poi da chiamare fire()
 
         // CombatZone1State
         CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
@@ -1119,12 +1118,10 @@ class StateTest {
         validatingShipState.readyToFly(gameController.getPlayerByID("player4"));
 
         assertTrue(validatingShipState.allShipsReadyToFly());
-        // Classe da testare: ValidatingShipState
     }
 
     @Test
     void readyToFly() {
-        // Classe da testare: ValidatingShipState
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         assertThrows(IllegalArgumentException.class, () -> validatingShipState.readyToFly(gameController.getPlayerByID("player1")));
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
@@ -1132,9 +1129,53 @@ class StateTest {
     }
 
     @Test
-    void automaticAction() {
+    void automaticAction() throws InvalidTileException {
         // Classe da testare: Epidemic, Stardust, ComactZone1, ComactZone0
-        // TODO: CombactZone1, ComactZone0
+        // EpidemicState
+        EpidemicState epidemicState = new EpidemicState(model, gameController, adventureCard);
+        gameController.setState(epidemicState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        Map<Direction, ConnectorEnum> directions = new HashMap<>();
+        directions.put(Direction.UP, ConnectorEnum.U);
+        directions.put(Direction.DOWN, ConnectorEnum.U);
+        directions.put(Direction.RIGHT, ConnectorEnum.U);
+        directions.put(Direction.LEFT, ConnectorEnum.U);
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"), 1, 2);
+        cabin.setConnectors(directions);
+
+        Cabin cabin2 = new Cabin();
+        cabin2.setAstronauts(3);
+        model.addToShip(cabin2, gameController.getPlayerByID("player1"), 2, 2);
+        cabin2.setConnectors(directions);
+
+        epidemicState.automaticAction();
+        assertEquals(2, cabin2.getAstronauts());
+        assertEquals(2, cabin.getAstronauts());
+
+        // StardustState
+        StardustState stardustState = new StardustState(model, gameController, adventureCard);
+        gameController.setState(stardustState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        stardustState.automaticAction();
+
+        assertEquals(-8, gameController.getPlayerByID("player1").getPosition());
+        assertEquals(-4, gameController.getPlayerByID("player2").getPosition());
+
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+
+        combatZone0State.automaticAction();
+
+        // TODO Understan why the value change from -12 to -21
+        assertEquals(-8-adventureCard.getLostDays(), gameController.getPlayerByID("player1").getPosition());
     }
 
     @Test
