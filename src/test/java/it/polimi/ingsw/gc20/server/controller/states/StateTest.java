@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.security.InvalidParameterException;
@@ -19,6 +20,7 @@ import java.util.*;
 import org.javatuples.Pair;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.Field;
 
 
 class StateTest {
@@ -29,8 +31,8 @@ class StateTest {
     static AdventureCard adventureCard;
     static String id = "0";
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         String player1 = "player1";
         String player2 = "player2";
         String player3 = "player3";
@@ -271,7 +273,7 @@ class StateTest {
     }
 
     @Test
-    void addAlien() {
+    void addAlien() throws NoSuchFieldException, IllegalAccessException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Cabin cabin = new Cabin();
         cabin.setColor(AlienColor.BROWN);
@@ -281,6 +283,11 @@ class StateTest {
         connectors.put(Direction.LEFT, ConnectorEnum.D);
         connectors.put(Direction.RIGHT, ConnectorEnum.D);
         cabin.setConnectors(connectors);
+
+        Field componentsInHandField = AssemblingState.class.getDeclaredField("componentsInHand");
+        componentsInHandField.setAccessible(true);
+        Map<Player, Component> componentsInHand = (Map<Player, Component>) componentsInHandField.get(assemblingState);
+        componentsInHand.put(gameController.getPlayerByID("player1"), cabin);
 
         assemblingState.placeComponent(gameController.getPlayerByID("player1"), new Pair<>(2, 2));
 
@@ -406,7 +413,7 @@ class StateTest {
     }
 
     @Test
-    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidEngineException {
+    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidEngineException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedStationState, SmugglersState, PlanetsState, CombactZone1, CargoState
         CargoHold cargoHold = new CargoHold();
         cargoHold.setSlots(3);
@@ -457,6 +464,14 @@ class StateTest {
         cargoHold.loadCargo(CargoColor.BLUE);
         CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
         gameController.setState(combactZone1);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combactZone1);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combactZone1, cannonPhase);
+
         combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -468,7 +483,7 @@ class StateTest {
     }
 
     @Test
-    void moveCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, InvalidEngineException, EnergyException {
+    void moveCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, InvalidEngineException, EnergyException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedStationState, PlanetsState, CombatZone1
 
         // AbandonedStationState
@@ -510,6 +525,14 @@ class StateTest {
         CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
         gameController.setState(combactZone1);
         model.setActiveCard(adventureCard);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combactZone1);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combactZone1, cannonPhase);
+
         combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -522,7 +545,7 @@ class StateTest {
     }
 
     @Test
-    void loseEnergy() throws InvalidTileException, InvalidTurnException, EnergyException, CargoNotLoadable, CargoFullException, InvalidCannonException, InvalidEngineException {
+    void loseEnergy() throws InvalidTileException, InvalidTurnException, EnergyException, CargoNotLoadable, CargoFullException, InvalidCannonException, InvalidEngineException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classe da testare: , CargoState, AbandonedStationState, CombactZone1
         // Smugglers
         adventureCard.setFirePower(-1);
@@ -588,6 +611,15 @@ class StateTest {
 
         battery.setAvailableEnergy(1);
         gameController.getPlayerByID("player1").getShip().addBatteries(2);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combatZone1State);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combatZone1State, cannonPhase);
+
+
         combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -795,6 +827,7 @@ class StateTest {
         List<Pair<Integer, Integer>> coordinatesCabin2 = new ArrayList<>();
         coordinatesCabin2.add(coordinatesCabin);
 
+        combatZone0State.setCurrentPlayer("player1");
         combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinatesCabin2);
         combatZone0State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         // NOTE -> se uguagliamo giocatore scelto a seconda della posizione
@@ -851,11 +884,11 @@ class StateTest {
 
     @Test
     void readyToFly() {
+        // Classe da testare: ValidatingShipState
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         assertThrows(IllegalArgumentException.class, () -> validatingShipState.readyToFly(gameController.getPlayerByID("player1")));
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
         validatingShipState.readyToFly(gameController.getPlayerByID("player1"));
-        // Classe da testare: ValidatingShipState
     }
 
     @Test

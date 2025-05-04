@@ -116,7 +116,12 @@ public class    CombatZone1State extends CargoState {
         if(!currentPhase.equals(phase.ENGINE)) {
             throw new IllegalStateException("Not in engine phase");
         }
-        declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
+
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
+
+        declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteriesComponents));
         nextPlayer();
         if (getCurrentPlayer() == null) {
             declaredEnginePower.keySet().removeIf(p -> !getController().getInGameConnectedPlayers().contains(p.getUsername()));
