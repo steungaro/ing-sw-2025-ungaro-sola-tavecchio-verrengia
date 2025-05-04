@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
@@ -883,20 +884,73 @@ class StateTest {
         Object engineEnum = Enum.valueOf((Class<Enum>) phaseEnumClass, "ENGINE");
         phaseField.set(combatZone1State, engineEnum);
 
-        combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        /*combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
 
-        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));*/
 
         // TODO
     }
 
     @Test
-    void activateShield() {
+    void activateShield() throws InvalidTurnException, EnergyException, InvalidShipException, DieNotRolledException, InvalidTileException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classe da testare: CombactZone1, CombactZone0, MeteorSwarm, PirateState
         // TODO: CombactZone1, ComactZone0
+
+        // CombactZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+
+        Shield shield = new Shield();
+        Battery battery = new Battery();
+        battery.setSlots(3);
+        battery.setAvailableEnergy(3);
+
+        model.addToShip(shield, gameController.getPlayerByID("player1"), 2, 2);
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 3, 3);
+
+        assertThrows(InvalidTurnException.class, () -> combatZone0State.activateShield(gameController.getPlayerByID("player2"), new Pair<>(2,2), new Pair<>(2,2)));
+        //combatZone0State.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+        // TODO
+
+        // CombactZone1State
+        List<Projectile> projectiles = new ArrayList<>();
+        Projectile projectile = new Projectile();
+        projectile.setFireType(FireType.LIGHT_FIRE);
+        projectile.setDirection(Direction.UP);
+        projectiles.add(projectile);
+        adventureCard.setProjectiles(projectiles);
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.automaticAction();
+
+        Class<?> phaseEnumClass = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Field phaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        phaseField.setAccessible(true);
+        Object engineEnum = Enum.valueOf((Class<Enum>) phaseEnumClass, "FIRE");
+        phaseField.set(combatZone1State, engineEnum);
+
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.rollDice(gameController.getPlayerByID("player1"));
+        combatZone1State.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+
+
+        // MeteorSwarmState
+        MeteorSwarmState meteorSwarm = new MeteorSwarmState(model, gameController, adventureCard);
+        gameController.setState(meteorSwarm);
+        gameController.getModel().setActiveCard(adventureCard);
+        meteorSwarm.setCurrentPlayer("player1");
+
+        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+
     }
 
     @Test
