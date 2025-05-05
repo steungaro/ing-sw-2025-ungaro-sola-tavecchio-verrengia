@@ -74,15 +74,18 @@ public class TUI extends View {
                 for (int i = 0; i < networkTypes.length; i++) {
                     System.out.println((i + 1) + ". " + networkTypes[i]);
                 }
+                System.out.print(" > ");
 
                 type = scanner.nextLine().trim();
 
             } while (!type.matches("[1-2]"));
 
             System.out.println("Insert server address (leave blank for default):");
+            System.out.print(" > ");
             String address = scanner.nextLine().trim();
 
             System.out.println("Insert server port (leave blank for default):");
+            System.out.print(" > ");
             String port = scanner.nextLine().trim();
 
             System.out.println("Trying connection...");
@@ -107,6 +110,7 @@ public class TUI extends View {
                 System.out.println("Connection failed. Type [1] to try again, type [2] to exit.");
                 // reset the console color to default
                 System.out.print("\033[0m");
+                System.out.print(" > ");
                 String retry = scanner.nextLine().trim();
                 if ("2".equals(retry)) {
                     System.exit(0);
@@ -139,6 +143,7 @@ public class TUI extends View {
             writingLock.lock();
 
             System.out.println("Insert username:");
+            System.out.print(" > ");
             String username = scanner.nextLine().trim();
 
             if (username.equalsIgnoreCase("q")) {
@@ -148,23 +153,18 @@ public class TUI extends View {
             if (username.isBlank() || username.equals("__BROADCAST__")) {
                 // set the console color to red
                 System.out.print("\033[31m");
-                System.out.println("Username not valid.");
+                System.out.println("Username not valid. Please try again.");
                 // reset the console color to default
                 System.out.print("\033[0m");
                 continue;
             }
 
             client.login(username);
-            try {
-                this.wait();
-            } catch (InterruptedException e) {
-                LOGGER.severe("Error while waiting for login response: " + e.getMessage());
-            }
         } while (!loggedIn);
 
         // set the console color to green
         System.out.print("\033[32m");
-        System.out.println("Logged in as " + username);
+        System.out.println("Logged in as: " + username);
         // reset the console color to default
         System.out.print("\033[0m");
 
