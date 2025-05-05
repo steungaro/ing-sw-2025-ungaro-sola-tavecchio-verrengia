@@ -431,9 +431,10 @@ class GameControllerTest {
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
+        assertTrue(gameController.isPlayerDisconnected("player1"));
         gameController.reconnectPlayer("player1");
+        gameController.preDrawConnect();
         assertFalse(gameController.isPlayerDisconnected("player1"));
-        assertTrue(gameController.getInGameConnectedPlayers().contains("player1"));
         assertFalse(gameController.getDisconnectedPlayers().contains("player1"));
         assertEquals(4, gameController.getOnlinePlayers());
     }
