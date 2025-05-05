@@ -115,7 +115,6 @@ public class CombatZone0State extends PlayingState {
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
             if (player.getShip().crew() == 0) {
                 lostCrew = 0;
-                currentPhase = phase.CANNON;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
             }
@@ -156,9 +155,6 @@ public class CombatZone0State extends PlayingState {
                     .getKey();
             currentPhase = phase.CREW;
             setCurrentPlayer(p.getUsername());
-            while (manager.isFirstHeavyFire()) {
-                manager.fire();
-            }
         }
     }
 

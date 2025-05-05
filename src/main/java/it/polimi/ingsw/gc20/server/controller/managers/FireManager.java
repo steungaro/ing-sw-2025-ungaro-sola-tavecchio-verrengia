@@ -73,12 +73,14 @@ public class FireManager {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
         if (skipNextFire) {
+            fires.removeFirst();
             skipNextFire = false;
+            return;
         }
         if (fires.isEmpty()) {
             return;
         }
-        Projectile fire = fires.getFirst();
+        Projectile fire = fires.removeFirst();
         int dice = gm.getGame().lastRolled();
         if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection()) !=
         ConnectorEnum.ZERO) {
