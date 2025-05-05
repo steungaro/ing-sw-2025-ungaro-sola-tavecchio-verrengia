@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.common.interfaces;
 
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
