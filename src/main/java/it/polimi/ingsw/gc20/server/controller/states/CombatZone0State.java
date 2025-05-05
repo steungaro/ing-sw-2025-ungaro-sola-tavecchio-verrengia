@@ -75,7 +75,10 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        Set<Cannon> cannonsComponents = new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class));
+        Set<Cannon> cannonsComponents = new HashSet<>();
+        if(Translator.getComponentAt(player, cannons, Cannon.class) != null) {
+            cannonsComponents = new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class));
+        }
         List<Battery> batteriesComponents = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
