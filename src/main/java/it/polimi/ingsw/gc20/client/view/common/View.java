@@ -5,10 +5,12 @@ import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 
 public abstract class View implements ViewInterface {
     private static View instance;
-    private boolean loggedIn;
-    private String username;
+    protected boolean loggedIn;
+    protected String username;
 
     protected Client client;
+
+
 
     protected View() {
         this.loggedIn = false;

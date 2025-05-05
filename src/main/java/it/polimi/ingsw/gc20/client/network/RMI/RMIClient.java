@@ -101,6 +101,16 @@ public class RMIClient implements Client {
     }
 
     @Override
+    public String getAddress() {
+        return serverAddress;
+    }
+
+    @Override
+    public int getPort() {
+        return port;
+    }
+
+    @Override
     public void killGame(String username) {
         try {
             gameService.killGame(username);

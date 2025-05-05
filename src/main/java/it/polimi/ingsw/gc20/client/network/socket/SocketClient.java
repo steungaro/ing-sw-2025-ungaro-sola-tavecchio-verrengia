@@ -104,6 +104,16 @@ public class SocketClient implements Client {
         // logout logic is not needed for this project
     }
 
+    @Override
+    public String getAddress() {
+        return serverAddress;
+    }
+
+    @Override
+    public int getPort() {
+        return serverPort;
+    }
+
 
     private void connectToServer() {
         try {
@@ -114,7 +124,10 @@ public class SocketClient implements Client {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
             executor.submit(this::receiveMessages);
+            LOGGER.info("Socket client started, waiting for messages...");
+            running = true;
         } catch (Exception e) {
+            running = false;
             LOGGER.severe("Error while connecting to server: " + e.getMessage());
         }
     }

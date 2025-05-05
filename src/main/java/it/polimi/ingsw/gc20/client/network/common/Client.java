@@ -14,4 +14,8 @@ public interface Client extends GameControllerInterface, MatchControllerInterfac
 
     @Deprecated
     void logout(String username);
+
+    String getAddress();
+
+    int getPort();
 }
