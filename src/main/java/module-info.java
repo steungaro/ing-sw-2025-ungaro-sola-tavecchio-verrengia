@@ -16,5 +16,6 @@ module it.polimi.ingsw.gc20 {
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.gamesets to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.player to com.fasterxml.jackson.databind;
+    opens it.polimi.ingsw.gc20.client.view.common.localmodel.components to com.fasterxml.jackson.databind;
 
 }
