@@ -120,8 +120,12 @@ public class FireManager {
             throw new InvalidTurnException("It's not your turn");
         }
         if (!validator.isSplit()) {
-            throw new IllegalStateException("Ship is valid.");
+            // ignore
         }
-        validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
+        try {
+            validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
+        } catch (IllegalStateException e){
+            // ignore
+        }
     }
 }

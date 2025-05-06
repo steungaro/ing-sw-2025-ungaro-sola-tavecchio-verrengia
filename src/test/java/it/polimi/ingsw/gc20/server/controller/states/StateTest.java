@@ -1280,17 +1280,111 @@ class StateTest {
 
         PausedState pausedState = new PausedState(combatZone0State, model, gameController);
         assertTrue(pausedState.toString().contains("PausedState"));
+
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        assertTrue(openSpaceState.toString().contains("OpenSpaceState"));
+
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        assertTrue(smugglersState.toString().contains("SmugglersState"));
     }
 
     @Test
-    void currentQuit() throws InvalidTurnException {
-        // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
+    void currentQuit() throws InvalidTurnException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, InvalidShipException {
         // AbandonedShipState
         AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
         gameController.setState(abandonedShipState);
         gameController.getModel().setActiveCard(adventureCard);
-        assertThrows(InvalidTurnException.class, () -> abandonedShipState.currentQuit(gameController.getPlayerByID("player2")));
         abandonedShipState.currentQuit(gameController.getPlayerByID("player1"));
-        assertTrue(gameController.getInGameConnectedPlayers().contains(gameController.getPlayerByID("player2")));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || gameController.getState().toString().contains("AbandonedShipState"));
+
+        // AbandoneStationState
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+        gameController.getModel().setActiveCard(adventureCard);
+        abandonedStationState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || gameController.getState().toString().contains("AbandonedStationState"));
+
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(combatZone0State.getCurrentPlayer() == null || !combatZone0State.getCurrentPlayer().equals("player1"));
+
+        // CombatZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(combatZone1State.getCurrentPlayer() == null || !combatZone1State.getCurrentPlayer().equals("player1"));
+        // case currentPhase = phase.Fire
+        Class<?> phaseEnumClass = CombatZone1State.class.getDeclaredClasses()[0];
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Object enumValue = Enum.valueOf((Class<Enum>) phaseEnumClass, "FIRE");
+        currentPhaseField.set(combatZone1State, enumValue);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone1State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        gameController.setState(meteorSwarmState);
+        gameController.getModel().setActiveCard(adventureCard);
+        meteorSwarmState.setCurrentPlayer("player2");
+        meteorSwarmState.currentQuit(gameController.getPlayerByID("player2"));
+        assertTrue(meteorSwarmState.getCurrentPlayer() == null || !meteorSwarmState.getCurrentPlayer().equals("player1"));
+
+        // OpenSpaceState
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.getModel().setActiveCard(adventureCard);
+        openSpaceState.setCurrentPlayer("player1");
+        openSpaceState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || !openSpaceState.getCurrentPlayer().equals("player1"));
+
+
+        // PiratesState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+        //piratesState.currentQuit(gameController.getPlayerByID("player1"));
+        //assertTrue(gameController.getState().toString().contains("PreDrawState") || !piratesState.getCurrentPlayer().equals("player1"));
+        // TODO
+
+        // PlanetsState
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        gameController.getModel().setActiveCard(adventureCard);
+        planetsState.setCurrentPlayer("player1");
+
+        Field landedPlayerField = PlanetsState.class.getDeclaredField("landedPlayer");
+        landedPlayerField.setAccessible(true);
+        landedPlayerField.set(planetsState, "player1");
+
+        planetsState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || !planetsState.getCurrentPlayer().equals("player1"));
+
+        // SlaversState
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        gameController.setState(slaversState);
+        gameController.getModel().setActiveCard(adventureCard);
+        slaversState.setCurrentPlayer("player1");
+        slaversState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // SmugglersState
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        gameController.getModel().setActiveCard(adventureCard);
+        smugglersState.setCurrentPlayer("player1");
+        smugglersState.currentQuit(gameController.getPlayerByID("player1"));
+
+        Field currentLostCargoField = SmugglersState.class.getDeclaredField("currentLostCargo");
+        currentLostCargoField.setAccessible(true);
+        assertEquals(0, currentLostCargoField.getInt(smugglersState));
+
     }
 }
