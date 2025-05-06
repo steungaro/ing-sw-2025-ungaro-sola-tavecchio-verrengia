@@ -193,6 +193,7 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) {
         nextPlayer();
     }

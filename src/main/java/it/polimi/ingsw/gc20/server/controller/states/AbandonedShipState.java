@@ -82,6 +82,7 @@ public class AbandonedShipState extends PlayingState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) throws InvalidTurnException {
         if (player.getUsername().equals(getCurrentPlayer())) {
             endMove(player);

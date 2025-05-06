@@ -21,4 +21,14 @@ public class PausedState extends State {
     public String toString() {
         return "PausedState";
     }
+
+    @Override
+    public void setCurrentPlayer(String currentPlayer) {
+        // Implementation not needed in paused state
+    }
+
+    @Override
+    public void nextPlayer() {
+        // Implementation not needed in paused state
+    }
 }

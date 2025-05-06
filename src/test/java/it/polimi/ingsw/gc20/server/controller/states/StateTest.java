@@ -1242,4 +1242,55 @@ class StateTest {
             fail("Unexpected exception: " + e.getMessage());
         }
     }
+
+    @Test
+    void toStringTest(){
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        assertTrue(abandonedShipState.toString().contains("AbandonedShipState"));
+
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        assertTrue(abandonedStationState.toString().contains("AbandonedStationState"));
+
+        AssemblingState assemblingState = new AssemblingState(model);
+        assertTrue(assemblingState.toString().contains("AssemblingState"));
+
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        assertTrue(combatZone0State.toString().contains("CombatZone0State"));
+
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        assertTrue(combatZone1State.toString().contains("CombatZone1State"));
+
+        EpidemicState epidemicState = new EpidemicState(model, gameController, adventureCard);
+        assertTrue(epidemicState.toString().contains("EpidemicState"));
+
+        EndgameState endgameState = new EndgameState(gameController);
+        assertTrue(endgameState.toString().contains("EndgameState"));
+
+        ValidatingShipState validatingShipState = new ValidatingShipState(model);
+        assertTrue(validatingShipState.toString().contains("ValidatingShipState"));
+
+        StardustState stardustState = new StardustState(model, gameController, adventureCard);
+        assertTrue(stardustState.toString().contains("StardustState"));
+
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        assertTrue(slaversState.toString().contains("SlaversState"));
+
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        assertTrue(planetsState.toString().contains("PlanetsState"));
+
+        PausedState pausedState = new PausedState(combatZone0State, model, gameController);
+        assertTrue(pausedState.toString().contains("PausedState"));
+    }
+
+    @Test
+    void currentQuit() throws InvalidTurnException {
+        // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
+        // AbandonedShipState
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> abandonedShipState.currentQuit(gameController.getPlayerByID("player2")));
+        abandonedShipState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getInGameConnectedPlayers().contains(gameController.getPlayerByID("player2")));
+    }
 }

@@ -111,6 +111,7 @@ public class SlaversState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
+    @Override
     public void currentQuit(Player player){
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

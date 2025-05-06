@@ -15,6 +15,7 @@ public class PreDrawState extends State{
         getController().preDrawConnect();
     }
 
+    @Override
     public void nextRound(Player player){
         nextRound.add(player);
         if(nextRound.size() == getController().getOnlinePlayers()){

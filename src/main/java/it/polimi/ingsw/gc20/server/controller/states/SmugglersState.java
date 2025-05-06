@@ -176,6 +176,7 @@ public class SmugglersState extends CargoState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) throws InvalidTurnException {
         currentLostCargo = 0;
         endMove(player);
