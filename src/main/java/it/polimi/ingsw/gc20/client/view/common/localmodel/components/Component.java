@@ -27,7 +27,7 @@ import java.util.logging.Logger;
         @JsonSubTypes.Type(value = Shield.class, name = "Shield")
         // Add other component types as needed
 })
-public abstract class Component {
+public class Component {
     public int id;
     public int rotation; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
     public int upConnectors;
@@ -97,7 +97,13 @@ public abstract class Component {
         return downConnectors == 0 ? DOWN0 : downConnectors == 1 ? DOWN1 : downConnectors == 2 ? DOWN2 : DOWN3;
     }
 
-    public abstract String toLine(int i);
+    public String toLine(int i) {
+        return coveredLine(i);
+    }
+
+    public String toString() {
+        return covered();
+    }
 
     protected String leftCol(int row) {
         return switch (leftConnectors) {
@@ -125,14 +131,15 @@ public abstract class Component {
                         ╭─────────────╮
                         │             │
                         │             │
+                        │             │
                         ╰─────────────╯""";
     }
 
     public static String coveredLine(int i) {
         return switch (i) {
             case 0 ->       "╭─────────────╮";
-            case 1, 2 ->    "│             │";
-            case 3 ->       "╰─────────────╯";
+            case 1, 2, 3 ->    "│             │";
+            case 4 ->       "╰─────────────╯";
             default -> null;
         };
     }
@@ -148,7 +155,7 @@ public abstract class Component {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error reading components.json", e);
         }
-        for (int i = 0; i < allComponents.size()/4; i++) {
+        for (int i = 0; i < allComponents.size()/4; i++) { // 4 comps per row
             for (int j = 0; j < 5; j++) {
                 for (Component component : allComponents.subList(i*4, (i+1)*4)) {
                     System.out.print(component.toLine(j));
