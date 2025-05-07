@@ -14,7 +14,7 @@ public enum AlienColor {
             case PURPLE -> "P";
             case BROWN -> "B";
             case BOTH -> "*";
-            case NONE -> " ";
+            case NONE -> "X";
         };
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 public class ViewShip {
     private static final String TOPPER = "╭" + "─".repeat(117) + "╮";
     private static final String BOTTOM = "╰" + "─".repeat(117) + "╯";
+    private static final String SEPARATOR = "├" + "─".repeat(117) + "┤";
     public int baseFirepower;
     public int baseEnginePower;
     public int astronauts;
@@ -40,9 +41,57 @@ public class ViewShip {
         this.waste = waste;
     }
 
+    private String formatFixedLength(String lineContent) {
+        int targetLength = 118; // Desired fixed length
+        int currentLength = lineContent.length();
+        if (currentLength < targetLength) {
+            // Add padding spaces to reach 120 characters
+            return lineContent + " ".repeat(targetLength - currentLength);
+        } else if (currentLength > targetLength) {
+            // If content exceeds, truncate it to fit
+            return lineContent.substring(0, targetLength);
+        }
+        return lineContent; // Already the correct length
+    }
+
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(TOPPER).append("\n");
+
+        String line = "│       Base Firepower: " + baseFirepower +
+                "       │       Base Engine Power: " + baseEnginePower +
+                "       │       Astronauts: " + astronauts +
+                "       │       Aliens: " + aliens.getColorChar();
+        sb.append(formatFixedLength(line)).append("│\n");
+        sb.append(SEPARATOR).append("\n");
+
+        // For each textual row of the booked components
+        for (int i = 0; i < 5; i++) {
+            sb.append("│").append(" ".repeat(9)).append(i == 2 ? "Booked components" : " ".repeat(17)).append(" ".repeat(9));
+            for (int j = 0; j < booked.length; j++) {
+                if (booked[j] == null) {
+                    sb.append(Component.coveredLine(i));
+                } else {
+                    sb.append(booked[j].toLine(i));
+                }
+                sb.append(" ");
+            }
+            if (i == 2) {
+                sb.append(" ".repeat(13)).append("Components in waste: ").append(waste == null ? "0" : waste.size()).append(" ".repeat(14));
+                if (waste.size() >= 10) {
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                if (waste.size() >= 100) {
+                    sb.deleteCharAt(sb.length() - 2);
+                }
+            } else {
+                sb.append(" ".repeat(49));
+            }
+            sb.append(" │\n");
+        }
+
+        sb.append(SEPARATOR).append("\n");
 
         // For each row in the components' matrix
         // For each textual row of the component
@@ -84,13 +133,27 @@ public class ViewShip {
     public static void main(String[] args) {
         ViewShip viewShip = new ViewShip();
         viewShip.baseFirepower = 5;
-        viewShip.baseEnginePower = 10;
+        viewShip.baseEnginePower = 9;
         viewShip.astronauts = 3;
         viewShip.aliens = AlienColor.PURPLE;
 
         // Initialize components and booked
         viewShip.components = new Component[5][7];
-        viewShip.booked = new Component[5];
+        viewShip.booked = new Component[2];
+        viewShip.waste = List.of(new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield());
+
+        viewShip.booked[0] = new Shield();
+        viewShip.booked[0].upConnectors = 3;
+        viewShip.booked[0].downConnectors = 0;
+        viewShip.booked[0].leftConnectors = 2;
+        viewShip.booked[0].rightConnectors = 1;
+        viewShip.booked[1] = new Battery();
+        viewShip.booked[1].upConnectors = 0;
+        viewShip.booked[1].downConnectors = 1;
+        viewShip.booked[1].leftConnectors = 3;
+        viewShip.booked[1].rightConnectors = 2;
+
+
 
         // Example components
         viewShip.components[2][3] = new StartingCabin();
