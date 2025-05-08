@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.ingsw.gc20.server.exceptions.*;
+import org.junit.jupiter.api.TestTemplate;
 
 import java.util.*;
 
@@ -183,6 +184,8 @@ class GameControllerTest {
         }
 
         gameController.unloadCargo("player1", loaded, position);
+
+        // TODO: doesn't call moveCargo()
     }
 
     @Test
@@ -332,6 +335,8 @@ class GameControllerTest {
         gameController.rollDice("player1");
         Thread.sleep(2000);
         assertEquals(3, battery.getAvailableEnergy());
+
+        // TODO: doesn't call activateShield()
     }
 
     @Test
@@ -518,6 +523,8 @@ class GameControllerTest {
         gameController.takeComponentFromUnviewed("player1", 0);
         gameController.addComponentToViewed("player1");
         assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+
+        // TODO doesn't call takeComponentFromBooked
     }
 
     @Test
@@ -617,7 +624,7 @@ class GameControllerTest {
     void validateShip() {
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         gameController.setState(validatingShipState);
-        // TODO : implement a better test
+        // TODO
     }
 
     @Test
@@ -635,7 +642,7 @@ class GameControllerTest {
         Thread.sleep(90000);
 
         gameController.turnHourglass("player1");
-        assertEquals(1, gameController.getModel().getTurnedHourglass());
+        assertEquals(1, gameController.getHourglassTime("player1"));
     }
 
     @Test
@@ -759,5 +766,35 @@ class GameControllerTest {
         assertTrue(inGameConnectedPlayers.contains("player2"));
         assertTrue(inGameConnectedPlayers.contains("player3"));
         assertTrue(inGameConnectedPlayers.contains("player4"));
+    }
+
+    @Test
+    void shootEnemyTest(){
+        // TODO
+    }
+
+    @Test
+    void getScoretest(){
+        // TODO
+    }
+
+    @Test
+    void chooseBranchTest(){
+        // TODO
+    }
+
+    @Test
+    void getPlayerDataTest(){
+        // TODO
+    }
+
+    @Test
+    void takeComponentFromViewedTest(){
+        // TODO (note that is synchronized)
+    }
+
+    @Test
+    void killGame(){
+        // TODO
     }
 }
