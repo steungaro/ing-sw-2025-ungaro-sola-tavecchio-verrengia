@@ -227,7 +227,7 @@ class StateTest {
         assertTrue(time == 90 || time == 89);
     }
 
-    /*@Test
+    @Test
     void turnHourglass() {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         try {
@@ -242,7 +242,7 @@ class StateTest {
             fail("Unexpected exception: " + e.getMessage());
         }
         assertEquals(1, gameController.getModel().getTurnedHourglass());
-    }*/
+    }
 
     @Test
     void isShipValid() {
@@ -896,8 +896,7 @@ class StateTest {
 
     @Test
     void activateShield() throws InvalidTurnException, EnergyException, InvalidShipException, DieNotRolledException, InvalidTileException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
-        // Classe da testare: CombactZone1, CombactZone0, MeteorSwarm, PirateState
-        // TODO: CombactZone1, ComactZone0
+        // TODO: PiratesState
 
         // CombactZone0State
         CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
@@ -1196,7 +1195,7 @@ class StateTest {
     @Test
     void rollDice() throws InvalidTurnException, InvalidCannonException, EnergyException {
         // Classi da testare: CombactZone1, CombactZone0, MeteorSwarmState, PirateState, PlayingState
-        // TODO: CombatZone1, CombactZone0
+        // TODO: CombactZone0
 
         // MeteorSwarmState
         adventureCard.setFirePower(10);
@@ -1286,6 +1285,12 @@ class StateTest {
 
         SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
         assertTrue(smugglersState.toString().contains("SmugglersState"));
+
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        assertTrue(meteorSwarmState.toString().contains("MeteorSwarmState"));
+
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        assertTrue(piratesState.toString().contains("PiratesState"));
     }
 
     @Test
@@ -1352,7 +1357,7 @@ class StateTest {
         piratesState.setCurrentPlayer("player1");
         //piratesState.currentQuit(gameController.getPlayerByID("player1"));
         //assertTrue(gameController.getState().toString().contains("PreDrawState") || !piratesState.getCurrentPlayer().equals("player1"));
-        // TODO
+        // TODO PirateState
 
         // PlanetsState
         PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
@@ -1387,4 +1392,26 @@ class StateTest {
         assertEquals(0, currentLostCargoField.getInt(smugglersState));
 
     }
+
+    @Test
+    void chooseBranchTest(){
+        // TODO: CombatZone0, PiratesState
+    }
+
+    @Test
+    void killGameTest(){
+        // TODO: EndGame
+    }
+
+    @Test
+    void nextRound(){
+        // TODO PreDrawState
+    }
+
+    @Test
+    void allShipValidatedtest(){
+        // TODO ValidatingShipState
+    }
+
+    // TODO Costruttori PlayingState
 }
