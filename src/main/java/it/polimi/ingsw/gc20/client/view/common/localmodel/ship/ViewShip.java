@@ -12,6 +12,7 @@ public class ViewShip {
     public int baseEnginePower;
     public int astronauts;
     public AlienColor aliens;
+    public boolean isLearner;
 
     private Component[][] components;
     private Component[] booked;
@@ -54,53 +55,8 @@ public class ViewShip {
         return lineContent; // Already the correct length
     }
 
-
-    public String toString() {
+    private String level2Ship() {
         StringBuilder sb = new StringBuilder();
-        sb.append(TOPPER).append("\n");
-
-        String line = "│       Base Firepower: " + baseFirepower +
-                "       │       Base Engine Power: " + baseEnginePower +
-                "       │       Astronauts: " + astronauts +
-                "       │       Aliens: " + aliens.getColorChar();
-        sb.append(formatFixedLength(line)).append("│\n");
-        sb.append(SEPARATOR).append("\n");
-
-        // For each textual row of the booked components
-        for (int i = 0; i < 5; i++) {
-            sb.append("│").append(" ".repeat(9)).append(i == 2 ? "Booked components" : " ".repeat(17)).append(" ".repeat(9));
-            for (int j = 0; j < booked.length; j++) {
-                if (booked[j] == null) {
-                    sb.append(Component.coveredLine(i));
-                } else {
-                    sb.append(booked[j].toLine(i));
-                }
-                sb.append(" ");
-            }
-            if (i == 2) {
-                sb.append(" ".repeat(13)).append("Components in waste: ").append(waste == null ? "0" : waste.size()).append(" ".repeat(14));
-                if (waste.size() >= 10) {
-                    sb.deleteCharAt(sb.length() - 1);
-                }
-                if (waste.size() >= 100) {
-                    sb.deleteCharAt(sb.length() - 2);
-                }
-            } else {
-                sb.append(" ".repeat(49));
-            }
-            sb.append(" │\n");
-        }
-
-        sb.append(SEPARATOR).append("\n");
-
-        // For each row in the components' matrix
-        // For each textual row of the component
-        // For each component in the row
-        sb.append("│   ");
-        for (int i = 0; i < 7; i++) {
-            sb.append("       ").append(i + 4).append("        ");
-        }
-        sb.append(" │\n");
         for (int i = 0; i < components.length; i++) {
             for (int j = 0; j < 5; j++) {
                 sb.append("│ ").append(j == 2 ? i + 5 : " ").append(" ");
@@ -121,6 +77,112 @@ public class ViewShip {
                 sb.append(j == 2 ? i + 4 : " ").append(" │\n");
             }
         }
+        return sb.toString();
+    }
+
+    private String levelLShip() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < 5; j++) {
+                sb.append("│ ").append(j == 2 ? i + 5 : " ").append(" ");
+                for (int k = 0; k < components[i].length; k++) {
+                    if (components[i][k] == null) {
+                        if (    k == 0 || // First column)
+                                k == components[i].length - 1 || // Last column
+                                ((i == 0) && (k == 1 || k == 2 || k ==4 || k == 5)) ||
+                                (i == 1 && (k == 1 || k == 5)) ||
+                                (i == components.length - 1 && k== 3)
+                                ) {
+                            sb.append(" ".repeat(15));
+                        } else {
+                            sb.append(Component.coveredLine(j));
+                        }
+
+                    } else {
+                        sb.append(components[i][k].toLine(j));
+                    }
+                    sb.append(" ");
+                }
+                sb.append(j == 2 ? i + 4 : " ").append(" │\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    private String bookedAndWaste() {
+        StringBuilder sb = new StringBuilder();
+        // For each textual row of the booked components
+        for (int i = 0; i < 5; i++) {
+            sb.append("│").append(" ".repeat(9)).append(i == 2 ? "Booked components" : " ".repeat(17)).append(" ".repeat(9));
+            for (Component component : booked) {
+                if (component == null) {
+                    sb.append(Component.coveredLine(i));
+                } else {
+                    sb.append(component.toLine(i));
+                }
+                sb.append(" ");
+            }
+            if (i == 2) {
+                sb.append(" ".repeat(13)).append("Components in waste: ").append(waste == null ? "0" : waste.size()).append(" ".repeat(14));
+                if (waste.size() >= 10) {
+                    sb.deleteCharAt(sb.length() - 1);
+                }
+                if (waste.size() >= 100) {
+                    sb.deleteCharAt(sb.length() - 2);
+                }
+            } else {
+                sb.append(" ".repeat(49));
+            }
+            sb.append(" │\n");
+        }
+        return sb.toString();
+    }
+
+    private String waste() {
+        StringBuilder sb = new StringBuilder();
+        // For each textual row of the booked components
+        sb.append("│").append(" ".repeat(47)).append("Components in waste: ").append(waste == null ? "0" : waste.size()).append(" ".repeat(48));
+        if (waste.size() >= 10) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        if (waste.size() >= 100) {
+            sb.deleteCharAt(sb.length() - 2);
+        }
+        sb.append("│\n");
+        return sb.toString();
+    }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(TOPPER).append("\n");
+
+        String line = "│       Base Firepower: " + baseFirepower +
+                "       │       Base Engine Power: " + baseEnginePower +
+                "       │       Astronauts: " + astronauts +
+                "       │       Aliens: " + aliens.getColorChar();
+        sb.append(formatFixedLength(line)).append("│\n");
+        sb.append(SEPARATOR).append("\n");
+
+        if (isLearner) {
+            sb.append(waste());
+        } else {
+            sb.append(bookedAndWaste());
+        }
+
+        sb.append(SEPARATOR).append("\n");
+
+        sb.append("│   ");
+        for (int i = 0; i < 7; i++) {
+            sb.append("       ").append(i + 4).append("        ");
+        }
+        sb.append(" │\n");
+
+        if (isLearner) {
+            sb.append(levelLShip());
+        } else {
+            sb.append(level2Ship());
+        }
         sb.append("│   ");
         for (int i = 0; i < 7; i++) {
             sb.append("       ").append(i + 4).append("        ");
@@ -136,6 +198,7 @@ public class ViewShip {
         viewShip.baseEnginePower = 9;
         viewShip.astronauts = 3;
         viewShip.aliens = AlienColor.PURPLE;
+        viewShip.isLearner = false;
 
         // Initialize components and booked
         viewShip.components = new Component[5][7];
@@ -154,7 +217,6 @@ public class ViewShip {
         viewShip.booked[1].rightConnectors = 2;
 
 
-
         // Example components
         viewShip.components[2][3] = new StartingCabin();
         viewShip.components[2][3].downConnectors = 3;
@@ -170,6 +232,20 @@ public class ViewShip {
         viewShip.components[3][1] = new Cabin();
         viewShip.components[3][2] = new Cabin();
 
+
+        System.out.println(viewShip);
+
+        viewShip = new ViewShip();
+        viewShip.baseFirepower = 5;
+        viewShip.baseEnginePower = 9;
+        viewShip.astronauts = 3;
+        viewShip.aliens = AlienColor.PURPLE;
+        viewShip.isLearner = true;
+
+        // Initialize components and booked
+        viewShip.components = new Component[5][7];
+        viewShip.booked = new Component[2];
+        viewShip.waste = List.of(new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield());
 
         System.out.println(viewShip);
     }
