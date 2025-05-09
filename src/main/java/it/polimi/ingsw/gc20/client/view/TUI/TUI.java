@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 import java.rmi.RemoteException;
@@ -12,6 +13,7 @@ import java.util.logging.Logger;
 public class TUI extends View {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
     Scanner scanner;
+    MenuState menu;
 
     private ReentrantLock writingLock = new ReentrantLock();
 
