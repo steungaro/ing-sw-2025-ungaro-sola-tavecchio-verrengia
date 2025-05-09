@@ -142,6 +142,7 @@ public class AbandonedStationState extends CargoState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) throws InvalidTurnException {
         if (player.getUsername().equals(getCurrentPlayer())) {
             endMove(player);

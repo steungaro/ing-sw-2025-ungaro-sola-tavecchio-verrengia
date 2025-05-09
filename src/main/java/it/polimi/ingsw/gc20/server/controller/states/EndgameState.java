@@ -19,7 +19,8 @@ public class EndgameState extends State {
         scheduler.schedule(this::killGame, 30, TimeUnit.SECONDS);
     }
 
-    private void killGame() {
+    @Override
+    public void killGame() {
         MatchController.getInstance().endGame(getController().getGameID());
         scheduler.shutdown();
     }

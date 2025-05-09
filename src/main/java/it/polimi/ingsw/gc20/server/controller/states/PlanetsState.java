@@ -109,6 +109,7 @@ public class PlanetsState extends CargoState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) throws InvalidTurnException {
         endMove(player);
     }

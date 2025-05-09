@@ -46,7 +46,8 @@ public class OpenSpaceState extends PlayingState {
         }
     }
 
-    private void endTurn(){
+    @Override
+    public void endTurn(){
         declaredEngines.forEach((key, value) -> {
             getModel().movePlayer(key, value);
             if (value == 0) {
@@ -57,7 +58,8 @@ public class OpenSpaceState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
-    public void currQuit(Player player) {
+    @Override
+    public void currentQuit(Player player) {
             nextPlayer();
             if(getCurrentPlayer() == null) {
                 endTurn();

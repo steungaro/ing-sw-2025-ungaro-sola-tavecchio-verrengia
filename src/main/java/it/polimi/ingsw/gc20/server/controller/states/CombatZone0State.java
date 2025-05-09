@@ -76,8 +76,9 @@ public class CombatZone0State extends PlayingState {
             throw new InvalidTurnException("It's not your turn");
         }
         Set<Cannon> cannonsComponents = new HashSet<>();
-        if((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class)!=null)
-            cannonsComponents.addAll((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class));
+        if(Translator.getComponentAt(player, cannons, Cannon.class) != null) {
+            cannonsComponents = new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class));
+        }
         List<Battery> batteriesComponents = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
@@ -90,6 +91,8 @@ public class CombatZone0State extends PlayingState {
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
             currentPhase = phase.FIRE;
+            setCurrentPlayer(p.getUsername());
+            manager = new FireManager(getModel(), cannonFires, p);
         }
     }
 
@@ -119,17 +122,16 @@ public class CombatZone0State extends PlayingState {
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-            /*if (player.getShip().crew() == 0) {
+            if (player.getShip().crew() == 0) {
                 lostCrew = 0;
-                currentPhase = phase.CANNON;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
                 currentPhase = phase.CANNON;
-            }*/
-            //if (lostCrew == 0) {
+            }
+            if (lostCrew == 0) {
                 currentPhase = phase.CANNON;
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
-            //}
+            }
         } else {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -163,9 +165,6 @@ public class CombatZone0State extends PlayingState {
                     .getKey();
             currentPhase = phase.CREW;
             setCurrentPlayer(p.getUsername());
-            /*while (manager.isFirstHeavyFire()) {
-                manager.fire();
-            }*/
         }
     }
 
@@ -194,6 +193,7 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
+    @Override
     public void currentQuit(Player player) {
         nextPlayer();
     }

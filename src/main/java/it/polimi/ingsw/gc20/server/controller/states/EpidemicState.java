@@ -34,7 +34,7 @@ public class EpidemicState extends PlayingState {
     @Override
     public void automaticAction() {
         getModel().getInGamePlayers().stream()
-                .filter(p -> getController().isPlayerDisconnected(p.getUsername()))
+                .filter(p -> getController().getInGameConnectedPlayers().contains(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

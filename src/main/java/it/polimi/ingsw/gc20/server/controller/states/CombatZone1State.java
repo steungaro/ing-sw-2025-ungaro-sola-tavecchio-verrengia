@@ -251,6 +251,8 @@ public class    CombatZone1State extends CargoState {
             }
             catch (InvalidTurnException e) {
                 //ignore
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
             }
         }
         else {
