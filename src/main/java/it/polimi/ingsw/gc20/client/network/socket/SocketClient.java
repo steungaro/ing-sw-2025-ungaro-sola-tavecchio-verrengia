@@ -64,18 +64,25 @@ public class SocketClient implements Client {
     }
 
     public void receiveMessages() {
-        // Implementation for receiving messages from the server
         while (running) {
             try {
-                // Check if the socket is closed
+                // Check if the socket is valid and open
                 if (socket == null || socket.isClosed()) {
                     LOGGER.warning("Socket is closed, stopping message reception.");
                     break;
                 }
-                // Read messages from the socket
+                
+                // Receive the message
                 Message message = (Message) in.readObject();
-
-                message.handleMessage();
+                
+                // Submit message handling to the executor for asynchronous processing
+                executor.submit(() -> {
+                    try {
+                        message.handleMessage();
+                    } catch (Exception e) {
+                        LOGGER.warning("Error while handling message: " + e.getMessage());
+                    }
+                });
             } catch (IOException | ClassNotFoundException e) {
                 LOGGER.warning("Error while receiving messages: " + e.getMessage());
                 disconnect();
@@ -123,7 +130,14 @@ public class SocketClient implements Client {
             // Start a thread to handle incoming messages
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-            executor.submit(this::receiveMessages);
+            Thread messageReceiverThread = new Thread(() -> {
+                try {
+                    receiveMessages();
+                } catch (Exception e) {
+                    LOGGER.warning("Error while receiving messages: " + e.getMessage());
+                }
+            });
+            messageReceiverThread.start();
             LOGGER.info("Socket client started, waiting for messages...");
             running = true;
         } catch (Exception e) {
