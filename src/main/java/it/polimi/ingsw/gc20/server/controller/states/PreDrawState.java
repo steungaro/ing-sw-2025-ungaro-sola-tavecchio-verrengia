@@ -18,6 +18,15 @@ public class PreDrawState extends State{
     public void nextRound(Player player){
         nextRound.add(player);
         if(nextRound.size() == getController().getOnlinePlayers()){
+            getModel().getGame().sortPlayerByPosition();
+            for (int i = 1; i< getModel().getGame().getPlayers().size(); i++){
+                if (getModel().getGame().getPlayers().getFirst().getPosition()-getModel().getGame().getPlayers().get(i).getPosition() >= getModel().getGame().getBoard().getSpaces()){
+                    getModel().getGame().getPlayers().get(i).setGameStatus(false);
+                }
+                if (getModel().getGame().getPlayers().get(i).getShip().getAstronauts()==0){
+                    getModel().getGame().getPlayers().get(i).setGameStatus(false);
+                }
+            }
             getController().drawCard();
         }
     }

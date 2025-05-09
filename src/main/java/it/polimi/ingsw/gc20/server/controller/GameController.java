@@ -58,25 +58,15 @@ public class GameController implements GameControllerInterface {
      * @param state is the new state of the game
      */
     public void setState(State state) {
-        try{
-            this.state = state;
-            //TODO: notify players of state change
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error setting state", e);
-        }
+        this.state = state;
+        //TODO: notify players of state change
     }
 
     /** Getter method for the gameID
      * @return game id
      */
     public String getGameID() {
-        try{
-            return gameID;
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting game ID", e);
-        }
-        return null;
+        return gameID;
     }
 
     /**
@@ -113,12 +103,7 @@ public class GameController implements GameControllerInterface {
      * @return the current game state
      */
     public String getState() {
-        try{
-            return state.toString();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting state", e);
-        }
-        return null;
+        return state.toString();
     }
 
     /**
