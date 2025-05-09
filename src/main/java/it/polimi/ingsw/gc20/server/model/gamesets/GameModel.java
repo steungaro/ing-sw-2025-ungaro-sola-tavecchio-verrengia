@@ -352,15 +352,6 @@ public class GameModel {
      * @throws EmptyDeckException if the deck is empty
      */
     public AdventureCard drawCard() throws EmptyDeckException{
-        game.sortPlayerByPosition();
-        for (int i = 1; i< game.getPlayers().size(); i++){
-            if (game.getPlayers().getFirst().getPosition()-game.getPlayers().get(i).getPosition() >= game.getBoard().getSpaces()){
-                game.getPlayers().get(i).setGameStatus(false);
-            }
-            if (game.getPlayers().get(i).getShip().getAstronauts()==0){
-                game.getPlayers().get(i).setGameStatus(false);
-            }
-        }
         AdventureCard card = game.getBoard().drawCard();
         while (Objects.equals(card.getName(), "CombatZone") && getInGamePlayers().size() == 1){
             card = game.getBoard().drawCard();
