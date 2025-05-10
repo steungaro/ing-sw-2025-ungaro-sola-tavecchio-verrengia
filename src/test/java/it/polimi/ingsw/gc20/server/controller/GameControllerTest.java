@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller;
 
+import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.model.cards.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
@@ -10,6 +11,7 @@ import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -185,7 +187,7 @@ class GameControllerTest {
 
         gameController.unloadCargo("player1", loaded, position);
 
-        // TODO: doesn't call moveCargo()
+        gameController.moveCargo("player1", loaded, position, position);
     }
 
     @Test
@@ -800,26 +802,51 @@ class GameControllerTest {
 
     @Test
     void getScoretest(){
-        // TODO
+        EndgameState endgameState = new EndgameState(gameController);
+        gameController.setState(endgameState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        assertFalse(gameController.getScore().isEmpty());
     }
 
     @Test
-    void chooseBranchTest(){
-        // TODO
+    void chooseBranchTest() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException {
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+        Field managerField2 = PiratesState.class.getDeclaredField("manager");
+        managerField2.setAccessible(true);
+        managerField2.set(piratesState, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
+        gameController.chooseBranch("player1", new Pair<>(1, 2));
+        assertTrue(piratesState.getCurrentPlayer().equals("player2"));
+
     }
 
     @Test
     void getPlayerDataTest(){
-        // TODO
+        Player player1 = gameController.getPlayerByID("player1");
+        Player asked = gameController.getPlayerData("player2", "player1");
+
+        assertEquals(player1.getUsername(), asked.getUsername());
     }
 
     @Test
     void takeComponentFromViewedTest(){
-        // TODO (note that is synchronized)
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToViewed("player1");
+
+        gameController.takeComponentFromViewed("player1", 0);
+
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
     }
 
     @Test
     void killGame(){
-        // TODO
+        gameController.killGame("player1");
+        assertFalse(gameController.getModel().getGame().getPlayers().contains("player1"));
     }
 }

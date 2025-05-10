@@ -1542,13 +1542,10 @@ class StateTest {
         validatingShipState.readyToFly(gameController.getPlayerByID("player4"));
         assertTrue(validatingShipState.allShipsValidated());
     }
-    // TODO: testare State
 
     @Test
     void getScore(){
         EndgameState endgameState = new EndgameState(gameController);
         assertTrue(endgameState.getScore()!=null);
     }
-
-    // TODO Costruttori PlayingState
 }
