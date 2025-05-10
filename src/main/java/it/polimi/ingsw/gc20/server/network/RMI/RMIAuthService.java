@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
+import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
@@ -25,7 +27,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
 
     /**Function to log in a user
      * @param username The username of the user.
-     * @return The session token for the user.
+     * @return True if the user was logged in successfully, false otherwise.
      */
     @Override
     public boolean login(String username) {
@@ -61,6 +63,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
      * @return True if the user was logged out successfully, false otherwise.
      * @throws RemoteException if the token is invalid.
      */
+    @Override
+    @Deprecated
     public boolean logout(String username) throws RemoteException {
         LOGGER.info(String.format("User disconnected: " + username));
         ClientHandler client = NetworkService.getInstance().getClient(username);
@@ -69,6 +73,19 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             return true;
         } else {
             LOGGER.warning("User not found");
+            return false;
+        }
+    }
+
+    @Override
+    public boolean setView(String username) throws RemoteException {
+        try {
+            RMIClientHandler clientHandler = (RMIClientHandler) NetworkService.getInstance().getClient(username);
+            clientHandler.setView((ViewInterface) RMIServerHandler.getInstance().locateObject("View " + username));
+            LOGGER.info("View set for user: " + username);
+            return true;
+        } catch (RemoteException e) {
+            LOGGER.severe("Error while setting the view: " + e.getMessage());
             return false;
         }
     }

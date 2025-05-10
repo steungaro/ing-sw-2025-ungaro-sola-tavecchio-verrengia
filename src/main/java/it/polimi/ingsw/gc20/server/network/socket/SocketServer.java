@@ -4,11 +4,8 @@ import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -88,13 +85,6 @@ public class SocketServer implements Server {
     }
 
     @Override
-    public void broadcastMessage(Message message) {
-        for (ClientHandler client : clients) { // No need to create a copy
-            executor.submit(() -> client.sendToClient(message));
-        }
-    }
-
-    @Override
     public void updateClient(String username, ClientHandler client) {
         ClientHandler existingClient = NetworkService.getInstance().getClient(username);
         if (existingClient != null) {
@@ -109,6 +99,7 @@ public class SocketServer implements Server {
         LOGGER.info("Client updated (Socket): " + client.getClientUsername());
     }
 
+    @Override
     public void removeClient(ClientHandler client) {
         clients.remove(client);
         NetworkService.getInstance().removeClient(client.getClientUsername());

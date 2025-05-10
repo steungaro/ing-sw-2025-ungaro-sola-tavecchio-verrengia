@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
+import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.server.exceptions.ServerCriticalError;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
@@ -26,7 +27,7 @@ public class RMIServer implements Server {
      * Constructor for the RMIServer class.
      */
     public RMIServer() {
-        rmiServerHandler = new RMIServerHandler();
+        rmiServerHandler = RMIServerHandler.getInstance();
         this.clients = new CopyOnWriteArrayList<>();
         this.executor = Executors.newCachedThreadPool();
     }
@@ -106,16 +107,7 @@ public class RMIServer implements Server {
         LOGGER.info("removed client: " + client.getClientUsername());
     }
 
-    /** Function to broadCast a message
-     *
-     * @param message message to broadcast
-     */
-    public void broadcastMessage(Message message) {
-        for (ClientHandler client : clients) { // No need to create a copy
-            executor.submit(() -> client.sendToClient(message));
-        }
-    }
-
+    @Override
     public void updateClient(String username, ClientHandler client) {
         ClientHandler existingClient = NetworkService.getInstance().getClient(username);
         if (existingClient != null) {

@@ -11,6 +11,26 @@ public class RMIServerHandler {
     private boolean registryCreated = false;
     private int currentPort;
 
+    private static RMIServerHandler instance;
+
+    /**
+     * Constructor for the RMIServerHandler class.
+     */
+    private RMIServerHandler() {
+    }
+
+    /**
+     * Function to get the instance of the RMIServerHandler class.
+     *
+     * @return RMIServerHandler instance.
+     */
+    public static RMIServerHandler getInstance() {
+        if (instance == null) {
+            instance = new RMIServerHandler();
+        }
+        return instance;
+    }
+
     /**
      * Function to create the RMI registry on a specific port.
      *
@@ -52,5 +72,22 @@ public class RMIServerHandler {
 
         // Bind the stub to the registry
         registry.rebind(name, obj);
+    }
+
+    /**
+     * Function to locate a remote object in the RMI registry.
+     */
+    public Remote locateObject(String name) throws RemoteException {
+        // Check if the registry is created
+        if (!registryCreated) {
+            throw new RemoteException("RMI registry not created");
+        }
+
+        // Locate the object in the registry
+        try {
+            return registry.lookup(name);
+        } catch (Exception e) {
+            throw new RemoteException("Unable to locate object in RMI registry", e);
+        }
     }
 }

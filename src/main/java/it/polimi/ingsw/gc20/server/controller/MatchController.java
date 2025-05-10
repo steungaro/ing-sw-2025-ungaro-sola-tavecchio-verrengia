@@ -177,24 +177,26 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
-     * @param id is the id of the lobby to start
+     * @param username is the user that wants to start the lobby they're into
      */
-    public void startLobby(String id) {
+    public void startLobby(String username) {
         if (lobbies.isEmpty()) {
             logger.log(Level.WARNING, "No lobbies available");
         } else if (games.size() >= maxMatches) {
             logger.log(Level.WARNING, "Max matches reached");
         } else {
             try {
-                games.add(lobbies.stream()
-                        .filter(l -> l.getId().equals(id))
-                        .findFirst()
-                        .orElseThrow(() -> new LobbyException("No such lobby"))
-                        .createGameController());
-                lobbies.removeIf(l -> l.getId().equals(id));
+                Lobby l = null;
+                try {
+                    l = playersInLobbies.get(username);
+                    lobbies.remove(l);
+                    games.add(l.createGameController());
+                } catch (NoSuchElementException e) {
+                    throw new LobbyException("No lobby for username: " + username);
+                }
                 List<String> usersToRemove = new ArrayList<>();
                 for (String user : playersInLobbies.keySet()) {
-                    if (playersInLobbies.get(user).getId().equals(id)) {
+                    if (playersInLobbies.get(user).equals(l)) {
                         usersToRemove.add(user);
                     }
                 }
