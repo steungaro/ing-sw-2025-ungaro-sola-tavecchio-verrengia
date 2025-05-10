@@ -1,17 +1,13 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-import java.util.List;
-
-public record DeckPeekedMessage(
-        String username,
-        List<AdventureCard> cards
+public record DieResultMessage(
+        int dieValue
 ) implements Message {
     @Override
     public String toString() {
-        return username + " peeked a deck";
+        return "Die result: " + dieValue;
     }
 
     @Override
