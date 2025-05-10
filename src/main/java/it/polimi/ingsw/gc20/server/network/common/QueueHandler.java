@@ -51,8 +51,6 @@ public class QueueHandler {
                 // Take() will block until a message is available
                 Message message = messageQueue.take();
                 LOGGER.fine("Processing message: " + message);
-                // Update last ping time for the client
-                HeartbeatService.getInstance().handlePingResponse(message.username());
                 // Delegate to appropriate controller method based on message type
                 message.handleMessage();
             } catch (InterruptedException e) {

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toserver;
 
+import it.polimi.ingsw.gc20.server.network.common.HeartbeatService;
+
 public record Pong(
         String username
 ) implements Message {
@@ -11,6 +13,6 @@ public record Pong(
 
     @Override
     public void handleMessage() {
-        // Handled by the queue manager
+        HeartbeatService.getInstance().handlePingResponse(username);
     }
 }
