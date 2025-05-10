@@ -1,4 +1,8 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
-public record StateMessage() {
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+
+public record StateMessage(
+        // TODO
+) implements Message {
 }
