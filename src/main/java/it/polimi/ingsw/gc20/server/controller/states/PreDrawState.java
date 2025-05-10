@@ -8,7 +8,7 @@ import java.util.List;
 
 public class PreDrawState extends State{
 
-    List<Player> nextRound;
+    List<Player> nextRound = new ArrayList<>();
 
     public PreDrawState(GameController controller) {
         super(controller);

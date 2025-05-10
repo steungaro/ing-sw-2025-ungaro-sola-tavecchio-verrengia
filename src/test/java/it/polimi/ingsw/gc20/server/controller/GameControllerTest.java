@@ -769,8 +769,33 @@ class GameControllerTest {
     }
 
     @Test
-    void shootEnemyTest(){
-        // TODO
+    void shootEnemyTest() throws InvalidTurnException, InvalidCannonException, EnergyException, InvalidTileException {
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        // ==
+        assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        // Ship più potente
+        Cannon cannon = new Cannon();
+        cannon.setPower(2);
+        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+
+        Battery battery = new Battery();
+        battery.setSlots(2);
+        battery.setAvailableEnergy(1);
+
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
+
+        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
+        coordinatesBat.add(new Pair<>(1, 3));
+
+        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
+        coordinatesCan.add(new Pair<>(1, 2));
+        piratesState.setCurrentPlayer("player1");
+
+        model.setActiveCard(adventureCard);
+        gameController.getModel().setActiveCard(adventureCard);
+        gameController.setState(piratesState);
+        gameController.shootEnemy("player1", coordinatesCan, coordinatesBat);
+
     }
 
     @Test
