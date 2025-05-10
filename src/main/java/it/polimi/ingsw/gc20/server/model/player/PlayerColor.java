@@ -7,5 +7,14 @@ public enum PlayerColor {
     BLUE,
     RED,
     GREEN,
-    YELLOW
+    YELLOW;
+
+    public String TUIPrint() {
+        return switch (this) {
+            case BLUE -> "P1";
+            case RED -> "P2";
+            case GREEN -> "P3";
+            case YELLOW -> "P4";
+        };
+    }
 }
