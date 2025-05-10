@@ -336,9 +336,10 @@ class GameControllerTest {
         gameController.setState(meteorSwarmState);
         gameController.rollDice("player1");
         Thread.sleep(2000);
-        assertEquals(3, battery.getAvailableEnergy());
 
-        // TODO: doesn't call activateShield()
+        gameController.activateShield("player1", shieldCoord, batteryCoord);
+
+        assertEquals(2, battery.getAvailableEnergy());
     }
 
     @Test
@@ -523,10 +524,10 @@ class GameControllerTest {
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
 
         gameController.takeComponentFromUnviewed("player1", 0);
-        gameController.addComponentToViewed("player1");
-        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
-
-        // TODO doesn't call takeComponentFromBooked
+        gameController.addComponentToBooked("player1");
+        gameController.takeComponentFromBooked("player1", 0);
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+        assertFalse(((NormalShip)(gameController.getPlayerByID("player1").getShip())).getBooked().contains(comp));
     }
 
     @Test
@@ -626,7 +627,9 @@ class GameControllerTest {
     void validateShip() {
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         gameController.setState(validatingShipState);
-        // TODO
+        gameController.validateShip("player1");
+        assertTrue(validatingShipState.isShipValid(gameController.getPlayerByID("player1")));
+        assertFalse(validatingShipState.allShipsValidated());
     }
 
     @Test
@@ -636,7 +639,7 @@ class GameControllerTest {
         gameController.stopAssembling("player1", 1);
     }
 
-   /* @Test
+   /*@Test
     void turnHourglass() throws HourglassException, InterruptedException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
@@ -645,7 +648,7 @@ class GameControllerTest {
 
         gameController.turnHourglass("player1");
         assertEquals(1, gameController.getHourglassTime("player1"));
-    }
+    }*/
 
     @Test
     void getHourglassTime() throws InterruptedException {
@@ -657,7 +660,7 @@ class GameControllerTest {
         Thread.sleep(1000);
 
         assertEquals(79, gameController.getHourglassTime("player1"));
-    }*/
+    }
 
     @Test
     void peekDeck() {
