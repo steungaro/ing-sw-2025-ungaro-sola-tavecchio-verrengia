@@ -95,6 +95,7 @@ public class RMIClient implements Client {
         return connected;
     }
 
+    @Deprecated
     @Override
     public void logout(String username) {
         // Logout logic is not required for this project

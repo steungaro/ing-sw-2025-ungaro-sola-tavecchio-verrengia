@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.network.socket;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.*;
@@ -14,8 +15,6 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 public class SocketClient implements Client {
@@ -26,7 +25,6 @@ public class SocketClient implements Client {
     private ServerSocket serverSocket;
     private Socket socket;
     private boolean running;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
@@ -74,15 +72,8 @@ public class SocketClient implements Client {
                 
                 // Receive the message
                 Message message = (Message) in.readObject();
-                
-                // Submit message handling to the executor for asynchronous processing
-                executor.submit(() -> {
-                    try {
-                        message.handleMessage();
-                    } catch (Exception e) {
-                        LOGGER.warning("Error while handling message: " + e.getMessage());
-                    }
-                });
+
+                View.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
                 LOGGER.warning("Error while receiving messages: " + e.getMessage());
                 disconnect();

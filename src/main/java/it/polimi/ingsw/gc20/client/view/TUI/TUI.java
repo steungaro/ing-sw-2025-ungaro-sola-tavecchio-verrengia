@@ -20,11 +20,6 @@ public class TUI extends View {
     }
 
     @Override
-    public void updateView(Message message) throws RemoteException {
-        // Your implementation
-    }
-
-    @Override
     public void notifyDisconnection() throws RemoteException {
         // Handle disconnection
     }
