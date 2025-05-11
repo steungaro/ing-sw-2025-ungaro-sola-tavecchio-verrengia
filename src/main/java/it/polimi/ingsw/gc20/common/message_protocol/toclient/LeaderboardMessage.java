@@ -9,9 +9,7 @@ public record LeaderboardMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "LeaderboardMessage{" +
-                "leaderboard=" + leaderboard +
-                '}';
+        return "leaderboard=" + leaderboard;
     }
 
     @Override

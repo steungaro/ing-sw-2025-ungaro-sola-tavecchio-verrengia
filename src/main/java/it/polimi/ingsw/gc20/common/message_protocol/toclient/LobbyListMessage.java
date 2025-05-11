@@ -12,9 +12,7 @@ public record LobbyListMessage(
     public record LobbyInfo(String lobbyName, int maxNumberOfPlayers, int level) implements Serializable {}
     @Override
     public String toString() {
-        return "LobbyListMessage{" +
-                "lobbies=" + lobbies +
-                '}';
+        return "lobbies=" + lobbies;
     }
 
     @Override
