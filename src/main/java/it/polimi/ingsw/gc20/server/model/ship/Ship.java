@@ -36,6 +36,15 @@ public abstract class Ship {
         astronauts = 0;
     }
 
+
+    public Float getSingleCannonsPower() {
+        return singleCannonsPower;
+    }
+
+    public Integer getSingleEngines() {
+        return singleEngines;
+    }
+
     /**
      * Function to add a component to the ship
      * @param c component to add

@@ -13,7 +13,7 @@ import java.util.List;
 public record UpdateShipMessage(
         String username,
         ViewComponent[][] components,
-        String action, // can be "used energies", "movedCargo", "removed component"
+        String action, // can be "used some energies", "moved piece of cargo", "removed a component"
         float baseFirePower,
         int baseEnginePower,
         int astronauts,
@@ -32,11 +32,10 @@ public record UpdateShipMessage(
      * Costruttore statico factory per creare un messaggio partendo dalla nave
      *
      * @param username nome dell'utente che sta assemblando la nave
-     * @param componentInHand componente attualmente in mano al giocatore
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
      * @return una nuova istanza di UpdateShipMessage
      */
-    public static UpdateShipMessage fromShip(String username, Component componentInHand, Ship ship, String action) {
+    public UpdateShipMessage(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
@@ -44,11 +43,8 @@ public record UpdateShipMessage(
                 components[i][j] = ship.getComponentAt(i, j).createViewComponent();
             }
         }
-        try {
-            return new UpdateShipMessage(username, components, action, ship.firePower(null, 0), ship.enginePower(0), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), waste );
-        } catch (Exception _){
-            return null;
-        }
+        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), waste );
+
     }
 
     @Override
