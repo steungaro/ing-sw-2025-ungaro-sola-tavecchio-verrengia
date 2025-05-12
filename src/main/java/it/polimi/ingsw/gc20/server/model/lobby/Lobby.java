@@ -104,4 +104,12 @@ public class Lobby {
     public GameController createGameController() {
         return new GameController(id, users, level);
     }
+
+    public void kill() {
+        this.users.clear();
+        this.id = null;
+        this.maxPlayers = 0;
+        this.ownerUsername = null;
+        this.name = null;
+    }
 }

@@ -1,11 +1,8 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.*;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.CreateLobbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.JoinLobbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LeaveLobbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.StartLobbyMessage;
 
 import java.io.Serial;
 import java.rmi.RemoteException;
@@ -45,5 +42,11 @@ public class RMIMatchControllerService extends UnicastRemoteObject implements Ma
     public void startLobby(String userid) throws RemoteException {
         LOGGER.fine("Received RMI call: startLobby from " + userid);
         queueHandler.enqueue(new StartLobbyMessage(userid));
+    }
+
+    @Override
+    public void killLobby(String username) throws RemoteException {
+        LOGGER.fine("Received RMI call: killLobby from " + username);
+        queueHandler.enqueue(new KillLobbyMessage(username));
     }
 }

@@ -416,4 +416,14 @@ public class RMIClient implements Client {
             LOGGER.warning("Error during starting lobby: " + e.getMessage());
         }
     }
+
+    @Override
+    public void killLobby(String username)  {
+        try {
+            matchService.killLobby(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during killing lobby: " + e.getMessage());
+        }
+
+    }
 }

@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -207,6 +208,21 @@ public class MatchController implements MatchControllerInterface {
             } catch (LobbyException e) {
                 logger.log(Level.WARNING, "No such Lobby", e);
             }
+        }
+    }
+
+    @Override
+    public void killLobby(String username) {
+        if (playersInLobbies.containsKey(username)) {
+            Lobby lobby = playersInLobbies.get(username);
+            if (lobby.getOwnerUsername().equals(username)) {
+                lobby.getUsers().forEach(playersInLobbies::remove);
+                lobby.kill();
+                lobbies.remove(lobby);
+                logger.log(Level.INFO, "Lobby killed");
+            }
+        } else {
+            logger.log(Level.WARNING, "User not found in lobbies");
         }
     }
 
