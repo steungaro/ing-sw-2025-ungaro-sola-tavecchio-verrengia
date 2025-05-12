@@ -11,11 +11,10 @@ public record LobbyMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "LobbyMessage{" +
+        return "lobby data:" +
                 "players=" + players +
                 ", lobbyName='" + lobbyName + '\'' +
-                ", Level=" + level +
-                '}';
+                ", Level=" + level;
     }
 
     @Override

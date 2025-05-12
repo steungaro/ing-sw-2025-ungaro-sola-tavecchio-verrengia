@@ -7,9 +7,7 @@ public record LoginSuccessfulMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "LoginSuccessfulMessage{" +
-                "username='" + username + '\'' +
-                '}';
+        return username + " login successful.";
     }
     @Override
     public void handleMessage() {

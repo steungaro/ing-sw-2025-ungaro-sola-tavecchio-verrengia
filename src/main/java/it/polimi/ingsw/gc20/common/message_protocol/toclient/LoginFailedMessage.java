@@ -7,9 +7,7 @@ public record LoginFailedMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "LoginFailedMessage{" +
-                "username='" + username + '\'' +
-                '}';
+        return username + " login failed.";
     }
 
     @Override
