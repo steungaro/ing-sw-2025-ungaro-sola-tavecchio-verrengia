@@ -14,9 +14,18 @@ public class ViewShip {
     public AlienColor aliens;
     public boolean isLearner;
 
+    private boolean isValid;
     private Component[][] components;
     private Component[] booked;
     private List<Component> waste;
+
+    public void setValid(boolean isValid) {
+        this.isValid = isValid;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
 
     public Component getComponent(int i, int j) {
         return components[i][j];

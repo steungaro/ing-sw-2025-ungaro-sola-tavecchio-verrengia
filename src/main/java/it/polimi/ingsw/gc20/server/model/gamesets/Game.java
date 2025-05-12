@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class Game {
 
-    private final List<Player> players;
+    private List<Player> players = Collections.synchronizedList(new ArrayList<>());
     private Board board;
     private String gameID;
     private Pile pile;
@@ -150,8 +150,11 @@ public class Game {
      * first to last
      */
     public void sortPlayerByPosition() {
-        players.sort((p1, p2) -> p2.getPosition() - p1.getPosition());
+        synchronized (players) {
+            players.sort((p1, p2) -> p2.getPosition() - p1.getPosition());
+        }
     }
+
     /** function that rolls the dice
      * @return int sum of the two dice
      */

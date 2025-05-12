@@ -75,7 +75,15 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class)));
+        Set<Cannon> cannonsComponents = new HashSet<>();
+        if(Translator.getComponentAt(player, cannons, Cannon.class) != null) {
+            cannonsComponents = new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class));
+        }
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
+
+        declaredFirepower.put(player, getModel().FirePower(player, cannonsComponents, batteriesComponents));
         if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
             Player p = declaredFirepower.entrySet()
                     .stream()
@@ -83,6 +91,7 @@ public class CombatZone0State extends PlayingState {
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
             currentPhase = phase.FIRE;
+            setCurrentPlayer(p.getUsername());
             manager = new FireManager(getModel(), cannonFires, p);
         }
     }
@@ -115,9 +124,9 @@ public class CombatZone0State extends PlayingState {
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
             if (player.getShip().crew() == 0) {
                 lostCrew = 0;
-                currentPhase = phase.CANNON;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
+                currentPhase = phase.CANNON;
             }
             if (lostCrew == 0) {
                 currentPhase = phase.CANNON;
@@ -156,9 +165,6 @@ public class CombatZone0State extends PlayingState {
                     .getKey();
             currentPhase = phase.CREW;
             setCurrentPlayer(p.getUsername());
-            while (manager.isFirstHeavyFire()) {
-                manager.fire();
-            }
         }
     }
 
@@ -187,7 +193,8 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
-    public void currQuit(Player player) {
+    @Override
+    public void currentQuit(Player player) {
         nextPlayer();
     }
 }

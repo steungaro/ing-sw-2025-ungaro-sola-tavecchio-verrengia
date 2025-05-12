@@ -8,4 +8,5 @@ public interface MatchControllerInterface extends Remote {
     void createLobby(String name, String user, int maxPlayers, int level) throws RemoteException;
     void leaveLobby(String userid) throws RemoteException;
     void startLobby(String id) throws RemoteException;
+    //TODO killLobby -> when the  owner quits before starting the game
 }

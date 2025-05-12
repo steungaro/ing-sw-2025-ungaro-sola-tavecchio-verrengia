@@ -18,7 +18,7 @@ import org.javatuples.Pair;
 import java.util.*;
 
 @SuppressWarnings("unused") // dynamically created by Cards
-public class CombatZone1State extends PlayingState {
+public class    CombatZone1State extends CargoState {
     private final int lostDays;
     private int lostCargo;
     private final List<Projectile> cannonFires;
@@ -26,6 +26,14 @@ public class CombatZone1State extends PlayingState {
     private final Map<Player, Integer> declaredEnginePower;
     private boolean removingCargo;
     private FireManager manager;
+    //enumeration that represents the state of the game
+    private enum phase {
+        CANNON,
+        ENGINE,
+        FIRE,
+        CARGO
+    }
+    private phase currentPhase;
     /**
      * Default constructor
      */
@@ -41,24 +49,19 @@ public class CombatZone1State extends PlayingState {
             declaredFirepower.put(player, 0f);
         }
         this.removingCargo = false;
-
         this.manager = null;
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        this.automaticAction();
+        currentPhase = phase.CANNON;
     }
 
     @Override
     public void automaticAction() {
         Player player = getController().getInGameConnectedPlayers().stream()
-                        .map(p -> getController().getPlayerByID(p))
-                        .min(Comparator.comparingInt(p -> p.getShip().crew()))
-                        .orElseThrow(() -> new RuntimeException("Error"));
+                .map(p -> getController().getPlayerByID(p))
+                .min(Comparator.comparingInt(p -> p.getShip().crew()))
+                .orElseThrow(() -> new RuntimeException("Error"));
         manager = new FireManager(getModel(), cannonFires, player);
         setCurrentPlayer(player.getUsername());
+        currentPhase = phase.FIRE;
     }
 
     @Override
@@ -66,9 +69,22 @@ public class CombatZone1State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredFirepower.put(player, getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class)));
+        if(!currentPhase.equals(phase.CANNON)) {
+            throw new IllegalStateException("Not in cannon phase");
+        }
+        Set<Cannon> cannonsComponents = new HashSet<>();
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class)!=null)
+            cannonsComponents.addAll((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class));
+        if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
+        declaredFirepower.put(player, getModel().FirePower(player, cannonsComponents, batteriesComponents));
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            //remove from declaredFirePower the players that are not in getInGameConnectedPlayers
+            declaredFirepower.keySet().removeIf(p -> !getController().getInGameConnectedPlayers().contains(p.getUsername()));
+
+            //get the player with the minimum declaredFirePower and make hit lose flight days
             getModel().movePlayer(declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
@@ -76,6 +92,7 @@ public class CombatZone1State extends PlayingState {
                     .getKey()
                     , - lostDays);
             setCurrentPlayer(getController().getFirstOnlinePlayer());
+            currentPhase = phase.ENGINE;
         }
     }
 
@@ -96,9 +113,19 @@ public class CombatZone1State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
+        if(!currentPhase.equals(phase.ENGINE)) {
+            throw new IllegalStateException("Not in engine phase");
+        }
+
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
+
+        declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteriesComponents));
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            declaredEnginePower.keySet().removeIf(p -> !getController().getInGameConnectedPlayers().contains(p.getUsername()));
+
             setCurrentPlayer(declaredEnginePower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
@@ -106,6 +133,7 @@ public class CombatZone1State extends PlayingState {
                     .getKey()
                     .getUsername());
             removingCargo = true;
+            currentPhase = phase.CARGO;
         }
     }
 
@@ -128,10 +156,15 @@ public class CombatZone1State extends PlayingState {
         return getModel().getGame().rollDice();
     }
 
+
+
     @Override
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException, DieNotRolledException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if(!currentPhase.equals(phase.FIRE)) {
+            throw new IllegalStateException("Not being shot at");
         }
         manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
         manager.fire();
@@ -199,10 +232,31 @@ public class CombatZone1State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if(!currentPhase.equals(phase.FIRE)) {
+            throw new IllegalStateException("Not in branch phase");
+        }
         manager.chooseBranch(player, coordinates);
         if (manager.finished()) {
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        }
+    }
+
+    public void currentQuit(Player player){
+        if(currentPhase.equals(phase.FIRE)) {
+            try {
+                chooseBranch(player, new Pair<>(-1, -1));
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+            catch (InvalidTurnException e) {
+                //ignore
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+        }
+        else {
+            nextPlayer();
         }
     }
 }

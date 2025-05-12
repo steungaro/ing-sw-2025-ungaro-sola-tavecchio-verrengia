@@ -108,4 +108,9 @@ public class PlanetsState extends CargoState {
             getController().setState(new PreDrawState(getController()));
         }
     }
+
+    @Override
+    public void currentQuit(Player player) throws InvalidTurnException {
+        endMove(player);
+    }
 }

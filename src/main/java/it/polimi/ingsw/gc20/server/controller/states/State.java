@@ -164,6 +164,10 @@ public abstract class State{
         exception();
     }
 
+    public void killGame(){
+        exception();
+    }
+
     public Map<String, Integer> getScore(){
         exception();
         return null;
@@ -173,19 +177,33 @@ public abstract class State{
         exception();
     }
 
+    public void setCurrentPlayer(String currentPlayer){
+        exception();
+    }
+
+    public void nextPlayer(){
+        exception();
+    }
+
     public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, InvalidShipException, DieNotRolledException {
         exception();
         return 0;
     }
+
     public void nextRound(Player player){
         exception();
     }
 
     public String getCurrentPlayer() {
+        exception();
         return null;
     }
 
-    public void currentQuit(Player playerByID) throws InvalidTurnException {
+    public void currentQuit(Player playerByID) throws InvalidTurnException, InvalidShipException {
+        exception();
+    }
+
+    public void endTurn(){
         exception();
     }
 }

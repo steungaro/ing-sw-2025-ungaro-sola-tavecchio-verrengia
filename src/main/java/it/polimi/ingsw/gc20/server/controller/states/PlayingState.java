@@ -13,24 +13,27 @@ public abstract class PlayingState extends State {
         currentPlayer = controller.getFirstOnlinePlayer();
     }
 
-    public PlayingState(GameController controller) {
+    /*public PlayingState(GameController controller) {
         super(controller);
     }
 
     public PlayingState(GameModel model) {
         super(model);
-    }
+    }*/
 
+    @Override
     public String getCurrentPlayer() {
         return currentPlayer;
     }
 
+    @Override
     public void setCurrentPlayer(String currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
 
     private String currentPlayer;
 
+    @Override
     public void nextPlayer() {
         currentPlayer = getController().getInGameConnectedPlayers().stream()
                 .dropWhile(p -> !p.equals(currentPlayer))
@@ -38,10 +41,12 @@ public abstract class PlayingState extends State {
                 .findFirst().orElse(null);
     }
 
+    @Override
     public int rollDice(Player player) throws InvalidTurnException, InvalidShipException, DieNotRolledException {
         if (!currentPlayer.equals(player.getUsername())) {
             throw new InvalidTurnException("Not your turn.");
         }
         return getModel().getGame().rollDice();
     }
+
 }

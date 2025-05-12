@@ -11,8 +11,10 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused") // dynamically created by Cards
 public class SlaversState extends PlayingState {
@@ -49,7 +51,15 @@ public class SlaversState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        float firePower = getModel().FirePower(player, new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)), Translator.getComponentAt(player, batteries, Battery.class));
+
+        Set<Cannon> cannonsComponents = new HashSet<>();
+        if (Translator.getComponentAt(player, cannons, Cannon.class) != null)
+            cannonsComponents.addAll(new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)));
+        List<Battery> batteriesComponents = new ArrayList<>();
+        if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
+
+        float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
             defeated = true;
@@ -97,6 +107,12 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
+        getController().getActiveCard().playCard();
+        getController().setState(new PreDrawState(getController()));
+    }
+
+    @Override
+    public void currentQuit(Player player){
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

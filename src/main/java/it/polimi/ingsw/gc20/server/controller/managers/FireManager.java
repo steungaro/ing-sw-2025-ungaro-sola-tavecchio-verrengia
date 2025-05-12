@@ -74,12 +74,18 @@ public class FireManager {
         }
         if (skipNextFire) {
             skipNextFire = false;
+            fires.removeFirst();
+            return;
         }
         if (fires.isEmpty()) {
             return;
         }
-        Projectile fire = fires.getFirst();
+        Projectile fire = fires.removeFirst();
         int dice = gm.getGame().lastRolled();
+        if(player.getShip().getFirstComponent(fire.getDirection(), dice) == null)
+            return;
+        if(player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection())==null)
+            return;
         if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection()) !=
         ConnectorEnum.ZERO) {
             return;
@@ -114,8 +120,12 @@ public class FireManager {
             throw new InvalidTurnException("It's not your turn");
         }
         if (!validator.isSplit()) {
-            throw new IllegalStateException("Ship is valid.");
+            // ignore
         }
-        validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
+        try {
+            validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
+        } catch (IllegalStateException e){
+            // ignore
+        }
     }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller;
 
+import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.model.cards.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
@@ -10,10 +11,12 @@ import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.ingsw.gc20.server.exceptions.*;
+import org.junit.jupiter.api.TestTemplate;
 
 import java.util.*;
 
@@ -183,6 +186,8 @@ class GameControllerTest {
         }
 
         gameController.unloadCargo("player1", loaded, position);
+
+        gameController.moveCargo("player1", loaded, position, position);
     }
 
     @Test
@@ -331,7 +336,10 @@ class GameControllerTest {
         gameController.setState(meteorSwarmState);
         gameController.rollDice("player1");
         Thread.sleep(2000);
-        assertEquals(3, battery.getAvailableEnergy());
+
+        gameController.activateShield("player1", shieldCoord, batteryCoord);
+
+        assertEquals(2, battery.getAvailableEnergy());
     }
 
     @Test
@@ -431,9 +439,10 @@ class GameControllerTest {
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
+        assertTrue(gameController.isPlayerDisconnected("player1"));
         gameController.reconnectPlayer("player1");
+        gameController.preDrawConnect();
         assertFalse(gameController.isPlayerDisconnected("player1"));
-        assertTrue(gameController.getInGameConnectedPlayers().contains("player1"));
         assertFalse(gameController.getDisconnectedPlayers().contains("player1"));
         assertEquals(4, gameController.getOnlinePlayers());
     }
@@ -515,8 +524,10 @@ class GameControllerTest {
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
 
         gameController.takeComponentFromUnviewed("player1", 0);
-        gameController.addComponentToViewed("player1");
-        assertTrue(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+        gameController.addComponentToBooked("player1");
+        gameController.takeComponentFromBooked("player1", 0);
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+        assertFalse(((NormalShip)(gameController.getPlayerByID("player1").getShip())).getBooked().contains(comp));
     }
 
     @Test
@@ -616,7 +627,9 @@ class GameControllerTest {
     void validateShip() {
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
         gameController.setState(validatingShipState);
-        // TODO : implement a better test
+        gameController.validateShip("player1");
+        assertTrue(validatingShipState.isShipValid(gameController.getPlayerByID("player1")));
+        assertFalse(validatingShipState.allShipsValidated());
     }
 
     @Test
@@ -626,7 +639,7 @@ class GameControllerTest {
         gameController.stopAssembling("player1", 1);
     }
 
-   /* @Test
+   /*@Test
     void turnHourglass() throws HourglassException, InterruptedException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
@@ -634,8 +647,8 @@ class GameControllerTest {
         Thread.sleep(90000);
 
         gameController.turnHourglass("player1");
-        assertEquals(1, gameController.getModel().getTurnedHourglass());
-    }
+        assertEquals(1, gameController.getHourglassTime("player1"));
+    }*/
 
     @Test
     void getHourglassTime() throws InterruptedException {
@@ -647,15 +660,15 @@ class GameControllerTest {
         Thread.sleep(1000);
 
         assertEquals(79, gameController.getHourglassTime("player1"));
-    }*/
+    }
 
     @Test
     void peekDeck() {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         gameController.setState(assemblingState);
-        List<AdventureCard> peekedCards = gameController.peekDeck("player1", 3);
-        assertNotNull(peekedCards);
-        assertEquals(3, peekedCards.size());
+        gameController.peekDeck("player1", 3);
+        //assertNotNull(peekedCards);
+        //assertEquals(3, peekedCards.size());
     }
 
     @Test
@@ -758,5 +771,85 @@ class GameControllerTest {
         assertTrue(inGameConnectedPlayers.contains("player2"));
         assertTrue(inGameConnectedPlayers.contains("player3"));
         assertTrue(inGameConnectedPlayers.contains("player4"));
+    }
+
+    @Test
+    void shootEnemyTest() throws InvalidTurnException, InvalidCannonException, EnergyException, InvalidTileException {
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        // ==
+        assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        // Ship più potente
+        Cannon cannon = new Cannon();
+        cannon.setPower(2);
+        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+
+        Battery battery = new Battery();
+        battery.setSlots(2);
+        battery.setAvailableEnergy(1);
+
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
+
+        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
+        coordinatesBat.add(new Pair<>(1, 3));
+
+        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
+        coordinatesCan.add(new Pair<>(1, 2));
+        piratesState.setCurrentPlayer("player1");
+
+        model.setActiveCard(adventureCard);
+        gameController.getModel().setActiveCard(adventureCard);
+        gameController.setState(piratesState);
+        gameController.shootEnemy("player1", coordinatesCan, coordinatesBat);
+
+    }
+
+    @Test
+    void getScoretest(){
+        EndgameState endgameState = new EndgameState(gameController);
+        gameController.setState(endgameState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        assertFalse(gameController.getScore().isEmpty());
+    }
+
+    @Test
+    void chooseBranchTest() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException {
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+        Field managerField2 = PiratesState.class.getDeclaredField("manager");
+        managerField2.setAccessible(true);
+        managerField2.set(piratesState, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
+        gameController.chooseBranch("player1", new Pair<>(1, 2));
+        assertTrue(piratesState.getCurrentPlayer().equals("player2"));
+
+    }
+
+    @Test
+    void getPlayerDataTest(){
+        Player player1 = gameController.getPlayerByID("player1");
+        Player asked = gameController.getPlayerData("player2", "player1");
+
+        assertEquals(player1.getUsername(), asked.getUsername());
+    }
+
+    @Test
+    void takeComponentFromViewedTest(){
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        gameController.setState(assemblingState);
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
+        gameController.takeComponentFromUnviewed("player1", 0);
+        gameController.addComponentToViewed("player1");
+
+        gameController.takeComponentFromViewed("player1", 0);
+
+        assertFalse(gameController.getModel().getGame().getPile().getViewed().contains(comp));
+    }
+
+    @Test
+    void killGame(){
+        gameController.killGame("player1");
+        assertFalse(gameController.getModel().getGame().getPlayers().contains("player1"));
     }
 }

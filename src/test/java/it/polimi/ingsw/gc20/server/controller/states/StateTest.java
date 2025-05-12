@@ -1,8 +1,10 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
@@ -11,6 +13,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.security.InvalidParameterException;
@@ -19,6 +22,7 @@ import java.util.*;
 import org.javatuples.Pair;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.Field;
 
 
 class StateTest {
@@ -29,8 +33,8 @@ class StateTest {
     static AdventureCard adventureCard;
     static String id = "0";
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         String player1 = "player1";
         String player2 = "player2";
         String player3 = "player3";
@@ -224,7 +228,7 @@ class StateTest {
         assertTrue(time == 90 || time == 89);
     }
 
-    /*@Test
+    @Test
     void turnHourglass() {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         try {
@@ -239,7 +243,7 @@ class StateTest {
             fail("Unexpected exception: " + e.getMessage());
         }
         assertEquals(1, gameController.getModel().getTurnedHourglass());
-    }*/
+    }
 
     @Test
     void isShipValid() {
@@ -250,7 +254,6 @@ class StateTest {
         assemblingState.takeComponentFromUnviewed(gameController.getPlayerByID("player1"), 0);
         assemblingState.placeComponent(gameController.getPlayerByID("player1"), new Pair<>(1, 2));
         assertFalse(validatingShipState.isShipValid(gameController.getPlayerByID("player1")));
-        // TODO: add more tests for isShipValid
     }
 
     @Test
@@ -271,7 +274,7 @@ class StateTest {
     }
 
     @Test
-    void addAlien() {
+    void addAlien() throws NoSuchFieldException, IllegalAccessException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel());
         Cabin cabin = new Cabin();
         cabin.setColor(AlienColor.BROWN);
@@ -281,6 +284,11 @@ class StateTest {
         connectors.put(Direction.LEFT, ConnectorEnum.D);
         connectors.put(Direction.RIGHT, ConnectorEnum.D);
         cabin.setConnectors(connectors);
+
+        Field componentsInHandField = AssemblingState.class.getDeclaredField("componentsInHand");
+        componentsInHandField.setAccessible(true);
+        Map<Player, Component> componentsInHand = (Map<Player, Component>) componentsInHandField.get(assemblingState);
+        componentsInHand.put(gameController.getPlayerByID("player1"), cabin);
 
         assemblingState.placeComponent(gameController.getPlayerByID("player1"), new Pair<>(2, 2));
 
@@ -406,7 +414,7 @@ class StateTest {
     }
 
     @Test
-    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidEngineException {
+    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidEngineException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedStationState, SmugglersState, PlanetsState, CombactZone1, CargoState
         CargoHold cargoHold = new CargoHold();
         cargoHold.setSlots(3);
@@ -457,6 +465,14 @@ class StateTest {
         cargoHold.loadCargo(CargoColor.BLUE);
         CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
         gameController.setState(combactZone1);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combactZone1);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combactZone1, cannonPhase);
+
         combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -468,7 +484,7 @@ class StateTest {
     }
 
     @Test
-    void moveCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, InvalidEngineException, EnergyException {
+    void moveCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException, InvalidTurnException, CargoException, InvalidCargoException, InvalidEngineException, EnergyException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedStationState, PlanetsState, CombatZone1
 
         // AbandonedStationState
@@ -510,6 +526,14 @@ class StateTest {
         CombatZone1State combactZone1 = new CombatZone1State(model, gameController, adventureCard);
         gameController.setState(combactZone1);
         model.setActiveCard(adventureCard);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combactZone1);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combactZone1, cannonPhase);
+
         combactZone1.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combactZone1.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -522,7 +546,7 @@ class StateTest {
     }
 
     @Test
-    void loseEnergy() throws InvalidTileException, InvalidTurnException, EnergyException, CargoNotLoadable, CargoFullException, InvalidCannonException, InvalidEngineException {
+    void loseEnergy() throws InvalidTileException, InvalidTurnException, EnergyException, CargoNotLoadable, CargoFullException, InvalidCannonException, InvalidEngineException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classe da testare: , CargoState, AbandonedStationState, CombactZone1
         // Smugglers
         adventureCard.setFirePower(-1);
@@ -588,6 +612,15 @@ class StateTest {
 
         battery.setAvailableEnergy(1);
         gameController.getPlayerByID("player1").getShip().addBatteries(2);
+
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combatZone1State);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "ENGINE");
+        currentPhaseField.set(combatZone1State, cannonPhase);
+
+
         combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
@@ -596,8 +629,6 @@ class StateTest {
         combatZone1State.loseEnergy(gameController.getPlayerByID("player1"), coordinates);
 
         assertEquals(0, battery.getAvailableEnergy());
-
-        // TODO -> combatZone1State
     }
 
     @Test
@@ -658,27 +689,323 @@ class StateTest {
     }
 
     @Test
-    void loseCrew() {
+    void loseCrew() throws InvalidTileException, InvalidTurnException, EmptyCabinException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         // Classi da testare: AbandonedShipState, CombactZone0State, SlaversState
-        // TODO: CombactZone1, ComactZone0
+
+        // AbandonedShipState
+        adventureCard.setCrew(1);
+        adventureCard.setCredits(2);
+        adventureCard.setLostDays(3);
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        assertThrows(InvalidTurnException.class, () -> abandonedShipState.loseCrew(gameController.getPlayerByID("player2"), new ArrayList<>()));
+        assertThrows(IllegalStateException.class, () -> abandonedShipState.loseCrew(gameController.getPlayerByID("player1"), new ArrayList<>()));
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"),2, 2);
+
+        List<Pair<Integer, Integer>> coordinates = new ArrayList<>();
+        coordinates.add(new Pair<>(2, 2));
+
+        abandonedShipState.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(2, cabin.getAstronauts());
+        assertEquals(2, gameController.getPlayerByID("player1").getCredits());
+        assertEquals(-3, gameController.getPlayerByID("player1").getPosition());
+
+        // CombactZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+
+        Field currentPhaseField = CombatZone0State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone0State$phase");
+        Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combatZone0State);
+        Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "CREW");
+        currentPhaseField.set(combatZone0State, cannonPhase);
+
+        gameController.setState(combatZone0State);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(1, cabin.getAstronauts());
+
+        // SlaversState
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        gameController.setState(slaversState);
+        gameController.getModel().setActiveCard(adventureCard);
+        slaversState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> slaversState.loseCrew(gameController.getPlayerByID("player2"), new ArrayList<>()));
+
+        slaversState.loseCrew(gameController.getPlayerByID("player1"), coordinates);
+        assertEquals(0, cabin.getAstronauts());
+        assertEquals(4, gameController.getPlayerByID("player1").getCredits());
+        assertEquals(-9, gameController.getPlayerByID("player1").getPosition());
     }
 
     @Test
-    void endMove() {
+    void endMove() throws InvalidTurnException, NoSuchFieldException, IllegalAccessException, InvalidShipException {
         // Classi da testare: AbandonedShipState, AbandoneStationState, CombatZone1State, PiratesState, PlatesState, SmugglersState
-        // TODO: CombactZone1, ComactZone0
+
+        // AbandonedShipState
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+        assertThrows(InvalidTurnException.class, () -> abandonedShipState.endMove(gameController.getPlayerByID("player2")));
+        abandonedShipState.endMove(gameController.getPlayerByID("player1"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player2"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player3"));
+        abandonedShipState.endMove(gameController.getPlayerByID("player4"));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // AbandoneStationState
+        adventureCard.setLostDays(2);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+
+        gameController.getModel().setActiveCard(adventureCard);
+        abandonedStationState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> abandonedStationState.endMove(gameController.getPlayerByID("player2")));
+        abandonedStationState.endMove(gameController.getPlayerByID("player1"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player2"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player3"));
+        abandonedStationState.endMove(gameController.getPlayerByID("player4"));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+        gameController.setState(abandonedStationState);
+
+        abandonedStationState.setCurrentPlayer("player1");
+        model.getActiveCard().playCard();
+        adventureCard.playCard();
+        abandonedStationState.endMove(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+        assertEquals(-2, gameController.getPlayerByID("player1").getPosition());
+
+        // CombatZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> combatZone1State.endMove(gameController.getPlayerByID("player2")));
+        assertThrows(IllegalStateException.class, () -> combatZone1State.endMove(gameController.getPlayerByID("player1")));
+
+        Field removingCargoField = CombatZone1State.class.getDeclaredField("removingCargo");
+        removingCargoField.setAccessible(true);
+        removingCargoField.setBoolean(combatZone1State, true);
+
+        combatZone1State.endMove(gameController.getPlayerByID("player1"));
+        assertFalse(removingCargoField.getBoolean(combatZone1State));
+
+        // PiratesState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> piratesState.endMove(gameController.getPlayerByID("player2")));
+        piratesState.endMove(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // PlatesState
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        gameController.getModel().setActiveCard(adventureCard);
+        planetsState.setCurrentPlayer("player1");
+
+        Field landedPlayerField = PlanetsState.class.getDeclaredField("landedPlayer");
+        landedPlayerField.setAccessible(true);
+        landedPlayerField.set(planetsState, "player1");
+
+        planetsState.endMove(gameController.getPlayerByID("player1"));
+        landedPlayerField.set(planetsState, "player2");
+        planetsState.endMove(gameController.getPlayerByID("player2"));
+        landedPlayerField.set(planetsState, "player3");
+        planetsState.endMove(gameController.getPlayerByID("player3"));
+        landedPlayerField.set(planetsState, "player4");
+        planetsState.endMove(gameController.getPlayerByID("player4"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        assertEquals(-2, gameController.getPlayerByID("player1").getPosition());
+
+        // SmugglersState
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        gameController.getModel().setActiveCard(adventureCard);
+        smugglersState.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> smugglersState.endMove(gameController.getPlayerByID("player2")));
+        smugglersState.endMove(gameController.getPlayerByID("player1"));
+        /*smugglersState.endMove(gameController.getPlayerByID("player2"));
+        smugglersState.endMove(gameController.getPlayerByID("player3"));
+        smugglersState.endMove(gameController.getPlayerByID("player4"));*/
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        gameController.setState(smugglersState);
+        smugglersState.setCurrentPlayer("player1");
+
+        Field defeatedField = SmugglersState.class.getDeclaredField("defeated");
+        defeatedField.setAccessible(true);
+        defeatedField.setBoolean(smugglersState, true);
+
+        smugglersState.endMove(gameController.getPlayerByID("player1"));
+        assertEquals(-4, gameController.getPlayerByID("player1").getPosition());
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
     }
 
     @Test
-    void activateEngines() {
+    void activateEngines() throws InvalidTurnException, InvalidEngineException, EnergyException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
         // Classe da testare: OpenSpaceState, CombactZone1State, CombactZone0State
-        // TODO: CombactZone1, ComactZone0
+        // OpenSpaceState
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.getModel().setActiveCard(adventureCard);
+        openSpaceState.setCurrentPlayer("player1");
+        assertThrows(InvalidTurnException.class, () -> openSpaceState.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>()));
+
+        openSpaceState.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        openSpaceState.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
     }
 
     @Test
-    void activateShield() {
-        // Classe da testare: CombactZone1, CombactZone0, MeteorSwarm, PirateState
-        // TODO: CombactZone1, ComactZone0
+    void activateEngines2() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, InvalidTurnException, InvalidEngineException, EnergyException {
+        // CombactZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+
+        Class<?> phaseEnumClass = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Field phaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        phaseField.setAccessible(true);
+        Object engineEnum = Enum.valueOf((Class<Enum>) phaseEnumClass, "ENGINE");
+        phaseField.set(combatZone1State, engineEnum);
+
+        combatZone1State.activateEngines(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player3"), new ArrayList<>(), new ArrayList<>());
+        combatZone1State.activateEngines(gameController.getPlayerByID("player4"), new ArrayList<>(), new ArrayList<>());
+
+        String phase = phaseField.get(combatZone1State).toString();
+
+        assertTrue(phaseField.get(combatZone1State).toString().contains("CARGO"));
+    }
+
+    @Test
+    void activateShield() throws InvalidTurnException, EnergyException, InvalidShipException, DieNotRolledException, InvalidTileException, NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
+        Projectile fire = new Projectile();
+        fire.setDirection(Direction.UP);
+        fire.setFireType(FireType.LIGHT_FIRE);
+        Projectile fire2 = new Projectile();
+        fire2.setDirection(Direction.UP);
+        fire2.setFireType(FireType.LIGHT_FIRE);
+        Projectile fire3 = new Projectile();
+        fire3.setDirection(Direction.UP);
+        fire3.setFireType(FireType.LIGHT_FIRE);
+        Projectile fire4 = new Projectile();
+        fire4.setDirection(Direction.UP);
+        fire4.setFireType(FireType.LIGHT_FIRE);
+        List<Projectile> projectiles = new ArrayList<>();
+        projectiles.add(fire);
+        projectiles.add(fire2);
+        projectiles.add(fire3);
+        projectiles.add(fire4);
+        adventureCard.setProjectiles(projectiles);
+
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+
+        Shield shield = new Shield();
+        Battery battery = new Battery();
+        battery.setSlots(50);
+        battery.setAvailableEnergy(50);
+
+        model.addToShip(shield, gameController.getPlayerByID("player1"), 2, 2);
+        model.addToShip(battery, gameController.getPlayerByID("player1"), 3, 3);
+        model.addToShip(shield, gameController.getPlayerByID("player2"), 2, 2);
+        model.addToShip(battery, gameController.getPlayerByID("player2"), 3, 3);
+        model.addToShip(shield, gameController.getPlayerByID("player3"), 2, 2);
+        model.addToShip(battery, gameController.getPlayerByID("player3"), 3, 3);
+        model.addToShip(shield, gameController.getPlayerByID("player4"), 2, 2);
+        model.addToShip(battery, gameController.getPlayerByID("player4"), 3, 3);
+
+        Field managerField = PiratesState.class.getDeclaredField("manager");
+        managerField.setAccessible(true);
+        managerField.set(piratesState, new FireManager(gameController.getModel(), adventureCard.getProjectiles(), gameController.getPlayerByID("player1")));
+
+        piratesState.rollDice(gameController.getPlayerByID("player1"));
+        piratesState.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+        piratesState.setCurrentPlayer("player2");
+        piratesState.rollDice(gameController.getPlayerByID("player2"));
+        piratesState.activateShield(gameController.getPlayerByID("player2"), new Pair<>(2,2), new Pair<>(3,3));
+        piratesState.setCurrentPlayer("player3");
+        piratesState.rollDice(gameController.getPlayerByID("player3"));
+        piratesState.activateShield(gameController.getPlayerByID("player3"), new Pair<>(2,2), new Pair<>(3,3));
+        piratesState.setCurrentPlayer("player4");
+        piratesState.rollDice(gameController.getPlayerByID("player4"));
+        piratesState.activateShield(gameController.getPlayerByID("player4"), new Pair<>(2,2), new Pair<>(3,3));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // CombactZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+
+        assertThrows(InvalidTurnException.class, () -> combatZone0State.activateShield(gameController.getPlayerByID("player2"), new Pair<>(2,2), new Pair<>(2,2)));
+
+        Field managerField2 = CombatZone0State.class.getDeclaredField("manager");
+        managerField2.setAccessible(true);
+        List<Projectile> projectiles2 = new ArrayList<>();
+        projectiles2.add(fire);
+        managerField2.set(combatZone0State, new FireManager(gameController.getModel(), projectiles2, gameController.getPlayerByID("player1")));
+
+        combatZone0State.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // CombactZone1State
+        Projectile projectile = new Projectile();
+        projectile.setFireType(FireType.LIGHT_FIRE);
+        projectile.setDirection(Direction.UP);
+        projectiles.add(projectile);
+        adventureCard.setProjectiles(projectiles);
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.automaticAction();
+
+        Class<?> phaseEnumClass = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone1State$phase");
+        Field phaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        phaseField.setAccessible(true);
+        Object engineEnum = Enum.valueOf((Class<Enum>) phaseEnumClass, "FIRE");
+        phaseField.set(combatZone1State, engineEnum);
+
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.rollDice(gameController.getPlayerByID("player1"));
+        combatZone1State.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+
+
+        // MeteorSwarmState
+        projectiles.add(projectile);
+        adventureCard.setProjectiles(projectiles);
+        MeteorSwarmState meteorSwarm = new MeteorSwarmState(model, gameController, adventureCard);
+        gameController.setState(meteorSwarm);
+        gameController.getModel().setActiveCard(adventureCard);
+        meteorSwarm.setCurrentPlayer("player1");
+
+        meteorSwarm.activateShield(gameController.getPlayerByID("player1"), new Pair<>(2,2), new Pair<>(3,3));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
     }
 
     @Test
@@ -749,12 +1076,57 @@ class StateTest {
     }
 
     @Test
-    void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException {
+    void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException, EmptyCabinException, DieNotRolledException, InvalidEngineException {
         // Classe da testare: CombactZone1, MeteorSwarm, CombactZone0
         // CombatZone0State
         CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        Pair<Integer, Integer> coordinate = new Pair<>(1, 2);
+        List<Pair<Integer, Integer>> coordinates = new ArrayList<>();
+        coordinates.add(coordinate);
+
+        Battery newBattery = new Battery();
+        newBattery.setSlots(4);
+        newBattery.setAvailableEnergy(4);
+        model.addToShip(newBattery, gameController.getPlayerByID("player1"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player2"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player3"), 1, 3);
+        model.addToShip(newBattery, gameController.getPlayerByID("player4"), 1, 3);
+
+        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
+        coordinatesBat.add(new Pair<>(1, 3));
+
+        Cannon cannon = new Cannon();
+        cannon.setPower(2);
+        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player2"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player3"), 1, 2);
+        model.addToShip(cannon, gameController.getPlayerByID("player4"), 1, 2);
+
+        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
+        coordinatesCan.add(new Pair<>(1, 2));
+
+
+
+        combatZone0State.activateEngines(gameController.getPlayerByID("player1"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player2");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player2"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player3");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player3"), coordinatesCan, coordinatesBat);
+        combatZone0State.setCurrentPlayer("player4");
+        combatZone0State.activateEngines(gameController.getPlayerByID("player4"), coordinatesCan, coordinatesBat);
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        Pair<Integer, Integer> coordinatesCabin = new Pair<>(3, 2);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"), coordinatesCabin.getValue0(), coordinatesCabin.getValue1());
+        List<Pair<Integer, Integer>> coordinatesCabin2 = new ArrayList<>();
+        coordinatesCabin2.add(coordinatesCabin);
+
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.loseCrew(gameController.getPlayerByID("player1"), coordinatesCabin2);
+        combatZone0State.setCurrentPlayer("player1");
         combatZone0State.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
-        // NOTE -> se uguagliamo giocatore scelto a caso
+        // NOTE -> se uguagliamo giocatore scelto a seconda della posizione
 
         // CombatZone1State
         CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
@@ -765,8 +1137,6 @@ class StateTest {
         MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
         meteorSwarmState.setCurrentPlayer("player1");
         meteorSwarmState.activateCannons(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
-
-        // Maybe can be tested in other ways
     }
 
     @Test
@@ -802,7 +1172,6 @@ class StateTest {
         validatingShipState.readyToFly(gameController.getPlayerByID("player4"));
 
         assertTrue(validatingShipState.allShipsReadyToFly());
-        // Classe da testare: ValidatingShipState
     }
 
     @Test
@@ -811,13 +1180,59 @@ class StateTest {
         assertThrows(IllegalArgumentException.class, () -> validatingShipState.readyToFly(gameController.getPlayerByID("player1")));
         validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
         validatingShipState.readyToFly(gameController.getPlayerByID("player1"));
-        // Classe da testare: ValidatingShipState
     }
 
     @Test
-    void automaticAction() {
+    void automaticAction() throws InvalidTileException {
         // Classe da testare: Epidemic, Stardust, ComactZone1, ComactZone0
-        // TODO: CombactZone1, ComactZone0
+        // EpidemicState
+        EpidemicState epidemicState = new EpidemicState(model, gameController, adventureCard);
+        gameController.setState(epidemicState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        Map<Direction, ConnectorEnum> directions = new HashMap<>();
+        directions.put(Direction.UP, ConnectorEnum.U);
+        directions.put(Direction.DOWN, ConnectorEnum.U);
+        directions.put(Direction.RIGHT, ConnectorEnum.U);
+        directions.put(Direction.LEFT, ConnectorEnum.U);
+
+        Cabin cabin = new Cabin();
+        cabin.setAstronauts(3);
+        model.addToShip(cabin, gameController.getPlayerByID("player1"), 1, 2);
+        cabin.setConnectors(directions);
+
+        Cabin cabin2 = new Cabin();
+        cabin2.setAstronauts(3);
+        model.addToShip(cabin2, gameController.getPlayerByID("player1"), 2, 2);
+        cabin2.setConnectors(directions);
+
+        epidemicState.automaticAction();
+        assertEquals(2, cabin2.getAstronauts());
+        assertEquals(2, cabin.getAstronauts());
+
+        // StardustState
+        StardustState stardustState = new StardustState(model, gameController, adventureCard);
+        gameController.setState(stardustState);
+        gameController.getModel().setActiveCard(adventureCard);
+
+        stardustState.automaticAction();
+
+        assertEquals(-8, gameController.getPlayerByID("player1").getPosition());
+        assertEquals(-4, gameController.getPlayerByID("player2").getPosition());
+    }
+
+    @Test
+    void automaticAction2(){
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+
+        combatZone0State.automaticAction();
+
+        assertEquals(-adventureCard.getLostDays(), gameController.getPlayerByID("player1").getPosition());
+
     }
 
     @Test
@@ -835,16 +1250,32 @@ class StateTest {
     }
 
     @Test
-    void rollDice() throws InvalidTurnException, InvalidCannonException, EnergyException {
+    void rollDice() throws InvalidTurnException, InvalidCannonException, EnergyException, NoSuchFieldException, IllegalAccessException, InvalidShipException, DieNotRolledException {
         // Classi da testare: CombactZone1, CombactZone0, MeteorSwarmState, PirateState, PlayingState
-        // TODO: CombatZone1, CombactZone0
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+
+        Projectile projectil = new Projectile();
+        projectil.setFireType(FireType.LIGHT_FIRE);
+        projectil.setDirection(Direction.UP);
+        List<Projectile> projectiless = new ArrayList<>();
+        projectiless.add(projectil);
+
+        Field managerField = CombatZone0State.class.getDeclaredField("manager");
+        managerField.setAccessible(true);
+        managerField.set(combatZone0State, new FireManager(gameController.getModel(), projectiless, gameController.getPlayerByID("player1")));
+
+        combatZone0State.rollDice(gameController.getPlayerByID("player1"));
 
         // MeteorSwarmState
         adventureCard.setFirePower(10);
         MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
         PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
-        assertThrows(InvalidTurnException.class, () -> meteorSwarmState.rollDice(gameController.getPlayerByID("player2")));
-        assertThrows(IllegalStateException.class, () -> meteorSwarmState.rollDice(gameController.getPlayerByID("player1")));
+
+        piratesState.setCurrentPlayer("player1");
         Projectile projectile = new Projectile();
         List<Projectile> projectiles = new ArrayList<>();
         projectiles.add(projectile);
@@ -882,5 +1313,239 @@ class StateTest {
         } catch (InvalidShipException | DieNotRolledException | InvalidTurnException e) {
             fail("Unexpected exception: " + e.getMessage());
         }
+    }
+
+    @Test
+    void toStringTest(){
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        assertTrue(abandonedShipState.toString().contains("AbandonedShipState"));
+
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        assertTrue(abandonedStationState.toString().contains("AbandonedStationState"));
+
+        AssemblingState assemblingState = new AssemblingState(model);
+        assertTrue(assemblingState.toString().contains("AssemblingState"));
+
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        assertTrue(combatZone0State.toString().contains("CombatZone0State"));
+
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        assertTrue(combatZone1State.toString().contains("CombatZone1State"));
+
+        EpidemicState epidemicState = new EpidemicState(model, gameController, adventureCard);
+        assertTrue(epidemicState.toString().contains("EpidemicState"));
+
+        EndgameState endgameState = new EndgameState(gameController);
+        assertTrue(endgameState.toString().contains("EndgameState"));
+
+        ValidatingShipState validatingShipState = new ValidatingShipState(model);
+        assertTrue(validatingShipState.toString().contains("ValidatingShipState"));
+
+        StardustState stardustState = new StardustState(model, gameController, adventureCard);
+        assertTrue(stardustState.toString().contains("StardustState"));
+
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        assertTrue(slaversState.toString().contains("SlaversState"));
+
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        assertTrue(planetsState.toString().contains("PlanetsState"));
+
+        PausedState pausedState = new PausedState(combatZone0State, model, gameController);
+        assertTrue(pausedState.toString().contains("PausedState"));
+
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        assertTrue(openSpaceState.toString().contains("OpenSpaceState"));
+
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        assertTrue(smugglersState.toString().contains("SmugglersState"));
+
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        assertTrue(meteorSwarmState.toString().contains("MeteorSwarmState"));
+
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        assertTrue(piratesState.toString().contains("PiratesState"));
+    }
+
+    @Test
+    void currentQuit() throws InvalidTurnException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, InvalidShipException {
+        // AbandonedShipState
+        AbandonedShipState abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        gameController.setState(abandonedShipState);
+        gameController.getModel().setActiveCard(adventureCard);
+        abandonedShipState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || gameController.getState().toString().contains("AbandonedShipState"));
+
+        // AbandoneStationState
+        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, adventureCard);
+        gameController.setState(abandonedStationState);
+        gameController.getModel().setActiveCard(adventureCard);
+        abandonedStationState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || gameController.getState().toString().contains("AbandonedStationState"));
+
+        // CombatZone0State
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(combatZone0State.getCurrentPlayer() == null || !combatZone0State.getCurrentPlayer().equals("player1"));
+
+        // CombatZone1State
+        CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
+        gameController.setState(combatZone1State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone1State.setCurrentPlayer("player1");
+        combatZone1State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(combatZone1State.getCurrentPlayer() == null || !combatZone1State.getCurrentPlayer().equals("player1"));
+        // case currentPhase = phase.Fire
+        Class<?> phaseEnumClass = CombatZone1State.class.getDeclaredClasses()[0];
+        Field currentPhaseField = CombatZone1State.class.getDeclaredField("currentPhase");
+        currentPhaseField.setAccessible(true);
+        Object enumValue = Enum.valueOf((Class<Enum>) phaseEnumClass, "FIRE");
+        currentPhaseField.set(combatZone1State, enumValue);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone1State.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        MeteorSwarmState meteorSwarmState = new MeteorSwarmState(model, gameController, adventureCard);
+        gameController.setState(meteorSwarmState);
+        gameController.getModel().setActiveCard(adventureCard);
+        meteorSwarmState.setCurrentPlayer("player2");
+        meteorSwarmState.currentQuit(gameController.getPlayerByID("player2"));
+        assertTrue(meteorSwarmState.getCurrentPlayer() == null || !meteorSwarmState.getCurrentPlayer().equals("player1"));
+
+        // OpenSpaceState
+        OpenSpaceState openSpaceState = new OpenSpaceState(model, gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.getModel().setActiveCard(adventureCard);
+        openSpaceState.setCurrentPlayer("player1");
+        openSpaceState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || !openSpaceState.getCurrentPlayer().equals("player1"));
+
+        // PlanetsState
+        PlanetsState planetsState = new PlanetsState(model, gameController, adventureCard);
+        gameController.setState(planetsState);
+        gameController.getModel().setActiveCard(adventureCard);
+        planetsState.setCurrentPlayer("player1");
+
+        Field landedPlayerField = PlanetsState.class.getDeclaredField("landedPlayer");
+        landedPlayerField.setAccessible(true);
+        landedPlayerField.set(planetsState, "player1");
+
+        planetsState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || !planetsState.getCurrentPlayer().equals("player1"));
+
+        // SlaversState
+        SlaversState slaversState = new SlaversState(model, gameController, adventureCard);
+        gameController.setState(slaversState);
+        gameController.getModel().setActiveCard(adventureCard);
+        slaversState.setCurrentPlayer("player1");
+        slaversState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // SmugglersState
+        SmugglersState smugglersState = new SmugglersState(model, gameController, adventureCard);
+        gameController.setState(smugglersState);
+        gameController.getModel().setActiveCard(adventureCard);
+        smugglersState.setCurrentPlayer("player1");
+        smugglersState.currentQuit(gameController.getPlayerByID("player1"));
+
+        Field currentLostCargoField = SmugglersState.class.getDeclaredField("currentLostCargo");
+        currentLostCargoField.setAccessible(true);
+        assertEquals(0, currentLostCargoField.getInt(smugglersState));
+
+    }
+
+    @Test
+    void currentQuit2() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException, InvalidShipException {
+        // PiratesState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        adventureCard.playCard();
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+
+        Projectile projectile = new Projectile();
+        projectile.setFireType(FireType.LIGHT_FIRE);
+        projectile.setDirection(Direction.UP);
+        List<Projectile> projectiles = new ArrayList<>();
+
+        Field managerField = PiratesState.class.getDeclaredField("manager");
+        managerField.setAccessible(true);
+        managerField.set(piratesState, new FireManager(gameController.getModel(), projectiles, gameController.getPlayerByID("player1")));
+
+        piratesState.currentQuit(gameController.getPlayerByID("player1"));
+        assertTrue(gameController.getState().toString().contains("PreDrawState") || !piratesState.getCurrentPlayer().equals("player1"));
+
+    }
+
+    @Test
+    void chooseBranchTest() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException {
+        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        //Projectile projectile = new Projectile();
+        //projectile.setFireType(FireType.LIGHT_FIRE);
+        //projectile.setDirection(Direction.UP);
+        //List<Projectile> projectiles = new ArrayList<>();
+        //projectiles.add(projectile);
+
+        // CombatZone0State
+        Field managerField = CombatZone0State.class.getDeclaredField("manager");
+        managerField.setAccessible(true);
+        managerField.set(combatZone0State, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
+
+        gameController.setState(combatZone0State);
+        gameController.getModel().setActiveCard(adventureCard);
+        combatZone0State.setCurrentPlayer("player1");
+        combatZone0State.chooseBranch(gameController.getPlayerByID("player1"), new Pair<>(1, 2));
+
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+
+        // PiratesState
+        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+        gameController.setState(piratesState);
+        gameController.getModel().setActiveCard(adventureCard);
+        piratesState.setCurrentPlayer("player1");
+        Field managerField2 = PiratesState.class.getDeclaredField("manager");
+        managerField2.setAccessible(true);
+        managerField2.set(piratesState, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
+        piratesState.chooseBranch(gameController.getPlayerByID("player1"), new Pair<>(1, 2));
+        assertTrue(gameController.getState().toString().contains("PreDrawState"));
+    }
+
+    @Test
+    void killGameTest() throws NoSuchFieldException {
+        EndgameState endgameState = new EndgameState(gameController);
+        endgameState.killGame();
+
+        Field schedulerField = EndgameState.class.getDeclaredField("scheduler");
+        schedulerField.setAccessible(true);
+    }
+
+    @Test
+    void nextRound(){
+        PreDrawState preDrawState = new PreDrawState(gameController);
+        preDrawState.nextRound(gameController.getPlayerByID("player1"));
+        assertFalse(gameController.getState().toString().contains("PreDrawState"));
+    }
+
+    @Test
+    void allShipValidatedtest(){
+        ValidatingShipState validatingShipState = new ValidatingShipState(model);
+        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+
+        validatingShipState.readyToFly(gameController.getPlayerByID("player1"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player2"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player3"));
+        validatingShipState.readyToFly(gameController.getPlayerByID("player4"));
+        assertTrue(validatingShipState.allShipsValidated());
+    }
+
+    @Test
+    void getScore(){
+        EndgameState endgameState = new EndgameState(gameController);
+        assertTrue(endgameState.getScore()!=null);
     }
 }

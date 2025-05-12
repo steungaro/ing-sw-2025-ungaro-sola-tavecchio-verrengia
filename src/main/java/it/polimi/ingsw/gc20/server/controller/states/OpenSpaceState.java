@@ -34,14 +34,20 @@ public class OpenSpaceState extends PlayingState {
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredEngines.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
+
+        List<Battery> energy = new ArrayList<>();
+        if (Translator.getComponentAt(player, batteries, Battery.class) != null)
+            energy.addAll(Translator.getComponentAt(player, batteries, Battery.class));
+
+        declaredEngines.put(player, getModel().EnginePower(player, engines.size(), energy));
         nextPlayer();
         if (getCurrentPlayer() == null) {
             endTurn();
         }
     }
 
-    private void endTurn(){
+    @Override
+    public void endTurn(){
         declaredEngines.forEach((key, value) -> {
             getModel().movePlayer(key, value);
             if (value == 0) {
@@ -52,7 +58,8 @@ public class OpenSpaceState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
-    public void currQuit(Player player) {
+    @Override
+    public void currentQuit(Player player) {
             nextPlayer();
             if(getCurrentPlayer() == null) {
                 endTurn();

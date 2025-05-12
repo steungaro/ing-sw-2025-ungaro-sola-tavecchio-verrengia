@@ -72,6 +72,7 @@ public abstract class CargoState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      * @throws IllegalStateException if the player has cargo available
      */
+    @Override
     public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
