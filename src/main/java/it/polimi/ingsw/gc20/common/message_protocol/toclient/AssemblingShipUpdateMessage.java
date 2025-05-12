@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
@@ -8,14 +9,18 @@ public record AssemblingShipUpdateMessage(
         String username,
         Component componentInHand,
         Component[][] components,
-        String action// can be "added to the ship", "rotated", "took from booked", "added to booked"
+        String action, // can be "added to the ship", "rotated", "took from booked", "added to booked"
+        float baseFirePower,
+        int baseEnginePower,
+        int astronauts,
+        AlienColor aliens,
+        boolean isLearner
 
 ) implements Message {
     @Override
     public String toString() {
         return username + " has " + action + " the component: " + componentInHand;
     }
-
 
     /**
      * Costruttore statico factory per creare un messaggio partendo dalla nave
@@ -33,8 +38,11 @@ public record AssemblingShipUpdateMessage(
                 components[i][j] = ship.getComponentAt(i, j);
             }
         }
-
-        return new AssemblingShipUpdateMessage(username, componentInHand, components, action);
+        try {
+            return new AssemblingShipUpdateMessage(username, componentInHand, components, action, ship.firePower(null, 0), ship.enginePower(0), ship.getAstronauts(), ship.getAliens(), !ship.isNormal());
+        } catch (Exception _){
+            return null;
+        }
     }
 
     @Override
