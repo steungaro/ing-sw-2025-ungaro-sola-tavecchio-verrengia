@@ -3,10 +3,6 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.board;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ViewBoard {
     private static final String TOPPER = "╭" + "─".repeat(117) + "╮";
     private static final String BOTTOM = "╰" + "─".repeat(117) + "╯";

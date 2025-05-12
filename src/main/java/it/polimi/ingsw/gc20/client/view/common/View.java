@@ -1,10 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -17,7 +20,32 @@ public abstract class View implements ViewInterface {
 
     protected Client client;
 
+    private ViewBoard board;
+    private Map<String, ViewShip> ships;
 
+    public ViewBoard getBoard() {
+        return board;
+    }
+
+    public void setBoard(ViewBoard board) {
+        this.board = board;
+    }
+
+    public Map<String, ViewShip> getShips() {
+        return ships;
+    }
+
+    public void setShips(Map<String, ViewShip> ships) {
+        this.ships = ships;
+    }
+
+    public ViewShip getShip (String username) {
+        return ships.get(username);
+    }
+
+    public void setShip (String username, ViewShip ship) {
+        ships.put(username, ship);
+    }
 
     protected View() {
         this.loggedIn = false;
