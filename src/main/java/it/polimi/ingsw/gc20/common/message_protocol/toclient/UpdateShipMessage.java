@@ -33,7 +33,6 @@ public record UpdateShipMessage(
      *
      * @param username nome dell'utente che sta assemblando la nave
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
-     * @return una nuova istanza di UpdateShipMessage
      */
     public UpdateShipMessage(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
