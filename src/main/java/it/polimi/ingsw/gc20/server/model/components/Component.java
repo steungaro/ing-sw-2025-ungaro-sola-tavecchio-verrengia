@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.model.ship.Tile;
 
@@ -189,5 +190,15 @@ public abstract class Component {
      */
     public boolean isCannon() {
         return false; //default implementation
+    }
+
+    public abstract ViewComponent createViewComponent();
+
+    public void initializeViewComponent(ViewComponent viewComponent) {
+        viewComponent.id = ID;
+        viewComponent.upConnectors = connectors.get(Direction.UP).getValue();
+        viewComponent.downConnectors = connectors.get(Direction.DOWN).getValue();
+        viewComponent.leftConnectors = connectors.get(Direction.LEFT).getValue();
+        viewComponent.rightConnectors = connectors.get(Direction.RIGHT).getValue();
     }
 }

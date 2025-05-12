@@ -7,5 +7,23 @@ public enum Direction {
     UP,
     LEFT,
     DOWN,
-    RIGHT
+    RIGHT;
+
+    /**
+     * this function returns a value for the direction
+     * @return the value of the direction
+     * 0-up
+     * 1-right
+     * 2-down
+     * 3-left
+     */
+    public int getValue() {
+        return switch (this) {
+            case UP -> 0;
+            case RIGHT -> 1;
+            case DOWN -> 2;
+            case LEFT -> 3;
+            default -> -1;
+        };
+    }
 }

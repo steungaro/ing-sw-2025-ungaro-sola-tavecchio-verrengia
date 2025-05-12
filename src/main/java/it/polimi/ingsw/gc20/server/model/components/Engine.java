@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewEngine;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 public class Engine extends Component {
@@ -103,5 +105,14 @@ public class Engine extends Component {
             return false;
         }
         return super.isValid(c, d);
+    }
+
+    @Override
+    public ViewComponent createViewComponent() {
+        ViewEngine viewEngine = new ViewEngine();
+        viewEngine.power = doublePower ? 2 : 1;
+        viewEngine.rotation = this.orientation.getValue();
+        initializeViewComponent(viewEngine);
+        return viewEngine;
     }
 }

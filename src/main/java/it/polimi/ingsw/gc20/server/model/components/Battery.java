@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewBattery;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 public class Battery extends Component {
@@ -55,5 +57,14 @@ public class Battery extends Component {
     @Override
     public void updateParameter(Ship s, int sign){
         s.addBatteries (sign*availableEnergy);
+    }
+
+
+    public ViewComponent createViewComponent() {
+        ViewBattery battery= new ViewBattery();
+        battery.availableEnergy = availableEnergy;
+        battery.availableSlots = slots;
+        this.initializeViewComponent(battery);
+        return battery;
     }
 }

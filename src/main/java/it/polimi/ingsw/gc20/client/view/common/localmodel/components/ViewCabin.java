@@ -44,7 +44,9 @@ public class ViewCabin extends ViewComponent {
         System.out.println(cabin);
     }
 
-    public ViewCabin() {}
+    public ViewCabin() {
+        super();
+    }
 
     public boolean isCabin() {
         return true;

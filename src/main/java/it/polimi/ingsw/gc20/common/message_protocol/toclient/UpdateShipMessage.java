@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Component;
@@ -47,7 +48,14 @@ public record UpdateShipMessage(
 
     @Override
     public void handleMessage() {
-        //View.getInstance().getShip(username).updateShip(components, action, baseFirePower, baseEnginePower, astronauts, aliens, isLearner);
+        ViewComponent[][] viewShip = new ViewComponent[components.length][components[0].length];
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < components[i].length; j++) {
+
+                viewShip[i][j] = new ViewComponent(components[i][j]);
+            }
+        }
+        View.getInstance().setShip(username, viewShip).updateShip(components, action, baseFirePower, baseEnginePower, astronauts, aliens, isLearner);
         //TODO
     }
 

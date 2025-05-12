@@ -1,6 +1,9 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewShield;
+
 public class Shield extends Component {
 
     private Direction[] coveredSides = new Direction[2];
@@ -80,5 +83,24 @@ public class Shield extends Component {
             }
         }
         return false;
+    }
+
+
+    @Override
+    public ViewComponent createViewComponent() {
+        ViewShield viewShield = new ViewShield();
+        for (Direction d: coveredSides) {
+            if (d == Direction.UP) {
+                viewShield.up = true;
+            } else if (d == Direction.DOWN) {
+                viewShield.down = true;
+            } else if (d == Direction.LEFT) {
+                viewShield.left = true;
+            } else if (d == Direction.RIGHT) {
+                viewShield.right = true;
+            }
+        }
+        initializeViewComponent(viewShield);
+        return viewShield;
     }
 }

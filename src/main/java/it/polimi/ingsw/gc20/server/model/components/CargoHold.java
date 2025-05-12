@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCargoHold;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.exceptions.CargoFullException;
 import it.polimi.ingsw.gc20.server.exceptions.CargoNotLoadable;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidCargoException;
@@ -104,5 +106,17 @@ public class CargoHold extends Component {
 
             }
         }
+    }
+
+    @Override
+    public ViewComponent createViewComponent() {
+        ViewCargoHold viewCargoHold = new ViewCargoHold();
+        viewCargoHold.red = cargoHeld.getOrDefault(CargoColor.RED, 0);
+        viewCargoHold.green = cargoHeld.getOrDefault(CargoColor.GREEN, 0);
+        viewCargoHold.blue = cargoHeld.getOrDefault(CargoColor.BLUE, 0);
+        viewCargoHold.yellow = cargoHeld.getOrDefault(CargoColor.YELLOW, 0);
+        viewCargoHold.free = availableSlots;
+        initializeViewComponent(viewCargoHold);
+        return viewCargoHold;
     }
 }
