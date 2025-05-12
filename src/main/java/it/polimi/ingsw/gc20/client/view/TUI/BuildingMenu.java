@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.Component;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 public class BuildingMenu implements MenuState{
     private final MenuContext menuContext;
     private final ViewShip ship;
-    private Component componentInHand;
+    private ViewComponent componentInHand;
     //TODO Add ViewBoard
     public BuildingMenu(MenuContext menuContext, ViewShip ship) {
         this.ship = ship;

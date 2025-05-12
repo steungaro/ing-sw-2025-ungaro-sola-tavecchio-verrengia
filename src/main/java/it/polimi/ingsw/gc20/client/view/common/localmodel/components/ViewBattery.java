@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Battery extends Component {
+public class ViewBattery extends ViewComponent {
     public int availableEnergy;
     public int availableSlots;
 
@@ -33,7 +33,7 @@ public class Battery extends Component {
     }
 
     public static void main(String[] args) {
-        Battery battery = new Battery();
+        ViewBattery battery = new ViewBattery();
         battery.upConnectors = 3;
         battery.downConnectors = 2;
         battery.leftConnectors = 1;
@@ -43,7 +43,7 @@ public class Battery extends Component {
         System.out.println(battery);
     }
 
-    public Battery() {}
+    public ViewBattery() {}
 
     public boolean isBattery() {
         return true;

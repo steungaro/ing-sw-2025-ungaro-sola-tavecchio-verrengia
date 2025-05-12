@@ -19,9 +19,9 @@ public class ViewShip {
     public boolean isLearner;
 
     private boolean isValid;
-    private Component[][] components;
-    private Component[] booked;
-    private List<Component> waste;
+    private ViewComponent[][] components;
+    private ViewComponent[] booked;
+    private List<ViewComponent> waste;
 
     public void setValid(boolean isValid) {
         this.isValid = isValid;
@@ -31,27 +31,27 @@ public class ViewShip {
         return isValid;
     }
 
-    public Component getComponent(int i, int j) {
+    public ViewComponent getComponent(int i, int j) {
         return components[i][j];
     }
 
-    public void setComponent(int i, int j, Component component) {
+    public void setComponent(int i, int j, ViewComponent component) {
         components[i][j] = component;
     }
 
-    public Component getBooked(int i) {
+    public ViewComponent getBooked(int i) {
         return booked[i];
     }
 
-    public void setBooked(int i, Component component) {
+    public void setBooked(int i, ViewComponent component) {
         booked[i] = component;
     }
 
-    public List<Component> getWaste() {
+    public List<ViewComponent> getWaste() {
         return waste;
     }
 
-    public void setWaste(List<Component> waste) {
+    public void setWaste(List<ViewComponent> waste) {
         this.waste = waste;
     }
 
@@ -79,7 +79,7 @@ public class ViewShip {
                                 (i == 4 && k == 3)) {
                             sb.append(" ".repeat(15));
                         } else {
-                            sb.append(Component.coveredLine(j));
+                            sb.append(ViewComponent.coveredLine(j));
                         }
 
                     } else {
@@ -108,7 +108,7 @@ public class ViewShip {
                                 ) {
                             sb.append(" ".repeat(15));
                         } else {
-                            sb.append(Component.coveredLine(j));
+                            sb.append(ViewComponent.coveredLine(j));
                         }
 
                     } else {
@@ -127,9 +127,9 @@ public class ViewShip {
         // For each textual row of the booked components
         for (int i = 0; i < 5; i++) {
             sb.append("│").append(" ".repeat(9)).append(i == 2 ? "Booked components" : " ".repeat(17)).append(" ".repeat(9));
-            for (Component component : booked) {
+            for (ViewComponent component : booked) {
                 if (component == null) {
-                    sb.append(Component.coveredLine(i));
+                    sb.append(ViewComponent.coveredLine(i));
                 } else {
                     sb.append(component.toLine(i));
                 }
@@ -214,16 +214,16 @@ public class ViewShip {
         viewShip.isLearner = false;
 
         // Initialize components and booked
-        viewShip.components = new Component[5][7];
-        viewShip.booked = new Component[2];
-        viewShip.waste = List.of(new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield());
+        viewShip.components = new ViewComponent[5][7];
+        viewShip.booked = new ViewComponent[2];
+        viewShip.waste = List.of(new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield(), new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield(), new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield());
 
-        viewShip.booked[0] = new Shield();
+        viewShip.booked[0] = new ViewShield();
         viewShip.booked[0].upConnectors = 3;
         viewShip.booked[0].downConnectors = 0;
         viewShip.booked[0].leftConnectors = 2;
         viewShip.booked[0].rightConnectors = 1;
-        viewShip.booked[1] = new Battery();
+        viewShip.booked[1] = new ViewBattery();
         viewShip.booked[1].upConnectors = 0;
         viewShip.booked[1].downConnectors = 1;
         viewShip.booked[1].leftConnectors = 3;
@@ -231,19 +231,19 @@ public class ViewShip {
 
 
         // Example components
-        viewShip.components[2][3] = new StartingCabin();
+        viewShip.components[2][3] = new ViewStartingCabin();
         viewShip.components[2][3].downConnectors = 3;
         viewShip.components[2][3].upConnectors = 3;
         viewShip.components[2][3].leftConnectors = 3;
         viewShip.components[2][3].rightConnectors = 3;
-        viewShip.components[2][0] = new Engine();
-        viewShip.components[2][1] = new Engine();
+        viewShip.components[2][0] = new ViewEngine();
+        viewShip.components[2][1] = new ViewEngine();
         viewShip.components[2][1].upConnectors = 1;
-        viewShip.components[2][4] = new Pipes();
+        viewShip.components[2][4] = new ViewPipes();
         viewShip.components[2][4].leftConnectors = 1;
-        viewShip.components[3][0] = new LifeSupport();
-        viewShip.components[3][1] = new Cabin();
-        viewShip.components[3][2] = new Cabin();
+        viewShip.components[3][0] = new ViewLifeSupport();
+        viewShip.components[3][1] = new ViewCabin();
+        viewShip.components[3][2] = new ViewCabin();
 
 
         System.out.println(viewShip);
@@ -256,9 +256,9 @@ public class ViewShip {
         viewShip.isLearner = true;
 
         // Initialize components and booked
-        viewShip.components = new Component[5][7];
-        viewShip.booked = new Component[2];
-        viewShip.waste = List.of(new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield(), new CargoHold(), new StartingCabin(), new Engine(), new Shield());
+        viewShip.components = new ViewComponent[5][7];
+        viewShip.booked = new ViewComponent[2];
+        viewShip.waste = List.of(new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield(), new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield(), new ViewCargoHold(), new ViewStartingCabin(), new ViewEngine(), new ViewShield());
 
         System.out.println(viewShip);
     }
@@ -269,7 +269,7 @@ public class ViewShip {
         for (int i = 0; i < components.length; i++) {
             for (int j = 0; j < components[i].length; j++) {
                 if (components[i][j].isCabin()) {
-                    Triplet<Integer, Integer, Integer> triplet = new Triplet<>(i, j, ((Cabin) components[i][j]).getOccupants());
+                    Triplet<Integer, Integer, Integer> triplet = new Triplet<>(i, j, ((ViewCabin) components[i][j]).getOccupants());
                     crew.add(triplet);
                 }
             }
@@ -282,8 +282,8 @@ public class ViewShip {
         for (int i = 0; i < components.length; i++) {
             for (int j = 0; j < components[i].length; j++) {
                 if (components[i][j].isCargoHold()) {
-                    for (int k = 0; k < ((CargoHold) components[i][j]).getCargo().size(); k++) {
-                        Triplet<Integer, Integer, CargoColor> triplet = new Triplet<>(i, j, ((CargoHold) components[i][j]).getCargo().get(k));
+                    for (int k = 0; k < ((ViewCargoHold) components[i][j]).getCargo().size(); k++) {
+                        Triplet<Integer, Integer, CargoColor> triplet = new Triplet<>(i, j, ((ViewCargoHold) components[i][j]).getCargo().get(k));
                         cargo.add(triplet);
                     }
                 }
@@ -296,7 +296,7 @@ public class ViewShip {
         List<Pair<Integer, Integer>> cannons = new ArrayList<>();
         for (int i = 0; i < components.length; i++) {
             for (int j = 0; j < components[i].length; j++) {
-                if (components[i][j].isCannon() && ((Cannon)components[i][j]).power == 2) {
+                if (components[i][j].isCannon() && ((ViewCannon)components[i][j]).power == 2) {
                     Pair<Integer, Integer> pair = new Pair<>(i, j);
                     cannons.add(pair);
                 }
@@ -309,7 +309,7 @@ public class ViewShip {
         List<Pair<Integer, Integer>> engines = new ArrayList<>();
         for (int i = 0; i < components.length; i++) {
             for (int j = 0; j < components[i].length; j++) {
-                if (components[i][j].isEngine() && ((Engine)components[i][j]).power == 2) {
+                if (components[i][j].isEngine() && ((ViewEngine)components[i][j]).power == 2) {
                     Pair<Integer, Integer> pair = new Pair<>(i, j);
                     engines.add(pair);
                 }

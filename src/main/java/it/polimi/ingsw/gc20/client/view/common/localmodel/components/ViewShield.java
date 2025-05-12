@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Shield extends Component {
+public class ViewShield extends ViewComponent {
     public boolean up;
     public boolean down;
     public boolean left;
@@ -53,7 +53,7 @@ public class Shield extends Component {
     }
 
     public static void main(String[] args) {
-        Shield shield = new Shield();
+        ViewShield shield = new ViewShield();
         shield.up = true;
         shield.down = false;
         shield.left = true;
@@ -66,7 +66,7 @@ public class Shield extends Component {
         shield.right = true;
         System.out.println(shield);
     }
-    public Shield() {
+    public ViewShield() {
     }
 
     public boolean isShield() {

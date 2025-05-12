@@ -16,18 +16,18 @@ import java.util.logging.Logger;
         include = JsonTypeInfo.As.PROPERTY,
         property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Battery.class, name = "Battery"),
-        @JsonSubTypes.Type(value = Cannon.class, name = "Cannon"),
-        @JsonSubTypes.Type(value = Cabin.class, name = "Cabin"),
-        @JsonSubTypes.Type(value = Engine.class, name = "Engine"),
-        @JsonSubTypes.Type(value = CargoHold.class, name = "CargoHold"),
-        @JsonSubTypes.Type(value = Pipes.class, name = "Pipes"),
-        @JsonSubTypes.Type(value = SpecialCargoHold.class, name = "SpecialCargoHold"),
-        @JsonSubTypes.Type(value = LifeSupport.class, name = "LifeSupport"),
-        @JsonSubTypes.Type(value = Shield.class, name = "Shield")
+        @JsonSubTypes.Type(value = ViewBattery.class, name = "Battery"),
+        @JsonSubTypes.Type(value = ViewCannon.class, name = "Cannon"),
+        @JsonSubTypes.Type(value = ViewCabin.class, name = "Cabin"),
+        @JsonSubTypes.Type(value = ViewEngine.class, name = "Engine"),
+        @JsonSubTypes.Type(value = ViewCargoHold.class, name = "CargoHold"),
+        @JsonSubTypes.Type(value = ViewPipes.class, name = "Pipes"),
+        @JsonSubTypes.Type(value = ViewSpecialCargoHold.class, name = "SpecialCargoHold"),
+        @JsonSubTypes.Type(value = ViewLifeSupport.class, name = "LifeSupport"),
+        @JsonSubTypes.Type(value = ViewShield.class, name = "Shield")
         // Add other component types as needed
 })
-public class Component {
+public class ViewComponent {
     public int id;
     public int rotation; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
     public int upConnectors;
@@ -145,19 +145,19 @@ public class Component {
     }
 
     public static void main(String[] args) {
-        List<Component> allComponents = new ArrayList<>();
+        List<ViewComponent> allComponents = new ArrayList<>();
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Logger logger = Logger.getLogger(Component.class.getName());
+        Logger logger = Logger.getLogger(ViewComponent.class.getName());
         try {
-            allComponents = Arrays.asList(mapper.readValue(Component.class.getResourceAsStream("/components.json"), Component[].class));
+            allComponents = Arrays.asList(mapper.readValue(ViewComponent.class.getResourceAsStream("/components.json"), ViewComponent[].class));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error reading components.json", e);
         }
         for (int i = 0; i < allComponents.size()/4; i++) { // 4 comps per row
             for (int j = 0; j < 5; j++) {
-                for (Component component : allComponents.subList(i*4, (i+1)*4)) {
+                for (ViewComponent component : allComponents.subList(i*4, (i+1)*4)) {
                     System.out.print(component.toLine(j));
                     System.out.print("   ");
                 }

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Cabin extends Component {
+public class ViewCabin extends ViewComponent {
     public int astronauts;
     public boolean alien = false;
     public AlienColor alienColor = AlienColor.NONE;
@@ -35,14 +35,14 @@ public class Cabin extends Component {
     }
 
     public static void main(String[] args) {
-        Cabin cabin = new Cabin();
+        ViewCabin cabin = new ViewCabin();
         cabin.astronauts = 0;
         cabin.alien = true;
         cabin.alienColor = AlienColor.PURPLE;
         System.out.println(cabin);
     }
 
-    public Cabin() {}
+    public ViewCabin() {}
 
     public boolean isCabin() {
         return true;

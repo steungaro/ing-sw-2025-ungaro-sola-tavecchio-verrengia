@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Pipes extends Component {
+public class ViewPipes extends ViewComponent {
     @Override
     public String toString() {
         return
@@ -23,11 +23,11 @@ public class Pipes extends Component {
     }
 
     public static void main(String[] args) {
-        Pipes pipes = new Pipes();
+        ViewPipes pipes = new ViewPipes();
         System.out.println(pipes);
     }
 
-    public Pipes() {
+    public ViewPipes() {
     }
 
     public boolean isPipes() {

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Cannon extends Component {
+public class ViewCannon extends ViewComponent {
     public int power;
 
     public String toString(){
@@ -40,13 +40,13 @@ public class Cannon extends Component {
     }
 
     public static void main(String[] args) {
-        Cannon cannon = new Cannon();
+        ViewCannon cannon = new ViewCannon();
         cannon.power = 2;
         cannon.rotation = 3;
         System.out.println(cannon);
     }
 
-    public Cannon() {
+    public ViewCannon() {
     }
 
     public boolean isCannon() {

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class Engine extends Component {
+public class ViewEngine extends ViewComponent {
     public int power;
 
     @Override
@@ -25,13 +25,13 @@ public class Engine extends Component {
     }
 
     public static void main(String[] args) {
-        Engine engine = new Engine();
+        ViewEngine engine = new ViewEngine();
         engine.power = 2;
         engine.rotation = 3;
         System.out.println(engine);
     }
 
-    public Engine() {
+    public ViewEngine() {
     }
 
     public boolean isEngine() {

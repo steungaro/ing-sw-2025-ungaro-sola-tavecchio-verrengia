@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
-public class CargoHold extends Component {
+public class ViewCargoHold extends ViewComponent {
     public int red;
     public int green;
     public int blue;
@@ -50,7 +50,7 @@ public class CargoHold extends Component {
     }
 
     public static void main(String[] args) {
-        CargoHold cargoHold = new CargoHold();
+        ViewCargoHold cargoHold = new ViewCargoHold();
         cargoHold.red = 0;
         cargoHold.green = 1;
         cargoHold.blue = 1;
@@ -59,7 +59,7 @@ public class CargoHold extends Component {
         System.out.println(cargoHold);
     }
 
-    public CargoHold() {}
+    public ViewCargoHold() {}
 
     @Override
     public boolean isCargoHold() {

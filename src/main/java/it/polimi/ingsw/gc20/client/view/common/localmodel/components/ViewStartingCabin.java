@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class StartingCabin extends Cabin {
+public class ViewStartingCabin extends ViewCabin {
     public String toString() {
         String occupants;
 
@@ -25,11 +25,11 @@ public class StartingCabin extends Cabin {
     }
 
     public static void main(String[] args) {
-        StartingCabin startingCabin = new StartingCabin();
+        ViewStartingCabin startingCabin = new ViewStartingCabin();
         startingCabin.astronauts = 0;
         System.out.println(startingCabin);
     }
-    public StartingCabin() {}
+    public ViewStartingCabin() {}
 
     @Override
     public boolean isStartingCabin() {

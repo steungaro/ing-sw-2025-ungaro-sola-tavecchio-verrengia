@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
-public class LifeSupport extends Component {
+public class ViewLifeSupport extends ViewComponent {
     public AlienColor color;
 
     @Override
@@ -25,14 +25,14 @@ public class LifeSupport extends Component {
     }
 
     public static void main(String[] args) {
-        LifeSupport lifeSupport = new LifeSupport();
+        ViewLifeSupport lifeSupport = new ViewLifeSupport();
         lifeSupport.color = AlienColor.PURPLE;
         System.out.println(lifeSupport);
         lifeSupport.color = AlienColor.BROWN;
         System.out.println(lifeSupport);
     }
 
-    public LifeSupport() {
+    public ViewLifeSupport() {
         this.color = AlienColor.NONE;
     }
 
