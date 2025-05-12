@@ -33,4 +33,8 @@ public class Engine extends Component {
 
     public Engine() {
     }
+
+    public boolean isEngine() {
+        return true;
+    }
 }

@@ -30,4 +30,9 @@ public class StartingCabin extends Cabin {
         System.out.println(startingCabin);
     }
     public StartingCabin() {}
+
+    @Override
+    public boolean isStartingCabin() {
+        return true;
+    }
 }

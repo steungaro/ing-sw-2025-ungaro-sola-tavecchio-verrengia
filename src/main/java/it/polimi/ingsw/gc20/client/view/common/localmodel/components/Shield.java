@@ -68,4 +68,8 @@ public class Shield extends Component {
     }
     public Shield() {
     }
+
+    public boolean isShield() {
+        return true;
+    }
 }

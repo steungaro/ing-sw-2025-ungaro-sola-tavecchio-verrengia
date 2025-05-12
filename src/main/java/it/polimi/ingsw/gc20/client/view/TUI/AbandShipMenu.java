@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import org.javatuples.Triplet;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbandShipMenu implements MenuState{
 
@@ -22,8 +24,10 @@ public class AbandShipMenu implements MenuState{
             System.out.println("2. Don't Board Ship");
         }else{
             System.out.println("Choose the astronauts that will board the ship");
-            new List <Triplet<Integer, Integer, Integer>> crew = menuContext.getShip().getCrew();
-            for(astr in crew)
+            List<Triplet<Integer, Integer, Integer>> crew = menuContext.getShip().getCrew();
+            for(Triplet<Integer, Integer, Integer> astr : crew) {
+
+            }
             //TODO handle astronauts
         }
     }

@@ -43,4 +43,8 @@ public class Cabin extends Component {
     }
 
     public Cabin() {}
+
+    public boolean isCabin() {
+        return true;
+    }
 }

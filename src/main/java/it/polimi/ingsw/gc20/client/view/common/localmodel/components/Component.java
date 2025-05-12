@@ -165,4 +165,44 @@ public class Component {
             }
         }
     }
+
+    public boolean isCabin() {
+        return false;
+    }
+
+    public boolean isEngine() {
+        return false;
+    }
+
+    public boolean isBattery() {
+        return false;
+    }
+
+    public boolean isCannon() {
+        return false;
+    }
+
+    public boolean isCargoHold() {
+        return false;
+    }
+
+    public boolean isPipes() {
+        return false;
+    }
+
+    public boolean isSpecialCargoHold() {
+        return false;
+    }
+
+    public boolean isLifeSupport() {
+        return false;
+    }
+
+    public boolean isShield() {
+        return false;
+    }
+
+    public boolean isStartingCabin() {
+        return false;
+    }
 }

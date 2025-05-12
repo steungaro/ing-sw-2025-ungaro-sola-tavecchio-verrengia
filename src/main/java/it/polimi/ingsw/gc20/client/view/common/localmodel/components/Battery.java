@@ -44,4 +44,8 @@ public class Battery extends Component {
     }
 
     public Battery() {}
+
+    public boolean isBattery() {
+        return true;
+    }
 }

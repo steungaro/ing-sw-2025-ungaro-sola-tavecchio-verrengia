@@ -1,7 +1,11 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.ship;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import org.javatuples.Pair;
+import org.javatuples.Triplet;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ViewShip {
@@ -96,7 +100,7 @@ public class ViewShip {
                 sb.append("│ ").append(j == 2 ? i + 5 : " ").append(" ");
                 for (int k = 0; k < components[i].length; k++) {
                     if (components[i][k] == null) {
-                        if (    k == 0 || // First column)
+                        if (    k == 0 || // First column
                                 k == components[i].length - 1 || // Last column
                                 ((i == 0) && (k == 1 || k == 2 || k ==4 || k == 5)) ||
                                 (i == 1 && (k == 1 || k == 5)) ||
@@ -259,4 +263,58 @@ public class ViewShip {
         System.out.println(viewShip);
     }
 
+    
+    public List<Triplet<Integer, Integer, Integer>> getCrew() {
+        List<Triplet<Integer, Integer, Integer>> crew = new ArrayList<>();
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < components[i].length; j++) {
+                if (components[i][j].isCabin()) {
+                    Triplet<Integer, Integer, Integer> triplet = new Triplet<>(i, j, ((Cabin) components[i][j]).getOccupants());
+                    crew.add(triplet);
+                }
+            }
+        }
+        return crew;
+    }
+
+    public List<Triplet<Integer, Integer, CargoColor>> getCargo() {
+        List<Triplet<Integer, Integer, CargoColor>> cargo = new ArrayList<>();
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < components[i].length; j++) {
+                if (components[i][j].isCargoHold()) {
+                    for (int k = 0; k < ((CargoHold) components[i][j]).getCargo().size(); k++) {
+                        Triplet<Integer, Integer, CargoColor> triplet = new Triplet<>(i, j, ((CargoHold) components[i][j]).getCargo().get(k));
+                        cargo.add(triplet);
+                    }
+                }
+            }
+        }
+        return cargo;
+    }
+
+    public List<Pair<Integer, Integer>> getCannons() {
+        List<Pair<Integer, Integer>> cannons = new ArrayList<>();
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < components[i].length; j++) {
+                if (components[i][j].isCannon() && ((Cannon)components[i][j]).power == 2) {
+                    Pair<Integer, Integer> pair = new Pair<>(i, j);
+                    cannons.add(pair);
+                }
+            }
+        }
+        return cannons;
+    }
+
+    public List<Pair<Integer, Integer>> getEngines() {
+        List<Pair<Integer, Integer>> engines = new ArrayList<>();
+        for (int i = 0; i < components.length; i++) {
+            for (int j = 0; j < components[i].length; j++) {
+                if (components[i][j].isEngine() && ((Engine)components[i][j]).power == 2) {
+                    Pair<Integer, Integer> pair = new Pair<>(i, j);
+                    engines.add(pair);
+                }
+            }
+        }
+        return engines;
+    }
 }

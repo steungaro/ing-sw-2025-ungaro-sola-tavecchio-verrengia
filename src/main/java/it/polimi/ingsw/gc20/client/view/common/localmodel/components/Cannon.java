@@ -48,4 +48,8 @@ public class Cannon extends Component {
 
     public Cannon() {
     }
+
+    public boolean isCannon() {
+        return true;
+    }
 }

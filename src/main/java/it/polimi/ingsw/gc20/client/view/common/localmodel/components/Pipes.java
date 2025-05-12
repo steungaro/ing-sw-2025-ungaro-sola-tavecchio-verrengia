@@ -29,4 +29,8 @@ public class Pipes extends Component {
 
     public Pipes() {
     }
+
+    public boolean isPipes() {
+        return true;
+    }
 }

@@ -35,4 +35,8 @@ public class LifeSupport extends Component {
     public LifeSupport() {
         this.color = AlienColor.NONE;
     }
+
+    public boolean isLifeSupport() {
+        return true;
+    }
 }

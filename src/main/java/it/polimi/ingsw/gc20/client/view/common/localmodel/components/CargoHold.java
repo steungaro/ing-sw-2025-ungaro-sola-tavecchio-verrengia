@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+
+import java.util.List;
+
 public class CargoHold extends Component {
     public int red;
     public int green;
@@ -56,4 +60,26 @@ public class CargoHold extends Component {
     }
 
     public CargoHold() {}
+
+    @Override
+    public boolean isCargoHold() {
+        return true;
+    }
+
+    public List<CargoColor> getCargo() {
+        List<CargoColor> cargo = new java.util.ArrayList<>();
+        for (int i = 0; i < red; i++) {
+            cargo.add(CargoColor.RED);
+        }
+        for (int i = 0; i < green; i++) {
+            cargo.add(CargoColor.GREEN);
+        }
+        for (int i = 0; i < blue; i++) {
+            cargo.add(CargoColor.BLUE);
+        }
+        for (int i = 0; i < yellow; i++) {
+            cargo.add(CargoColor.YELLOW);
+        }
+        return cargo;
+    }
 }

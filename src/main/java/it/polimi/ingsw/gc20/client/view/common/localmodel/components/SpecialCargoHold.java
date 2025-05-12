@@ -50,4 +50,8 @@ public class SpecialCargoHold extends CargoHold {
 
     public SpecialCargoHold() {
     }
+
+    public boolean isSpecialCargoHold() {
+        return true;
+    }
 }
