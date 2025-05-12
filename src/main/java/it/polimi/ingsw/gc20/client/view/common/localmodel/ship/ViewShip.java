@@ -13,7 +13,7 @@ public class ViewShip {
     private static final String TOPPER = "╭" + "─".repeat(117) + "╮";
     private static final String BOTTOM = "╰" + "─".repeat(117) + "╯";
     private static final String SEPARATOR = "├" + "─".repeat(117) + "┤";
-    public int baseFirepower;
+    public float baseFirepower;
     public int baseEnginePower;
     public int astronauts;
     public AlienColor aliens;
@@ -26,6 +26,10 @@ public class ViewShip {
 
     public void setValid(boolean isValid) {
         this.isValid = isValid;
+    }
+
+    public void setComponents(ViewComponent[][] components) {
+        this.components = components;
     }
 
     public boolean isValid() {

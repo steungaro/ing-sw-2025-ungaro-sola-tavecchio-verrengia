@@ -2,20 +2,25 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+import java.util.List;
+
 public record UpdateShipMessage(
         String username,
-        Component[][] components,
+        ViewComponent[][] components,
         String action, // can be "used energies", "movedCargo", "removed component"
         float baseFirePower,
         int baseEnginePower,
         int astronauts,
         AlienColor aliens,
-        boolean isLearner
+        boolean isLearner,
+        boolean isValid,
+        List<ViewComponent> waste
 
         ) implements Message {
     @Override
@@ -32,15 +37,15 @@ public record UpdateShipMessage(
      * @return una nuova istanza di UpdateShipMessage
      */
     public static UpdateShipMessage fromShip(String username, Component componentInHand, Ship ship, String action) {
-        Component[][] components = new Component[ship.getRows()][ship.getCols()];
-
+        ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
+        List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
             for (int j = 0; j < ship.getCols(); j++) {
-                components[i][j] = ship.getComponentAt(i, j);
+                components[i][j] = ship.getComponentAt(i, j).createViewComponent();
             }
         }
         try {
-            return new UpdateShipMessage(username, components, action, ship.firePower(null, 0), ship.enginePower(0), ship.getAstronauts(), ship.getAliens(), !ship.isNormal());
+            return new UpdateShipMessage(username, components, action, ship.firePower(null, 0), ship.enginePower(0), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), waste );
         } catch (Exception _){
             return null;
         }
@@ -48,15 +53,15 @@ public record UpdateShipMessage(
 
     @Override
     public void handleMessage() {
-        ViewComponent[][] viewShip = new ViewComponent[components.length][components[0].length];
-        for (int i = 0; i < components.length; i++) {
-            for (int j = 0; j < components[i].length; j++) {
-
-                viewShip[i][j] = new ViewComponent(components[i][j]);
-            }
-        }
-        View.getInstance().setShip(username, viewShip).updateShip(components, action, baseFirePower, baseEnginePower, astronauts, aliens, isLearner);
-        //TODO
+        ViewShip viewShip = new ViewShip();
+        viewShip.aliens = aliens;
+        viewShip.astronauts = astronauts;
+        viewShip.baseEnginePower = baseEnginePower;
+        viewShip.baseFirepower = baseFirePower;
+        viewShip.setComponents(components);
+        viewShip.isLearner = isLearner;
+        viewShip.setWaste(waste);
+        View.getInstance().setShip(username, viewShip);
     }
 
 }
