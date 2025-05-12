@@ -7,5 +7,15 @@ public enum AlienColor {
     PURPLE,
     BROWN,
     BOTH,
-    NONE
+    NONE;
+
+
+    public String getColorChar() {
+        return switch (this) {
+            case PURPLE -> "P";
+            case BROWN -> "B";
+            case BOTH -> "*";
+            case NONE -> "X";
+        };
+    }
 }

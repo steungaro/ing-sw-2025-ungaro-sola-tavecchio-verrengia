@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.ship;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
+import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
