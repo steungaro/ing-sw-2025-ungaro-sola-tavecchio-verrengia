@@ -99,7 +99,6 @@ public class MenuContext {
     }
 
     public void createLobby(String user, int maxPlayers, int level) throws RemoteException {
-        String name = UUID.randomUUID().toString();UUID.randomUUID().toString();
         client.createLobby(name, user, maxPlayers, level);
         lobby = new ViewLobby(name, user, maxPlayers, level);
     }

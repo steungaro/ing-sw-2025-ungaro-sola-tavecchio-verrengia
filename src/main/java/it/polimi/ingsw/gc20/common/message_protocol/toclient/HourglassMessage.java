@@ -9,11 +9,9 @@ public record HourglassMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "HourglassMessage{" +
-                "totalRemainingTime=" + totalRemainingTime +
+        return "totalRemainingTime=" + totalRemainingTime +
                 ", remainingTime=" + remainingTime +
-                ", numberOfRotations=" + numberOfRotations +
-                '}';
+                ", numberOfRotations=" + numberOfRotations;
     }
 
     @Override

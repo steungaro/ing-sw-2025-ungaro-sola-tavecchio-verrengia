@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCabin;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
@@ -205,5 +207,15 @@ public class Cabin extends Component {
     @Override
     public boolean isCabin() {
         return true;
+    }
+
+    public ViewComponent createViewComponent (){
+        ViewCabin viewCabin = new ViewCabin();
+        viewCabin.astronauts = astronauts;
+        viewCabin.alien = alien;
+        viewCabin.alienColor = alienColor;
+        viewCabin.cabinColor = cabinColor;
+        initializeViewComponent( viewCabin);
+        return viewCabin;
     }
 }

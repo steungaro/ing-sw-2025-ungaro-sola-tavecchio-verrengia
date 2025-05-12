@@ -2,8 +2,10 @@ package it.polimi.ingsw.gc20.client.view.common;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.AssemblingShipUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 import java.rmi.RemoteException;
@@ -23,6 +25,15 @@ public abstract class View implements ViewInterface {
     private ViewBoard board;
     private Map<String, ViewShip> ships;
 
+    private ViewComponent componentInHand;
+
+    public ViewComponent getComponentInHand() {
+        return componentInHand;
+    }
+
+    public void setComponentInHand(ViewComponent componentInHand) {
+        this.componentInHand = componentInHand;
+    }
     public ViewBoard getBoard() {
         return board;
     }

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewLifeSupport;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
@@ -49,5 +51,13 @@ public class LifeSupport extends Component {
     @Override
     public boolean isLifeSupport() {
         return true;
+    }
+
+    @Override
+    public ViewComponent createViewComponent() {
+        ViewLifeSupport viewLifeSupport = new ViewLifeSupport();
+        viewLifeSupport.color = color;
+        initializeViewComponent(viewLifeSupport);
+        return viewLifeSupport;
     }
 }

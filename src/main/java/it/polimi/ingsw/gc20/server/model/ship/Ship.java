@@ -36,6 +36,15 @@ public abstract class Ship {
         astronauts = 0;
     }
 
+
+    public Float getSingleCannonsPower() {
+        return singleCannonsPower;
+    }
+
+    public Integer getSingleEngines() {
+        return singleEngines;
+    }
+
     /**
      * Function to add a component to the ship
      * @param c component to add
@@ -91,6 +100,9 @@ public abstract class Ship {
      * @throws InvalidCannonException if a cannon is a single cannon
      */
     public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
+        if (cannons == null) {
+            return singleCannonsPower;
+        }
         if(energies > totalEnergy || cannons.size() != energies)
             throw new EnergyException("cannon size too large");
         float power  = singleCannonsPower;
@@ -669,6 +681,10 @@ public abstract class Ship {
 
     public void addBookedToWaste() {
         //default implementation
+    }
+
+    public AlienColor getAliens() {
+        return AlienColor.NONE; //default implementation
     }
 
 

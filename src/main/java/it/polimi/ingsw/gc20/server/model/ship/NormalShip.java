@@ -102,7 +102,6 @@ public class NormalShip extends Ship {
             throw new ComponentNotFoundException("Component not found");
         }
     }
-
     /**
      * @return booked components
      */
@@ -359,6 +358,19 @@ public class NormalShip extends Ship {
     @Override
     public boolean isNormal(){
         return true;
+    }
+
+    @Override
+    public AlienColor getAliens(){
+        if (brownAlien) {
+            if (purpleAlien) {
+                return AlienColor.BOTH;
+            }
+            return AlienColor.BROWN;
+        } else if (purpleAlien) {
+            return AlienColor.PURPLE;
+        }
+        return AlienColor.NONE;
     }
 
 }
