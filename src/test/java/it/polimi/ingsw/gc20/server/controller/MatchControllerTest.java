@@ -1,9 +1,13 @@
 package it.polimi.ingsw.gc20.server.controller;
 
+import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
+import it.polimi.ingsw.gc20.server.controller.states.PiratesState;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.classfile.FieldBuilder;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
@@ -18,8 +22,17 @@ class MatchControllerTest {
         // Initialize the MatchController instance before each test
         matchController = MatchController.getInstance(3, 3);
         matchController.createLobby("lobby1", "player1", 4, 2);
-        matchController.setMaxMatches(3);
-        matchController.setMaxLobbies(3);
+        matchController.setMaxMatches(30);
+        matchController.setMaxLobbies(30);
+    }
+
+    @Test
+    void getGameControllerForPlayer() {
+        // Nessun giocatore dovrebbe essere in un gioco inizialmente
+        matchController.createLobby("lobby10", "player1", 4, 2);
+
+        assertNotNull(matchController.getGameControllerForPlayer("player1"));
+        assertNull(matchController.getGameControllerForPlayer("player4"));
     }
 
     @Test
@@ -37,8 +50,10 @@ class MatchControllerTest {
     @Test
     void getPlayersInLobbies() {
         // Verifica che la lista dei giocatori nelle lobby non sia nulla
+        matchController.createLobby("lobby2", "player1", 4, 2);
         assertNotNull(matchController.getPlayersInLobbies());
         // Dovrebbe contenere "player1" impostato in setUp
+        List<String> listString = matchController.getPlayersInLobbies();
         assertTrue(matchController.getPlayersInLobbies().contains("player1"));
     }
 
@@ -73,31 +88,46 @@ class MatchControllerTest {
     }
 
     @Test
-    void getLobby() {
-        Lobby lobby = matchController.getLobby("lobby1");
+    void getLobby() throws NoSuchFieldException, IllegalAccessException {
+        List<Lobby> lobbies = matchController.getLobbies();
+        Lobby lobbytmp = lobbies.get(0);
+
+        Field IDField = Lobby.class.getDeclaredField("id");
+        IDField.setAccessible(true);
+        String idd = IDField.get(lobbytmp).toString();
+
+        Lobby lobby = matchController.getLobby(idd);
         assertNotNull(lobby);
-        assertEquals("lobby1", lobby.getId());
+        assertEquals(idd, lobby.getId());
     }
 
     @Test
     void joinLobby() {
         // Creiamo una nuova lobby per questo test
         matchController.createLobby("joinTestLobby", "owner", 4, 2);
-        matchController.joinLobby("joinTestLobby", "newPlayer");
+        String id = matchController.getLobbies().get(1).getId();
+        matchController.joinLobby(id, "newPlayer");
 
         // Verifichiamo che il giocatore sia nella lobby
-        Lobby lobby = matchController.getLobby("joinTestLobby");
+        Lobby lobby = matchController.getLobby(id);
         assertTrue(lobby.getUsers().contains("newPlayer"));
     }
 
     @Test
     void createLobby() {
         matchController.createLobby("createTestLobby", "creator", 4, 2);
+        Lobby l = matchController.getLobbies().get(0);
+        for (int i = 0; i < matchController.getLobbies().size(); i++) {
+            if (matchController.getLobbies().get(i).getOwnerUsername().equals("creator")) {
+                l = matchController.getLobbies().get(i);
+                break;
+            }
+        }
 
         // Verifichiamo che la lobby sia stata creata
-        Lobby lobby = matchController.getLobby("createTestLobby");
+        Lobby lobby = matchController.getLobby(l.getId());
         assertNotNull(lobby);
-        assertEquals("createTestLobby", lobby.getId());
+        assertEquals(l.getId(), lobby.getId());
         assertTrue(lobby.getUsers().contains("creator"));
     }
 
@@ -105,13 +135,14 @@ class MatchControllerTest {
     void leaveLobby() {
         // Creiamo una nuova lobby e aggiungiamo un giocatore
         matchController.createLobby("leaveTestLobby", "owner", 4, 2);
-        matchController.joinLobby("leaveTestLobby", "leaver");
+        String id = matchController.getLobbies().get(1).getId();
+        matchController.joinLobby(id, "leaver");
 
         // Il giocatore lascia la lobby
         matchController.leaveLobby("leaver");
 
         // Verifichiamo che il giocatore non sia più nella lobby
-        Lobby lobby = matchController.getLobby("leaveTestLobby");
+        Lobby lobby = matchController.getLobby(id);
         assertFalse(lobby.getUsers().contains("leaver"));
     }
 
@@ -126,7 +157,14 @@ class MatchControllerTest {
     void startLobby() {
         // Creiamo una nuova lobby con abbastanza giocatori
         matchController.createLobby("startTestLobby", "owner", 2, 2);
-        matchController.joinLobby("startTestLobby", "player2");
+        Lobby l = matchController.getLobbies().get(0);
+        for (int i = 0; i < matchController.getLobbies().size(); i++) {
+            if (matchController.getLobbies().get(i).getOwnerUsername().equals("owner")) {
+                l = matchController.getLobbies().get(i);
+                break;
+            }
+        }
+        matchController.joinLobby(l.getId(), "player1");
 
         // Test base: verifichiamo che startLobby non lanci eccezioni
         matchController.startLobby("owner");
@@ -147,11 +185,5 @@ class MatchControllerTest {
 
         // Un nome utente casuale dovrebbe essere disponibile
         assertTrue(matchController.isUsernameAvailable("newRandomUsername"));
-    }
-
-    @Test
-    void getGameControllerForPlayer() {
-        // Nessun giocatore dovrebbe essere in un gioco inizialmente
-        assertNull(matchController.getGameControllerForPlayer("player1"));
     }
 }
