@@ -48,6 +48,19 @@ public class AbandonedShipState extends PlayingState {
                 '}';
     }
 
+    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        if (player.getShip().crew() < lostCrew) {
+            throw new IllegalStateException("You don't have enough crew to lose");
+        }
+        getModel().movePlayer(player, lostDays);
+        getModel().addCredits(player, credits);
+        for (Player p: getModel().getGame().getPlayers()) {;
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(getCurrentPlayer(), credits, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        }
+    }
     /**
      * This method is used to accept the card and lose crew
      * @param player the player who is losing crew
@@ -64,11 +77,8 @@ public class AbandonedShipState extends PlayingState {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-        getModel().addCredits(player, credits);
-        getModel().movePlayer(player, -lostDays);
         for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(p.getUsername(), p.getShip(), "lost crew", null));
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(p.getUsername(), credits, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
         }
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -84,10 +94,11 @@ public class AbandonedShipState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(p.getUsername()));
-        }
+        String currentPlayer = getCurrentPlayer();
         nextPlayer();
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(currentPlayer, getCurrentPlayer()));
+        }
         if (getCurrentPlayer() == null) {
             getController().setState(new PreDrawState(getController()));
         }

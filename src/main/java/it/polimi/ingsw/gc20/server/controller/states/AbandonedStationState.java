@@ -1,11 +1,15 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.EndMoveConfirmMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -82,6 +86,9 @@ public class AbandonedStationState extends CargoState {
         }
         reward.remove(loaded);
         super.loadCargo(player, loaded, chTo);
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
+        }
     }
 
     /**
@@ -99,6 +106,9 @@ public class AbandonedStationState extends CargoState {
             throw new IllegalStateException("You can't unload cargo unless you are on the station");
         }
         super.unloadCargo(player, unloaded, ch);
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
+        }
     }
 
     /**
@@ -117,6 +127,9 @@ public class AbandonedStationState extends CargoState {
             throw new IllegalStateException("You can't move cargo unless you are on the station");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
+        }
     }
 
     /**
@@ -132,10 +145,17 @@ public class AbandonedStationState extends CargoState {
         }
         if (getController().getActiveCard().isPlayed()) {
             getModel().movePlayer(player, -lostDays);
+            for (Player p: getModel().getGame().getPlayers()) {;
+                NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(getCurrentPlayer(), 0, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
+            }
             getController().setState(new PreDrawState(getController()));
 
         } else {
+            String currentPlayer = getCurrentPlayer();
             nextPlayer();
+            for (Player p: getModel().getGame().getPlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(currentPlayer, getCurrentPlayer()));
+            }
             if (getCurrentPlayer() == null) {
                 getController().setState(new PreDrawState(getController()));
             }
