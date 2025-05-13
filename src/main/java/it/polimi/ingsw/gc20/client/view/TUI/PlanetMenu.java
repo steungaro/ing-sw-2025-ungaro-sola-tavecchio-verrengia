@@ -50,13 +50,13 @@ public class PlanetMenu implements MenuState{
                     String cargoColor = menuContext.getScanner().next();
                     int x = menuContext.getScanner().nextInt();
                     int y = menuContext.getScanner().nextInt();
-                    menuContext.getClient().loadCargo(menuContext.getUsername(), CargoColor, new Pair<>(x, y)); //TODO cargo color argument?
+                    //menuContext.getClient().loadCargo(menuContext.getUsername(), CargoColor, new Pair<>(x, y)); //TODO cargo color argument?
                     break;
                 case 2:
                     String cargoColor1 = menuContext.getScanner().next();
                     int fromX = menuContext.getScanner().nextInt();
                     int fromY = menuContext.getScanner().nextInt();
-                    menuContext.getClient().unloadCargo(menuContext.getUsername(), CargoColor, new Pair<>(fromX, fromY)); //TODO cargo color argument?
+                    //menuContext.getClient().unloadCargo(menuContext.getUsername(), CargoColor, new Pair<>(fromX, fromY)); //TODO cargo color argument?
                     break;
                 case 3:
                     String cargoColor2 = menuContext.getScanner().next();
@@ -64,7 +64,7 @@ public class PlanetMenu implements MenuState{
                     int fromY1 = menuContext.getScanner().nextInt();
                     int toX = menuContext.getScanner().nextInt();
                     int toY = menuContext.getScanner().nextInt();
-                    menuContext.getClient().moveCargo(menuContext.getUsername(), CargoColor, new Pair<>(fromX1, fromY1), new Pair<>(toX, toY)); //TODO cargo color argument?
+                    //menuContext.getClient().moveCargo(menuContext.getUsername(), CargoColor, new Pair<>(fromX1, fromY1), new Pair<>(toX, toY)); //TODO cargo color argument?
                     break;
                 case 4:
                     menuContext.getClient().endMove(menuContext.getUsername());
