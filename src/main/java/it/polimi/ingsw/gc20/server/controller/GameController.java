@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.server.controller;
 
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.CardDrawnMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LandOnPlanetMessage;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -8,6 +10,7 @@ import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 import java.util.*;
 import java.util.logging.Level;
@@ -93,6 +96,9 @@ public class GameController implements GameControllerInterface {
         try {
             AdventureCard card = model.drawCard();
             card.setState(this, model);
+            for (Player p: model.getGame().getPlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new CardDrawnMessage(card.getIDCard(), card.getName()));
+            }
         } catch (EmptyDeckException e) {
             state = new EndgameState(state.getController());
         }

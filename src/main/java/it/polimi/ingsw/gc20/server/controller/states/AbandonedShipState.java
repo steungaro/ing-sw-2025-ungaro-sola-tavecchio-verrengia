@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.EndMoveConfirmMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
@@ -8,6 +11,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -62,6 +66,10 @@ public class AbandonedShipState extends PlayingState {
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
         getModel().addCredits(player, credits);
         getModel().movePlayer(player, -lostDays);
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(p.getUsername(), p.getShip(), "lost crew", null));
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(p.getUsername(), credits, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        }
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
@@ -75,6 +83,9 @@ public class AbandonedShipState extends PlayingState {
     public void endMove(Player player) throws InvalidTurnException{
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        for (Player p: getModel().getGame().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(p.getUsername()));
         }
         nextPlayer();
         if (getCurrentPlayer() == null) {

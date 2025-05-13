@@ -51,7 +51,7 @@ public class ViewCargoHold extends ViewComponent {
 
     public static void main(String[] args) {
         ViewCargoHold cargoHold = new ViewCargoHold();
-        cargoHold.red = 0;
+        cargoHold.red = 1;
         cargoHold.green = 1;
         cargoHold.blue = 1;
         cargoHold.yellow = 0;

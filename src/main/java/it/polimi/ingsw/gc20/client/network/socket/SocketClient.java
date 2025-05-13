@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.client.network.socket;
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
@@ -14,7 +15,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -111,6 +111,16 @@ public class SocketClient implements Client {
     @Override
     public int getPort() {
         return serverPort;
+    }
+
+    @Override
+    public void pong(String username) {
+        try {
+            out.writeObject(new Pong(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while sending pong: " + e.getMessage());
+        }
     }
 
 

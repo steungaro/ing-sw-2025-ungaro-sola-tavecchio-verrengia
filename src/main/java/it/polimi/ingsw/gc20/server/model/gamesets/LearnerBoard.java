@@ -44,4 +44,9 @@ public class LearnerBoard extends Board {
         Collections.shuffle(learnerCards);
         this.setDeck(learnerCards);
     }
+
+    @Override
+    public boolean isLearner() {
+        return true;
+    }
 }

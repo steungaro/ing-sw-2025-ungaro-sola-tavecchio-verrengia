@@ -37,6 +37,15 @@ public class RMIClient implements Client {
     }
 
     @Override
+    public void pong(String username) {
+        try {
+            authService.pong(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during pong back: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void start() {
         try {
             // Look up the registry

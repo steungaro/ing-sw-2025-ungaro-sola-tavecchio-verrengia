@@ -2,9 +2,11 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 
 import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
+import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 
 import java.io.Serial;
 import java.rmi.RemoteException;
@@ -88,6 +90,11 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             LOGGER.severe("Error while setting the view: " + e.getMessage());
             return false;
         }
+    }
+
+    public void pong(String username) throws RemoteException {
+        QueueHandler.getInstance().enqueue(new Pong(username));
+        LOGGER.info("Pong received from client");
     }
 }
 
