@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Component;
+import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 import java.util.List;
@@ -13,18 +14,24 @@ import java.util.List;
 public record UpdateShipMessage(
         String username,
         ViewComponent[][] components,
-        String action, // can be "used some energies", "moved piece of cargo", "removed a component"
+        String action, // can be "used some energies", "moved piece of cargo", "removed a component",
+        // "added to the ship", "rotated", "took from booked", "added to booked"
         float baseFirePower,
         int baseEnginePower,
         int astronauts,
         AlienColor aliens,
         boolean isLearner,
         boolean isValid,
-        List<ViewComponent> waste
+        ViewComponent[] componentsBooked, // components in the booked area null if not used
+        List<ViewComponent> waste,
+        ViewComponent componentInHand // component in hand, null if not used
 
         ) implements Message {
     @Override
     public String toString() {
+        if (componentInHand != null) {
+            return username + " has " + action + " the component: " + componentInHand;
+        }
         return username + " has " + action;
     }
 
@@ -34,7 +41,7 @@ public record UpdateShipMessage(
      * @param username nome dell'utente che sta assemblando la nave
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
      */
-    public UpdateShipMessage(String username, Ship ship, String action) {
+    public UpdateShipMessage(String username, Ship ship, String action, Component componentInHand) {
         ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
@@ -42,8 +49,22 @@ public record UpdateShipMessage(
                 components[i][j] = ship.getComponentAt(i, j).createViewComponent();
             }
         }
-        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), waste );
-
+        ViewComponent[] booked = new ViewComponent[2];
+        if (ship.isNormal()){
+            NormalShip normalShip = (NormalShip) ship;
+            for (int i = 0; i < normalShip.getBooked().size(); i++) {
+                if (normalShip.getBooked().get(i) != null) {
+                    booked[i] = normalShip.getBooked().get(i).createViewComponent();
+                } else {
+                    booked[i] = null;
+                }
+            }
+        }
+        ViewComponent hand = null;
+        if (componentInHand != null) {
+            hand= componentInHand.createViewComponent();
+        }
+        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste, hand);
     }
 
     @Override
@@ -56,7 +77,12 @@ public record UpdateShipMessage(
         viewShip.setComponents(components);
         viewShip.isLearner = isLearner;
         viewShip.setWaste(waste);
+        viewShip.setBooked(0, componentsBooked[0]);
+        viewShip.setBooked(1, componentsBooked[1]);
+        viewShip.setValid(isValid);
+        // da capire dove mettere il component in hand
         View.getInstance().setShip(username, viewShip);
+
     }
 
 }
