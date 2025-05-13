@@ -89,4 +89,9 @@ public abstract class Board {
     public void mergeDecks(){
         //default implementation
     }
+
+    public boolean isLearner(){
+        //default implementation
+        return false;
+    }
 }
