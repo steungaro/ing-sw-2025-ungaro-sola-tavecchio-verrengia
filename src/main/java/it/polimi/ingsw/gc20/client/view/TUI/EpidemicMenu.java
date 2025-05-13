@@ -10,7 +10,7 @@ public class EpidemicMenu implements MenuState{
 
     public void displayMenu() {
         System.out.println("An epidemic has occurred in your ship! This is the aftermath:");
-        menuContext.getShip().view();
+        System.out.println(menuContext.getShip().toString());
     }
 
     public boolean handleInput(){

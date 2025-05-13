@@ -19,11 +19,11 @@ public class CannonsMenu {
         System.out.println("Available cannons:");
         System.out.println("1. End selecting cannons and their batteries");
         for (Pair<Integer, Integer> cannon : cannons) {
-            System.out.println((cannons.indexOf(cannon) + 2) + ". Cannon coordinates: <" + cannon.getKey() + "> <" + cannon.getValue() + ">");
+            System.out.println((cannons.indexOf(cannon) + 2) + ". Cannon coordinates: <" + cannon.getValue0() + "> <" + cannon.getValue1() + ">");
         }
         for( Pair<Integer, Integer> battery : batteries) {
             System.out.println("Batteries:");
-            System.out.println((batteries.indexOf(battery) + cannons.size() + 2) + ". Battery coordinates: <" + battery.getKey() + "> <" + battery.getValue() + ">");
+            System.out.println((batteries.indexOf(battery) + cannons.size() + 2) + ". Battery coordinates: <" + battery.getValue0() + ">  <" + battery.getValue1() + ">");
         }
     }
 

@@ -322,4 +322,9 @@ public class ViewShip {
         }
         return engines;
     }
+
+    public List<Pair<Integer, Integer>> getBatteries() {
+        //TODO
+        return null;
+    }
 }

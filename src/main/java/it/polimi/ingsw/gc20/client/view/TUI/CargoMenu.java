@@ -62,4 +62,5 @@ public class CargoMenu implements MenuState{
     @Override
     public String getStateName() {
         return "Cargo Menu";
+    }
 }

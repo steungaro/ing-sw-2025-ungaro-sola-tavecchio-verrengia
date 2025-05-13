@@ -16,7 +16,7 @@ public class LobbyListMenu implements MenuState{
 
 
     public boolean handleInput(){
-
+        return null;
     }
 
     public String getStateName() {

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
@@ -10,7 +11,6 @@ public class BuildingMenu implements MenuState{
     private final MenuContext menuContext;
     private final ViewShip ship;
     private ViewComponent componentInHand;
-    //TODO Add ViewBoard
     public BuildingMenu(MenuContext menuContext, ViewShip ship) {
         this.ship = ship;
         this.menuContext = menuContext;
@@ -21,18 +21,22 @@ public class BuildingMenu implements MenuState{
             System.out.println("Building Ship Menu");
             System.out.println("1. Take component from covered components with the argument: <componentIndex>");
             System.out.println("2. Take component from uncovered components with the argument: <componentIndex>");
-            System.out.println("3. Take component from the stored components with the argument: <componentIndex>");
-            System.out.println("4. Turn hourglass");
-            System.out.println("5. Check a deck of cards with argument: <deckIndex>");
+            if(!ship.isLearner) {
+                System.out.println("3. Take component from the stored components with the argument: <componentIndex>");
+                System.out.println("4. Turn hourglass");
+                System.out.println("5. Check a deck of cards with argument: <deckIndex>");
+            }
         }else {
             System.out.println("Building Ship Menu");
-            System.out.println("1. Add the component in hand to stored components");
-            System.out.println("2. Put back the component in hand");
-            System.out.println("3. Add the component in hand to your ship with the arguments: <x> <y>");
-            System.out.println("4. Rotate the component in hand Clockwise with argument: <numberOfRotations>");
-            System.out.println("5. Rotate the component in hand Counter-Clockwise with argument: <numberOfRotations>");
-            System.out.println("6. Turn hourglass");
-            System.out.println("7. Check a deck of cards with argument: <deckIndex>");
+            System.out.println("1. Put back the component in hand");
+            System.out.println("2. Add the component in hand to your ship with the arguments: <x> <y>");
+            System.out.println("3. Rotate the component in hand Clockwise with argument: <numberOfRotations>");
+            System.out.println("4. Rotate the component in hand Counter-Clockwise with argument: <numberOfRotations>");
+            if(!ship.isLearner) {
+                System.out.println("5. Add the component in hand to stored components");
+                System.out.println("6. Turn hourglass");
+                System.out.println("7. Check a deck of cards with argument: <deckIndex>");
+            }
         }
     }
 
@@ -56,30 +60,37 @@ public class BuildingMenu implements MenuState{
                 case 3:
                     componentInHand = ship.getBooked(menuContext.getScanner().nextInt());
                     break;
+                case 4:
+                    menuContext.getClient().turnHourglass(menuContext.getUsername());
+                    break;
+                case 5:
+                    int deckIndex = menuContext.getScanner().nextInt();
+                    menuContext.getClient().peekDeck(menuContext.getUsername(), deckIndex);
+                    break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     return false;
             }
         }else{
             switch (choice){
-                case 1:
+                case 5:
                     menuContext.getClient().addComponentToBooked(menuContext.getUsername());
                     break;
-                case 2:
+                case 1:
                     menuContext.getClient().addComponentToViewed(menuContext.getUsername());
                     break;
-                case 3:
+                case 2:
                     int x = menuContext.getScanner().nextInt();
                     int y = menuContext.getScanner().nextInt();
                     menuContext.getClient().placeComponent(menuContext.getUsername(), new Pair<>(x, y));
                     break;
-                case 4:
+                case 3:
                     int numRotations = menuContext.getScanner().nextInt();
                     for(int i = 0; i < numRotations; i++){
                         menuContext.getClient().rotateComponentClockwise(menuContext.getUsername());
                     }
                     break;
-                case 5:
+                case 4:
                     int numRotations1 = menuContext.getScanner().nextInt();
                     for(int i = 0; i < numRotations1; i++){
                         menuContext.getClient().rotateComponentCounterclockwise(menuContext.getUsername());
