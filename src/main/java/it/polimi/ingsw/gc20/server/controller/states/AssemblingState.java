@@ -1,11 +1,14 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.PeekDeckMessage;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.security.InvalidParameterException;
@@ -47,6 +50,9 @@ public class AssemblingState extends State {
             getModel().componentFromUnviewed(component);
             // Add component to player's hand
             componentsInHand.put(player, component);
+            for (Player p : getModel().getInGamePlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), component, "taken from unviewed"));
+            }
         } catch (NoSuchElementException | ComponentNotFoundException e) {
             throw new NoSuchElementException("Component not found in unviewed pile");
         }
@@ -61,6 +67,9 @@ public class AssemblingState extends State {
             getModel().componentFromViewed(component);
             // Add component to player's hand
             componentsInHand.put(player, component);
+            for (Player p : getModel().getInGamePlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), component, "taken from viewed"));
+            }
         } catch (NoSuchElementException e) {
             throw new NoSuchElementException("No component found in viewed pile");
         } catch (ComponentNotFoundException e) {
@@ -77,6 +86,9 @@ public class AssemblingState extends State {
             getModel().componentFromBooked(component, player);
             // Add component to player's hand
             componentsInHand.put(player, component);
+            for (Player p : getModel().getInGamePlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "taken from booked", component));
+            }
         } catch (ComponentNotFoundException e) {
             throw new NoSuchElementException("Component not found in player's booked list");
         } catch (NoSuchElementException e) {
@@ -91,6 +103,9 @@ public class AssemblingState extends State {
         getModel().componentToBooked(componentsInHand.get(player), player);
         // Remove component from player's hand
         componentsInHand.put(player, null);
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "added to booked", null));
+        }
     }
     @Override
     public void addComponentToViewed(Player player) throws DuplicateComponentException {
@@ -98,6 +113,9 @@ public class AssemblingState extends State {
             throw new InvalidParameterException("Player does not have a component in hand");
         }
         getModel().componentToViewed(componentsInHand.get(player));
+        for (Player p: getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "added to viewed"));
+        }
         // Remove component from player's hand
         componentsInHand.put(player, null);
     }
@@ -110,6 +128,9 @@ public class AssemblingState extends State {
             getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
             // Remove component from player's hand
             componentsInHand.put(player, null);
+            for (Player p : getModel().getInGamePlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "added to the ship", null));
+            }
         } catch (Exception e) {
             // Ship implementation will throw appropriate exceptions if placement is invalid
             throw new InvalidParameterException("Cannot place component at specified location: " + e.getMessage());
@@ -118,10 +139,16 @@ public class AssemblingState extends State {
     @Override
     public void rotateComponentClockwise(Player player) {
         getModel().RotateClockwise(componentsInHand.get(player));
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "rotated clockwise"));
+        }
     }
     @Override
     public void rotateComponentCounterclockwise(Player player) {
         getModel().RotateCounterclockwise(componentsInHand.get(player));
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "rotated counterclockwise"));
+        }
     }
     @Override
     public void stopAssembling(Player player, int position) throws InvalidIndexException {
@@ -129,6 +156,9 @@ public class AssemblingState extends State {
             throw new InvalidParameterException("Place component somewhere before stopping assembling");
         }
         getModel().stopAssembling(player, position);
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition()));
+        }
         assembled.put(player, true);
     }
 
@@ -142,11 +172,15 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) != null) {
             throw new InvalidParameterException("Player has a component in hand, cannot peek deck");
         }
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new DeckPeekedMessage(player.getUsername(), getModel().viewDeck(num)));
+        }
         return getModel().viewDeck(num);
     }
 
     @Override
     public int getHourglassTime(Player player) {
+        NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTotalRemainingTime(), getModel().getRemainingTime(), getModel().getTurnedHourglass()));
         return getModel().getRemainingTime();
     }
 
@@ -159,5 +193,8 @@ public class AssemblingState extends State {
             throw new HourglassException("Cannot turn hourglass if time is not 0");
         }
         getModel().turnHourglass();
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new HourglassMessage(getModel().getTotalRemainingTime(), getModel().getRemainingTime(), getModel().getTurnedHourglass()));
+        }
     }
 }
