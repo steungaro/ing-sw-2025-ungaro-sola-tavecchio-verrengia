@@ -14,7 +14,8 @@ import java.util.List;
 public record UpdateShipMessage(
         String username,
         ViewComponent[][] components,
-        String action, // can be "used some energies", "moved piece of cargo", "removed a component", "added to the ship", "rotated", "took from booked", "added to booked"
+        String action, // can be "used some energies", "moved piece of cargo", "removed a component",
+        // "added to the ship", "rotated", "took from booked", "added to booked"
         float baseFirePower,
         int baseEnginePower,
         int astronauts,
