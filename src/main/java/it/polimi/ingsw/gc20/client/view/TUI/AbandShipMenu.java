@@ -46,7 +46,7 @@ public class AbandShipMenu implements MenuState{
 
                     break;
                 case 2:
-                    menuContext.getClient().abandonShip(menuContext.getUsername());
+                    //menuContext.getClient().abandonShip(menuContext.getUsername());
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
@@ -54,11 +54,14 @@ public class AbandShipMenu implements MenuState{
             }
             return false;
         }
+        return false;
     }
 
     /**
      * Get the name of the current state
      * @return State name
      */
-    String getStateName();
+    public String getStateName() {
+        return "Abandon Ship Menu";
+    }
 }
