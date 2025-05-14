@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.ActivatedPowerMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
@@ -13,6 +15,7 @@ import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -78,7 +81,14 @@ public class    CombatZone1State extends CargoState {
             cannonsComponents.addAll((Set<Cannon>) Translator.getComponentAt(player, cannons, Cannon.class));
         if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
-        declaredFirepower.put(player, getModel().FirePower(player, cannonsComponents, batteriesComponents));
+        float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        declaredFirepower.put(player, firepower);
+
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new ActivatedPowerMessage(player.getUsername(), firepower, "firepower"));
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
+        }
+        // TODO endMoveMessage
         nextPlayer();
         if (getCurrentPlayer() == null) {
             //remove from declaredFirePower the players that are not in getInGameConnectedPlayers

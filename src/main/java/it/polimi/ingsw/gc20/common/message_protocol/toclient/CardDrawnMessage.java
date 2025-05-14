@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 public record CardDrawnMessage(
-        String cardId,
+        int cardId,
         String cardName
 ) implements Message {
     @Override

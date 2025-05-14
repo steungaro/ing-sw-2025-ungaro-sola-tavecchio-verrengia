@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
+import it.polimi.ingsw.gc20.server.controller.states.StatePhase;
 import it.polimi.ingsw.gc20.server.exceptions.DieNotRolledException;
 import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
@@ -23,6 +24,7 @@ public class FireManager {
     private final GameModel gm;
     private final Validator validator;
     final Player player;
+    private StatePhase statePhase;
 
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
         this.fires = fires;
@@ -30,6 +32,20 @@ public class FireManager {
         this.gm = model;
         this.player = p;
         this.validator = new Validator();
+        Projectile fire = fires.getFirst();
+        switch (fire.getFireType()) {
+            case LIGHT_METEOR, LIGHT_FIRE:
+                statePhase = StatePhase.SELECT_SHIELD;
+                break;
+            case HEAVY_FIRE:
+                statePhase = StatePhase.AUTOMATIC_ACTION;
+                break;
+            case HEAVY_METEOR:
+                statePhase = StatePhase.CANNONS_PHASE;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + fire.getFireType());
+        }
     }
 
     public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
