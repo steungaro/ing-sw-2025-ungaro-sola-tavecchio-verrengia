@@ -29,6 +29,7 @@ public class AbandonedShipState extends PlayingState {
     private final int credits;
     private final int lostDays;
 
+
     /**
      * Default constructor
      */
@@ -37,6 +38,7 @@ public class AbandonedShipState extends PlayingState {
         this.lostCrew = card.getCrew();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
+        this.phase = StatePhase.ACCEPT_PHASE;
     }
 
     @Override
@@ -55,6 +57,8 @@ public class AbandonedShipState extends PlayingState {
         if (player.getShip().crew() < lostCrew) {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
+        phase = StatePhase.LOSE_CREW_PHASE;
+        //messaggio state update
         getModel().movePlayer(player, lostDays);
         getModel().addCredits(player, credits);
         for (Player p: getModel().getGame().getPlayers()) {;
@@ -81,6 +85,7 @@ public class AbandonedShipState extends PlayingState {
             NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
         }
         getController().getActiveCard().playCard();
+        phase = StatePhase.STANDBY_PHASE;
         getController().setState(new PreDrawState(getController()));
     }
 
@@ -96,10 +101,12 @@ public class AbandonedShipState extends PlayingState {
         }
         String currentPlayer = getCurrentPlayer();
         nextPlayer();
+        phase = StatePhase.ACCEPT_PHASE;
         for (Player p: getModel().getGame().getPlayers()) {
             NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(currentPlayer, getCurrentPlayer()));
         }
         if (getCurrentPlayer() == null) {
+            phase = StatePhase.STANDBY_PHASE;
             getController().setState(new PreDrawState(getController()));
         }
     }

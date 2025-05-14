@@ -39,6 +39,7 @@ public class AbandonedStationState extends CargoState {
         this.crewNeeded = card.getCrew();
         this.reward = card.getReward();
         this.lostDays = card.getLostDays();
+        this.phase = StatePhase.ACCEPT_PHASE;
     }
 
     @Override
@@ -64,6 +65,7 @@ public class AbandonedStationState extends CargoState {
         if(player.getShip().crew() < crewNeeded){
             throw new IllegalStateException("You don't have enough crew to land on the station");
         }
+        phase = StatePhase.ADD_CARGO;
         getController().getActiveCard().playCard();
     }
 
@@ -148,6 +150,7 @@ public class AbandonedStationState extends CargoState {
             for (Player p: getModel().getGame().getPlayers()) {;
                 NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(getCurrentPlayer(), 0, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
             }
+            phase = StatePhase.STANDBY_PHASE;
             getController().setState(new PreDrawState(getController()));
 
         } else {
@@ -157,7 +160,10 @@ public class AbandonedStationState extends CargoState {
                 NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(currentPlayer, getCurrentPlayer()));
             }
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                phase = StatePhase.ACCEPT_PHASE;
             }
         }
     }

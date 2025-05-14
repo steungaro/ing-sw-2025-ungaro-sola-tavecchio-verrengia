@@ -29,16 +29,6 @@ public class CombatZone0State extends PlayingState {
     private final Map<Player, Float> declaredFirepower;
     private final Map<Player, Integer> declaredEnginePower;
     private FireManager manager;
-    //enumeration that represents the state of the game
-    private enum phase {
-        CANNON,
-        CREW,
-        ENGINE,
-        SHIELD,
-        FIRE,
-        BRANCH
-    }
-    private phase currentPhase;
     /**
      * Default constructor
      */
@@ -53,13 +43,14 @@ public class CombatZone0State extends PlayingState {
         for (Player player : getModel().getInGamePlayers()) {
             declaredFirepower.put(player, 0f);
         }
-        currentPhase = phase.ENGINE;
+
         this.manager = null;
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        this.phase = StatePhase.AUTOMATIC_ACTION;
         this.automaticAction();
     }
 
@@ -73,12 +64,13 @@ public class CombatZone0State extends PlayingState {
         for (Player player: getModel().getInGamePlayers()) {
             NetworkService.getInstance().sendToClient(player.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition()));
         }
+        this.phase = StatePhase.ENGINES_PHASE;
 
     }
 
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
-        if(currentPhase != phase.CANNON) {
+        if(phase != StatePhase.CANNONS_PHASE) {
             throw new IllegalStateException("You cannot activate cannons now");
         }
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -104,7 +96,7 @@ public class CombatZone0State extends PlayingState {
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            currentPhase = phase.FIRE;
+            phase = StatePhase.GET_HIT;
             setCurrentPlayer(p.getUsername());
             manager = new FireManager(getModel(), cannonFires, p);
         }
@@ -135,7 +127,7 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException {
-        if (currentPhase != phase.CREW) {
+        if (phase != StatePhase.LOSE_CREW_PHASE) {
             throw new IllegalStateException("You cannot remove crew now");
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
@@ -144,10 +136,10 @@ public class CombatZone0State extends PlayingState {
                 lostCrew = 0;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
-                currentPhase = phase.CANNON;
+                phase = StatePhase.CANNONS_PHASE;
             }
             if (lostCrew == 0) {
-                currentPhase = phase.CANNON;
+                phase = StatePhase.CANNONS_PHASE;
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
             }
             for (Player p : getModel().getInGamePlayers()) {
@@ -171,7 +163,7 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
-        if(currentPhase != phase.ENGINE) {
+        if(phase != StatePhase.ENGINES_PHASE) {
             throw new IllegalStateException("You cannot activate engines now");
         }
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -189,7 +181,7 @@ public class CombatZone0State extends PlayingState {
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            currentPhase = phase.CREW;
+            phase = StatePhase.LOSE_CREW_PHASE;
             setCurrentPlayer(p.getUsername());
         }
     }

@@ -15,7 +15,7 @@ import java.util.Map;
 public abstract class State{
     private final GameModel model;
     private final GameController controller;
-
+    protected StatePhase phase;
     /**
      * Default constructor
      */

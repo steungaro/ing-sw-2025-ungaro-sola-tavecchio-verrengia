@@ -13,8 +13,9 @@ public enum StatePhase {
         SELECT_SHIELD("Select the shield to use"),
         SELECT_BATTERIES("Select the batteries to use"),
         TAKE_COMPONENT("can select the component you want to take, or a deck to view, or turn the hourglass"),
-        PLACE_COMPONENT("can place the component you took in the previous phase");
-
+        PLACE_COMPONENT("can place the component you took in the previous phase"),
+        BATTERY_PHASE ("finished their cargo, Select batteries for this phase"),
+        STANDBY_PHASE("wait for your turn");
         private final String description;
 
         StatePhase(String description) {
