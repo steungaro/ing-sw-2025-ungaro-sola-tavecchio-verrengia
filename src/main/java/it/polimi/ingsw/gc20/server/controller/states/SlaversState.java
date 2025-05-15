@@ -34,6 +34,7 @@ public class SlaversState extends PlayingState {
         this.reward = card.getCredits();
         this.lostDays = card.getLostDays();
         this.defeated = false;
+        phase = StatePhase.CANNONS_PHASE;
     }
 
     @Override
@@ -51,7 +52,9 @@ public class SlaversState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-
+        if (phase != StatePhase.CANNONS_PHASE) {
+            throw new IllegalStateException("You are not in the cannons phase");
+        }
         Set<Cannon> cannonsComponents = new HashSet<>();
         if (Translator.getComponentAt(player, cannons, Cannon.class) != null)
             cannonsComponents.addAll(new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)));
@@ -62,16 +65,18 @@ public class SlaversState extends PlayingState {
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
-            defeated = true;
+            phase = StatePhase.ACCEPT_PHASE;
             return 1;
         } else if (firePower == this.firePower) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             }
             return 0;
         } else {
+            phase = StatePhase.LOSE_CREW_PHASE;
             return -1;
         }
     }
@@ -81,19 +86,20 @@ public class SlaversState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (defeated) {
+        if (phase != StatePhase.LOSE_CREW_PHASE) {
             throw new IllegalStateException("You don't have to lose crew");
         }
         if (cabins.size() < lostMembers) {
             throw new IllegalStateException("You don't have enough crew to lose");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-        getModel().addCredits(player, reward);
-        getModel().movePlayer(player, -lostDays);
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            phase = StatePhase.STANDBY_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.CANNONS_PHASE;
         }
     }
 
@@ -102,11 +108,12 @@ public class SlaversState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
+        if (phase != StatePhase.ACCEPT_PHASE) {
             throw new IllegalStateException("Card not defeated");
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
+        phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

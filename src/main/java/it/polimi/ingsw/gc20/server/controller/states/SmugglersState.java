@@ -12,10 +12,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author GC20
@@ -45,6 +42,7 @@ public class SmugglersState extends CargoState {
         this.reward = card.getReward();
         defeated = false;
         accepted = false;
+        phase = StatePhase.CANNONS_PHASE;
     }
 
     @Override
@@ -52,10 +50,11 @@ public class SmugglersState extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
+        if (phase != StatePhase.ACCEPT_PHASE) {
             throw new IllegalStateException("Card not defeated");
         }
         accepted = true;
+        phase = StatePhase.ADD_CARGO;
     }
 
     @Override
@@ -63,8 +62,8 @@ public class SmugglersState extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
-            throw new IllegalStateException("Card not defeated. Cannot lose energy now");
+        if (phase != StatePhase.BATTERY_PHASE) {
+            throw new IllegalStateException("You are not in the battery phase");
         }
         super.loseEnergy(player, battery);
         currentLostCargo--;
@@ -85,8 +84,8 @@ public class SmugglersState extends CargoState {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated || !accepted) {
-            throw new IllegalStateException("Card not defeated or accepted yet");
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new IllegalStateException("You are not in the add cargo phase");
         }
         if (!reward.contains(loaded)) {
             throw new CargoException("Not in the card reward");
@@ -107,10 +106,20 @@ public class SmugglersState extends CargoState {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
-            currentLostCargo--;
-        }
         getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+        Map<CargoColor, Integer> cargo = player.getShip().getCargo();
+        boolean allZero = true;
+        for (Integer count: cargo.values()){
+            if (count > 0) {
+                allZero = false;
+                break;
+            }
+        }
+        //if all cargo is zero and there are still cargo to remove go to remove battery phase
+        currentLostCargo--;
+        if (allZero && currentLostCargo > 0 && phase == StatePhase.REMOVE_CARGO) {
+            phase = StatePhase.BATTERY_PHASE;
+        }
     }
 
     @Override
@@ -127,7 +136,9 @@ public class SmugglersState extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-
+        if (phase != StatePhase.CANNONS_PHASE) {
+            throw new IllegalStateException("You are not in the cannons phase");
+        }
         Set<Cannon> cannonsComponents = new HashSet<>();
         if (Translator.getComponentAt(player, cannons, Cannon.class) != null)
             cannonsComponents.addAll(new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)));
@@ -138,18 +149,21 @@ public class SmugglersState extends CargoState {
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
+            phase = StatePhase.ACCEPT_PHASE;
             defeated = true;
             currentLostCargo = 0;
             return 1;
         } else if (firePower == this.firePower) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             }
             currentLostCargo = 0;
             return 0;
         } else {
+            phase = StatePhase.REMOVE_CARGO;
             currentLostCargo = lostCargo;
             return -1;
         }
@@ -162,6 +176,7 @@ public class SmugglersState extends CargoState {
         }
         if (defeated) {
             getModel().movePlayer(player, -lostDays);
+            phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
@@ -170,8 +185,11 @@ public class SmugglersState extends CargoState {
             }
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                phase = StatePhase.CANNONS_PHASE;
             }
         }
     }

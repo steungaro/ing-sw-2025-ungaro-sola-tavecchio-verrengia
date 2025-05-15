@@ -130,6 +130,13 @@ public class CombatZone0State extends PlayingState {
                 phase = StatePhase.AUTOMATIC_ACTION;
                 try {
                     manager.fire();
+                    if (manager.finished()){
+                        phase = StatePhase.STANDBY_PHASE;
+                        getModel().getActiveCard().playCard();
+                        getController().setState(new PreDrawState(getController()));
+                    } else {
+                        phase = StatePhase.ROLL_DICE_PHASE;
+                    }
                 } catch (InvalidShipException e) {
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
                 }

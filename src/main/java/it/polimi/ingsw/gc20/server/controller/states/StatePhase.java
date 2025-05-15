@@ -16,7 +16,8 @@ public enum StatePhase {
         BATTERY_PHASE ("finished their cargo, Select batteries for this phase"),
         STANDBY_PHASE("wait for your turn"),
         ROLL_DICE_PHASE("roll the dice"),
-        VALIDATE_SHIP_PHASE("validate your ship");
+        VALIDATE_SHIP_PHASE("validate your ship"),
+        ADD_ALIEN_PHASE("add alien to the ship");
         private final String description;
 
         StatePhase(String description) {

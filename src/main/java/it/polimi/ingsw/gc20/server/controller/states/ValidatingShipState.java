@@ -15,7 +15,7 @@ import java.util.Map;
 public class ValidatingShipState extends State {
     private final Map<Player, Boolean> validShips = new HashMap<>();
     private final Map<Player, Boolean> readyToFly = new HashMap<>();
-
+    private final Map<Player, StatePhase> phaseMap = new HashMap<>();
     /**
      * Default constructor
      */
@@ -24,6 +24,7 @@ public class ValidatingShipState extends State {
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
+            phaseMap.put (player, StatePhase.VALIDATE_SHIP_PHASE);
         }
     }
 
@@ -36,6 +37,7 @@ public class ValidatingShipState extends State {
     public boolean isShipValid(Player player) {
         if (getModel().shipValidating(player)) {
             validShips.put(player, true);
+            phaseMap.put(player, StatePhase.ADD_ALIEN_PHASE);
             return true;
         }
         return false;
@@ -76,6 +78,7 @@ public class ValidatingShipState extends State {
             throw new IllegalArgumentException("Cannot fly with invalid ship");
         }
         readyToFly.put(player, true);
+        phaseMap.put(player, StatePhase.STANDBY_PHASE);
     }
 
     @Override

@@ -21,7 +21,9 @@ public class OpenSpaceState extends PlayingState {
      * Default constructor
      */
     public OpenSpaceState(GameModel model, GameController controller, AdventureCard card) {
+
         super(model, controller);
+        phase = StatePhase.ENGINES_PHASE;
     }
 
     @Override
@@ -34,6 +36,9 @@ public class OpenSpaceState extends PlayingState {
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase != StatePhase.ENGINES_PHASE) {
+            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
+        }
 
         List<Battery> energy = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class) != null)
@@ -42,7 +47,10 @@ public class OpenSpaceState extends PlayingState {
         declaredEngines.put(player, getModel().EnginePower(player, engines.size(), energy));
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            phase = StatePhase.STANDBY_PHASE;
             endTurn();
+        } else {
+            //manderemo messaggio al controller di cambio fase tutti in standby tranne a chi serve selezionare i motori
         }
     }
 
@@ -61,6 +69,7 @@ public class OpenSpaceState extends PlayingState {
     @Override
     public void currentQuit(Player player) {
             nextPlayer();
+            //aggiornamento fasi
             if(getCurrentPlayer() == null) {
                 endTurn();
             }

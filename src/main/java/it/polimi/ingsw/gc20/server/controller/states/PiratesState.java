@@ -18,6 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static it.polimi.ingsw.gc20.server.model.cards.FireType.HEAVY_FIRE;
+import static it.polimi.ingsw.gc20.server.model.cards.FireType.LIGHT_FIRE;
+
 /**
  * @author GC20
  * During the PiratesState, the player can shoot the enemy declaring the firepower, if the result is 1, the player has defeated the enemy, if it is 0, the player has to pass the turn, if it is -1, the player has lost
@@ -43,6 +46,7 @@ public class PiratesState extends PlayingState {
         this.cannonFire = card.getProjectiles();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
+        phase = StatePhase.CANNONS_PHASE;
     }
 
     @Override
@@ -58,6 +62,9 @@ public class PiratesState extends PlayingState {
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
+        if (phase != StatePhase.ACCEPT_PHASE) {
+            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
+        }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
     }
@@ -66,6 +73,9 @@ public class PiratesState extends PlayingState {
     public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if (phase != StatePhase.CANNONS_PHASE) {
+            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
         }
         Set<Cannon> cannonsComponents = new HashSet<>();
         if (Translator.getComponentAt(player, cannons, Cannon.class) != null)
@@ -77,14 +87,19 @@ public class PiratesState extends PlayingState {
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
             getController().getActiveCard().playCard();
+            phase = StatePhase.ACCEPT_PHASE;
             return 1;
         } else if (firePower == this.firePower) {
             nextPlayer();
+            //la fase andra al prossimo player gli altri in standby
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
+                getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             }
             return 0;
         } else {
+            phase = StatePhase.ROLL_DICE_PHASE;
             manager = new FireManager(getModel(), cannonFire, player);
             return -1;
         }
@@ -99,18 +114,43 @@ public class PiratesState extends PlayingState {
             throw new IllegalStateException("Cannot roll dice when not firing");
         }
         getModel().getGame().rollDice();
-        if (manager.isFirstHeavyFire()) {
-            manager.fire();
-        }
-        if (manager.finished()) {
-            nextPlayer();
-            if (getCurrentPlayer() == null) {
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
-
-            } else {
-                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
-            }
+        switch (manager.getFirstProjectile()) {
+            case HEAVY_FIRE:
+                phase = StatePhase.AUTOMATIC_ACTION;
+                try {
+                    manager.fire();
+                    if (manager.finished()) {
+                        nextPlayer();
+                        if (getCurrentPlayer() == null) {
+                            getModel().getActiveCard().playCard();
+                            getController().setState(new PreDrawState(getController()));
+                            phase = StatePhase.STANDBY_PHASE;
+                        } else {
+                            phase = StatePhase.CANNONS_PHASE;
+                        }
+                    } else {
+                        phase = StatePhase.ROLL_DICE_PHASE;
+                    }
+                } catch (InvalidShipException e) {
+                    phase = StatePhase.VALIDATE_SHIP_PHASE;
+                }
+                break;
+            case LIGHT_FIRE:
+                phase = StatePhase.SELECT_SHIELD;
+                break;
+            case null:
+                nextPlayer();
+                if (getCurrentPlayer() == null) {
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                    phase = StatePhase.STANDBY_PHASE;
+                } else {
+                    //next player needs to fight pirates
+                    phase = StatePhase.CANNONS_PHASE;
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + cannonFire.getFirst());
         }
         return getModel().getGame().rollDice();
     }
@@ -120,15 +160,21 @@ public class PiratesState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase != StatePhase.VALIDATE_SHIP_PHASE){
+            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
+        }
         manager.chooseBranch(player, coordinates);
         if (manager.finished()) {
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
-                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+                phase = StatePhase.CANNONS_PHASE;
             }
+        }else {
+            phase = StatePhase.ROLL_DICE_PHASE;
         }
     }
 
@@ -137,16 +183,25 @@ public class PiratesState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase != StatePhase.SELECT_SHIELD) {
+            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
+        }
         manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-        manager.fire();
-        if (manager.finished()) {
-            nextPlayer();
-            if (getCurrentPlayer() == null) {
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
+        try {
+            manager.fire();
+            if (manager.finished()) {
+                nextPlayer();
+                if (getCurrentPlayer() == null) {
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    phase = StatePhase.CANNONS_PHASE;
+                }
             } else {
-                manager = new FireManager(getModel(), cannonFire, getController().getPlayerByID(getCurrentPlayer()));
+                phase = StatePhase.ROLL_DICE_PHASE;
             }
+        } catch (InvalidShipException e) {
+            phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
 
@@ -164,6 +219,7 @@ public class PiratesState extends PlayingState {
         if (!getController().getActiveCard().isPlayed()) {
             throw new IllegalStateException("Card not defeated");
         }
+        phase = StatePhase.STANDBY_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

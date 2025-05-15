@@ -30,6 +30,7 @@ public class PlanetsState extends CargoState {
         this.landedPlayer = null;
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();
+        phase = StatePhase.LAND_ON_PLANET;
     }
 
     @Override
@@ -61,6 +62,7 @@ public class PlanetsState extends CargoState {
             landedPlayer = player.getUsername();
             landedPlanetIndex = planetIndex;
             playersToMove.add(player);
+            phase = StatePhase.ADD_CARGO;
         } else {
             throw new IllegalStateException("The planet is not available");
         }
@@ -70,6 +72,9 @@ public class PlanetsState extends CargoState {
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't load cargo unless you are on the planet");
+        }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidTurnException("You can't load cargo unless you are on the planet");
         }
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
@@ -84,6 +89,9 @@ public class PlanetsState extends CargoState {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't unload cargo unless you are on the planet");
         }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidTurnException("You can't unload cargo unless you are on the planet");
+        }
         super.unloadCargo(player, unloaded, ch);
     }
 
@@ -91,6 +99,9 @@ public class PlanetsState extends CargoState {
     public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new IllegalArgumentException("You can't move cargo unless you are on the planet");
+        }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidTurnException("You can't move cargo unless you are on the planet");
         }
         super.moveCargo(player, cargo, from, to);
     }
@@ -105,7 +116,10 @@ public class PlanetsState extends CargoState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
+            phase = StatePhase.STANDBY_PHASE;
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.LAND_ON_PLANET;
         }
     }
 
