@@ -99,8 +99,8 @@ public class MenuContext {
     }
 
     public void createLobby(String user, int maxPlayers, int level) throws RemoteException {
-        client.createLobby(name, user, maxPlayers, level);
-        lobby = new ViewLobby(name, user, maxPlayers, level);
+        //client.createLobby(name, user, maxPlayers, level);
+        //lobby = new ViewLobby(name, user, maxPlayers, level);
     }
 
     public ViewShip getShip() {

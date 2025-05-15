@@ -67,6 +67,7 @@ public class TUI extends View {
 
         do {
             do {
+                clearConsole();
                 System.out.println("Select network type:");
                 for (int i = 0; i < networkTypes.length; i++) {
                     System.out.println((i + 1) + ". " + networkTypes[i]);
