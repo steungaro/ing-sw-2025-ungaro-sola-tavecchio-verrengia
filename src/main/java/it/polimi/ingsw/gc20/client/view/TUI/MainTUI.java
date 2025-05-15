@@ -13,7 +13,7 @@ public class MainTUI {
                 tui.init();
                 tui.initNetwork();
                 tui.login();
-                //tui.lobbyLoop();
+                tui.lobbyLoop();
                 //tui.gameLoop();
                 tui.shutdown();
             } catch (Exception e) {

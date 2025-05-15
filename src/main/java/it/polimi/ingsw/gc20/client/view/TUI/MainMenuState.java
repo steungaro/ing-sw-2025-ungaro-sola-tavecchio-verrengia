@@ -14,7 +14,7 @@ public class MainMenuState implements MenuState{
     public void displayMenu() {
         System.out.println("Welcome to the game!");
         System.out.println("1. Get list of available lobbies");
-        System.out.println("2. Create  a new lobby with the arguments: <name> <maxPlayers> <level>");
+        System.out.println("2. Create  a new lobby with the arguments: <Lobby name> <username> <maxPlayers> <level>");
     }
 
 
@@ -32,7 +32,7 @@ public class MainMenuState implements MenuState{
                 String user = menuContext.getUsername();
                 int maxPlayers = menuContext.getScanner().nextInt();
                 int level = menuContext.getScanner().nextInt();
-                menuContext.createLobby(user, maxPlayers, level);
+                menuContext.createLobby(name, user, maxPlayers, level);
                 menuContext.setState(new InLobbyMenu(menuContext));
             default:
                 System.out.println("Invalid choice. Please try again.");

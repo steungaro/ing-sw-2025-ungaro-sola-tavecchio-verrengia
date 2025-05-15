@@ -168,4 +168,22 @@ public class TUI extends View {
 
         this.username = username;
     }
+
+    public void lobbyLoop() {
+        writingLock.lock();
+
+        // Create the menu context
+        MenuContext menuContext = new MenuContext(client, username);
+
+        // Set the initial state
+        menuContext.setState(new MainMenuState(menuContext));
+        // Run the menu system
+        try {
+            menuContext.run();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+        writingLock.unlock();
+    }
 }

@@ -30,9 +30,10 @@ public class PopulateShipMenu {
                 break;
             case 2:
                 if(menuContext.getLobby().getLevel() == 1) {
+                    AlienColor color = AlienColor.valueOf(menuContext.getScanner().next());
                     int x = menuContext.getScanner().nextInt();
                     int y = menuContext.getScanner().nextInt();
-                    //menuContext.getClient().addAlien(menuContext.getUsername(), new Pair<>(x, y)); //TODO remove the alien color argument
+                    menuContext.getClient().addAlien(menuContext.getUsername(), color, new Pair<>(x, y)); //TODO remove the alien color argument
                 }
                 break;
             default:
