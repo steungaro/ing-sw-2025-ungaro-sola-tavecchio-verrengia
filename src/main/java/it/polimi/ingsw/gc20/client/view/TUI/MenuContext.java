@@ -44,8 +44,8 @@ public class MenuContext {
     public void run() throws RemoteException {
         while (client.isConnected() && currentState != null) {
             currentState.displayMenu();
-            if (!currentState.handleInput()) {
-                break;
+            if(!currentState.handleInput()){
+                
             }
         }
     }

@@ -24,7 +24,6 @@ public class MainMenuState implements MenuState{
         // Handle user input for the main menu
         switch (choice) {
             case 1:
-
                 menuContext.setState(new LobbyListMenu(menuContext));
                 break;
             case 2:
