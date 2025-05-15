@@ -30,13 +30,7 @@ public class    CombatZone1State extends CargoState {
     private boolean removingCargo;
     private FireManager manager;
     //enumeration that represents the state of the game
-    private enum phase {
-        CANNON,
-        ENGINE,
-        FIRE,
-        CARGO
-    }
-    private phase currentPhase;
+    private StatePhase phase;
     /**
      * Default constructor
      */
@@ -53,7 +47,7 @@ public class    CombatZone1State extends CargoState {
         }
         this.removingCargo = false;
         this.manager = null;
-        currentPhase = phase.CANNON;
+        this.phase = StatePhase.CANNONS_PHASE;
     }
 
     @Override
@@ -64,7 +58,7 @@ public class    CombatZone1State extends CargoState {
                 .orElseThrow(() -> new RuntimeException("Error"));
         manager = new FireManager(getModel(), cannonFires, player);
         setCurrentPlayer(player.getUsername());
-        currentPhase = phase.FIRE;
+        phase = StatePhase.ROLL_DICE_PHASE;
     }
 
     @Override
@@ -72,7 +66,7 @@ public class    CombatZone1State extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(!currentPhase.equals(phase.CANNON)) {
+        if(phase != StatePhase.CANNONS_PHASE) {
             throw new IllegalStateException("Not in cannon phase");
         }
         Set<Cannon> cannonsComponents = new HashSet<>();
@@ -102,7 +96,7 @@ public class    CombatZone1State extends CargoState {
                     .getKey()
                     , - lostDays);
             setCurrentPlayer(getController().getFirstOnlinePlayer());
-            currentPhase = phase.ENGINE;
+            phase = StatePhase.ENGINES_PHASE;
         }
     }
 
@@ -123,14 +117,13 @@ public class    CombatZone1State extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(!currentPhase.equals(phase.ENGINE)) {
+        if(!phase.equals(StatePhase.ENGINES_PHASE)) {
             throw new IllegalStateException("Not in engine phase");
         }
 
         List<Battery> batteriesComponents = new ArrayList<>();
-        if((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class)!=null)
-            batteriesComponents.addAll((List<Battery>) Translator.getComponentAt(player, batteries, Battery.class));
-
+        if(Translator.getComponentAt(player, batteries, Battery.class)!=null)
+            batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), batteriesComponents));
         nextPlayer();
         if (getCurrentPlayer() == null) {
@@ -143,7 +136,7 @@ public class    CombatZone1State extends CargoState {
                     .getKey()
                     .getUsername());
             removingCargo = true;
-            currentPhase = phase.CARGO;
+            phase = StatePhase.REMOVE_CARGO;
         }
     }
 
@@ -156,12 +149,26 @@ public class    CombatZone1State extends CargoState {
             throw new IllegalStateException("Cannot roll dice when not firing");
         }
         getModel().getGame().rollDice();
-        if (manager.isFirstHeavyFire()) {
-            manager.fire();
-        }
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        switch (manager.getFirstProjectile()) {
+            case LIGHT_FIRE, LIGHT_METEOR:
+                phase = StatePhase.SELECT_SHIELD;
+                break;
+            case HEAVY_METEOR:
+                phase = StatePhase.CANNONS_PHASE;
+                break;
+            case HEAVY_FIRE:
+                phase = StatePhase.AUTOMATIC_ACTION;
+                try {
+                    manager.fire();
+                } catch (InvalidShipException e) {
+                    phase = StatePhase.VALIDATE_SHIP_PHASE;
+                }
+                break;
+            case null:
+                getModel().getActiveCard().playCard();
+                phase = StatePhase.STANDBY_PHASE;
+                getController().setState(new PreDrawState(getController()));
+                break;
         }
         return getModel().getGame().rollDice();
     }
@@ -173,26 +180,21 @@ public class    CombatZone1State extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(!currentPhase.equals(phase.FIRE)) {
-            throw new IllegalStateException("Not being shot at");
+        if(!phase.equals(StatePhase.SELECT_SHIELD)) {
+            throw new IllegalStateException("Not in shield phase");
         }
         manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-        manager.fire();
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        try {
+            manager.fire();
+            phase = StatePhase.ROLL_DICE_PHASE;
+        } catch (InvalidShipException e) {
+            phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
 
     @Override
     public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws IllegalStateException, InvalidTurnException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
-        }
-        if (!removingCargo) {
-            throw new IllegalStateException("Not in removing cargo state");
-        }
-        getModel().MoveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
+        throw new InvalidTurnException("cannot move cargo when you lose cargo");
     }
 
     @Override
@@ -204,7 +206,19 @@ public class    CombatZone1State extends CargoState {
             throw new IllegalStateException("Not in removing cargo state");
         }
         getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+        Map<CargoColor, Integer> cargo = player.getShip().getCargo();
+        boolean allZero = true;
+        for (Integer count: cargo.values()){
+            if (count > 0) {
+                allZero = false;
+                break;
+            }
+        }
+        //if all cargo is zero and there are still cargo to remove go to remove battery phase
         lostCargo--;
+        if (allZero && lostCargo > 0) {
+            phase = StatePhase.BATTERY_PHASE;
+        }
     }
 
     @Override
@@ -218,6 +232,7 @@ public class    CombatZone1State extends CargoState {
         if (lostCargo == 0) {
             removingCargo = false;
             setCurrentPlayer(getController().getFirstOnlinePlayer());
+            phase = StatePhase.AUTOMATIC_ACTION;
             automaticAction();
         }
     }
@@ -229,6 +244,9 @@ public class    CombatZone1State extends CargoState {
         }
         if (!removingCargo) {
             throw new IllegalStateException("Not in removing cargo state");
+        }
+        if (phase != StatePhase.BATTERY_PHASE) {
+            throw new IllegalStateException("Not in battery phase");
         }
         super.loseEnergy(player, battery);
         lostCargo--;
@@ -242,31 +260,38 @@ public class    CombatZone1State extends CargoState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if(!currentPhase.equals(phase.FIRE)) {
+        if(!phase.equals(StatePhase.VALIDATE_SHIP_PHASE)) {
             throw new IllegalStateException("Not in branch phase");
         }
         manager.chooseBranch(player, coordinates);
         if (manager.finished()) {
+            phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.ROLL_DICE_PHASE;
         }
     }
 
     public void currentQuit(Player player){
-        if(currentPhase.equals(phase.FIRE)) {
+        if(phase.equals(StatePhase.VALIDATE_SHIP_PHASE)) {
             try {
                 chooseBranch(player, new Pair<>(-1, -1));
+                phase = StatePhase.STANDBY_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             }
             catch (InvalidTurnException e) {
                 //ignore
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
             }
         }
         else {
             nextPlayer();
+            if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
         }
     }
 }

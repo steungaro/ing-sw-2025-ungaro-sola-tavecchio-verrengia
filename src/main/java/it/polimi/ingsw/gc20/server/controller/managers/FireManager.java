@@ -24,28 +24,12 @@ public class FireManager {
     private final GameModel gm;
     private final Validator validator;
     final Player player;
-    private StatePhase statePhase;
-
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
         this.fires = fires;
         this.skipNextFire = false;
         this.gm = model;
         this.player = p;
         this.validator = new Validator();
-        Projectile fire = fires.getFirst();
-        switch (fire.getFireType()) {
-            case LIGHT_METEOR, LIGHT_FIRE:
-                statePhase = StatePhase.SELECT_SHIELD;
-                break;
-            case HEAVY_FIRE:
-                statePhase = StatePhase.AUTOMATIC_ACTION;
-                break;
-            case HEAVY_METEOR:
-                statePhase = StatePhase.CANNONS_PHASE;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + fire.getFireType());
-        }
     }
 
     public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
@@ -124,11 +108,14 @@ public class FireManager {
         return validator.isSplit();
     }
 
-    public boolean isFirstHeavyFire() {
+    /** posso modificare questa funzione in modo che ritorni il tipo di proeittile e null se è finito
+     * @return il tipo di proiettile
+     */
+    public FireType getFirstProjectile() {
         if (fires.isEmpty()) {
-            return false;
+            return null;
         }
-        return fires.getFirst().getFireType() == FireType.HEAVY_FIRE;
+        return fires.getFirst().getFireType();
     }
 
     public void chooseBranch(Player p, Pair<Integer, Integer> coordinates) throws InvalidTurnException {

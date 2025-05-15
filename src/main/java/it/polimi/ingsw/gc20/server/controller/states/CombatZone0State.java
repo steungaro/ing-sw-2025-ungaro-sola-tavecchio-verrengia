@@ -90,16 +90,21 @@ public class CombatZone0State extends PlayingState {
             NetworkService.getInstance().sendToClient(p.getUsername(), new ActivatedPowerMessage(player.getUsername(), firepower, "firepower"));
             NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
         }
-        if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
+            //remove from declaredFirePower the players that are not in getInGameConnectedPlayers
+            declaredFirepower.keySet().removeIf(p -> !getController().getInGameConnectedPlayers().contains(p.getUsername()));
+
             Player p = declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            phase = StatePhase.GET_HIT;
+            phase = StatePhase.ROLL_DICE_PHASE;
             setCurrentPlayer(p.getUsername());
             manager = new FireManager(getModel(), cannonFires, p);
         }
+
     }
 
     @Override
@@ -114,13 +119,26 @@ public class CombatZone0State extends PlayingState {
         for (Player p : getModel().getInGamePlayers()) {
             NetworkService.getInstance().sendToClient(p.getUsername(), new DieResultMessage(getModel().getGame().lastRolled()));
         }
-        if (manager.isFirstHeavyFire()) {
-            //TODO message dei proiettili da fare
-            manager.fire();
-        }
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        switch (manager.getFirstProjectile()) {
+            case LIGHT_FIRE, LIGHT_METEOR:
+                phase = StatePhase.SELECT_SHIELD;
+                break;
+            case HEAVY_METEOR:
+                phase = StatePhase.CANNONS_PHASE;
+                break;
+            case HEAVY_FIRE:
+                phase = StatePhase.AUTOMATIC_ACTION;
+                try {
+                    manager.fire();
+                } catch (InvalidShipException e) {
+                    phase = StatePhase.VALIDATE_SHIP_PHASE;
+                }
+                break;
+            case null:
+                getModel().getActiveCard().playCard();
+                phase = StatePhase.STANDBY_PHASE;
+                getController().setState(new PreDrawState(getController()));
+                break;
         }
         return getModel().getGame().rollDice();
     }
@@ -191,14 +209,18 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase!=StatePhase.SELECT_SHIELD) {
+            throw new InvalidTurnException("You cannot activate shield now");
+        }
         manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
         for (Player p : getModel().getInGamePlayers()) {
             NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
         }
-        manager.fire();
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        try {
+            manager.fire();
+            phase = StatePhase.ROLL_DICE_PHASE;
+        } catch (InvalidShipException e) {
+            phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
 
@@ -207,13 +229,19 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
+            throw new InvalidTurnException("You cannot choose branch now");
+        }
         manager.chooseBranch(player, coordinates);
         for (Player p : getModel().getInGamePlayers()) {
             NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "lost a branch", null));
         }
         if (manager.finished()) {
+            phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.ROLL_DICE_PHASE;
         }
     }
 

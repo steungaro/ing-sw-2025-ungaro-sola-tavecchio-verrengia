@@ -11,11 +11,12 @@ public enum StatePhase {
         LAND_ON_PLANET("Select the planet to land on"),
         ENGINES_PHASE("Select engines and batteries for this phase"),
         SELECT_SHIELD("Select the shield to use"),
-        SELECT_BATTERIES("Select the batteries to use"),
         TAKE_COMPONENT("can select the component you want to take, or a deck to view, or turn the hourglass"),
         PLACE_COMPONENT("can place the component you took in the previous phase"),
         BATTERY_PHASE ("finished their cargo, Select batteries for this phase"),
-        STANDBY_PHASE("wait for your turn");
+        STANDBY_PHASE("wait for your turn"),
+        ROLL_DICE_PHASE("roll the dice"),
+        VALIDATE_SHIP_PHASE("validate your ship");
         private final String description;
 
         StatePhase(String description) {
