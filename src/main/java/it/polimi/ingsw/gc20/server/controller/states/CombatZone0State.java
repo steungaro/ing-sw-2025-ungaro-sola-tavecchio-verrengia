@@ -246,7 +246,25 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public void currentQuit(Player player) {
-        nextPlayer();
+    public void currentQuit(Player player){
+        if(phase.equals(StatePhase.VALIDATE_SHIP_PHASE)) {
+            try {
+                chooseBranch(player, new Pair<>(-1, -1));
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+            catch (InvalidTurnException e) {
+                //ignore
+            }
+        }
+        else {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+        }
     }
 }

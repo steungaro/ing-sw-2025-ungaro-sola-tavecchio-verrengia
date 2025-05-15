@@ -15,6 +15,7 @@ public class EpidemicState extends PlayingState {
      */
     public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
+        phase = StatePhase.AUTOMATIC_ACTION;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.schedule(() -> {
             try {
@@ -36,6 +37,7 @@ public class EpidemicState extends PlayingState {
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().getInGameConnectedPlayers().contains(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
+        phase = StatePhase.STANDBY_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

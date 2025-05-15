@@ -138,7 +138,7 @@ public abstract class State{
         exception();
         return 0;
     }
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, DieNotRolledException {
         exception();
     }
 
