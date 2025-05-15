@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 
 import java.rmi.RemoteException;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -97,9 +98,9 @@ public class MenuContext {
         this.lobby = lobby;
     }
 
-    public void createLobby(String name, String user, int maxPlayers, int level) throws RemoteException {
-        client.createLobby(name, user, maxPlayers, level);
-        lobby = new ViewLobby(name, user, maxPlayers, level);
+    public void createLobby(String user, int maxPlayers, int level) throws RemoteException {
+        //client.createLobby(name, user, maxPlayers, level);
+        //lobby = new ViewLobby(name, user, maxPlayers, level);
     }
 
     public ViewShip getShip() {

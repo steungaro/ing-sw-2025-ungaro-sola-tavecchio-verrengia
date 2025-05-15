@@ -14,18 +14,28 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unused") // dynamically created by Cards
 public class MeteorSwarmState extends PlayingState {
     private final List<Projectile> meteors;
-    private FireManager manager;
+    private Map<Player, FireManager> fireManagerMap;
+    private Map<Player, StatePhase> phaseMap;
     /**
      * Default constructor
      */
     public MeteorSwarmState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.meteors = card.getProjectiles();
-        manager = new FireManager(model, meteors, controller.getPlayerByID(getCurrentPlayer()));
+        //init the map
+        for (String username : getController().getInGameConnectedPlayers()) {
+            fireManagerMap.put(getController().getPlayerByID(username), new FireManager(model, meteors, getController().getPlayerByID(username)));
+            if (username.equals(getCurrentPlayer())) {
+                phaseMap.put(getController().getPlayerByID(username), StatePhase.ROLL_DICE_PHASE);
+            } else {
+                phaseMap.put(getController().getPlayerByID(username), StatePhase.STANDBY_PHASE);
+            }
+        }
     }
 
     @Override
@@ -36,33 +46,81 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, EnergyException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws DieNotRolledException, InvalidTurnException, InvalidShipException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (cannons.isEmpty() || batteries.isEmpty()) {
-            return;
+        if (phaseMap.get(player) != StatePhase.CANNONS_PHASE) {
+            throw new InvalidTurnException("cannot activate cannons in this phase");
         }
-        manager.activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
-        if (manager.finished()) {
+
+        fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
+        try {
+            fireManagerMap.get(player).fire();
             nextPlayer();
-            if (getCurrentPlayer() == null) {
-                getController().setState(new PreDrawState(getController()));
+            //if all the player has received this projectile
+            if (getCurrentPlayer() == null){
+                //verify if the first player has received all the meteors
+                setCurrentPlayer(getController().getFirstOnlinePlayer());
+                if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        if (p.equals(getCurrentPlayer())){
+                            phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
+                        } else {
+                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                        }
+                    }
+
+                }
             } else {
-                manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+                phaseMap.put(player, StatePhase.STANDBY_PHASE);
+                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.CANNONS_PHASE);
             }
+        } catch (InvalidShipException e) {
+            phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
+            phase = StatePhase.CANNONS_PHASE;
         }
     }
 
     @Override
-    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException {
+    public int rollDice(Player player) throws IllegalStateException, InvalidTurnException, DieNotRolledException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (manager == null || manager.finished()) {
+        if (fireManagerMap.get(player).finished()) {
             throw new IllegalStateException("Cannot roll dice when not firing");
         }
-        return getModel().getGame().rollDice();
+        if (phaseMap.get(player) != StatePhase.ROLL_DICE_PHASE){
+            throw new InvalidTurnException("Cannot roll dice in this phase");
+        }
+        getModel().getGame().rollDice();
+        switch (fireManagerMap.get(player).getFirstProjectile()) {
+            case LIGHT_METEOR:
+                for (String p : getController().getInGameConnectedPlayers()) {
+                    if (p.equals(getCurrentPlayer())) {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.SELECT_SHIELD);
+                    } else {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                }
+                break;
+            case HEAVY_METEOR:
+                for (String p : getController().getInGameConnectedPlayers()) {
+                    if (p.equals(getCurrentPlayer())) {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.CANNONS_PHASE);
+                    } else {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                }
+                break;
+        }
+        return getModel().getGame().lastRolled();
     }
 
     @Override
@@ -70,16 +128,41 @@ public class MeteorSwarmState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-        manager.fire();
-        if (manager.finished()) {
+        if (!phaseMap.get(player).equals(StatePhase.SELECT_SHIELD)) {
+            throw new InvalidTurnException("cannot activate shield in this phase");
+        }
+
+        fireManagerMap.get(player).activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+        try {
+            fireManagerMap.get(player).fire();
             nextPlayer();
-            if (getCurrentPlayer() == null) {
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
+            //if all the player has received this projectile
+            if (getCurrentPlayer() == null){
+                //verify if the first player has received all the meteors
+                setCurrentPlayer(getController().getFirstOnlinePlayer());
+                if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        if (p.equals(getCurrentPlayer())){
+                            phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
+                        } else {
+                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                        }
+                    }
+
+                }
             } else {
-                manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+                phaseMap.put(player, StatePhase.STANDBY_PHASE);
+                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.SELECT_SHIELD);
             }
+        } catch (InvalidShipException e) {
+            phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
+            phase = StatePhase.SELECT_SHIELD;
         }
     }
 
@@ -88,31 +171,75 @@ public class MeteorSwarmState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        manager.chooseBranch(player, coordinates);
-        if (manager.finished()) {
-            nextPlayer();
-            if (getCurrentPlayer() == null) {
+        if (phaseMap.get(player) != StatePhase.VALIDATE_SHIP_PHASE){
+            throw new InvalidTurnException("cannot choose branch in this phase");
+        }
+        fireManagerMap.get(player).chooseBranch(player, coordinates);
+        //after the player chose the branch we check if there is a next player
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
+            //if there is no next player we set the current player to the fist player
+            setCurrentPlayer(getController().getFirstOnlinePlayer());
+            //we verify if we shot all the projectiles
+            if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()){
+                //we set all the player phase to standby and we can go to the next card
+                for (String p : getController().getInGameConnectedPlayers()) {
+                    phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                }
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
-                manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+                //if is not finisched we set the first player to the roll dice phase and the others to the standby phase
+                for (String p : getController().getInGameConnectedPlayers()) {
+                    if (p.equals(getCurrentPlayer())){
+                        phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
+                    } else {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                }
             }
+        } else {
+            //if there is a next player we modify is state to the correct phase, memorized in the phase attribute
+            phaseMap.put(player, StatePhase.STANDBY_PHASE);
+            phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), phase);
         }
     }
 
     @Override
-    public void currentQuit(Player player){
-        try {
-            chooseBranch(player, new Pair<>(-1, -1));
-        } catch (InvalidTurnException e) {
-            throw new RuntimeException(e);
-        }
-        nextPlayer();
-        if (getCurrentPlayer() == null) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+    public void currentQuit(Player player) {
+        if (phaseMap.get(player) == StatePhase.VALIDATE_SHIP_PHASE) {
+            try {
+                chooseBranch(player, new Pair<>(-1, -1));
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            } catch (InvalidTurnException e) {
+                //ignore
+            }
         } else {
-            manager = new FireManager(getModel(), meteors, getController().getPlayerByID(getCurrentPlayer()));
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                //if there is no next player we set the current player to the first player
+                setCurrentPlayer(getController().getFirstOnlinePlayer());
+                //we verify if we shot all the projectiles
+                if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
+                    //we set all the player phase to standby and we can go to the next card
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                    }
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    //if is not finished we set the first player to the roll dice phase and the others to the standby phase
+                    for (String p : getController().getInGameConnectedPlayers()) {
+                        if (p.equals(getCurrentPlayer())) {
+                            phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
+                        } else {
+                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.ActivatedPowerMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DieResultMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
@@ -12,6 +16,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -24,16 +29,6 @@ public class CombatZone0State extends PlayingState {
     private final Map<Player, Float> declaredFirepower;
     private final Map<Player, Integer> declaredEnginePower;
     private FireManager manager;
-    //enumeration that represents the state of the game
-    private enum phase {
-        CANNON,
-        CREW,
-        ENGINE,
-        SHIELD,
-        FIRE,
-        BRANCH
-    }
-    private phase currentPhase;
     /**
      * Default constructor
      */
@@ -48,28 +43,34 @@ public class CombatZone0State extends PlayingState {
         for (Player player : getModel().getInGamePlayers()) {
             declaredFirepower.put(player, 0f);
         }
-        currentPhase = phase.ENGINE;
+
         this.manager = null;
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        this.phase = StatePhase.AUTOMATIC_ACTION;
         this.automaticAction();
     }
 
     @Override
     public void automaticAction() {
-        getModel().movePlayer(getController().getInGameConnectedPlayers().stream()
-                        .map(p -> getController().getPlayerByID(p))
-                        .min(Comparator.comparingInt(p -> p.getShip().crew()))
-                        .orElseThrow(() -> new RuntimeException("Error"))
-        , -lostDays);
+        Player p = getController().getInGameConnectedPlayers().stream()
+                .map(pl -> getController().getPlayerByID(pl))
+                .min(Comparator.comparingInt(pl -> pl.getShip().crew()))
+                .orElseThrow(() -> new RuntimeException("Error"));
+        getModel().movePlayer(p, -lostDays);
+        for (Player player: getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(player.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition()));
+        }
+        this.phase = StatePhase.ENGINES_PHASE;
+
     }
 
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
-        if(currentPhase != phase.CANNON) {
+        if(phase != StatePhase.CANNONS_PHASE) {
             throw new IllegalStateException("You cannot activate cannons now");
         }
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -82,18 +83,28 @@ public class CombatZone0State extends PlayingState {
         List<Battery> batteriesComponents = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
+        float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        declaredFirepower.put(player, firepower);
 
-        declaredFirepower.put(player, getModel().FirePower(player, cannonsComponents, batteriesComponents));
-        if (declaredFirepower.size() == getController().getInGameConnectedPlayers().size()) {
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new ActivatedPowerMessage(player.getUsername(), firepower, "firepower"));
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
+        }
+        nextPlayer();
+        if (getCurrentPlayer() == null) {
+            //remove from declaredFirePower the players that are not in getInGameConnectedPlayers
+            declaredFirepower.keySet().removeIf(p -> !getController().getInGameConnectedPlayers().contains(p.getUsername()));
+
             Player p = declaredFirepower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            currentPhase = phase.FIRE;
+            phase = StatePhase.ROLL_DICE_PHASE;
             setCurrentPlayer(p.getUsername());
             manager = new FireManager(getModel(), cannonFires, p);
         }
+
     }
 
     @Override
@@ -105,19 +116,36 @@ public class CombatZone0State extends PlayingState {
             throw new IllegalStateException("Cannot roll dice when not firing");
         }
         getModel().getGame().rollDice();
-        if (manager.isFirstHeavyFire()) {
-            manager.fire();
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new DieResultMessage(getModel().getGame().lastRolled()));
         }
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        switch (manager.getFirstProjectile()) {
+            case LIGHT_FIRE, LIGHT_METEOR:
+                phase = StatePhase.SELECT_SHIELD;
+                break;
+            case HEAVY_METEOR:
+                phase = StatePhase.CANNONS_PHASE;
+                break;
+            case HEAVY_FIRE:
+                phase = StatePhase.AUTOMATIC_ACTION;
+                try {
+                    manager.fire();
+                } catch (InvalidShipException e) {
+                    phase = StatePhase.VALIDATE_SHIP_PHASE;
+                }
+                break;
+            case null:
+                getModel().getActiveCard().playCard();
+                phase = StatePhase.STANDBY_PHASE;
+                getController().setState(new PreDrawState(getController()));
+                break;
         }
         return getModel().getGame().rollDice();
     }
 
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException {
-        if (currentPhase != phase.CREW) {
+        if (phase != StatePhase.LOSE_CREW_PHASE) {
             throw new IllegalStateException("You cannot remove crew now");
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
@@ -126,11 +154,14 @@ public class CombatZone0State extends PlayingState {
                 lostCrew = 0;
             } else if (cabins.size() != lostCrew) {
                 lostCrew -= cabins.size();
-                currentPhase = phase.CANNON;
+                phase = StatePhase.CANNONS_PHASE;
             }
             if (lostCrew == 0) {
-                currentPhase = phase.CANNON;
+                phase = StatePhase.CANNONS_PHASE;
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
+            }
+            for (Player p : getModel().getInGamePlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "lost crew", null));
             }
         } else {
             throw new InvalidTurnException("It's not your turn");
@@ -150,20 +181,25 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
-        if(currentPhase != phase.ENGINE) {
+        if(phase != StatePhase.ENGINES_PHASE) {
             throw new IllegalStateException("You cannot activate engines now");
         }
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        declaredEnginePower.put(player, getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class)));
+        float enginePower = getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
+        declaredEnginePower.put(player, (int) enginePower);
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new ActivatedPowerMessage(player.getUsername(), enginePower, "engine power"));
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
+        }
         if (declaredEnginePower.size() == getController().getInGameConnectedPlayers().size()) {
             Player p = declaredEnginePower.entrySet()
                     .stream()
                     .min(Map.Entry.comparingByValue())
                     .orElseThrow(() -> new RuntimeException("Error"))
                     .getKey();
-            currentPhase = phase.CREW;
+            phase = StatePhase.LOSE_CREW_PHASE;
             setCurrentPlayer(p.getUsername());
         }
     }
@@ -173,11 +209,18 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase!=StatePhase.SELECT_SHIELD) {
+            throw new InvalidTurnException("You cannot activate shield now");
+        }
         manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-        manager.fire();
-        if (manager.finished()) {
-            getModel().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
+        }
+        try {
+            manager.fire();
+            phase = StatePhase.ROLL_DICE_PHASE;
+        } catch (InvalidShipException e) {
+            phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
 
@@ -186,15 +229,42 @@ public class CombatZone0State extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
+            throw new InvalidTurnException("You cannot choose branch now");
+        }
         manager.chooseBranch(player, coordinates);
+        for (Player p : getModel().getInGamePlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "lost a branch", null));
+        }
         if (manager.finished()) {
+            phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.ROLL_DICE_PHASE;
         }
     }
 
     @Override
-    public void currentQuit(Player player) {
-        nextPlayer();
+    public void currentQuit(Player player){
+        if(phase.equals(StatePhase.VALIDATE_SHIP_PHASE)) {
+            try {
+                chooseBranch(player, new Pair<>(-1, -1));
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+            catch (InvalidTurnException e) {
+                //ignore
+            }
+        }
+        else {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+        }
     }
 }

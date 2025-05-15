@@ -63,6 +63,11 @@ public abstract class View implements ViewInterface {
         this.client = null;
     }
 
+    public void ping() {
+        LOGGER.info("Ping received from server, ponging back.");
+        client.pong(username);
+    }
+
     public static View getInstance() {
         return instance;
     }

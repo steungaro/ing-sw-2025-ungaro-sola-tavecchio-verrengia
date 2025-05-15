@@ -175,10 +175,10 @@ public class ViewShip {
         StringBuilder sb = new StringBuilder();
         sb.append(TOPPER).append("\n");
 
-        String line = "│       Base Firepower: " + baseFirepower +
-                "       │       Base Engine Power: " + baseEnginePower +
-                "       │       Astronauts: " + astronauts +
-                "       │       Aliens: " + aliens.getColorChar();
+        String line = "│        Base Firepower: " + baseFirepower +
+                "      │      Base Engine Power: " + baseEnginePower +
+                "      │      Astronauts: " + astronauts +
+                "      │      Aliens: " + aliens.getColorChar();
         sb.append(formatFixedLength(line)).append("│\n");
         sb.append(SEPARATOR).append("\n");
 

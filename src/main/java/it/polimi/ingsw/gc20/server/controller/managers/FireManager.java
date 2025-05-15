@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
+import it.polimi.ingsw.gc20.server.controller.states.StatePhase;
 import it.polimi.ingsw.gc20.server.exceptions.DieNotRolledException;
 import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
@@ -23,7 +24,6 @@ public class FireManager {
     private final GameModel gm;
     private final Validator validator;
     final Player player;
-
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
         this.fires = fires;
         this.skipNextFire = false;
@@ -108,11 +108,14 @@ public class FireManager {
         return validator.isSplit();
     }
 
-    public boolean isFirstHeavyFire() {
+    /** posso modificare questa funzione in modo che ritorni il tipo di proeittile e null se è finito
+     * @return il tipo di proiettile
+     */
+    public FireType getFirstProjectile() {
         if (fires.isEmpty()) {
-            return false;
+            return null;
         }
-        return fires.getFirst().getFireType() == FireType.HEAVY_FIRE;
+        return fires.getFirst().getFireType();
     }
 
     public void chooseBranch(Player p, Pair<Integer, Integer> coordinates) throws InvalidTurnException {

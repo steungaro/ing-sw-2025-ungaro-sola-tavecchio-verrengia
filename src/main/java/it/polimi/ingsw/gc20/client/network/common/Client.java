@@ -18,4 +18,6 @@ public interface Client extends GameControllerInterface, MatchControllerInterfac
     String getAddress();
 
     int getPort();
+
+    void pong(String username);
 }
