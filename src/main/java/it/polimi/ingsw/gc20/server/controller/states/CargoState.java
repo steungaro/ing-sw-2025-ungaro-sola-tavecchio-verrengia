@@ -24,13 +24,11 @@ public abstract class CargoState extends PlayingState {
      * @param player the player who is loading the cargo
      * @param loaded the color of the cargo to be loaded
      * @param chTo the cargo hold to which the cargo is loaded
-     * @throws InvalidTurnException if it's not the player's turn
+     * @throws CargoException if the cargo is not loadable
+     * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new InvalidTurnException("It's not your turn");
-        }
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws CargoNotLoadable, CargoFullException, InvalidStateException, CargoException, InvalidTurnException{
         getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
     }
 
@@ -40,13 +38,16 @@ public abstract class CargoState extends PlayingState {
      * @param unloaded the color of the cargo to be unloaded
      * @param ch the cargo hold from which the cargo is unloaded
      * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the player is not in the correct phase
+     * @throws InvalidCargoException if the cargo is not in the player's cargo hold
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new IllegalArgumentException("It's not your turn");
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException,  InvalidStateException, InvalidCargoException{
+        try {
+            getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+        } catch (CargoNotLoadable | CargoFullException _) {
+            //ignore this exception, we are unloading the cargo
         }
-        getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
     }
 
     /**
@@ -56,12 +57,13 @@ public abstract class CargoState extends PlayingState {
      * @param chFrom the cargo hold from which the cargo is moved
      * @param chTo the cargo hold to which the cargo is moved
      * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the player is not in the correct phase
+     * @throws InvalidCargoException if the cargo is not in the player's cargo hold
+     * @throws CargoNotLoadable if the cargo cannot be loaded
+     * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new IllegalArgumentException("It's not your turn");
-        }
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, InvalidStateException, InvalidCargoException, CargoNotLoadable, CargoFullException {
         getModel().MoveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
     }
 
