@@ -393,10 +393,12 @@ public class CombatZone0State extends PlayingState {
             try {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
-                //the card is played and a new one is drawn
-                phase = StatePhase.STANDBY_PHASE;
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
+                if (phase != StatePhase.STANDBY_PHASE){
+                    phase = StatePhase.STANDBY_PHASE;
+                    //if we are not in the standby phase, we can draw a new card
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                }
             } catch (InvalidTurnException | InvalidStateException _) {
                 //ignore
             }

@@ -47,15 +47,18 @@ public class PlanetsState extends CargoState {
 
     /**
      * Accepts a planet card and lands on the planet
-     * @param player is the player that wants to land on the planet
+     * @param player player that wants to land on a planet
      * @param planetIndex is the index of the planet card in the player's hand
-     * @throws IllegalStateException if the game is not in the planet phase
+     * @throws InvalidStateException if the game is not in the planet phase, or if the planet is not available
      * @throws InvalidTurnException if it is not the player's turn
      */
     @Override
-    public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException {
+    public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException, InvalidStateException {
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if (phase != StatePhase.LAND_ON_PLANET) {
+            throw new InvalidStateException("You can't land on a planet unless you are in the planet phase");
         }
         if (planets.get(planetIndex).getAvailable()) {
             planets.get(planetIndex).setAvailable(false);
@@ -64,52 +67,94 @@ public class PlanetsState extends CargoState {
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
         } else {
-            throw new IllegalStateException("The planet is not available");
+            throw new InvalidStateException("The planet is not available");
         }
     }
 
+    /**
+     * this method is used to load the cargo on the ship
+     * @param player the player who is loading the cargo
+     * @param loaded the color of the cargo to be loaded
+     * @param chTo the cargo hold to which the cargo is loaded
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the planet phase
+     * @throws CargoException if the cargo is incorrect
+     * @throws CargoNotLoadable if the cargo is not loadable
+     * @throws CargoFullException if the cargo hold is full
+     */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
+        //check if the player is on the planet
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't load cargo unless you are on the planet");
-        }
-        if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidTurnException("You can't load cargo unless you are on the planet");
+        }
+        //cehck if the planet is available
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't load cargo unless you are on the planet");
         }
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
             super.loadCargo(player, loaded, chTo);
         } else {
-            throw new IllegalStateException("You can't load this cargo, it's not in the reward");
+            throw new CargoException("You can't load this cargo, it's not in the reward");
         }
     }
 
+    /**
+     * this method is used to unload the cargo from the ship
+     * @param player the player who is unloading the cargo
+     * @param unloaded the color of the cargo to be unloaded
+     * @param ch the cargo hold from which the cargo is unloaded
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the planet phase
+     * @throws InvalidCargoException if the cargo is incorrect
+     */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, InvalidCargoException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't unload cargo unless you are on the planet");
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet");
         }
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidTurnException("You can't unload cargo unless you are on the planet");
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet");
         }
         super.unloadCargo(player, unloaded, ch);
     }
 
+    /**
+     * this method is used to move the cargo from one cargo hold to another
+     * @param player the player who is moving the cargo
+     * @param cargo the color of the cargo to be moved
+     * @param from the cargo hold from which the cargo is moved
+     * @param to the cargo hold to which the cargo is moved
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the planet phase
+     * @throws CargoNotLoadable if the cargo is not loadable
+     * @throws CargoFullException if the cargo hold is full
+     */
     @Override
-    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't move cargo unless you are on the planet");
+            throw new InvalidTurnException("You can't move cargo unless you are on the planet");
         }
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidTurnException("You can't move cargo unless you are on the planet");
+            throw new InvalidStateException("You can't move cargo unless you are on the planet");
         }
         super.moveCargo(player, cargo, from, to);
     }
 
+    /**
+     * this method is used to end the move of the player
+     * @param player the player who is ending the move
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the add cargo phase
+     */
     @Override
-    public void endMove(Player player) throws InvalidTurnException {
+    public void endMove(Player player) throws InvalidTurnException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidTurnException("It's not your turn");
+        }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't end your move unless you are on the planet");
         }
         landedPlayer = null;
         landedPlanetIndex = -1;
@@ -117,6 +162,7 @@ public class PlanetsState extends CargoState {
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
             phase = StatePhase.STANDBY_PHASE;
+            getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
             phase = StatePhase.LAND_ON_PLANET;
