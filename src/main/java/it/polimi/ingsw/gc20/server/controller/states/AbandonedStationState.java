@@ -208,12 +208,15 @@ public class AbandonedStationState extends CargoState {
     /**
      * This method is called when a player quits the game
      * @param player who quits the game
-     * @throws InvalidTurnException if the player is not the current player
      */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
+    public void currentQuit(Player player) {
         if (player.getUsername().equals(getCurrentPlayer())) {
-            endMove(player);
+            try{
+                endMove(player);
+            } catch (InvalidTurnException e) {
+                //ignore, the player is not connected
+            }
         }
     }
 }

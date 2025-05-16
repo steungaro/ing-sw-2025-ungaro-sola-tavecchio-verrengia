@@ -32,11 +32,17 @@ public class EpidemicState extends PlayingState {
     }
 
 
+    /**
+     * This method is called when the player has to perform an automatic action.
+     * In this case, the action is to infect all players in the game and if necessary, to remove crew members
+     */
     @Override
     public void automaticAction() {
+        //apply the epidemic effect to all players in the game
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().getInGameConnectedPlayers().contains(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
+        //effect ended, draw a new card
         phase = StatePhase.STANDBY_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

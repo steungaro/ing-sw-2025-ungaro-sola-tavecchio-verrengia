@@ -136,9 +136,13 @@ public class AbandonedShipState extends PlayingState {
      * @param player player who quits
      */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
+    public void currentQuit(Player player) {
         if (player.getUsername().equals(getCurrentPlayer())) {
-            endMove(player);
+            try {
+                endMove(player);
+            } catch (InvalidTurnException e) {
+                //ignore, the player is disconnected
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidEngineException;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
@@ -31,15 +32,28 @@ public class OpenSpaceState extends PlayingState {
         return "OpenSpaceState";
     }
 
+    /**
+     * this method is called when the player has selected the engines and batteries to use
+     * @param player player who is selecting the engines
+     * @param engines list of engines selected by the player
+     * @param batteries list of batteries selected by the player
+     * @throws IllegalStateException
+     * @throws InvalidTurnException
+     * @throws InvalidEngineException
+     * @throws EnergyException
+     */
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidEngineException, EnergyException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
+        //check if the player is the current player
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        //check if the player is in the engines phase
         if (phase != StatePhase.ENGINES_PHASE) {
-            throw new IllegalStateException("Cannot perform this action in " + phase + " state");
+            throw new InvalidStateException("You are not in the engines phase");
         }
 
+        //check if the player has selected at least one engine
         List<Battery> energy = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class) != null)
             energy.addAll(Translator.getComponentAt(player, batteries, Battery.class));

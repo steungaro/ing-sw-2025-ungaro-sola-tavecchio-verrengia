@@ -1,10 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
 import it.polimi.ingsw.gc20.server.controller.states.StatePhase;
-import it.polimi.ingsw.gc20.server.exceptions.DieNotRolledException;
-import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
@@ -32,10 +29,7 @@ public class FireManager {
         this.validator = new Validator();
     }
 
-    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
-        if (fires.getFirst().getFireType() != FireType.HEAVY_METEOR) {
-            throw new IllegalStateException("Cannot activate cannon in this state");
-        }
+    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, EnergyException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -51,10 +45,7 @@ public class FireManager {
         }
     }
 
-    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
-        if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
-            throw new IllegalStateException("Cannot activate shield in this state");
-        }
+    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, EnergyException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -122,12 +113,9 @@ public class FireManager {
         if (!p.equals(player)) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!validator.isSplit()) {
-            // ignore
-        }
         try {
             validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
-        } catch (IllegalStateException e){
+        } catch (InvalidStateException e){
             // ignore
         }
     }

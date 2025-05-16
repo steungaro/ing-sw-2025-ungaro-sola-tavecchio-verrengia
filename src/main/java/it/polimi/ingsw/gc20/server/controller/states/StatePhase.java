@@ -7,7 +7,6 @@ public enum StatePhase {
         AUTOMATIC_ACTION("Automatic action will be performed, no action needed"),
         REMOVE_CARGO("select the cargo to remove, if there are not enough cargoes, you will be prompted to remove batteries"),
         ADD_CARGO("add cargo to the ship, you can reorganize your cargo"),
-        GET_HIT("your ship will be shot"),
         LAND_ON_PLANET("Select the planet to land on"),
         ENGINES_PHASE("Select engines and batteries for this phase"),
         SELECT_SHIELD("Select the shield to use"),
