@@ -4,8 +4,6 @@ import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
-
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -187,7 +185,7 @@ public class MatchController implements MatchControllerInterface {
             logger.log(Level.WARNING, "Max matches reached");
         } else {
             try {
-                Lobby l = null;
+                Lobby l;
                 try {
                     l = playersInLobbies.get(username);
                     lobbies.remove(l);

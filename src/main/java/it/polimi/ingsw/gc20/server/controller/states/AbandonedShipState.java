@@ -70,10 +70,6 @@ public class AbandonedShipState extends PlayingState {
         phase = StatePhase.LOSE_CREW_PHASE;
         getModel().movePlayer(player, lostDays);
         getModel().addCredits(player, credits);
-        //send a message to all players to update the player and the board with the new position and credits
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(getCurrentPlayer(), credits, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
-        }
     }
     /**
      * method to remove the crew from the ship of the player whose turn it is
@@ -97,9 +93,6 @@ public class AbandonedShipState extends PlayingState {
             throw new InvalidStateException("You didn't select enough cabins");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
-        }
         //mark the card as player and go to the standby phase
         getController().getActiveCard().playCard();
         phase = StatePhase.STANDBY_PHASE;
@@ -118,7 +111,6 @@ public class AbandonedShipState extends PlayingState {
             throw new InvalidTurnException("It's not your turn");
         }
         //pass the turn to the next player if there is one
-        String currentPlayer = getCurrentPlayer();
         nextPlayer();
         // if there is no next player, go to the next card
         if (getCurrentPlayer() == null) {
@@ -136,9 +128,11 @@ public class AbandonedShipState extends PlayingState {
      * @param player player who quits
      */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        if (player.getUsername().equals(getCurrentPlayer())) {
+    public void currentQuit(Player player) {
+        try {
             endMove(player);
+        } catch (InvalidTurnException e) {
+            //cannot happen
         }
     }
 }

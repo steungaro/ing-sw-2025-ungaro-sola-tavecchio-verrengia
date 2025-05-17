@@ -44,22 +44,22 @@ public abstract class State{
         throw new InvalidStateException("Cannot perform this action in " + this + " state");
     }
     
-    public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException{
+    public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         exception();
     }
-    public void takeComponentFromViewed(Player player, int index)throws InvalidStateException {
+    public void takeComponentFromViewed(Player player, int index)throws InvalidStateException, ComponentNotFoundException {
         exception();
     }
-    public void takeComponentFromBooked(Player player, int index) throws InvalidStateException {
+    public void takeComponentFromBooked(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         exception();
     }
-    public void addComponentToBooked(Player player) throws InvalidStateException {
+    public void addComponentToBooked(Player player) throws InvalidStateException, NoSpaceException {
         exception();
     }
-    public void addComponentToViewed(Player player) throws InvalidStateException {
+    public void addComponentToViewed(Player player) throws InvalidStateException, DuplicateComponentException {
         exception();
     }
-    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException{
+    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException{
         exception();
     }
     public void rotateComponentClockwise(Player player) throws InvalidStateException{
@@ -152,7 +152,7 @@ public abstract class State{
         return false;
     }
 
-    public void readyToFly(Player player) throws InvalidStateException{
+    public void readyToFly(Player player) throws InvalidStateException, InvalidShipException {
         exception();
     }
 

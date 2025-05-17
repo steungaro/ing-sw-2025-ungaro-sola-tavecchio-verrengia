@@ -261,7 +261,7 @@ public class GameModel {
      * @apiNote catch the exception if the position isn't valid
      * @param p        player that stops assembling
      * @param position position chosen by the player (1-4)
-     * @throws IllegalArgumentException if the position is already occupied
+     * @throws InvalidIndexException if the position is already occupied
      */
     public void stopAssembling(Player p, int position) throws InvalidIndexException {
         game.getBoard().removePlayer(p);

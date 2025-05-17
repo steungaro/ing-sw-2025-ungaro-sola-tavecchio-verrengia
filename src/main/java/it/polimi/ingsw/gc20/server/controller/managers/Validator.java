@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 
 public class Validator {
@@ -9,9 +10,9 @@ public class Validator {
         isSplit = true;
     }
 
-    public void chooseBranch(Player p, Integer row, Integer col){
+    public void chooseBranch(Player p, Integer row, Integer col) throws InvalidStateException{
         if(!isSplit){
-            throw new IllegalStateException("Ship is valid.");
+            throw new InvalidStateException("Ship is valid.");
         }
         p.getShip().findValid(row, col);
         isSplit = false;

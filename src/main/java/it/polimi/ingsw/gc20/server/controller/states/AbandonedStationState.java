@@ -99,10 +99,6 @@ public class AbandonedStationState extends CargoState {
         }
         reward.remove(loaded);
         super.loadCargo(player, loaded, chTo);
-        //send a message to all players to update the ship of the player who loaded the cargo
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
-        }
     }
 
     /**
@@ -125,10 +121,6 @@ public class AbandonedStationState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         super.unloadCargo(player, unloaded, ch);
-        //send a message to all players to update the ship of the player who unloaded the cargo
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
-        }
     }
 
     /**
@@ -155,10 +147,6 @@ public class AbandonedStationState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
-        //send a message to all players to update the ship of the player who moved the cargo
-        for (Player p: getModel().getGame().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(getCurrentPlayer(), p.getShip(), "lost crew", null));
-        }
     }
 
     /**
@@ -177,22 +165,13 @@ public class AbandonedStationState extends CargoState {
         if (getController().getActiveCard().isPlayed()) {
             //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
-            //send a message to all players to update the new position of the player
-            for (Player p: getModel().getGame().getPlayers()) {
-                NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(getCurrentPlayer(), 0, p.isInGame(), p.getColor(), p.getPosition()%getModel().getGame().getBoard().getSpaces()));
-            }
             //change the phase to standby phase
             phase = StatePhase.STANDBY_PHASE;
             //draw a new card
             getController().setState(new PreDrawState(getController()));
         } else {
             //if the card has not been played, it's the turn of the next player
-            String currentPlayer = getCurrentPlayer();
             nextPlayer();
-            //send a message to all players that the turn has ended and the next player is starting
-            for (Player p: getModel().getGame().getPlayers()) {
-                NetworkService.getInstance().sendToClient(p.getUsername(), new EndMoveConfirmMessage(currentPlayer, getCurrentPlayer()));
-            }
             //check if the next player is null, if it is, the card is over
             if (getCurrentPlayer() == null) {
                 phase = StatePhase.STANDBY_PHASE;
@@ -208,12 +187,13 @@ public class AbandonedStationState extends CargoState {
     /**
      * This method is called when a player quits the game
      * @param player who quits the game
-     * @throws InvalidTurnException if the player is not the current player
      */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        if (player.getUsername().equals(getCurrentPlayer())) {
+    public void currentQuit(Player player) {
+        try {
             endMove(player);
+        } catch (InvalidTurnException e) {
+            //cannot happen
         }
     }
 }

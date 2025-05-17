@@ -19,6 +19,9 @@ public class EndgameState extends State {
         scheduler.schedule(this::killGame, 30, TimeUnit.SECONDS);
     }
 
+    /**
+     * this method will kill the game after 30 seconds the endgame state is reached
+     */
     @Override
     public void killGame() {
         MatchController.getInstance().endGame(getController().getGameID());
@@ -30,6 +33,9 @@ public class EndgameState extends State {
         return "EndgameState";
     }
 
+    /** this method returns the score of the game
+     * @return a map with the username and the score of each player
+     */
     @Override
     public Map<String, Integer> getScore() {
         return getModel().calculateScore()
