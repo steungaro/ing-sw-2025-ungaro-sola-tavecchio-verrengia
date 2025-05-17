@@ -152,7 +152,7 @@ public abstract class State{
         return false;
     }
 
-    public void readyToFly(Player player) throws InvalidStateException{
+    public void readyToFly(Player player) throws InvalidStateException, InvalidShipException {
         exception();
     }
 

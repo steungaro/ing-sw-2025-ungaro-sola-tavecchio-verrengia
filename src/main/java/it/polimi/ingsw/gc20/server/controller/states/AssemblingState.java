@@ -63,10 +63,6 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        // Notify all players about the component taken
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), component, "taken from unviewed"));
-        }
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -95,10 +91,6 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        // Notify all players about the component taken
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), component, "taken from viewed"));
-        }
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -127,10 +119,6 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        // Notify all players about the component taken
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "taken from booked", component));
-        }
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -156,10 +144,6 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
-        // Notify all players about the component added to booked components
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "added to booked", null));
-        }
     }
 
     /**
@@ -179,10 +163,6 @@ public class AssemblingState extends State {
 
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        //notify all players about the component added to the viewed pile
-        for (Player p: getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "added to viewed"));
-        }
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
     }
@@ -203,10 +183,6 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
-        //notify all players about the component added to the ship
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "added to the ship", null));
-        }
     }
     /**
      * This method is used to rotate a component clockwise.
@@ -221,10 +197,6 @@ public class AssemblingState extends State {
         }
         //rotate the component clockwise
         getModel().RotateClockwise(componentsInHand.get(player));
-        //notify all players about the component rotated clockwise
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "rotated clockwise"));
-        }
     }
     /**
      * This method is used to rotate a component counterclockwise.
@@ -238,10 +210,6 @@ public class AssemblingState extends State {
         }
         //rotate the component counterclockwise
         getModel().RotateCounterclockwise(componentsInHand.get(player));
-        //notify all players about the component rotated counterclockwise
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PileUpdateMessage(player.getUsername(), getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), componentsInHand.get(player), "rotated counterclockwise"));
-        }
     }
 
     /** this method is used to stop assembling the ship
@@ -257,10 +225,6 @@ public class AssemblingState extends State {
         }
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
-        //notify all players about the player that stopped assembling
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition()));
-        }
         //mark the player as assembled
         assembled.put(player, true);
         //put the player in standby phase
@@ -306,10 +270,6 @@ public class AssemblingState extends State {
         } else {
             throw new InvalidIndexException("Deck already peeked");
         }
-        //notify all players about the deck peeked
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new DeckPeekedMessage(player.getUsername(), getModel().viewDeck(num)));
-        }
         return getModel().viewDeck(num);
     }
 
@@ -347,10 +307,6 @@ public class AssemblingState extends State {
             if (deckPeeked.get(i) == player) {
                 deckPeeked.put(i, null);
             }
-        }
-        //notify all players about the hourglass turned
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new HourglassMessage(getModel().getTotalRemainingTime(), getModel().getRemainingTime(), getModel().getTurnedHourglass()));
         }
     }
 }

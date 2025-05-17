@@ -417,28 +417,54 @@ public class    CombatZone1State extends CargoState {
      * @param player who quits
      */
     public void currentQuit(Player player){
-        //if we are in the validate ship phase, we need to check if the player is the current player
-        //if he is, we can choose the branch
-        if(phase.equals(StatePhase.VALIDATE_SHIP_PHASE)) {
+        //first, we check if we are in a penality phase:
+        // REMOVE_CARGO or ROLL_DICE_PHASE, ACTIVATE_SHIELD or VALIDATE SHIP
+        if (phase == StatePhase.REMOVE_CARGO){
+            //we go to the next phase
+            phase = StatePhase.AUTOMATIC_ACTION;
+            automaticAction();
+        }
+        else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
+            //we end the card
+            phase = StatePhase.STANDBY_PHASE;
+            getModel().getActiveCard().playCard();
+            getController().setState(new PreDrawState(getController()));
+        }
+        else if (phase == StatePhase.VALIDATE_SHIP_PHASE){
             try {
-                //auto choose the branch
+                //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
-                //the card is played, we can draw a new card
-                phase = StatePhase.STANDBY_PHASE;
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
-            }
-            catch (InvalidTurnException | InvalidStateException _) {
+                if (phase != StatePhase.STANDBY_PHASE){
+                    phase = StatePhase.STANDBY_PHASE;
+                    //if we are not in the standby phase, we can draw a new card
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                }
+            } catch (InvalidTurnException | InvalidStateException _) {
                 //ignore
             }
-        } else if (player.getUsername().equals(getCurrentPlayer())) {
-            //we pass the turn to the next player
+        }else {
+            //if we are not in a penality phase, we can pass the turn to the next player
             nextPlayer();
-            //the next player is null, we can draw a new card
             if (getCurrentPlayer() == null) {
-                phase = StatePhase.STANDBY_PHASE;
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
+                //we need to verify based on the phase
+                if (phase == StatePhase.ENGINES_PHASE) {
+                    try {
+                        //we auto-activate the engines,
+                        // and the player will be removed from the array in the activateEngines method
+                        activateEngines(player, new ArrayList<>(), new ArrayList<>());
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
+                        //ignore
+                    }
+                } else if (phase == StatePhase.CANNONS_PHASE) {
+                    try {
+                        //we auto-activate the cannons,
+                        // and the player will be removed from the array in the activateCannons method
+                        activateCannons(player, new ArrayList<>(), new ArrayList<>());
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException e) {
+                        //ignore
+                    }
+                }
             }
         }
     }

@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.server.controller;
 
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.CardDrawnMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.LandOnPlanetMessage;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyDeckException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -408,7 +407,7 @@ public class GameController implements GameControllerInterface {
      * Handles reconnection of a previously disconnected player
      *
      * @param username Username of the player attempting to reconnect
-     * @return true if reconnection was successful, false otherwise
+     *
      */
     public void reconnectPlayer(String username) {
         try{

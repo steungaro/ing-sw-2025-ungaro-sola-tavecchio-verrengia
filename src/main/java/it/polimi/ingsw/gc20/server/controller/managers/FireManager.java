@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
-import it.polimi.ingsw.gc20.server.controller.states.StatePhase;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;

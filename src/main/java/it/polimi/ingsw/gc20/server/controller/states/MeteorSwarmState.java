@@ -282,25 +282,29 @@ public class MeteorSwarmState extends PlayingState {
      */
     @Override
     public void currentQuit(Player player) {
-        //check if the player is validating is ship
-        if (phaseMap.get(player) == StatePhase.VALIDATE_SHIP_PHASE) {
-            //if the player is validating his ship, we automatically choose the branch
+        //if we are in the rolling dice phase, we need to auto roll the dice for the others player
+        //if we are in the cannon phase or in the shield phase we skip the turn of the player
+        //if we are in the validate ship phase we auto choose the branch
+        if (phaseMap.get(player) == StatePhase.ROLL_DICE_PHASE) {
             try {
-                chooseBranch(player, new Pair<>(-1, -1));
-            } catch (InvalidTurnException | InvalidStateException e) {
-                //ignore
+                rollDice(player);
+            }catch (InvalidTurnException | InvalidStateException e) {
+                //cannot happen
             }
-        } else {
+        } else if (phaseMap.get(player) == StatePhase.CANNONS_PHASE || phaseMap.get(player) == StatePhase.SELECT_SHIELD) {
+            phase = phaseMap.get(player);
+            //skip the turn of the player
+            phaseMap.put(player, StatePhase.STANDBY_PHASE);
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //if there is no next player, we set the current player to the first player
                 setCurrentPlayer(getController().getFirstOnlinePlayer());
                 //we verify if we shot all the projectiles
                 if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
-                    //we set all the player phase to standby, and we can go to the next card
                     for (String p : getController().getInGameConnectedPlayers()) {
                         phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
                     }
+                    //if we finished the projectiles, we draw a new card
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
                 } else {
@@ -314,9 +318,17 @@ public class MeteorSwarmState extends PlayingState {
                     }
                 }
             } else {
-                //if there is a next player, we modify the state to the correct phase, memorized in the phase attribute
+                //if there is a next player,
+                // we put the current player to standby and the next player to the correct phase
                 phaseMap.put(player, StatePhase.STANDBY_PHASE);
                 phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), phase);
+            }
+        } else if (phaseMap.get(player) == StatePhase.VALIDATE_SHIP_PHASE) {
+            try {
+                //auto choose the branch
+                chooseBranch(player, new Pair<>(-1, -1));
+            } catch (InvalidTurnException | InvalidStateException e) {
+                //cannot happen
             }
         }
     }

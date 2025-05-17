@@ -150,7 +150,6 @@ public class SlaversState extends PlayingState {
         if (phase != StatePhase.ACCEPT_PHASE) {
             throw new InvalidStateException("Card not defeated");
         }
-        phase = StatePhase.AUTOMATIC_ACTION;
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
         phase = StatePhase.STANDBY_PHASE;
@@ -177,7 +176,24 @@ public class SlaversState extends PlayingState {
 
     @Override
     public void currentQuit(Player player){
-        getController().getActiveCard().playCard();
-        getController().setState(new PreDrawState(getController()));
+        //if the player is in the cannon phase, if he quit, we go to the next player
+        if (phase == StatePhase.CANNONS_PHASE || phase == StatePhase.LOSE_CREW_PHASE) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                //draw new card
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            } else {
+                //the next player has to fight
+                phase = StatePhase.CANNONS_PHASE;
+            }
+        } else if (phase == StatePhase.ACCEPT_PHASE){
+            try {
+                endMove(player);
+            } catch (InvalidStateException | InvalidTurnException e) {
+                //ignore
+            }
+        }
     }
 }

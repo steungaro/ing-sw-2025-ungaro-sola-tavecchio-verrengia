@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static it.polimi.ingsw.gc20.server.model.cards.FireType.HEAVY_FIRE;
-import static it.polimi.ingsw.gc20.server.model.cards.FireType.LIGHT_FIRE;
 
 /**
  * @author GC20
@@ -76,7 +74,7 @@ public class PiratesState extends PlayingState {
     }
 
     /**
-     * this methos is called when the player has lost against the pirates and has to shoot the enemy
+     * this method is called when the player has lost against the pirates and has to shoot the enemy
      * @param player the player that is shooting the enemy
      * @param cannons the cannons that the player is using
      * @param batteries the batteries that the player is using
@@ -158,7 +156,7 @@ public class PiratesState extends PlayingState {
                 try {
                     //fire the projectile
                     manager.fire();
-                    //check if we finisched shooting
+                    //check if we finished shooting
                     if (manager.finished()) {
                         //if we finished shooting, we can go to the next player
                         nextPlayer();
@@ -168,7 +166,7 @@ public class PiratesState extends PlayingState {
                             getController().setState(new PreDrawState(getController()));
                             phase = StatePhase.STANDBY_PHASE;
                         } else {
-                            //if there is a next player, we can go to the cannons phase
+                            //if there is a next player, we can go to the cannon phase
                             phase = StatePhase.CANNONS_PHASE;
                         }
                     } else {
@@ -198,7 +196,7 @@ public class PiratesState extends PlayingState {
                     getController().setState(new PreDrawState(getController()));
                     phase = StatePhase.STANDBY_PHASE;
                 } else {
-                    //next player needs to fight pirates
+                    //the next player needs to fight pirates
                     phase = StatePhase.CANNONS_PHASE;
                 }
                 break;
@@ -235,7 +233,7 @@ public class PiratesState extends PlayingState {
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
-                //if there is a next player, we can go to the cannons phase
+                //if there is a next player, we can go to the cannon phase
                 phase = StatePhase.CANNONS_PHASE;
             }
         }else {
@@ -275,10 +273,11 @@ public class PiratesState extends PlayingState {
                     //if we finished shooting, we can go to the next player
                     if (getCurrentPlayer() == null) {
                         //draw a new card
+                        phase = StatePhase.STANDBY_PHASE;
                         getModel().getActiveCard().playCard();
                         getController().setState(new PreDrawState(getController()));
                     } else {
-                        //if there is a next player, we can go to the cannons phase
+                        //if there is a next player, we can go to the cannon phase
                         phase = StatePhase.CANNONS_PHASE;
                     }
                 } else {
@@ -329,15 +328,36 @@ public class PiratesState extends PlayingState {
 
     @Override
     public void currentQuit(Player player) throws InvalidTurnException, InvalidShipException {
-        if (phase == StatePhase.VALIDATE_SHIP_PHASE) {
+        if (phase == StatePhase.VALIDATE_SHIP_PHASE){
             try {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
-
+                if (phase != StatePhase.STANDBY_PHASE){
+                    phase = StatePhase.STANDBY_PHASE;
+                    //if we are not in the standby phase, we can draw a new card
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                }
             } catch (InvalidTurnException | InvalidStateException _) {
                 //ignore
             }
+        } else {
+            try {
+                endMove(player);
+            } catch (InvalidStateException | InvalidTurnException _) {
+                nextPlayer();
+                if (getCurrentPlayer() == null) {
+                    //draw a new card
+                    phase = StatePhase.STANDBY_PHASE;
+                    getModel().getActiveCard().playCard();
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    //if there is a next player, we can go to the cannon phase
+                    phase = StatePhase.CANNONS_PHASE;
+                }
+            } catch (InvalidShipException e) {
+                currentQuit(player);
+            }
         }
-        endMove(player);
     }
 }

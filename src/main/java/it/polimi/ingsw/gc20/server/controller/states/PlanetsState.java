@@ -146,18 +146,15 @@ public class PlanetsState extends CargoState {
      * this method is used to end the move of the player
      * @param player the player who is ending the move
      * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the add cargo phase
      */
     @Override
-    public void endMove(Player player) throws InvalidTurnException, InvalidStateException {
-        if (!player.getUsername().equals(landedPlayer)) {
+    public void endMove(Player player) throws InvalidTurnException {
+        if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
-        }
-        if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't end your move unless you are on the planet");
         }
         landedPlayer = null;
         landedPlanetIndex = -1;
+
         nextPlayer();
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
@@ -170,7 +167,11 @@ public class PlanetsState extends CargoState {
     }
 
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        endMove(player);
+    public void currentQuit(Player player){
+        try {
+            endMove(player);
+        } catch (InvalidTurnException _) {
+            // This exception should never be thrown here, as the player is the current player
+        }
     }
 }

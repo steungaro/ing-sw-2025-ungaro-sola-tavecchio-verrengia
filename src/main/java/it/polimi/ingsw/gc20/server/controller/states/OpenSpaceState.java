@@ -96,17 +96,10 @@ public class OpenSpaceState extends PlayingState {
      */
     @Override
     public void currentQuit(Player player) {
-        if (player.getUsername().equals(getCurrentPlayer())) {
-            nextPlayer();
-            //aggiornamento fasi
-            if (getCurrentPlayer() == null) {
-                phase = StatePhase.AUTOMATIC_ACTION;
-                try {
-                    endTurn();
-                } catch (InvalidStateException e) {
-                    //cannot happen
-                }
-            }
+        try {
+            activateEngines(player, new ArrayList<>(), new ArrayList<>());
+        } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
+            //ignore
         }
     }
 }
