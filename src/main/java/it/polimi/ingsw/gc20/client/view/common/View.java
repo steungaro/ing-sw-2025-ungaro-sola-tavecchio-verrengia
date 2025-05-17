@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -18,11 +19,10 @@ public abstract class View implements ViewInterface {
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(View.class.getName());
     protected boolean loggedIn;
     protected String username;
-
     protected Client client;
-
     private ViewBoard board;
     private Map<String, ViewShip> ships;
+    protected AdventureCard currentCard;
 
     private ViewComponent componentInHand;
 
@@ -74,6 +74,39 @@ public abstract class View implements ViewInterface {
 
     public static void setInstance(View instance) {
         View.instance = instance;
+    }
+
+    public void printShip(String username) {
+        ViewShip ship = ships.get(username);
+        if (ship != null) {
+            ship.toString();
+        } else {
+            LOGGER.warning("No ship found for " + username);
+        }
+    }
+
+    public void printBoard() {
+        if (board != null) {
+            board.toString();
+        } else {
+            LOGGER.warning("No board found.");
+        }
+    }
+
+    public void printDeck(int index) {
+        if (board != null) {
+            // TODO: Implement the logic to print the deck at the specified index
+        } else {
+            LOGGER.warning("No deck found at index " + index);
+        }
+    }
+
+    public void printCurrentCard() {
+        if (currentCard != null) {
+            currentCard.toString();
+        } else {
+            LOGGER.warning("No current card found.");
+        }
     }
 
     @Override
