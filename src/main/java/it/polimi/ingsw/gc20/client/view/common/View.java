@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
@@ -9,9 +10,11 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public abstract class View implements ViewInterface {
     private static View instance;
@@ -95,10 +98,68 @@ public abstract class View implements ViewInterface {
 
     public void printDeck(int index) {
         if (board != null) {
-            // TODO: Implement the logic to print the deck at the specified index
+            List<ViewAdvetnureCard> cards = board.decks.get(index);
+            if (cards != null) {
+                String out = printCardsInLine(cards);
+                System.out.println(out);
+                LOGGER.info("Deck " + index + ":\n");
+            } else {
+                LOGGER.warning("No card found at index " + index);
+            }
         } else {
             LOGGER.warning("No deck found at index " + index);
         }
+    }
+
+    /**
+     * Metodo che consente di visualizzare multiple carte sulla stessa riga orizzontale,
+     * andando a capo ogni 10 carte
+     * @param cards Lista di ViewAdventureCard da visualizzare
+     * @return Stringa con la rappresentazione delle carte affiancate
+     */
+    public String printCardsInLine(List<ViewAdvetnureCard> cards) {
+        if (cards == null || cards.isEmpty()) {
+            return "";
+        }
+        
+        final int cardsPerRow = 10;
+        
+        int numCardRows = (int) Math.ceil((double) cards.size() / cardsPerRow);
+        
+        StringBuilder finalResult = new StringBuilder();
+
+        for (int cardRow = 0; cardRow < numCardRows; cardRow++) {
+            int startIdx = cardRow * cardsPerRow;
+            int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
+            List<ViewAdvetnureCard> rowCards = cards.subList(startIdx, endIdx);
+            
+            List<String> cardStrings = rowCards.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+            
+            List<String[]> cardLines = cardStrings.stream()
+                    .map(card -> card.split("\n"))
+                    .collect(Collectors.toList());
+            
+            int numRows = cardLines.get(0).length;
+            
+            for (int i = 0; i < numRows; i++) {
+                for (String[] cardLine : cardLines) {
+                    finalResult.append(cardLine[i]);
+                    finalResult.append("  ");
+                }
+                finalResult.append("\n");
+            }
+            
+            if (cardRow < numCardRows - 1) {
+                finalResult.append("\n");
+            }
+        }
+        return finalResult.toString();
+    }
+
+    public void printDeck(){
+        printDeck(0);
     }
 
     public void printCurrentCard() {
@@ -107,6 +168,68 @@ public abstract class View implements ViewInterface {
         } else {
             LOGGER.warning("No current card found.");
         }
+    }
+
+    public void printViewPile(){
+        if (board != null) {
+            List<ViewComponent> cards = board.viewedPile;
+            if (cards != null) {
+                String out = printComponentsInLine(cards);
+                System.out.println(out);
+                LOGGER.info("View Pile:\n");
+            } else {
+                LOGGER.warning("No card found in view pile.");
+            }
+        } else {
+            LOGGER.warning("No view pile found.");
+        }
+    }
+
+    /**
+     * Metodo che consente di visualizzare multipli componenti sulla stessa riga orizzontale,
+     * andando a capo ogni 10 componenti
+     * @param components Lista di ViewComponent da visualizzare
+     * @return Stringa con la rappresentazione dei componenti affiancati
+     */
+    public String printComponentsInLine(List<ViewComponent> components) {
+        if (components == null || components.isEmpty()) {
+            return "";
+        }
+
+        final int componentsPerRow = 10;
+
+        int numComponentRows = (int) Math.ceil((double) components.size() / componentsPerRow);
+
+        StringBuilder finalResult = new StringBuilder();
+
+        for (int componentRow = 0; componentRow < numComponentRows; componentRow++) {
+            int startIdx = componentRow * componentsPerRow;
+            int endIdx = Math.min(startIdx + componentsPerRow, components.size());
+            List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
+
+            List<String> componentStrings = rowComponents.stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+
+            List<String[]> componentLines = componentStrings.stream()
+                    .map(component -> component.split("\n"))
+                    .collect(Collectors.toList());
+
+            int numRows = componentLines.get(0).length;
+
+            for (int i = 0; i < numRows; i++) {
+                for (String[] componentLine : componentLines) {
+                    finalResult.append(componentLine[i]);
+                    finalResult.append("  ");
+                }
+                finalResult.append("\n");
+            }
+
+            if (componentRow < numComponentRows - 1) {
+                finalResult.append("\n");
+            }
+        }
+        return finalResult.toString();
     }
 
     @Override
