@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ClientController;
-
+import it.polimi.ingsw.gc20.client.view.common.LobbyListCell;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -13,7 +13,6 @@ import javafx.stage.Stage;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 
 import java.io.IOException;
-import java.util.List;
 
 public class LobbyListController {
 
@@ -29,6 +28,7 @@ public class LobbyListController {
     @FXML
     private Button backButton;
     
+    // Riferimento al ClientController per comunicare con il server
     private ClientController clientController;
     
     public void setClientController(ClientController clientController) {
@@ -37,14 +37,18 @@ public class LobbyListController {
     
     @FXML
     private void initialize() {
+        // Configura la ListView per permettere solo la selezione singola
         lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
-        lobbiesListView.setCellFactory(// TODO);
-
+        // Personalizza la visualizzazione delle lobby nella ListView
+        lobbiesListView.setCellFactory(lv -> new LobbyListCell());
+        
+        // Abilita il pulsante di join solo quando una lobby è selezionata
         lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             joinLobbyButton.setDisable(newVal == null);
         });
         
+        // Aggiungi handler per i pulsanti
         joinLobbyButton.setOnAction(event -> onJoinLobby());
         refreshButton.setOnAction(event -> onRefreshLobbies());
         backButton.setOnAction(event -> onBack());
@@ -56,8 +60,8 @@ public class LobbyListController {
     private void loadLobbies() {
         // Implementazione per caricare le lobby dal server
         if (clientController != null) {
-            List<Lobby> lobbies = clientController.getAvailableLobbies();
-            lobbiesListView.getItems().clear();
+            // List<Lobby> lobbies = clientController.getAvailableLobbies();
+            // lobbiesListView.getItems().clear();
             // lobbiesListView.getItems().addAll(lobbies);
         }
     }
