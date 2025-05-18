@@ -14,6 +14,7 @@ public class MainTUI {
                 // Start the TUI
                 tui.init();
                 tui.initNetwork();
+                tui.wait(1);
                 tui.login();
                 tui.lobbyLoop();
                 //tui.gameLoop();
