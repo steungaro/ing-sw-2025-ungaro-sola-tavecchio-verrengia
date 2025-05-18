@@ -1,14 +1,19 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.ClientController;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
+import it.polimi.ingsw.gc20.server.model.player.Player;
 
+import java.io.IOException;
 import java.util.List;
 
 public class InLobbyController {
@@ -34,56 +39,57 @@ public class InLobbyController {
     @FXML
     private Button leaveLobbyButton;
 
-    @FXML
-    private Button killLobbyButton;
-
-    private ViewLobby currentLobby;
+    private Lobby currentLobby;
     private boolean isOwner = false;
     private String currentUsername;
-    private ClientGameModel clientController = ClientGameModel.getInstance();
+
+    // Riferimento al ClientController per comunicare con il server
+    private ClientController clientController;
+
+    public void setClientController(ClientController clientController) {
+        this.clientController = clientController;
+    }
 
     @FXML
-    public void initialize() {
-        initLobbyData(clientController.getCurrentLobby(), clientController.getUsername());
+    private void initialize() {
+        startGameButton.setOnAction(event -> onStartGame());
+        leaveLobbyButton.setOnAction(event -> onLeaveLobby());
     }
 
-    public void initLobbyData(ViewLobby lobby, String username) {
-        if (lobby != null) {
-            this.currentLobby = lobby;
-            lobbyTitleLabel.setText("Lobby: " + lobby.getID());
-            currentUsername = username;
+    /**
+     * Configura la schermata della lobby con i dati specifici
+     * @param lobby La lobby in cui si trova il giocatore
+     * @param username Il nome utente del giocatore corrente
+     */
+    public void setupLobby(Lobby lobby, String username) {
+        this.currentLobby = lobby;
+        this.currentUsername = username;
 
-            playerCountLabel.setText(String.format("%d/%d giocatori",
-                    lobby.getPlayersList().size(),
-                    lobby.getMaxPlayers()));
+        this.isOwner = username.equals(lobby.getOwnerUsername());
 
-            updatePlayerList(lobby, username);
+        lobbyTitleLabel.setText("LOBBY DI " + lobby.getOwnerUsername().toUpperCase());
+        updatePlayerCount();
 
-            isOwner = username.equals(lobby.getOwner());
-            ownerControlsBox.setVisible(isOwner);
+        ownerControlsBox.setVisible(isOwner);
+        waitingMessageLabel.setVisible(!isOwner);
 
+        if (isOwner) {
             updateStartButtonState();
-        } else {
-            lobbyTitleLabel.setText("Errore: Dati della lobby non disponibili");
         }
+
+        loadPlayers();
+
+        startLobbyUpdateTimer();
     }
 
-    private void updatePlayerList(ViewLobby lobby, String username) {
-        playersListView.getItems().clear();
-        for (String player : lobby.getPlayersList()) {
-            String displayName = player;
-            if (player.equals(lobby.getOwner())) {
-                displayName += " (Proprietario)";
-            }
-            if (player.equals(username)) {
-                displayName += " (Tu)";
-            }
-            playersListView.getItems().add(displayName);
-        }
+    private void updatePlayerCount() {
+        playerCountLabel.setText(String.format("%d/%d giocatori",
+                currentLobby.getUsers(),
+                currentLobby.getMaxPlayers()));
     }
 
     private void updateStartButtonState() {
-        boolean canStart = currentLobby != null && currentLobby.getPlayersList().size() >= 2;
+        boolean canStart = currentLobby.getUsers().size() >= 2;
         startGameButton.setDisable(!canStart);
 
         if (!canStart) {
@@ -95,36 +101,82 @@ public class InLobbyController {
         }
     }
 
-    @FXML
-    public void onStartGame() {
+    private void loadPlayers() {
+        playersListView.getItems().clear();
+
+        List<String> players = currentLobby.getUsers();
+
+        for (String player : players) {
+            String displayName = player;
+            if (player.equals(currentLobby.getOwnerUsername())) {
+                displayName += " (Proprietario)";
+            }
+            if (player.equals(currentUsername)) {
+                displayName += " (Tu)";
+            }
+            playersListView.getItems().add(displayName);
+        }
+    }
+
+    private void startLobbyUpdateTimer() {
+        // TODO: Implementa il timer per aggiornare lo stato della lobby
+    }
+
+    private void onStartGame() {
         if (!isOwner) return;
 
+        boolean gameStarted = clientController.startGame(currentLobby.getId());
+
+        if (gameStarted) {
+            navigateToGameScreen();
+        } else {
+            System.out.println("Impossibile avviare la partita");
+        }
+    }
+
+    private void onLeaveLobby() {
+        boolean leftSuccessfully = clientController.leaveLobby(currentLobby.getId());
+
+        if (leftSuccessfully) {
+            navigateToLobbyListScreen();
+        } else {
+            System.out.println("Impossibile uscire dalla lobby");
+        }
+    }
+
+    private void navigateToGameScreen() {
         try {
-            ClientGameModel.getInstance().getClient().startLobby(currentUsername);
-            ((GUIView)ClientGameModel.getInstance()).showScene("game");
-        } catch (Exception e) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/GameScreen.fxml"));
+            Parent root = loader.load();
+
+            GameScreenController controller = loader.getController();
+            controller.setClientController(clientController);
+            controller.setupGame(currentLobby);
+
+            Stage stage = (Stage) startGameButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @FXML
-    public void onLeaveLobby() {
+    private void navigateToLobbyListScreen() {
         try {
-            ClientGameModel.getInstance().getClient().leaveLobby(currentUsername);
-            ((GUIView)ClientGameModel.getInstance()).showScene("login");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/LobbyList.fxml"));
+            Parent root = loader.load();
 
-    @FXML
-    public void onKillLobby() {
-        if (!isOwner) return;
+            LobbyListController controller = loader.getController();
+            controller.setClientController(clientController);
 
-        try {
-            ClientGameModel.getInstance().getClient().killLobby(currentUsername);
-            ((GUIView)ClientGameModel.getInstance()).showScene("login");
-        } catch (Exception e) {
+            Stage stage = (Stage) leaveLobbyButton.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

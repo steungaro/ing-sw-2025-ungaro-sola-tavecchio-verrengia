@@ -1,56 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="30" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.MainMenuController">
+<VBox alignment="CENTER" spacing="30" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.MainMenuController"
+      prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #222233;">
 
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
     <Label text="GALAXY TRUCKER" textFill="WHITE">
         <font>
-            <Font name="System Bold" size="32.0" />
+            <Font name="System Bold" size="32.0"/>
         </font>
     </Label>
 
     <Label fx:id="welcomeLabel" text="Benvenuto" textFill="#bbbbff">
         <font>
-            <Font size="18.0" />
+            <Font size="18.0"/>
         </font>
     </Label>
 
-        <Button fx:id="createLobbyButton" prefHeight="50" prefWidth="240" text="CREA NUOVA LOBBY">
-         <font>
-             <Font size="16.0" />
-         </font>
-         <style>
-                -fx-background-color: #5a6e93;
-                -fx-text-fill: white;
-            </style>
-     </Button>
-
-    <Label text="LOBBY DISPONIBILI" textFill="WHITE">
-        <font>
-            <Font name="System Bold" size="24.0" />
-        </font>
-    </Label>
-
-    <ListView fx:id="lobbiesListView" prefHeight="250" prefWidth="500" VBox.vgrow="ALWAYS">
-        <style>
-            -fx-background-color: #4a5363;
-            -fx-control-inner-background: #333344;
-            -fx-text-fill: white;
-        </style>
-    </ListView>
-
-    <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="joinLobbyButton" disable="true" prefHeight="40" prefWidth="200" text="ENTRA NELLA LOBBY">
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 30; -fx-background-radius: 8;">
+        <Button fx:id="viewLobbiesButton" text="VISUALIZZA LOBBY" prefWidth="240" prefHeight="50">
             <font>
-                <Font size="14.0" />
+                <Font size="16.0"/>
             </font>
             <style>
                 -fx-background-color: #4a7eb3;
@@ -58,20 +37,26 @@
             </style>
         </Button>
 
-        <Button fx:id="refreshButton" prefHeight="40" prefWidth="150" text="AGGIORNA">
+        <Separator prefWidth="300">
+            <padding>
+                <Insets top="5" bottom="5"/>
+            </padding>
+        </Separator>
+
+        <Button fx:id="createLobbyButton" text="CREA NUOVA LOBBY" prefWidth="240" prefHeight="50">
             <font>
-                <Font size="14.0" />
+                <Font size="16.0"/>
             </font>
             <style>
                 -fx-background-color: #5a6e93;
                 -fx-text-fill: white;
             </style>
         </Button>
-    </HBox>
+    </VBox>
 
-    <Button fx:id="logoutButton" prefWidth="150" text="DISCONNETTI">
+    <Button fx:id="logoutButton" text="DISCONNETTI" prefWidth="150">
         <font>
-            <Font size="14.0" />
+            <Font size="14.0"/>
         </font>
         <style>
             -fx-background-color: #663333;

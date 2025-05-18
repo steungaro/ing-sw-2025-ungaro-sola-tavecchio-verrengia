@@ -1,25 +1,14 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.common.ClientController;
+import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-
-import java.rmi.RemoteException;
-import java.util.List;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 
 public class MainMenuController {
-
-    @FXML
-    private ListView<ViewLobby> lobbiesListView;
-
-    @FXML
-    private Button joinLobbyButton;
-
-    @FXML
-    private Button refreshButton;
 
     @FXML
     private Label welcomeLabel;
@@ -35,70 +24,17 @@ public class MainMenuController {
 
     private GUIView guiView;
     private String username;
+    private ClientController clientController;
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) ClientGameModel.getInstance();
-        lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        lobbiesListView.setCellFactory(listView -> new ListCell<ViewLobby>() {
-            @Override
-            protected void updateItem(ViewLobby lobby, boolean empty) {
-                super.updateItem(lobby, empty);
-
-                if (empty || lobby == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    // Qui definisci come vuoi visualizzare l'oggetto ViewLobby
-                    setText(lobby.getOwner() + " (Proprietario: " + lobby.getOwner() + ") - " +
-                            "Giocatori: " + lobby.getPlayersList() + "/" + lobby.getMaxPlayers());
-                }
-            }
-        });
+        guiView = (GUIView) View.getInstance();
 
 
-        lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            joinLobbyButton.setDisable(newVal == null);
-        });
-
-        joinLobbyButton.setOnAction(event -> onJoinLobby());
-        refreshButton.setOnAction(event -> onRefreshLobbies());
-        loadLobbies();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
+        viewLobbiesButton.setOnAction( event -> handleViewLobbies());
         logoutButton.setOnAction(event -> handleLogout());
-    }
-
-    private void onJoinLobby() {
-        ViewLobby selectedLobby = lobbiesListView.getSelectionModel().getSelectedItem();
-        if (selectedLobby != null) {
-            // 1. Invia richiesta al server per entrare nella lobby
-            joinLobbyOnServer(selectedLobby);
-        }
-    }
-
-    private void onRefreshLobbies() {
-         loadLobbies();
-    }
-
-    private void loadLobbies() {
-        try {
-            ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
-        } catch (RemoteException e){
-            System.out.println("Errore di connessione al server: " + e.getMessage());
-        }
-    }
-
-    private void joinLobbyOnServer(ViewLobby lobby) {
-        Client client = ClientGameModel.getInstance().getClient();
-        if (client != null) {
-            try {
-                client.joinLobby(lobby.getID(), ClientGameModel.getInstance().getUsername());
-            } catch (java.rmi.RemoteException e){
-                System.out.println("Errore di connessione al server: " + e.getMessage());
-            }
-        }
     }
 
     public void setUsername(String username) {
@@ -107,10 +43,17 @@ public class MainMenuController {
     }
 
     private void handleCreateLobby() {
-        guiView.showScene("createLobby");
+        guiView.showCreateLobbyScene();
     }
-    private void handleLogout() {
+    private void handleViewLobbies() {
+        guiView.showLobbyListScene();
+    }
 
-        guiView.showScene("network");
+    public void setClientController(ClientController clientController) {
+        this.clientController = clientController;
+    }
+
+    private void handleLogout() {
+        guiView.showNetworkScene();
     }
 }
