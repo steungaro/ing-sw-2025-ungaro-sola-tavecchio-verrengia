@@ -1,74 +1,77 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.BranchMenuController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.ShipController;
-import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.network.NetworkManager;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.client.network.NetworkManager;
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.NetworkController;
+import it.polimi.ingsw.gc20.client.network.common.Client;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.application.Platform;
 
 import java.io.IOException;
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Map;
 
-public class GUIView extends ClientGameModel {
+public class GUIView extends View {
 
     private static Stage primaryStage;
 
-    public GUIView() throws RemoteException {
+    public GUIView() {
         super();
-    }
-
-    @Override
-    public void displayErrorMessage(String message) {
-        //TODO
     }
 
     public void initGUI(Stage stage) {
         primaryStage = stage;
-        showScene("welcome");
+        setupWelcomeScene();
     }
 
-    public FXMLLoader showScene(String fileName) {
+    private void setupWelcomeScene() {
         try {
-            String path = "/fxml/" + fileName + ".fxml";
-            URL resourceUrl = getClass().getResource(path);
-
-            if (resourceUrl == null) {
-                System.err.println("ERRORE: File FXML non trovato: " + path);
-                return null;
-            }
-
-            FXMLLoader loader = new FXMLLoader(resourceUrl);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/welcome.fxml"));
             Parent root = loader.load();
 
             Scene scene = new Scene(root, 600, 400);
             primaryStage.setScene(scene);
-            primaryStage.setTitle("Galaxy Trucker");
             primaryStage.centerOnScreen();
-            return loader;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
-    public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
+    public void showNetworkScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/network.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 400);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setupConnection(String ipAddress, int port, boolean isRMI) {
+        if (isRMI) {
+            System.out.println("Connessione RMI a " + ipAddress + ":" + port);
+            // TODO: implementare la connessione RMI
+        } else {
+            System.out.println("Connessione Socket a " + ipAddress + ":" + port);
+            // TODO: implementare la connessione Socket
+        }
+
+        // Mostra la schermata di login dopo la connessione
+        showLoginScene();
+    }
+
+    public void setupConnection(String ipAddress, int port, boolean isRMI, NetworkController controller) {
         String clientType = isRMI ? "RMI" : "Socket";
+
+        System.out.println("Connessione a " + ipAddress + ":" + port);
 
         try {
             Thread.sleep(1000);
@@ -85,168 +88,85 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client == null || !client.isConnected()) {
+            controller.showError("Connection failed");
             client = null;
-            return false;
         }
 
         if (client != null) {
-            showScene("login");
-            return true;
+            showLoginScene();
         }
-        return false;
+    }
+
+    public void showMainMenuScene(String username) {
+        client.login(username);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mainMenu.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 400);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showLoginScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 400);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showCreateLobbyScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/createLobby.fxml")); // Check if necessary
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 400);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showLobbyListScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/lobbyList.fxml"));
+            Parent root = loader.load();
+
+            Scene scene = new Scene(root, 600, 400);
+            primaryStage.setScene(scene);
+            primaryStage.centerOnScreen();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void updateView(Message message) {
+    public void updateView(Message message) throws RemoteException {
+        super.updateView(message);
         Platform.runLater(() -> {
-            try {
-                message.handleMessage();
-            } catch (Exception e) {
-                System.out.println("Error while handling message: " + e.getMessage());
-            }
+            // TODO: Implementare l'aggiornamento della view
         });
-    }
-
-    @Override
-    public void mainMenuState(){
-        showScene("mainMenu");
-    }
-
-    @Override
-    public void planetMenu(List<Planet> planets) {
-
-    }
-
-    @Override
-    public void populateShipMenu() {
-
-    }
-
-    @Override
-    public void automaticAction(String message) {
-
-    }
-
-    @Override
-    public void validationMenu() {
-
-    }
-
-    @Override
-    public void takeComponentMenu() {
-
-    }
-
-    @Override
-    public void init() {
-
-    }
-
-    @Override
-    public void shieldsMenu(FireType fireType, int direction, int line) {
-
-    }
-
-    @Override
-    public void rollDiceMenu(FireType fireType, int direction) {
-
-    }
-
-    @Override
-    public void cargoMenu(int cargoNum) {
-
-    }
-
-    @Override
-    public void loseCrewMenu(int crewNum) {
-
-    }
-
-    @Override
-    public void removeBatteryMenu(int batteryNum) {
-
-    }
-
-    @Override
-    public void placeComponentMenu() {
-
-    }
-
-    @Override
-    public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-
-    }
-
-    @Override
-    public void loginSuccessful(String username) {
-
-    }
-
-    @Override
-    public void loginFailed(String username) {
-
-    }
-
-    @Override
-    public void idleMenu(String message) {
-
     }
 
     @Override
     public void notifyDisconnection() throws RemoteException {
         // TODO: Implementare la notifica di disconnessione
+        Platform.runLater(() -> {
+            // Codice per gestire la disconnessione nell'interfaccia grafica
+        });
     }
 
-    @Override
-    public void shutdown() {
-        // TODO
-    }
-
-    @Override
-    public void branchMenu() {
-            Object playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-            String shipType = (playerShip != null && playerShip.getClass().getSimpleName().equals("ViewShip0")) ? "ship0" : "ship2";
-
-            FXMLLoader loader = showScene("branchMenu");
-            if (loader != null) {
-                BranchMenuController controller = loader.getController();
-                controller.initializeWithShip(shipType);
-            }
-    }
-
-    @Override
-    public void buildingMenu(List<ViewAdventureCard> cards) {
-        showScene("buildingPhase");
-    }
-
-    @Override
-    public void cannonsMenu(String message) {
-
-    }
-
-    @Override
-    public void cardAcceptanceMenu(String message) {
-
-    }
-
-    @Override
-    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-
-    }
-
-    @Override
-    public void engineMenu(String message) {
-
-    }
-
-    @Override
-    public void inLobbyMenu() {
-        showScene("inLobby");
-    }
-
-    @Override
-    public void login() {
-        client.login(username);
-        this.username = username;
+    public void login(String username, String server, int port) {
+        // TODO: Implementare il login
     }
 }
