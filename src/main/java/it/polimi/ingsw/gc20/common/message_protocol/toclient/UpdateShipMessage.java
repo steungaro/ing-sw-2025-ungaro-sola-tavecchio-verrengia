@@ -23,15 +23,11 @@ public record UpdateShipMessage(
         boolean isLearner,
         boolean isValid,
         ViewComponent[] componentsBooked, // components in the booked area null if not used
-        List<ViewComponent> waste,
-        ViewComponent componentInHand // component in hand, null if not used
+        List<ViewComponent> waste
 
         ) implements Message {
     @Override
     public String toString() {
-        if (componentInHand != null) {
-            return username + " has " + action + " the component: " + componentInHand;
-        }
         return username + " has " + action;
     }
 
@@ -41,7 +37,7 @@ public record UpdateShipMessage(
      * @param username nome dell'utente che sta assemblando la nave
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
      */
-    public UpdateShipMessage(String username, Ship ship, String action, Component componentInHand) {
+    public UpdateShipMessage(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
@@ -61,12 +57,9 @@ public record UpdateShipMessage(
             }
         }
         ViewComponent hand = null;
-        if (componentInHand != null) {
-            hand= componentInHand.createViewComponent();
-        }
-        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste, hand);
-    }
 
+        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
+    }
     @Override
     public void handleMessage() {
         ViewShip viewShip = View.getInstance().getShip(username);

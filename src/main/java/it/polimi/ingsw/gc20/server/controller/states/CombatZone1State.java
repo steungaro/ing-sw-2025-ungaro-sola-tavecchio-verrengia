@@ -92,11 +92,6 @@ public class    CombatZone1State extends CargoState {
         //save the declared firepower in the map
         float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player, firepower);
-        //notify the player that the firepower is activated
-        for (Player p : getModel().getInGamePlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new ActivatedPowerMessage(player.getUsername(), firepower, "firepower"));
-            NetworkService.getInstance().sendToClient(p.getUsername(), new UpdateShipMessage(player.getUsername(), player.getShip(), "used energies", null));
-        }
         //pass the turn to the next player
         nextPlayer();
         //check if the current player is null, if so, it means that all players have played
