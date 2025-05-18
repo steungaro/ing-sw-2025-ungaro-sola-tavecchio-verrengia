@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
@@ -21,11 +22,22 @@ public abstract class View implements ViewInterface {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(View.class.getName());
     protected boolean loggedIn;
-    protected String username;
+    public String username;
     protected Client client;
     private ViewBoard board;
     private Map<String, ViewShip> ships;
     protected AdventureCard currentCard;
+    private MenuState currentState;
+
+    public void setCurrentState(MenuState currentState) {
+        this.currentState = currentState;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public abstract void shutdown();
 
     private ViewComponent componentInHand;
 

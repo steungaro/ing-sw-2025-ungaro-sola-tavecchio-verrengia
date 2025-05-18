@@ -16,7 +16,6 @@ public class MainTUI {
                 tui.initNetwork();
                 tui.wait(1);
                 tui.login();
-                tui.lobbyLoop();
                 //tui.gameLoop();
                 tui.shutdown();
             } catch (UserInterruptException e) {

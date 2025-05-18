@@ -69,6 +69,13 @@ public class TUI extends View {
     public void shutdown() {
         terminal.writer().println("Application shutting down.");
         terminal.flush();
+        client.stop();
+        try {
+            terminal.close();
+        } catch (Exception e) {
+            LOGGER.warning("Error while closing terminal: " + e.getMessage());
+        }
+        System.exit(0);
     }
     
     public void wait(int seconds) {
