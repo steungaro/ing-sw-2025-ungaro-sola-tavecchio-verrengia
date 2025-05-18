@@ -1,15 +1,11 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.EndMoveConfirmMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
