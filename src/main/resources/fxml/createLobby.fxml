@@ -1,95 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.CreateLobbyController"
-      prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #222233;">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fxml.CreateLobby"
+            prefHeight="400.0" prefWidth="600.0">
 
-    <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
-    </padding>
-
-    <Label text="CREA NUOVA LOBBY" textFill="WHITE">
-        <font>
-            <Font name="System Bold" size="24.0"/>
-        </font>
-    </Label>
-
-    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 20;">
-        <HBox alignment="CENTER" spacing="15">
-            <Label text="Nome Lobby:" textFill="WHITE">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
-            <TextField fx:id="lobbyNameField" prefWidth="250" promptText="Inserisci il nome della lobby">
-                <style>
-                    -fx-background-color: #4a5363;
-                    -fx-text-fill: white;
-                    -fx-prompt-text-fill: #aaaaaa;
-                </style>
-            </TextField>
-        </HBox>
-
-        <HBox alignment="CENTER" spacing="15">
-            <Label text="Numero di Giocatori:" textFill="WHITE">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
-            <ComboBox fx:id="numPlayersComboBox" prefWidth="150">
-                <style>
-                    -fx-background-color: #4a5363;
-                    -fx-text-fill: white;
-                </style>
-            </ComboBox>
-        </HBox>
-
-        <HBox alignment="CENTER" spacing="15">
-            <Label text="Livello del Gioco:" textFill="WHITE">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
-            <ComboBox fx:id="levelComboBox" prefWidth="150">
-                <style>
-                    -fx-background-color: #4a5363;
-                    -fx-text-fill: white;
-                </style>
-            </ComboBox>
-        </HBox>
-    </VBox>
-
-    <Label fx:id="errorLabel" textFill="#ff6666" visible="false">
-        <font>
-            <Font size="14.0"/>
-        </font>
-    </Label>
-
-    <HBox alignment="CENTER" spacing="25">
-        <Button fx:id="createButton" onAction="#handleCreateButton" text="CREA" prefWidth="150" prefHeight="40">
-            <font>
-                <Font size="14.0"/>
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-
-        <Button fx:id="cancelButton" onAction="#handleCancelButton" text="ANNULLA" prefWidth="150" prefHeight="40">
-            <font>
-                <Font size="14.0"/>
-            </font>
-            <style>
-                -fx-background-color: #663333;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-    </HBox>
-</VBox>
+</AnchorPane>
