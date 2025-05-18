@@ -43,12 +43,24 @@ public class InLobbyController {
     private boolean isOwner = false;
     private String currentUsername;
 
+    // Riferimento al ClientController per comunicare con il server
+    private ClientController clientController;
+
+    public void setClientController(ClientController clientController) {
+        this.clientController = clientController;
+    }
+
     @FXML
     private void initialize() {
         startGameButton.setOnAction(event -> onStartGame());
         leaveLobbyButton.setOnAction(event -> onLeaveLobby());
     }
 
+    /**
+     * Configura la schermata della lobby con i dati specifici
+     * @param lobby La lobby in cui si trova il giocatore
+     * @param username Il nome utente del giocatore corrente
+     */
     public void setupLobby(Lobby lobby, String username) {
         this.currentLobby = lobby;
         this.currentUsername = username;
