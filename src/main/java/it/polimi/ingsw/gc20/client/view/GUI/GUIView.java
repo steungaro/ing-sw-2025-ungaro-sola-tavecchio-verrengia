@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.NetworkController;
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,10 +16,29 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GUIView extends View {
 
     private static Stage primaryStage;
+    private MenuStateForGui currentState;
+
+    public enum MenuStateForGui {
+        WELCOME,
+        NETWORK_CONFIG,
+        LOGIN,
+        MAIN_MENU,
+        LOBBY_LIST,
+        CREATE_LOBBY,
+        IN_LOBBY,
+        GAME_SCREEN,
+        BUILDING_PHASE,
+        VALIDATION_PHASE,
+        PLANET_PHASE
+    }
+
+    private Map<MenuStateForGui, Object> controllers = new HashMap<>();
 
     public GUIView() {
         super();
@@ -26,10 +46,40 @@ public class GUIView extends View {
 
     public void initGUI(Stage stage) {
         primaryStage = stage;
-        setupWelcomeScene();
+        changeState(MenuStateForGui.WELCOME);
     }
 
-    private void setupWelcomeScene() {
+    public void changeState(MenuStateForGui newState, Object... params) {
+        this.currentState = newState;
+
+        switch(newState) {
+            case WELCOME:
+                showWelcomeScene();
+                break;
+            case NETWORK_CONFIG:
+                showNetworkScene();
+                break;
+            case LOGIN:
+                showLoginScene();
+                break;
+            case MAIN_MENU:
+                showMainMenuScene((String)params[0]);
+                break;
+            case LOBBY_LIST:
+                showLobbyListScene();
+                break;
+            case CREATE_LOBBY:
+                showCreateLobbyScene();
+                break;
+            case IN_LOBBY:
+                showInLobbyScene((Lobby)params[0]);
+                break;
+            // TODO: Implement other states
+        }
+    }
+
+
+    private void showWelcomeScene() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/welcome.fxml"));
             Parent root = loader.load();
@@ -53,19 +103,6 @@ public class GUIView extends View {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setupConnection(String ipAddress, int port, boolean isRMI) {
-        if (isRMI) {
-            System.out.println("Connessione RMI a " + ipAddress + ":" + port);
-            // TODO: implementare la connessione RMI
-        } else {
-            System.out.println("Connessione Socket a " + ipAddress + ":" + port);
-            // TODO: implementare la connessione Socket
-        }
-
-        // Mostra la schermata di login dopo la connessione
-        showLoginScene();
     }
 
     public void setupConnection(String ipAddress, int port, boolean isRMI, NetworkController controller) {
