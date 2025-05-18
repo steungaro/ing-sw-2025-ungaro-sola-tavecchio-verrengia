@@ -1,8 +1,10 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+
 public record StandbyMessage(
         String situation
-) implements Message{
+) implements Message {
     @Override
     public String toString() {
         return situation;

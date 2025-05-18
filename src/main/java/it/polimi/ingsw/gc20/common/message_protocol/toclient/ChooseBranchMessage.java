@@ -2,15 +2,14 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
-public record AddCargoMessage() implements Message {
+public record ChooseBranchMessage() implements Message {
     @Override
     public String toString() {
-        return "Add cargo";
+        return "after the projectile your ship is invalid, choose a branch";
     }
 
     @Override
     public void handleMessage() {
         //TODO
     }
-
 }
