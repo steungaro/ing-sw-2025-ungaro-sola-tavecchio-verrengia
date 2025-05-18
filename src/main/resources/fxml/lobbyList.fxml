@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.LobbyListController">
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.LobbyListController"
+      prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #222233;">
 
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="Available lobbies" textFill="WHITE">
+    <Label text="LOBBY DISPONIBILI" textFill="WHITE">
         <font>
-            <Font name="System Bold" size="24.0" />
+            <Font name="System Bold" size="24.0"/>
         </font>
     </Label>
 
-    <ListView fx:id="lobbiesListView" prefHeight="250" prefWidth="500" VBox.vgrow="ALWAYS">
+    <ListView fx:id="lobbiesListView" prefWidth="500" prefHeight="250" VBox.vgrow="ALWAYS">
         <style>
             -fx-background-color: #4a5363;
-            -fx-control-inner-background: #333344;-fx-text-fill: white; -fx-background-radius: 10;</style>
+            -fx-control-inner-background: #333344;
+            -fx-text-fill: white;
+        </style>
     </ListView>
 
     <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="joinLobbyButton" disable="true" prefHeight="40" prefWidth="200" text="Join lobby">
+        <Button fx:id="joinLobbyButton" text="ENTRA NELLA LOBBY" prefWidth="200" prefHeight="40" disable="true">
             <font>
-                <Font size="14.0" />
+                <Font size="14.0"/>
             </font>
             <style>
                 -fx-background-color: #4a7eb3;
@@ -37,9 +39,9 @@
             </style>
         </Button>
 
-        <Button fx:id="refreshButton" prefHeight="40" prefWidth="150" text="Refresh">
+        <Button fx:id="refreshButton" text="AGGIORNA" prefWidth="150" prefHeight="40">
             <font>
-                <Font size="14.0" />
+                <Font size="14.0"/>
             </font>
             <style>
                 -fx-background-color: #5a6e93;
@@ -48,9 +50,9 @@
         </Button>
     </HBox>
 
-    <Button fx:id="backButton" prefHeight="30" prefWidth="120" text="Back">
+    <Button fx:id="backButton" text="INDIETRO" prefWidth="120" prefHeight="30">
         <font>
-            <Font size="12.0" />
+            <Font size="12.0"/>
         </font>
         <style>
             -fx-background-color: #663333;
