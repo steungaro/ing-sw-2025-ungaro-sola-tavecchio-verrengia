@@ -2,20 +2,20 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.View;
-import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.InfoCmp;
 
 import java.rmi.RemoteException;
-import java.util.Scanner;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 public class TUI extends View {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
-    Scanner scanner;
-    MenuState menu;
 
-    private ReentrantLock writingLock = new ReentrantLock();
+    private Terminal terminal;
+    private LineReader reader;
 
     public TUI() {
         LOGGER.info("TUI created");
@@ -23,73 +23,70 @@ public class TUI extends View {
 
     @Override
     public void notifyDisconnection() throws RemoteException {
-        // Handle disconnection
+        terminal.writer().println("\033[31mDisconnected from server.\033[0m");
+        terminal.flush();
     }
 
     public void init() {
         System.out.println("Welcome to Galaxy Trucker!");
-        scanner = new Scanner(System.in);
-
-        printLogo();
 
         try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            terminal = TerminalBuilder.builder().system(true).build();
+            reader = LineReaderBuilder.builder().terminal(terminal).build();
+        } catch (Exception e) {
+            LOGGER.warning("Error while initializing terminal: " + e.getMessage());
         }
 
-        clearConsole();
+        printLogo();
     }
 
-    public static void clearConsole() {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+    public void clearConsole() {
+        terminal.puts(InfoCmp.Capability.clear_screen);
+        terminal.flush();
     }
 
     private void printLogo() {
-        System.out.println(" ██████╗  █████╗ ██╗      █████╗ ██╗  ██╗██╗   ██╗    ████████╗██████╗ ██╗   ██╗ ██████╗██╗  ██╗███████╗██████╗ ");
-        System.out.println("██╔════╝ ██╔══██╗██║     ██╔══██╗╚██╗██╔╝╚██╗ ██╔╝    ╚══██╔══╝██╔══██╗██║   ██║██╔════╝██║ ██╔╝██╔════╝██╔══██╗");
-        System.out.println("██║  ███╗███████║██║     ███████║ ╚███╔╝  ╚████╔╝        ██║   ██████╔╝██║   ██║██║     █████╔╝ █████╗  ██████╔╝");
-        System.out.println("██║   ██║██╔══██║██║     ██╔══██║ ██╔██╗   ╚██╔╝         ██║   ██╔══██╗██║   ██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗");
-        System.out.println("╚██████╔╝██║  ██║███████╗██║  ██║██╔╝ ██╗   ██║          ██║   ██║  ██║╚██████╔╝╚██████╗██║  ██╗███████╗██║  ██║");
-        System.out.println(" ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝");
+        terminal.writer().println(" ██████╗  █████╗ ██╗      █████╗ ██╗  ██╗██╗   ██╗    ████████╗██████╗ ██╗   ██╗ ██████╗██╗  ██╗███████╗██████╗ ");
+        terminal.writer().println("██╔════╝ ██╔══██╗██║     ██╔══██╗╚██╗██╔╝╚██╗ ██╔╝    ╚══██╔══╝██╔══██╗██║   ██║██╔════╝██║ ██╔╝██╔════╝██╔══██╗");
+        terminal.writer().println("██║  ███╗███████║██║     ███████║ ╚███╔╝  ╚████╔╝        ██║   ██████╔╝██║   ██║██║     █████╔╝ █████╗  ██████╔╝");
+        terminal.writer().println("██║   ██║██╔══██║██║     ██╔══██║ ██╔██╗   ╚██╔╝         ██║   ██╔══██╗██║   ██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗");
+        terminal.writer().println("╚██████╔╝██║  ██║███████╗██║  ██║██╔╝ ██╗   ██║          ██║   ██║  ██║╚██████╔╝╚██████╗██║  ██╗███████╗██║  ██║");
+        terminal.writer().println(" ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝");
+        terminal.flush();
     }
 
     public void shutdown() {
-        System.out.println("Application shutting down.");
+        terminal.writer().println("Application shutting down.");
+        terminal.flush();
+    }
+
+    public Terminal getTerminal() {
+        return terminal;
     }
 
     public void initNetwork() {
         String type;
         String[] networkTypes = {"RMI", "Socket"};
 
-        writingLock.lock();
-
         do {
             do {
-                clearConsole();
-                System.out.println("Select network type:");
+                terminal.writer().println("Select network type:");
                 for (int i = 0; i < networkTypes.length; i++) {
-                    System.out.println((i + 1) + ". " + networkTypes[i]);
+                    terminal.writer().println((i + 1) + ". " + networkTypes[i]);
                 }
-                System.out.print(" > ");
+                terminal.flush();
 
-                type = scanner.nextLine().trim();
-
+                type = reader.readLine(" > ").trim();
             } while (!type.matches("[1-2]"));
 
-            System.out.println("Insert server address (leave blank for default):");
-            System.out.print(" > ");
-            String address = scanner.nextLine().trim();
+            String address = reader.readLine("Insert server address (leave blank for default):\n > ").trim();
+            String port = reader.readLine("Insert server port (leave blank for default):\n > ").trim();
 
-            System.out.println("Insert server port (leave blank for default):");
-            System.out.print(" > ");
-            String port = scanner.nextLine().trim();
-
-            System.out.println("Trying connection...");
+            terminal.writer().println("Trying connection...");
+            terminal.flush();
 
             try {
-                Thread.sleep(1000); // Simulate delay
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -103,27 +100,20 @@ public class TUI extends View {
             }
 
             if (client == null || !client.isConnected()) {
-                // set the console color to red
-                System.out.print("\033[31m");
-                System.out.println("Connection failed. Type [1] to try again, type [2] to exit.");
-                // reset the console color to default
-                System.out.print("\033[0m");
-                System.out.print(" > ");
-                String retry = scanner.nextLine().trim();
+                terminal.writer().print("\033[31mConnection failed. Type [1] to try again, [2] to exit.\033[0m\n > ");
+                terminal.flush();
+                String retry = reader.readLine("").trim();
                 if ("2".equals(retry)) {
                     System.exit(0);
                 }
                 client = null;
             }
+
         } while (client == null || !client.isConnected());
 
-        // set the console color to green
-        System.out.print("\033[32m");
-        System.out.println("Connection established with server at " + client.getAddress() + ":" + client.getPort());
-        // reset the console color to default
-        System.out.print("\033[0m");
-
-        System.out.println("Use [q] to quit the application at any time (works in every menu).");
+        terminal.writer().println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
+        terminal.writer().println("Use [q] to quit the application at any time (works in every menu).");
+        terminal.flush();
 
         try {
             Thread.sleep(2000);
@@ -132,58 +122,28 @@ public class TUI extends View {
         }
 
         clearConsole();
-
-        writingLock.unlock();
     }
 
     public void login() {
         do {
-            writingLock.lock();
+            String inputUsername = reader.readLine("Insert username:\n > ").trim();
 
-            System.out.println("Insert username:");
-            System.out.print(" > ");
-            String username = scanner.nextLine().trim();
-
-            if (username.equalsIgnoreCase("q")) {
+            if (inputUsername.equalsIgnoreCase("q")) {
                 System.exit(0);
             }
 
-            if (username.isBlank() || username.equals("__BROADCAST__")) {
-                // set the console color to red
-                System.out.print("\033[31m");
-                System.out.println("Username not valid. Please try again.");
-                // reset the console color to default
-                System.out.print("\033[0m");
+            if (inputUsername.isBlank() || inputUsername.equals("__BROADCAST__")) {
+                terminal.writer().println("\033[31mUsername not valid. Please try again.\033[0m");
+                terminal.flush();
                 continue;
             }
 
-            client.login(username);
+            client.login(inputUsername);
+            this.username = inputUsername;
+
         } while (!loggedIn);
 
-        // set the console color to green
-        System.out.print("\033[32m");
-        System.out.println("Logged in as: " + username);
-        // reset the console color to default
-        System.out.print("\033[0m");
-
-        this.username = username;
-    }
-
-    public void lobbyLoop() {
-        writingLock.lock();
-
-        // Create the menu context
-        MenuContext menuContext = new MenuContext(client, username);
-
-        // Set the initial state
-        menuContext.setState(new MainMenuState(menuContext));
-        // Run the menu system
-        try {
-            menuContext.run();
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-
-        writingLock.unlock();
+        terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
+        terminal.flush();
     }
 }
