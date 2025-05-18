@@ -16,14 +16,12 @@ public abstract class View implements ViewInterface {
     private static View instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger.getLogger(View.class.getName());
+
     protected boolean loggedIn;
     protected String username;
-
     protected Client client;
-
     private ViewBoard board;
     private Map<String, ViewShip> ships;
-
     private ViewComponent componentInHand;
 
     public ViewComponent getComponentInHand() {
@@ -33,6 +31,7 @@ public abstract class View implements ViewInterface {
     public void setComponentInHand(ViewComponent componentInHand) {
         this.componentInHand = componentInHand;
     }
+
     public ViewBoard getBoard() {
         return board;
     }
