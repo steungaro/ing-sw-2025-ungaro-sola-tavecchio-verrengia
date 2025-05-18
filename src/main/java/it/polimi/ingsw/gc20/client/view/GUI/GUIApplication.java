@@ -12,12 +12,10 @@ public class GUIApplication extends Application {
     public void start(Stage primaryStage) {
         // Inizializza la GUIView
         guiView = new GUIView();
-        // Imposta come istanza singleton di View
         View.setInstance(guiView);
-        // Inizializza l'interfaccia grafica
         guiView.initGUI(primaryStage);
 
-        primaryStage.setTitle("Game Client");
+        primaryStage.setTitle("Galaxy Trucker");
         primaryStage.show();
     }
 
