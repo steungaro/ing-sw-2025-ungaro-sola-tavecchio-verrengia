@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -18,23 +18,20 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) ClientGameModel.getInstance();
+        guiView = (GUIView) View.getInstance();
 
         loginButton.setOnAction(event -> handleLogin());
     }
 
     private void handleLogin() {
-        String username;
-        do {
-            username = usernameField.getText().trim();
-            if (username.isEmpty()) {
-                System.out.println("Username cannot be empty");
-            }
-        } while(username.isEmpty());
+        String username = usernameField.getText().trim();
 
-        ClientGameModel.getInstance().setUsername(username);
-        ClientGameModel.getInstance().login();
+        if (username.isEmpty()) {
+            System.out.println("Username cannot be empty");
+            return;
+        }
+
         // Passa al MainMenu
-        guiView.showScene("mainMenu");
+        guiView.showMainMenuScene(username);
     }
 }
