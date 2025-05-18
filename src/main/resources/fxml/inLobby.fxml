@@ -55,7 +55,7 @@
             </font>
         </Label>
 
-        <Button fx:id="startGameButton" onAction="#onStartGame" text="AVVIA PARTITA" prefWidth="300" prefHeight="50">
+        <Button fx:id="startGameButton" text="AVVIA PARTITA" prefWidth="300" prefHeight="50">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -64,20 +64,10 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-
-        <Button fx:id="killLobbyButton" onAction="#onKillLobby" text="ELIMINA LOBBY" prefWidth="200" prefHeight="40">
-            <font>
-                <Font size="14.0"/>
-            </font>
-            <style>
-                -fx-background-color: #663333;
-                -fx-text-fill: white;
-            </style>
-        </Button>
     </VBox>
 
     <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="leaveLobbyButton" onAction="#onLeaveLobby" text="ABBANDONA LOBBY" prefWidth="200" prefHeight="40">
+        <Button fx:id="leaveLobbyButton" text="ABBANDONA LOBBY" prefWidth="200" prefHeight="40">
             <font>
                 <Font size="14.0"/>
             </font>
