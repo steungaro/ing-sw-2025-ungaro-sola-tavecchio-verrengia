@@ -8,8 +8,7 @@ public class ViewSlavers extends ViewAdventureCard {
     public int credits;
     public int lostDays;
 
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    protected ViewSlavers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.lostCrew = adventureCard.getCrew();
@@ -17,19 +16,38 @@ public class ViewSlavers extends ViewAdventureCard {
         this.lostDays = adventureCard.getLostDays();
     }
 
+    public ViewSlavers() {
+        super();
+    }
+
     @Override
     public String toString() {
         return
-                        up() + "\n" +
-                        lateral() + "  Slavers             " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  FirePower: " + firePower + "        " + lateral() + "\n" +
-                        lateral() + "  LostCrew: " + lostCrew + "         " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  Credits: " + credits + "$         " + lateral() + "\n" +
-                        lateral() + "  LostDays: " + lostDays + "         " + lateral() + "\n" +
-                                lateral() + EMPTY_ROW + lateral() + "\n" +
-                                down();
+                        UP + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "       Slavers        " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "     FirePower: " + firePower + "     " + LATERAL + "\n" +
+                        LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "      Credits: " + credits + "      " + LATERAL + "\n" +
+                        LATERAL + "     Lost days: " + lostDays + "     " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        DOWN;
     }
 
+    @Override
+    public String toLine(int i) {
+        return switch (i) {
+            case 0 -> UP;
+            case 1, 3, 6, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 2 -> LATERAL + "       Slavers        " + LATERAL;
+            case 4 -> LATERAL + "     FirePower: " + firePower + "     " + LATERAL;
+            case 5 -> LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL;
+            case 7 -> LATERAL + "      Credits: " + credits + "      " + LATERAL;
+            case 8 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 10 -> DOWN;
+            default -> "";
+        };
+    }
 }

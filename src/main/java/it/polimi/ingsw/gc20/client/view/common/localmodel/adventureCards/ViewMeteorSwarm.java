@@ -8,64 +8,67 @@ import java.util.List;
 public class ViewMeteorSwarm extends ViewAdventureCard {
     List<Projectile> projectiles;
 
-    // In ViewSlavers.java
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    protected ViewMeteorSwarm(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.projectiles = adventureCard.getProjectiles();
+    }
+    public ViewMeteorSwarm() {
+        super();
     }
 
     @Override
     public String toString(){
         return
-        up() + "\n" +
-                lateral() + "  Meteor Swarm        " + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                lateral() + "  Fires: " + meteorFires() + spaces(13-firesSize()) + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
-                down();
+        UP + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + "     Meteor Swarm     " + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + "       Meteors:       " + LATERAL + "\n" +
+                LATERAL + " ".repeat(10 - meteorFires().length()/2) + meteorFires() + " ".repeat(10 - meteorFires().length()/2 + (meteorFires().length() % 2 == 0 ? 0 : 1)) + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                DOWN;
+    }
+
+    @Override
+    public String toLine(int i) {
+        return switch (i) {
+            case 0 -> UP;
+            case 1, 3, 4, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 2 -> LATERAL + "     Meteor Swarm     " + LATERAL;
+            case 5 -> LATERAL + "       Meteors:       " + LATERAL;
+            case 6 -> LATERAL + " ".repeat(10 - meteorFires().length()/2) + meteorFires() + " ".repeat(10 - meteorFires().length()/2 + (meteorFires().length() % 2 == 0 ? 0 : 1)) + LATERAL;
+            case 10 -> DOWN;
+            default -> "";
+        };
     }
 
     private String meteorFires(){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(int i = 0; i < projectiles.size(); i++) {
             if (i == 0) {
                 switch(projectiles.get(i).getFireType()) {
-                    case HEAVY_METEOR -> result += "H";
-                    case LIGHT_METEOR -> result += "L";
+                    case HEAVY_METEOR -> result.append("H");
+                    case LIGHT_METEOR -> result.append("L");
                 }
 
-                switch(projectiles.get(i).getDirection()) {
-                    case UP -> result += "↑";
-                    case DOWN -> result += "↓";
-                    case LEFT -> result += "←";
-                    case RIGHT -> result += "→";
-                }
             }
             else{
                 switch(projectiles.get(i).getFireType()) {
-                    case HEAVY_METEOR -> result += " H";
-                    case LIGHT_METEOR -> result += " L";
+                    case HEAVY_METEOR -> result.append(" H");
+                    case LIGHT_METEOR -> result.append(" L");
                 }
 
-                switch(projectiles.get(i).getDirection()) {
-                    case UP -> result += "↑";
-                    case DOWN -> result += "↓";
-                    case LEFT -> result += "←";
-                    case RIGHT -> result += "→";
-                }
+            }
+            switch(projectiles.get(i).getDirection()) {
+                case UP -> result.append("↑");
+                case DOWN -> result.append("↓");
+                case LEFT -> result.append("←");
+                case RIGHT -> result.append("→");
             }
         }
-        return result;
+        return result.toString();
     }
-
-    private int firesSize(){
-        int result = projectiles.size();
-        return (result-1)*3 + 2;
-    }
-
 }

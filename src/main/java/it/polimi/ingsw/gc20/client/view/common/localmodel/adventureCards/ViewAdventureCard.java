@@ -32,30 +32,23 @@ import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
 public abstract class ViewAdventureCard {
 
-    /**
-     * Crea un'istanza dell'oggetto ViewAdventureCard appropriato in base al tipo della carta
-     * @param adventureCard La carta d'avventura del server
-     * @return L'istanza appropriata di ViewAdventureCard
-     */
+    public abstract String toLine(int i);
+
     public static ViewAdventureCard createFrom(AdventureCard adventureCard) {
         String type = adventureCard.getName();
 
         try {
-            // Costruiamo il nome completo della classe basandoci sul tipo
             String className = "it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.View" + type;
 
             Class<?> clazz = Class.forName(className);
 
-            ViewAdventureCard viewCard = (ViewAdventureCard) clazz.getDeclaredConstructor().newInstance();
-            viewCard.type = type;
-
-            viewCard.initialize(adventureCard);
+            ViewAdventureCard viewCard = (ViewAdventureCard) clazz.getConstructor(AdventureCard.class).newInstance(adventureCard);
 
             viewCard.type = type;
 
             return viewCard;
         } catch (Exception e) {
-            throw new RuntimeException("Impossibile creare ViewAdventureCard per il tipo: " + type, e);
+            throw new RuntimeException("Can't create card for type: " + type, e);
         }
     }
 
@@ -217,7 +210,7 @@ public abstract class ViewAdventureCard {
         ViewAbandonedStation abandonedStation = new ViewAbandonedStation();
         abandonedStation.type = "AbandonedStation";
         abandonedStation.lostDays = 2;
-        abandonedStation.newCrew = 3;
+        abandonedStation.crew = 3;
         abandonedStation.redCargo = 1;
         abandonedStation.yellowCargo = 1;
         abandonedStation.greenCargo = 1;

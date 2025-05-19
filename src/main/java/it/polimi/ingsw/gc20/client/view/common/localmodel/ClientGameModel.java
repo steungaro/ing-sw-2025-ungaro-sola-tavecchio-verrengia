@@ -160,12 +160,6 @@ public abstract class ClientGameModel implements ViewInterface {
         }
     }
 
-    /**
-     * Metodo che consente di visualizzare multiple carte sulla stessa riga orizzontale,
-     * andando a capo ogni 10 carte
-     * @param cards Lista di ViewAdventureCard da visualizzare
-     * @return Stringa con la rappresentazione delle carte affiancate
-     */
     public String printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return "";
@@ -213,6 +207,7 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public void printCurrentCard() {
         if (currentCard != null) {
+            //TODO
             currentCard.toString();
         } else {
             LOGGER.warning("No current card found.");

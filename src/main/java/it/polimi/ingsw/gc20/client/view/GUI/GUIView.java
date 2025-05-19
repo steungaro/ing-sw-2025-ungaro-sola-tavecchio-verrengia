@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -8,7 +9,7 @@ import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 
-public class GUIView extends View {
+public class GUIView extends ClientGameModel {
 
     private static Stage primaryStage;
 
@@ -36,6 +37,21 @@ public class GUIView extends View {
         Platform.runLater(() -> {
             // Aggiorna elementi JavaFX qui
         });
+    }
+
+    @Override
+    public void display() {
+
+    }
+
+    @Override
+    public void display(MenuState menuState) {
+
+    }
+
+    @Override
+    public void shutdown() {
+
     }
 
     @Override
