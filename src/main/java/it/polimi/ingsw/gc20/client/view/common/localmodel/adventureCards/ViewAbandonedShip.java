@@ -1,11 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
-import java.util.List;
-
-public class ViewAbandonedShip extends ViewAdvetnureCard {
+public class ViewAbandonedShip extends ViewAdventureCard {
     int lostCrew;
     int credits;
     int lostDays;

@@ -2,10 +2,10 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import java.util.ArrayList;
+
 import java.util.List;
 
-public class ViewMeteorSwarm extends ViewAdvetnureCard{
+public class ViewMeteorSwarm extends ViewAdventureCard {
     List<Projectile> projectiles;
 
     // In ViewSlavers.java

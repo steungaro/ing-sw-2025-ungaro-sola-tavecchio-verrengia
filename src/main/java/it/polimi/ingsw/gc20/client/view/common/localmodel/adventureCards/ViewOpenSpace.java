@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-public class ViewOpenSpace extends ViewAdvetnureCard{
+public class ViewOpenSpace extends ViewAdventureCard {
 
     // In ViewSlavers.java
     @Override

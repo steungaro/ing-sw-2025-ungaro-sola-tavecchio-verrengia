@@ -14,6 +14,6 @@ public record EnemyCannonMessage(
 
     @Override
     public void handleMessage() {
-        // No action needed for this message
+        //TODO
     }
 }

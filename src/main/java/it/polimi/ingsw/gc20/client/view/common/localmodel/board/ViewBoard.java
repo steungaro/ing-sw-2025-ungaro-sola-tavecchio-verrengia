@@ -1,9 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.board;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 import java.util.Arrays;
@@ -21,7 +20,7 @@ public class ViewBoard {
     public boolean assemblingState;
     public boolean[] deckAvailability = new boolean[3];
     public int remainingTime;
-    public List<List<ViewAdvetnureCard>> decks;
+    public List<List<ViewAdventureCard>> decks;
     public List<ViewComponent> unviewedPile;
     public List<ViewComponent> viewedPile;
 

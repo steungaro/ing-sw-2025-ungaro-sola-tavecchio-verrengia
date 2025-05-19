@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
-public class ViewSmugglers extends ViewAdvetnureCard {
+public class ViewSmugglers extends ViewAdventureCard {
     int firePower;
     int lostCargo;
     int redCargo = 0;

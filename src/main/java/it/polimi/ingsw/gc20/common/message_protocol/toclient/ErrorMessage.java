@@ -12,6 +12,6 @@ public record ErrorMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        System.out.println(toString());
     }
 }

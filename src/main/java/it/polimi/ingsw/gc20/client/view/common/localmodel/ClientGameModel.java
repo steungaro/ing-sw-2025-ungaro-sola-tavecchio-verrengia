@@ -3,14 +3,14 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel;
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 // Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public abstract class ClientGameModel implements ViewInterface {
     protected Client client;
     private ViewBoard board;
     private Map<String, ViewShip> ships;
-    protected AdventureCard currentCard;
+    protected ViewAdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
@@ -46,6 +46,13 @@ public abstract class ClientGameModel implements ViewInterface {
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+    }
+    public ViewAdventureCard getCurrentCard() {
+        return currentCard;
+    }
+
+    public void setCurrentCard(ViewAdventureCard currentCard) {
+        this.currentCard = currentCard;
     }
 
     public void setLobbyList(List<ViewLobby> lobbyList) {
@@ -138,7 +145,7 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public void printDeck(int index) {
         if (board != null) {
-            List<ViewAdvetnureCard> cards = board.decks.get(index);
+            List<ViewAdventureCard> cards = board.decks.get(index);
             if (cards != null) {
                 String out = printCardsInLine(cards);
                 System.out.println(out);
@@ -157,7 +164,7 @@ public abstract class ClientGameModel implements ViewInterface {
      * @param cards Lista di ViewAdventureCard da visualizzare
      * @return Stringa con la rappresentazione delle carte affiancate
      */
-    public String printCardsInLine(List<ViewAdvetnureCard> cards) {
+    public String printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return "";
         }
@@ -171,7 +178,7 @@ public abstract class ClientGameModel implements ViewInterface {
         for (int cardRow = 0; cardRow < numCardRows; cardRow++) {
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
-            List<ViewAdvetnureCard> rowCards = cards.subList(startIdx, endIdx);
+            List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
 
             List<String> cardStrings = rowCards.stream()
                     .map(Object::toString)
@@ -325,12 +332,28 @@ public abstract class ClientGameModel implements ViewInterface {
     public String getErrorMessage() { return errorMessage; }
 
 
-    public abstract void display();
-    public abstract void display(MenuState menuState);
+    public abstract void display(String message);
+
+    public abstract void display(MenuState menuState, String message);
+
 
     public Client getClient() {
         return client;
     }
 
     public abstract void shutdown();
+
+    public abstract void branchMenu();
+    public abstract void buildingMenu();
+    public abstract void cannonsMenu(String message);
+    public abstract void cardAcceptanceMenu(String message);
+    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
+    public abstract void engineMenu(String message);
+    public abstract void inGameMenu();
+    public abstract void mainMenuState();
+    public abstract void planetMenu(List<Planet> planets);
+    public abstract void populateShipMenu();
+    public abstract void shieldsMenu(String message);
+    public abstract void validationMenu();
+    public abstract void automaticAction(String message);
 }

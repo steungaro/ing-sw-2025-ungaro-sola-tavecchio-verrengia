@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 
 import java.util.List;
 
-public class ViewPlanets extends ViewAdvetnureCard{
+public class ViewPlanets extends ViewAdventureCard {
 
     List<int[]> planets; // red, yellow, green, blue
     int lostDays;

@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
-public class ViewCombatZone0 extends ViewAdvetnureCard{
+public class ViewCombatZone0 extends ViewAdventureCard {
     int lostDays;
     int lostCrew;
     List<Projectile> projectiles;

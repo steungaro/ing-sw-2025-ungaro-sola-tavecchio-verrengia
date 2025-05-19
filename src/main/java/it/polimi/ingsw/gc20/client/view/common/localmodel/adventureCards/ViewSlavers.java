@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-public class ViewSlavers extends ViewAdvetnureCard {
+public class ViewSlavers extends ViewAdventureCard {
     public int firePower;
     public int lostCrew;
     public int credits;

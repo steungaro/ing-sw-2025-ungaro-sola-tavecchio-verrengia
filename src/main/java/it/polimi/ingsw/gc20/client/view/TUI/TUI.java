@@ -234,12 +234,12 @@ public class TUI extends ClientGameModel {
         terminal.flush();
     }
 
-    public void display(MenuState menu) {
+    public void display(MenuState menu, String message) {
         currentState = menu;
         boolean input = false;
         while (client.isConnected() && !input) {
             try {
-                currentState.displayMenu();
+                currentState.displayMenu(String message);
                 input = currentState.handleInput();
             } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());
@@ -248,11 +248,11 @@ public class TUI extends ClientGameModel {
     }
 
     //Display the menu after we get an error, it does not change the state, simply returns to last menu
-    public void display() {
+    public void display(String message) {
         boolean input = false;
         while (client.isConnected() && !input) {
             try {
-                currentState.displayMenu();
+                currentState.displayMenu(String message);
                 input = currentState.handleInput();
             } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());

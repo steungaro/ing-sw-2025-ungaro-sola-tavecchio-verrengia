@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
-public class ViewAbandonedStation extends ViewAdvetnureCard{
+public class ViewAbandonedStation extends ViewAdventureCard {
     int newCrew;
     int redCargo = 0;
     int yellowCargo = 0;

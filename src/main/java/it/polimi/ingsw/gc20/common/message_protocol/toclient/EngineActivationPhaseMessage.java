@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 public record EngineActivationPhaseMessage() implements Message {
@@ -10,5 +11,6 @@ public record EngineActivationPhaseMessage() implements Message {
 
     @Override
     public void handleMessage() {
+        ClientGameModel.getInstance().engineMenu(toString());
     }
 }

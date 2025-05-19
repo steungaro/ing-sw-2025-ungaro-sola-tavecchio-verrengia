@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-public class ViewStardust extends ViewAdvetnureCard{
+public class ViewStardust extends ViewAdventureCard {
 
     @Override
     protected void initialize(AdventureCard adventureCard) {

@@ -30,14 +30,14 @@ import it.polimi.ingsw.gc20.server.model.cards.FireType;
         // Add other adventure cards types as needed
 })
 
-public abstract class ViewAdvetnureCard {
+public abstract class ViewAdventureCard {
 
     /**
-     * Crea un'istanza dell'oggetto ViewAdvetnureCard appropriato in base al tipo della carta
+     * Crea un'istanza dell'oggetto ViewAdventureCard appropriato in base al tipo della carta
      * @param adventureCard La carta d'avventura del server
-     * @return L'istanza appropriata di ViewAdvetnureCard
+     * @return L'istanza appropriata di ViewAdventureCard
      */
-    public static ViewAdvetnureCard createFrom(AdventureCard adventureCard) {
+    public static ViewAdventureCard createFrom(AdventureCard adventureCard) {
         String type = adventureCard.getName();
 
         try {
@@ -46,7 +46,7 @@ public abstract class ViewAdvetnureCard {
 
             Class<?> clazz = Class.forName(className);
 
-            ViewAdvetnureCard viewCard = (ViewAdvetnureCard) clazz.getDeclaredConstructor().newInstance();
+            ViewAdventureCard viewCard = (ViewAdventureCard) clazz.getDeclaredConstructor().newInstance();
             viewCard.type = type;
 
             viewCard.initialize(adventureCard);
@@ -55,7 +55,7 @@ public abstract class ViewAdvetnureCard {
 
             return viewCard;
         } catch (Exception e) {
-            throw new RuntimeException("Impossibile creare ViewAdvetnureCard per il tipo: " + type, e);
+            throw new RuntimeException("Impossibile creare ViewAdventureCard per il tipo: " + type, e);
         }
     }
 
