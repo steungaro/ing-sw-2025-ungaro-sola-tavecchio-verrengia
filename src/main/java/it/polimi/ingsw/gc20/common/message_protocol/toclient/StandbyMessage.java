@@ -12,6 +12,6 @@ public record StandbyMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        //TODO come mostriamo questa stringa
     }
 }

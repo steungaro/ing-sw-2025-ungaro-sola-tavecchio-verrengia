@@ -13,6 +13,6 @@ public record PlaceComponentMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        // ClientGameModel.getInstance().placeComponentMenu(component);
     }
 }

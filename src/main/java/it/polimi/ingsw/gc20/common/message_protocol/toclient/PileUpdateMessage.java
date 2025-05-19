@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 
@@ -17,6 +19,11 @@ public record PileUpdateMessage(
     }
     @Override
     public void handleMessage() {
-        //TODO
+        ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
+        if (viewBoard.unviewedPile != null && viewBoard.unviewedPile.size() > unviewedSize) {
+            viewBoard.unviewedPile = viewBoard.unviewedPile.subList(viewBoard.unviewedPile.size() - unviewedSize, viewBoard.unviewedPile.size()); // first out
+        }
+
+        // TODO
     }
 }

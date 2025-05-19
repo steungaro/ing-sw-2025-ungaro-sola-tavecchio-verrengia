@@ -92,6 +92,10 @@ public abstract class ClientGameModel implements ViewInterface {
         ships.put(username, ship);
     }
 
+    public void setPlayers(List<ViewPlayer> players) {
+        this.players = players;
+    }
+
     public void ping() {
         LOGGER.info("Ping received from server, ponging back.");
         client.pong(username);

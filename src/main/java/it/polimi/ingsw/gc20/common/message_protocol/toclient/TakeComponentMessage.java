@@ -10,6 +10,6 @@ public record TakeComponentMessage() implements Message {
 
     @Override
     public void handleMessage() {
-        //TODO
+        // ClientGameModel.getInstance().takeComponentMenu();
     }
 }
