@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -11,11 +11,12 @@ import org.jline.utils.InfoCmp;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
-public class TUI extends View {
+public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
 
     private Terminal terminal;
     private LineReader reader;
+    private MenuState currentState;
 
     public TUI() {
         LOGGER.info("TUI created");
@@ -146,4 +147,18 @@ public class TUI extends View {
         terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
         terminal.flush();
     }
+
+    public void display(MenuState menu) {
+        currentState = menu;
+        boolean input = false;
+        while (client.isConnected() && !input) {
+            try {
+                menu.displayMenu();
+                input = currentState.handleInput();
+            } catch (RemoteException e) {
+                LOGGER.warning("Error while handling input: " + e.getMessage());
+            }
+        }
+    }
 }
+

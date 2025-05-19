@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.network.socket;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
@@ -74,7 +74,7 @@ public class SocketClient implements Client {
                 // Receive the message
                 Message message = (Message) in.readObject();
 
-                View.getInstance().updateView(message);
+                ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
                 LOGGER.warning("Error while receiving messages: " + e.getMessage());
                 disconnect();

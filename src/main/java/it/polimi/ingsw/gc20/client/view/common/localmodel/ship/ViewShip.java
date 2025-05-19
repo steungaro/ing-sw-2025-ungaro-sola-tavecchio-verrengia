@@ -8,8 +8,31 @@ import org.javatuples.Triplet;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ViewShip {
+    /* -------------------------------------------------
+       1. Listener infrastructure
+       ------------------------------------------------- */
+    public interface Listener {
+        void onShipChanged(ViewShip ship);
+    }
+
+    private final transient List<Listener> listeners = new CopyOnWriteArrayList<>();
+
+    public void addListener(Listener l) {
+        if (l != null) listeners.add(l);
+    }
+
+    public void removeListener(Listener l) {
+        listeners.remove(l);
+    }
+
+    private void fireChange() {
+        for (Listener l : listeners) {
+            l.onShipChanged(this);
+        }
+    }
     private static final String TOPPER = "╭" + "─".repeat(117) + "╮";
     private static final String BOTTOM = "╰" + "─".repeat(117) + "╯";
     private static final String SEPARATOR = "├" + "─".repeat(117) + "┤";
@@ -26,10 +49,12 @@ public class ViewShip {
 
     public void setValid(boolean isValid) {
         this.isValid = isValid;
+        fireChange();
     }
 
     public void setComponents(ViewComponent[][] components) {
         this.components = components;
+        fireChange();
     }
 
     public boolean isValid() {
@@ -42,6 +67,7 @@ public class ViewShip {
 
     public void setComponent(int i, int j, ViewComponent component) {
         components[i][j] = component;
+        fireChange();
     }
 
     public ViewComponent getBooked(int i) {
@@ -50,6 +76,7 @@ public class ViewShip {
 
     public void setBooked(int i, ViewComponent component) {
         booked[i] = component;
+        fireChange();
     }
 
     public List<ViewComponent> getWaste() {
@@ -58,6 +85,7 @@ public class ViewShip {
 
     public void setWaste(List<ViewComponent> waste) {
         this.waste = waste;
+        fireChange();
     }
 
     private String formatFixedLength(String lineContent) {

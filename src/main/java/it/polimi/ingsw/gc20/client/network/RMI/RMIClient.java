@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.network.RMI;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
@@ -72,7 +72,7 @@ public class RMIClient implements Client {
             boolean result = authService.login(username);
             if (result) {
                 // Register the view with the server
-                registry.rebind("View " + username, UnicastRemoteObject.exportObject(View.getInstance(), 0));
+                registry.rebind("View " + username, UnicastRemoteObject.exportObject(ClientGameModel.getInstance(), 0));
                 if (authService.setView(username)) {
                     LOGGER.info("Successfully logged in as: " + username);
                 } else {

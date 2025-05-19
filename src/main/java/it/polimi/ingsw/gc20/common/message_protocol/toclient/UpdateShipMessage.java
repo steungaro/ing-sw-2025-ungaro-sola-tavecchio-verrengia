@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -69,7 +69,7 @@ public record UpdateShipMessage(
 
     @Override
     public void handleMessage() {
-        ViewShip viewShip = View.getInstance().getShip(username);
+        ViewShip viewShip = ClientGameModel.getInstance().getShip(username);
         viewShip.aliens = aliens;
         viewShip.astronauts = astronauts;
         viewShip.baseEnginePower = baseEnginePower;
