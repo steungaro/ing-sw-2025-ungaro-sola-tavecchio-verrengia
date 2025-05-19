@@ -61,6 +61,9 @@ public class PopulateShipMenu {
                     ClientGameModel.getInstance().getClient().addAlien(username, color, coordinates);
                 }
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

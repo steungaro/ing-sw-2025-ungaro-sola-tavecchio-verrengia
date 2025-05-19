@@ -54,6 +54,9 @@ public class PlanetMenu implements MenuState{
             case 2:
                 ClientGameModel.getInstance().getClient().endMove(username);
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

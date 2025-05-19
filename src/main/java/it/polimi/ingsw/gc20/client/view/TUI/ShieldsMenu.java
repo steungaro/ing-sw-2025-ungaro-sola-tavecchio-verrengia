@@ -54,6 +54,9 @@ public class ShieldsMenu implements MenuState {
             case 2:
                 ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), null, null);
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

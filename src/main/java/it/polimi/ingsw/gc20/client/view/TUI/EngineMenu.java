@@ -63,6 +63,9 @@ public class EngineMenu implements MenuState {
             case 2:
                 ClientGameModel.getInstance().getClient().activateEngines(ClientGameModel.getInstance().getUsername(), null, null);
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

@@ -51,6 +51,9 @@ public class CardAcceptanceMenu implements MenuState{
             case 2:
                 ClientGameModel.getInstance().getClient().endMove(ClientGameModel.getInstance().getUsername());
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

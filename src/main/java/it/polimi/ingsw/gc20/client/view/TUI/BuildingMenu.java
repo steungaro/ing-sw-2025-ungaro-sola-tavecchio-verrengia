@@ -94,6 +94,9 @@ public class BuildingMenu implements MenuState{
                     int index4 = Integer.parseInt(lineReader.readLine().trim());
                     ClientGameModel.getInstance().getClient().peekDeck(username, index4);
                     break;
+                case 'q':
+                    ClientGameModel.getInstance().shutdown();
+                    break;
                 default:
                     terminal.writer().println("Invalid choice. Please try again.");
                     return false;

@@ -67,6 +67,9 @@ public class CannonsMenu implements MenuState {
             case 2:
                 ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), null, null);
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

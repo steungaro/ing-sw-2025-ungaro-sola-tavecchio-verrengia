@@ -62,6 +62,9 @@ public class ValidationMenu implements MenuState{
                 Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                 ClientGameModel.getInstance().getClient().removeComponentFromShip(ClientGameModel.getInstance().getUsername(), coordinates);
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;

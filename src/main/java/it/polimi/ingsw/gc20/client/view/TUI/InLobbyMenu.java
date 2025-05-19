@@ -43,6 +43,9 @@ public class InLobbyMenu implements MenuState {
                     ClientGameModel.getInstance().getClient().killLobby(username);
                 }
                 break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
             default:
                 terminal.writer().println("Invalid choice. Please try again.");
                 return false;
