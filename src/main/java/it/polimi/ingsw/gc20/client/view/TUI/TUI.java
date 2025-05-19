@@ -9,6 +9,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
@@ -232,9 +233,22 @@ public class TUI extends ClientGameModel {
         boolean input = false;
         while (client.isConnected() && !input) {
             try {
-                menu.displayMenu();
+                currentState.displayMenu();
                 input = currentState.handleInput();
-            } catch (RemoteException e) {
+            } catch (IOException e){
+                LOGGER.warning("Error while handling input: " + e.getMessage());
+            }
+        }
+    }
+
+    //Display the menu after we get an error, it does not change the state, simply returns to last menu
+    public void display() {
+        boolean input = false;
+        while (client.isConnected() && !input) {
+            try {
+                currentState.displayMenu();
+                input = currentState.handleInput();
+            } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());
             }
         }

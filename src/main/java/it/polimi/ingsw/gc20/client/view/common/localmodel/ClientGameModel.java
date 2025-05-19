@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
@@ -303,4 +304,8 @@ public abstract class ClientGameModel implements ViewInterface{
     public GamePhase getCurrentPhase() { return currentPhase; }
     public List<ViewPlayer> getPlayers() { return players; }
     public String getErrorMessage() { return errorMessage; }
+
+
+    public abstract void display();
+    public abstract void display(MenuState menuState);
 }
