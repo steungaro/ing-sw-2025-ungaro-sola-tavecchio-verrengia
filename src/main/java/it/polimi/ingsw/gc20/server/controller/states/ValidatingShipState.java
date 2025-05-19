@@ -1,11 +1,15 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.AlienPlacementePhaseMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.ValidateShipPhase;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
@@ -23,6 +27,9 @@ public class ValidatingShipState extends State {
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
+            }
             phaseMap.put (player, StatePhase.VALIDATE_SHIP_PHASE); //set all the phase to validate ship phase
         }
     }
@@ -47,9 +54,11 @@ public class ValidatingShipState extends State {
             //if the ship is valid, he can add the aliens
             validShips.put(player, true);
             if (getModel().getLevel() == 0) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 phaseMap.put(player, StatePhase.STANDBY_PHASE);
                 readyToFly.put(player, true);
             } else {
+                NetworkService.getInstance().sendToClient(player.getUsername(), new AlienPlacementePhaseMessage());
                 phaseMap.put(player, StatePhase.ADD_ALIEN_PHASE);
             }
             return true;
@@ -101,20 +110,6 @@ public class ValidatingShipState extends State {
     }
 
     /**
-     * this method is called to set the ship of the player ready to fly
-     * @param player the player that is setting the ship ready to fly
-     * @throws IllegalArgumentException if the ship is not valid
-     */
-    @Override
-    public void readyToFly(Player player) throws InvalidShipException {
-        if (!validShips.get(player)) {
-            throw new InvalidShipException("Cannot fly with invalid ship");
-        }
-        readyToFly.put(player, true);
-        phaseMap.put(player, StatePhase.STANDBY_PHASE);
-    }
-
-    /**
      * this method is called if all the ships are ready to fly
      * @throws InvalidStateException if some ships are not ready to fly
      */
@@ -139,6 +134,7 @@ public class ValidatingShipState extends State {
             throw new InvalidStateException("Cannot end move in this phase");
         }
         readyToFly.put(player, true);
+        NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
         phaseMap.put(player, StatePhase.STANDBY_PHASE);
     }
 }

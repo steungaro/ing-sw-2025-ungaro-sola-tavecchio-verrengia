@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
@@ -9,6 +10,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -32,6 +34,13 @@ public class SlaversState extends PlayingState {
         this.lostMembers = card.getCrew();
         this.reward = card.getCredits();
         this.lostDays = card.getLostDays();
+        for (String username : getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+            } else {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+            }
+        }
         phase = StatePhase.CANNONS_PHASE;
     }
 
@@ -76,6 +85,13 @@ public class SlaversState extends PlayingState {
         if (firePower > this.firePower) {
             //won, the player can accept the card
             getController().getActiveCard().playCard();
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Slavers defeated, do you want to accept the card?"));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card"));
+                }
+            }
             phase = StatePhase.ACCEPT_PHASE;
             return 1;
         } else if (firePower == this.firePower) {
@@ -83,13 +99,31 @@ public class SlaversState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw new card
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                    }
+                }
             }
             return 0;
         } else {
             //lost, the player has to lose crew
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new LoseCrewMessage(lostMembers));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to lose crew"));
+                }
+            }
             phase = StatePhase.LOSE_CREW_PHASE;
             return -1;
         }
@@ -127,11 +161,21 @@ public class SlaversState extends PlayingState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             //draw new card
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+            }
             phase = StatePhase.STANDBY_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
             //the next player has to fight
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                }
+            }
             phase = StatePhase.CANNONS_PHASE;
         }
     }
@@ -152,6 +196,12 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
+        for (String username : getController().getInGameConnectedPlayers()){
+            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        }
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+        }
         phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -169,6 +219,9 @@ public class SlaversState extends PlayingState {
         if (phase != StatePhase.ACCEPT_PHASE) {
             throw new InvalidStateException("Card not defeated");
         }
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+        }
         phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -181,11 +234,21 @@ public class SlaversState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw new card
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
                 //the next player has to fight
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                    }
+                }
                 phase = StatePhase.CANNONS_PHASE;
             }
         } else if (phase == StatePhase.ACCEPT_PHASE){

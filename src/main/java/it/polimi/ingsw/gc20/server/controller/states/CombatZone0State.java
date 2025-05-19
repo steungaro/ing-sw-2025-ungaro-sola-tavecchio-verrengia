@@ -42,7 +42,7 @@ public class CombatZone0State extends PlayingState {
             declaredEnginePower.put(player.getUsername(), 0);
         }
         //notify the players that they are in the automatic action phase
-        for (String player : getController().getInGameConnectedPlayers()) {;
+        for (String player : getController().getInGameConnectedPlayers()) {
             NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage("finding the player with the minimum crew"));
         }
         this.manager = null;
@@ -537,6 +537,26 @@ public class CombatZone0State extends PlayingState {
                         activateCannons(player, new ArrayList<>(), new ArrayList<>());
                     } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException e) {
                         //ignore
+                    }
+                }
+            }  else {
+                if (phase == StatePhase.ENGINES_PHASE) {
+                    //notify all players that the current player has to select the engines
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new CombatZoneEngineMessage(declaredEnginePower));
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select the engines"));
+                        }
+                    }
+                } else if (phase == StatePhase.CANNONS_PHASE) {
+                    //notify all players that the current player has to select the cannons
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new CombatZoneCannonMessage(declaredFirepower));
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select the cannons"));
+                        }
                     }
                 }
             }
