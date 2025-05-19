@@ -206,6 +206,10 @@ public class CombatZone0State extends PlayingState {
                         }
                     }
                 } catch (InvalidShipException e) {
+                    //notify all the players the ship update
+                    for (String player1 : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(player1, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed a component"));
+                    }
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
                     //notify the current player that he has to choose the branch
                     NetworkService.getInstance().sendToClient(player.getUsername(), new ChooseBranchMessage());
@@ -395,6 +399,10 @@ public class CombatZone0State extends PlayingState {
                     phase = StatePhase.ROLL_DICE_PHASE;
                 }
             } catch (InvalidShipException e) {
+                //notify all the players the ship update
+                for (String player1 : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(player1, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed a component"));
+                }
                 //notify the current player that he has to choose the branch
                 NetworkService.getInstance().sendToClient(player.getUsername(), new ChooseBranchMessage());
                 phase = StatePhase.VALIDATE_SHIP_PHASE;
@@ -402,6 +410,10 @@ public class CombatZone0State extends PlayingState {
                 //cannot happen
             }
         } catch(InvalidShipException e) {
+            //notify all the players the ship update
+            for (String player1 : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(player1, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed a component"));
+            }
             //notify the current player that he has to choose the branch
             NetworkService.getInstance().sendToClient(player.getUsername(), new ChooseBranchMessage());
             phase = StatePhase.VALIDATE_SHIP_PHASE;
@@ -463,10 +475,24 @@ public class CombatZone0State extends PlayingState {
             //we go to the next phase
             phase = StatePhase.CANNONS_PHASE;
             setCurrentPlayer(getController().getFirstOnlinePlayer());
+            //notify the first player that he has to activate the cannons and the others that they have to wait
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (!username.equals(getCurrentPlayer())) {
+                    //notify the player that he has to wait
+                    NetworkService.getInstance().sendToClient(username, new CombatZoneCannonMessage(declaredFirepower));
+                } else {
+                    //notify the player that he has to activate the cannons
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
+                }
+            }
         }
         else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
             //we end the card
             phase = StatePhase.STANDBY_PHASE;
+            //notify all connected players that the player finished shooting, we will wait next card to be drawn
+            for (String player1 : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+            }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         }
@@ -474,7 +500,15 @@ public class CombatZone0State extends PlayingState {
             try {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
+                //notify all the players the ship update
+                for (String player1 : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(player1, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed a component"));
+                }
                 if (phase != StatePhase.STANDBY_PHASE){
+                    //notify all connected players that the player finished shooting, we will wait next card to be drawn
+                    for (String player1 : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                    }
                     phase = StatePhase.STANDBY_PHASE;
                     //if we are not in the standby phase, we can draw a new card
                     getModel().getActiveCard().playCard();

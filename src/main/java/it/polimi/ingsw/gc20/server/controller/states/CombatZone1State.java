@@ -270,7 +270,6 @@ public class    CombatZone1State extends CargoState {
                 break;
             case HEAVY_FIRE:
                 //if the projectile is a heavy fire, the player can't do anything
-                phase = StatePhase.AUTOMATIC_ACTION;
                 try {
                     //fire the projectile
                     manager.fire();
@@ -278,14 +277,34 @@ public class    CombatZone1State extends CargoState {
                     if (manager.finished()) {
                         //if we finished shooting, set the phase to standby phase
                         phase = StatePhase.STANDBY_PHASE;
+                        //notify all players that the card has been plated, next will be drawn
+                        for (String username : getController().getInGameConnectedPlayers()){
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                        }
                         getModel().getActiveCard().playCard();
                         getController().setState(new PreDrawState(getController()));
                     } else {
                         //if we didn't finish shooting, set the phase to roll dice phase
                         phase = StatePhase.ROLL_DICE_PHASE;
+                        //notify all players that the current player has to roll the dice
+                        for (String username : getController().getInGameConnectedPlayers()){
+                            if (username.equals(getCurrentPlayer())) {
+                                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                            } else {
+                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                            }
+                        }
                     }
                 } catch (InvalidShipException e) {
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
+                    //notify all players that the current player has to choose the branch
+                    for (String username : getController().getInGameConnectedPlayers()){
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
+                        }
+                    }
                 } catch (DieNotRolledException _) {
                     //cannot happen
                 }
@@ -293,6 +312,10 @@ public class    CombatZone1State extends CargoState {
             case null:
                 //if the projectile is null, we can draw a new card
                 getModel().getActiveCard().playCard();
+                //notify all players that the card has been plated, next will be drawn
+                for (String username : getController().getInGameConnectedPlayers()){
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getController().setState(new PreDrawState(getController()));
                 break;
@@ -331,18 +354,46 @@ public class    CombatZone1State extends CargoState {
                 if (manager.finished()) {
                     //if we finished shooting, set the phase to standby phase
                     phase = StatePhase.STANDBY_PHASE;
+                    //notify all players that the card has been plated, next will be drawn
+                    for (String username : getController().getInGameConnectedPlayers()){
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                    }
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
                 } else {
                     //if we didn't finish shooting, set the phase to roll dice phase
                     phase = StatePhase.ROLL_DICE_PHASE;
+                    //notify all connected players that the current player has to roll the dice
+                    for (String username : getController().getInGameConnectedPlayers()){
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                        }
+                    }
                 }
             } catch (InvalidShipException e) {
                 phase = StatePhase.VALIDATE_SHIP_PHASE;
+                //notify all players that the current player has to choose the branch
+                for (String username : getController().getInGameConnectedPlayers()){
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
+                    }
+                }
             } catch (DieNotRolledException _) {
                 //cannot happen
             }
         } catch (InvalidShipException e) {
+            //notify all players that the current player has to choose the branch
+            for (String username : getController().getInGameConnectedPlayers()){
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
+                }
+            }
             phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
@@ -478,11 +529,23 @@ public class    CombatZone1State extends CargoState {
         if (manager.finished()) {
             //if the fire manager is finished, we can draw a new card
             phase = StatePhase.STANDBY_PHASE;
+            //notify all players that the card has been plated, next will be drawn
+            for (String username : getController().getInGameConnectedPlayers()){
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+            }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
             //if the fire manager is not finished, we can roll the dice again
             phase = StatePhase.ROLL_DICE_PHASE;
+            //notify the current player that he has to roll the dice
+            for (String username : getController().getInGameConnectedPlayers()){
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                }
+            }
         }
     }
 
@@ -495,12 +558,20 @@ public class    CombatZone1State extends CargoState {
         // REMOVE_CARGO or ROLL_DICE_PHASE, ACTIVATE_SHIELD or VALIDATE SHIP
         if (phase == StatePhase.REMOVE_CARGO){
             //we go to the next phase
+            //notify all players that the current player has to remove the cargo
+            for (String username : getController().getInGameConnectedPlayers()){
+                NetworkService.getInstance().sendToClient(username, new AutomaticActionMessage("finding player with minimum crew"));
+            }
             phase = StatePhase.AUTOMATIC_ACTION;
             automaticAction();
         }
         else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
             //we end the card
             phase = StatePhase.STANDBY_PHASE;
+            //notify all players that the card has been plated, next will be drawn
+            for (String username : getController().getInGameConnectedPlayers()){
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+            }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         }
