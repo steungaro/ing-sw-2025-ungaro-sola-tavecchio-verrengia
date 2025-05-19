@@ -43,7 +43,7 @@ public class PopulateShipMenu {
         switch (choice) {
             case 1:
                 // End population phase
-                ClientGameModel.getInstance().getClient().readyToFly(ClientGameModel.getInstance().getUsername());
+                ClientGameModel.getInstance().getClient().endMove(ClientGameModel.getInstance().getUsername());
                 break;
             case 2:
                 if (!ClientGameModel.getInstance().getShip(username).isLearner) {
