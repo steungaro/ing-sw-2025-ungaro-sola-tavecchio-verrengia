@@ -10,7 +10,7 @@ import org.jline.terminal.Terminal;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class PopulateShipMenu {
+public class PopulateShipMenu implements MenuState{
     private final Terminal terminal;
     private final LineReader lineReader;
     private final String username = ClientGameModel.getInstance().getUsername();

@@ -2,7 +2,9 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.jline.reader.LineReader;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
@@ -12,6 +14,9 @@ import org.jline.utils.InfoCmp;
 import java.io.IOException;
 import java.io.Reader;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class TUI extends ClientGameModel {
@@ -234,12 +239,12 @@ public class TUI extends ClientGameModel {
         terminal.flush();
     }
 
-    public void display(MenuState menu, String message) {
+    public void display(MenuState menu) {
         currentState = menu;
         boolean input = false;
         while (client.isConnected() && !input) {
             try {
-                currentState.displayMenu(String message);
+                currentState.displayMenu();
                 input = currentState.handleInput();
             } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());
@@ -259,4 +264,69 @@ public class TUI extends ClientGameModel {
             }
         }
     }
+
+    public void branchMenu(){
+        MenuState menu = new BranchMenu(terminal);
+        display(menu);
+    }
+
+    public void buildingMenu(){
+        MenuState menu = new BuildingMenu(terminal);
+        display(menu);
+    }
+
+    public void inLobbyMenu(){
+        MenuState menu = new InLobbyMenu(terminal);
+        display(menu);
+    }
+
+    public void cannonsMenu(String message){
+        MenuState menu = new CannonsMenu(terminal, message);
+        display(menu);
+    }
+
+    public void cardAcceptanceMenu(String message){
+        MenuState menu = new CardAcceptanceMenu(terminal, message);
+        display(menu);
+    }
+
+    public void engineMenu(String message){
+        MenuState menu = new EngineMenu(terminal, message);
+        display(menu);
+    }
+
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain){
+        //conversion from list CargoColor to Map<Integer, CargoColor>
+        Map<CargoColor, Integer> cargoMap = new HashMap<>();
+        cargoToGain.forEach(cargoColor -> {
+            cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1);
+        });
+        MenuState menu = new CargoMenu(terminal, message, cargoToLose, cargoMap);
+        display(menu);
+    }
+
+    public void planetMenu(List<Planet> planets){
+        MenuState menu = new PlanetMenu(terminal, planets);
+        display(menu);
+    }
+
+    public void populateShipMenu(){
+        MenuState menu = new PopulateShipMenu(terminal);
+        display(menu);
+    }
+
+    public void shieldsMenu(String message){
+        MenuState menu = new ShieldsMenu(terminal, message);
+        display(menu);
+    }
+
+    public void validationMenu(){
+        MenuState menu = new ValidationMenu(terminal);
+        display(menu);
+    }
+
+    public void automaticAction(String message){
+        System.out.println(message);
+    }
+
 }

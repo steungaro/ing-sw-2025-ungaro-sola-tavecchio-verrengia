@@ -334,7 +334,7 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public abstract void display(String message);
 
-    public abstract void display(MenuState menuState, String message);
+    public abstract void display(MenuState menuState);
 
 
     public Client getClient() {
@@ -349,7 +349,7 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void cardAcceptanceMenu(String message);
     public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
     public abstract void engineMenu(String message);
-    public abstract void inGameMenu();
+    public abstract void inLobbyMenu();
     public abstract void mainMenuState();
     public abstract void planetMenu(List<Planet> planets);
     public abstract void populateShipMenu();

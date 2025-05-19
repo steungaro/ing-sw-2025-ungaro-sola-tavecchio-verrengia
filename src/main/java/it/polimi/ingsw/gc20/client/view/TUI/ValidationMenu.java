@@ -15,7 +15,7 @@ public class ValidationMenu implements MenuState{
     public final LineReader lineReader;
 
 
-    public ValidationMenu(Terminal terminal) throws RemoteException {
+    public ValidationMenu(Terminal terminal){
         this.terminal = terminal;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
     }
