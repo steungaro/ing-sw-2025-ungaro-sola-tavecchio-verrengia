@@ -432,6 +432,16 @@ public class SocketClient implements Client {
     }
 
     @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        try {
+            out.writeObject(new LoseEnergyMessage(username, coordinates));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while losing energy: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
         try {
             out.writeObject(new ActivateDoubleEnginesMessage(username, engines, batteries));

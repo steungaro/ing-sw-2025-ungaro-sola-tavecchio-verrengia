@@ -31,6 +31,12 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     }
 
     @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        LOGGER.fine("Received RMI call: loseEnergy from " + username);
+        queueHandler.enqueue(new LoseEnergyMessage(username, coordinates));
+    }
+
+    @Override
     public void takeComponentFromUnviewed(String username, int index) throws RemoteException {
         LOGGER.fine("Received RMI call: takeComponentFromUnviewed from " + username);
         queueHandler.enqueue(new TakeComponentMessage(username, index, PileEnum.UNVIEWED));

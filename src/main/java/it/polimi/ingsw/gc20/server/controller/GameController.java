@@ -12,6 +12,8 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
+
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -798,7 +800,6 @@ public class GameController implements GameControllerInterface {
      * Gets the remaining time for the hourglass
      *
      * @param username Username of the player checking the hourglass
-     * @return Remaining time in seconds
      */
     public void getHourglassTime(String username) {
         try {
@@ -928,6 +929,22 @@ public class GameController implements GameControllerInterface {
             MatchController.getInstance().endGame(this.getGameID());
         } else {
             logger.log(Level.SEVERE, "Player " + username + " is not connected to the game but tried to kill it");
+        }
+    }
+
+    @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) {
+        try {
+            state.loseEnergy(getPlayerByID(username), coordinates);
+            //notify players of the energy lost
+            //TODO CONTROLLARE
+            for (String user : getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "lost energy"));
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error losing energy", e);
+            //notify the player of the error
+            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error losing energy: " + e.getMessage()));
         }
     }
 }
