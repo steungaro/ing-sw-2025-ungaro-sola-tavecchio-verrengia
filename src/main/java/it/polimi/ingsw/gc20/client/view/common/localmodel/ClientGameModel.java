@@ -19,10 +19,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
-
+@SuppressWarnings("unused")
 public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
@@ -131,6 +130,7 @@ public abstract class ClientGameModel implements ViewInterface {
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
+            //TODO
             ship.toString();
         } else {
             LOGGER.warning("No ship found for " + username);
@@ -139,6 +139,7 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public void printBoard() {
         if (board != null) {
+            //TODO
             board.toString();
         } else {
             LOGGER.warning("No board found.");
@@ -175,27 +176,14 @@ public abstract class ClientGameModel implements ViewInterface {
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
             List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
-
-            List<String> cardStrings = rowCards.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-
-            List<String[]> cardLines = cardStrings.stream()
-                    .map(card -> card.split("\n"))
-                    .collect(Collectors.toList());
-
-            int numRows = cardLines.get(0).length;
-
-            for (int i = 0; i < numRows; i++) {
-                for (String[] cardLine : cardLines) {
-                    finalResult.append(cardLine[i]);
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowCards.size(); j++) {
+                    finalResult.append(rowCards.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowCards.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
-            }
-
-            if (cardRow < numCardRows - 1) {
-                finalResult.append("\n");
             }
         }
         return finalResult.toString();
@@ -214,11 +202,11 @@ public abstract class ClientGameModel implements ViewInterface {
         }
     }
 
-    public void printViewPile(){
+    public void printViewedPile(){
         if (board != null) {
-            List<ViewComponent> cards = board.viewedPile;
-            if (cards != null) {
-                String out = printComponentsInLine(cards);
+            List<ViewComponent> comps = board.viewedPile;
+            if (comps != null) {
+                String out = printComponentsInLine(comps);
                 System.out.println(out);
                 LOGGER.info("View Pile:\n");
             } else {
@@ -229,12 +217,6 @@ public abstract class ClientGameModel implements ViewInterface {
         }
     }
 
-    /**
-     * Metodo che consente di visualizzare multipli componenti sulla stessa riga orizzontale,
-     * andando a capo ogni 10 componenti
-     * @param components Lista di ViewComponent da visualizzare
-     * @return Stringa con la rappresentazione dei componenti affiancati
-     */
     public String printComponentsInLine(List<ViewComponent> components) {
         if (components == null || components.isEmpty()) {
             return "";
@@ -250,27 +232,14 @@ public abstract class ClientGameModel implements ViewInterface {
             int startIdx = componentRow * componentsPerRow;
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
-
-            List<String> componentStrings = rowComponents.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-
-            List<String[]> componentLines = componentStrings.stream()
-                    .map(component -> component.split("\n"))
-                    .collect(Collectors.toList());
-
-            int numRows = componentLines.get(0).length;
-
-            for (int i = 0; i < numRows; i++) {
-                for (String[] componentLine : componentLines) {
-                    finalResult.append(componentLine[i]);
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowComponents.size(); j++) {
+                    finalResult.append(rowComponents.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowComponents.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
-            }
-
-            if (componentRow < numComponentRows - 1) {
-                finalResult.append("\n");
             }
         }
         return finalResult.toString();
