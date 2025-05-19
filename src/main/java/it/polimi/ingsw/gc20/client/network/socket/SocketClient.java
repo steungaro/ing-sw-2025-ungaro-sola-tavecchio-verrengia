@@ -312,16 +312,6 @@ public class SocketClient implements Client {
     }
 
     @Override
-    public void readyToFly(String username) {
-        try {
-            out.writeObject(new ReadyToFlyMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while readying to fly: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
         try {
             out.writeObject(new ChooseBranchMessage(username, coordinates));

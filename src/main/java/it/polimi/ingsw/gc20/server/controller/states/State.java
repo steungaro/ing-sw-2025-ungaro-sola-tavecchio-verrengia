@@ -31,19 +31,15 @@ public abstract class State{
         this.model = model;
         this.controller = null;
     }
-
     public GameModel getModel() {
         return model;
     }
-
     public GameController getController() {
         return controller;
     }
-
     private void exception() throws InvalidStateException {
         throw new InvalidStateException("Cannot perform this action in " + this + " state");
     }
-    
     public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         exception();
     }
@@ -89,19 +85,16 @@ public abstract class State{
     public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException {
         exception();
     }
-
     public boolean allShipsValidated() throws InvalidStateException{
         exception();
         return false;
     }
-
     public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException {
         exception();
     }
     public void initAllShips() throws InvalidStateException {
         exception();
     }
-
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
         exception();
     }
@@ -120,14 +113,12 @@ public abstract class State{
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         exception();
     }
-
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidStateException, InvalidTurnException, EmptyCabinException {
         exception();
     }
     public void endMove(Player player) throws InvalidStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
-
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
         exception();
     }
@@ -141,68 +132,50 @@ public abstract class State{
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, DieNotRolledException {
         exception();
     }
-
     public boolean allAssembled() throws InvalidStateException {
         exception();
         return false;
     }
-
     public boolean allShipsReadyToFly() throws InvalidStateException {
         exception();
         return false;
     }
-
-    public void readyToFly(Player player) throws InvalidStateException, InvalidShipException {
-        exception();
-    }
-
     public void automaticAction() throws InvalidStateException {
         exception();
     }
-
     public void resume() throws InvalidStateException {
         exception();
     }
-
     public void killGame() throws InvalidStateException {
         exception();
     }
-
     public Map<String, Integer> getScore() throws InvalidStateException {
         exception();
         return null;
     }
-
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         exception();
     }
-
     public void setCurrentPlayer(String currentPlayer) throws InvalidStateException {
         exception();
     }
-
     public void nextPlayer() throws InvalidStateException{
         exception();
     }
-
     public int rollDice(Player player) throws InvalidStateException, InvalidTurnException, InvalidShipException, DieNotRolledException {
         exception();
         return 0;
     }
-
     public void nextRound(Player player) throws InvalidStateException{
         exception();
     }
-
     public String getCurrentPlayer() throws InvalidStateException{
         exception();
         return null;
     }
-
     public void currentQuit(Player playerByID) throws InvalidTurnException, InvalidShipException, InvalidStateException {
         exception();
     }
-
     public void endTurn()throws InvalidStateException{
         exception();
     }

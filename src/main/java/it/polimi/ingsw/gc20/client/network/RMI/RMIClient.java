@@ -256,15 +256,6 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void readyToFly(String username)  {
-        try {
-            gameService.readyToFly(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during ready to fly: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates)  {
         try {
             gameService.chooseBranch(username, coordinates);

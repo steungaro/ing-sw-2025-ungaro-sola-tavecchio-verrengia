@@ -869,27 +869,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Sets the player to be ready to fly
-     * @param username is the username of the player that wants to fly
-     * @apiNote be careful to add aliens before calling this function
-     */
-    public void readyToFly(String username) {
-        try{
-            state.readyToFly(getPlayerByID(username));
-            if (state.allShipsReadyToFly()) {
-                state.initAllShips();
-                //TODO: inside the state: notify all players of the ships changed (all of them are initialized)
-                model.createDeck();
-                drawCard();
-            }
-        } catch (Exception e) {
-            //notify the player of the error
-            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error ready to fly: " + e.getMessage()));
-            logger.log(Level.SEVERE, "Error ready to fly", e);
-        }
-    }
-
     public void defeated(String username) {
         model.giveUp(getPlayerByID(username));
     }

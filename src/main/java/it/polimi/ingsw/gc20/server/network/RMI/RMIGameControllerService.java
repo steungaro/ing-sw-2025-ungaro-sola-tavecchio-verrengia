@@ -121,12 +121,6 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     }
 
     @Override
-    public void readyToFly(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: readyToFly from " + username);
-        queueHandler.enqueue(new ReadyToFlyMessage(username));
-    }
-
-    @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
         LOGGER.fine("Received RMI call: chooseBranch from " + username);
         queueHandler.enqueue(new ChooseBranchMessage(username, coordinates));
