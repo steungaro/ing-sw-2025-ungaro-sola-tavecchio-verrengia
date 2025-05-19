@@ -40,6 +40,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
             LOGGER.info(String.format("User logged via RMI: " + username));
+            MatchController.getInstance().getLobbies(username);
+
             return true;
         }
         // Case 2: the username is already in use -- verify if it is connected

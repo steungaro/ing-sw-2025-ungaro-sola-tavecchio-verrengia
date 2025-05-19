@@ -50,7 +50,7 @@ public class SocketAuthService {
                     newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
                     socketServer.registerClient(newClient);
                     LOGGER.info("Client " + loginRequest + " connected.");
-
+                    MatchController.getInstance().getLobbies(loginRequest.username());
                 // If the client is already registered check if it is connected (reconnection)
                 } else {
                     // If the client is connected, refuse this connection and wait for a new username

@@ -244,6 +244,9 @@ public class GameController implements GameControllerInterface {
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
+            for (String user : getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(user, getPlayerByID(username).getShip(), "activated cannons"));
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating cannons", e);
             //notify the player of the error
