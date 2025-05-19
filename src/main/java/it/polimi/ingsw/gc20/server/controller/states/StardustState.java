@@ -1,8 +1,12 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,15 +19,11 @@ public class StardustState extends PlayingState {
      */
     public StardustState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new AutomaticActionMessage(card.getName() + " is played"));
+        }
         phase = StatePhase.AUTOMATIC_ACTION;
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.schedule(() -> {
-            try {
-                automaticAction();
-            } finally {
-                scheduler.shutdown();
-            }
-        }, 5, TimeUnit.SECONDS);
+        automaticAction();
     }
 
     @Override
@@ -40,6 +40,14 @@ public class StardustState extends PlayingState {
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         //draw a new card
+        for (String player : getController().getInGameConnectedPlayers()) {
+            for (String username : getController().getInGameConnectedPlayers()){
+                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
+            }
+        }
+        for (String player : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(player, new StandbyMessage("draw a new card"));
+        }
         phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

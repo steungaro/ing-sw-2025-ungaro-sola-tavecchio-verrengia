@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
@@ -11,6 +12,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -44,6 +46,15 @@ public class PiratesState extends PlayingState {
         this.cannonFire = card.getProjectiles();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
+        for (String username : getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                //send the player the cannon fire
+                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+            } else {
+                //send the player a standby message
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+            }
+        }
         phase = StatePhase.CANNONS_PHASE;
     }
 
@@ -71,6 +82,15 @@ public class PiratesState extends PlayingState {
         //get the reward of the card
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(), credits, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
+        }
+        try {
+            endMove(player);
+        } catch (InvalidShipException e) {
+            //cannot happen
+        }
+
     }
 
     /**
@@ -107,6 +127,13 @@ public class PiratesState extends PlayingState {
         //fight with the pirates
         if (firePower > this.firePower) {
             //if the player has defeated the pirates, he can accept the card
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("pirates defeated, do you want to accept the card?"));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card"));
+                }
+            }
             getController().getActiveCard().playCard();
             phase = StatePhase.ACCEPT_PHASE;
             return 1;
@@ -115,15 +142,33 @@ public class PiratesState extends PlayingState {
             nextPlayer();
             //if there is no next player, we draw a new card
             if (getCurrentPlayer() == null) {
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                    }
+                }
             }
             return 0;
         } else {
             //if the player has lost against the pirates, he has to roll the dice and get shot
             phase = StatePhase.ROLL_DICE_PHASE;
             manager = new FireManager(getModel(), cannonFire, player);
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                }
+            }
             return -1;
         }
     }
@@ -152,6 +197,7 @@ public class PiratesState extends PlayingState {
         switch (manager.getFirstProjectile()) {
             case HEAVY_FIRE:
                 //player cannot do anything to stop the fire
+                NetworkService.getInstance().sendToClient(player.getUsername(), new AutomaticActionMessage("cannot stop the  heavy fire"));
                 phase = StatePhase.AUTOMATIC_ACTION;
                 try {
                     //fire the projectile
@@ -162,18 +208,46 @@ public class PiratesState extends PlayingState {
                         nextPlayer();
                         if (getCurrentPlayer() == null) {
                             //if there is no next player, we draw a new card
+                            for (String username : getController().getInGameConnectedPlayers()) {
+                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                            }
                             getModel().getActiveCard().playCard();
                             getController().setState(new PreDrawState(getController()));
                             phase = StatePhase.STANDBY_PHASE;
                         } else {
                             //if there is a next player, we can go to the cannon phase
+                            for (String username : getController().getInGameConnectedPlayers()) {
+                                if (username.equals(getCurrentPlayer())) {
+                                    NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                                } else {
+                                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                                }
+                            }
                             phase = StatePhase.CANNONS_PHASE;
                         }
                     } else {
                         //if we didn't finish shooting, we can go to the roll dice phase
+                        for (String username : getController().getInGameConnectedPlayers()) {
+                            if (username.equals(getCurrentPlayer())) {
+                                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                            } else {
+                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to roll the dice"));
+                            }
+                        }
                         phase = StatePhase.ROLL_DICE_PHASE;
                     }
                 } catch (InvalidShipException e) {
+                    for (String username1 : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+                    }
+                    for (String username : getController().getInGameConnectedPlayers()) {
+
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to validate his ship"));
+                        }
+                    }
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
                 } catch (DieNotRolledException _) {
                     //cannot happen
@@ -186,6 +260,13 @@ public class PiratesState extends PlayingState {
             case LIGHT_FIRE:
                 //player can choose to activate a shield or not
                 phase = StatePhase.SELECT_SHIELD;
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new ShieldPhaseMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue(), result));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to choose a shield"));
+                    }
+                }
                 break;
             case null:
                 //we go to the next player
@@ -229,15 +310,32 @@ public class PiratesState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw a new card
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                    }
+                }
                 //if there is a next player, we can go to the cannon phase
                 phase = StatePhase.CANNONS_PHASE;
             }
         }else {
             //if we didn't finish shooting, we can go to the roll dice phase
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to roll the dice"));
+                }
+            }
             phase = StatePhase.ROLL_DICE_PHASE;
         }
     }
@@ -273,23 +371,60 @@ public class PiratesState extends PlayingState {
                     //if we finished shooting, we can go to the next player
                     if (getCurrentPlayer() == null) {
                         //draw a new card
+                        for (String username : getController().getInGameConnectedPlayers()) {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                        }
                         phase = StatePhase.STANDBY_PHASE;
                         getModel().getActiveCard().playCard();
                         getController().setState(new PreDrawState(getController()));
                     } else {
+                        for (String username : getController().getInGameConnectedPlayers()) {
+                            if (username.equals(getCurrentPlayer())) {
+                                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                            } else {
+                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                            }
+                        }
                         //if there is a next player, we can go to the cannon phase
                         phase = StatePhase.CANNONS_PHASE;
                     }
                 } else {
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to roll the dice"));
+                        }
+                    }
                     //if we didn't finish shooting, we can go to the roll dice phase
                     phase = StatePhase.ROLL_DICE_PHASE;
                 }
             } catch (InvalidShipException e) {
+                for (String username1 : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+                }
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to validate his ship"));
+                    }
+                }
                 phase = StatePhase.VALIDATE_SHIP_PHASE;
             } catch (DieNotRolledException _) {
                 //cannot happen
             }
         } catch (InvalidShipException e){
+            for (String username1 : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+            }
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to validate his ship"));
+                }
+            }
             phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
@@ -321,6 +456,9 @@ public class PiratesState extends PlayingState {
             throw new InvalidStateException("Card not defeated");
         }
         //draw a new card
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+        }
         phase = StatePhase.STANDBY_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -332,9 +470,15 @@ public class PiratesState extends PlayingState {
             try {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new UpdateShipMessage(player.getUsername(), player.getShip(), "chose a branch"));
+                }
                 if (phase != StatePhase.STANDBY_PHASE){
                     phase = StatePhase.STANDBY_PHASE;
                     //if we are not in the standby phase, we can draw a new card
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                    }
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
                 }
@@ -348,10 +492,20 @@ public class PiratesState extends PlayingState {
                 nextPlayer();
                 if (getCurrentPlayer() == null) {
                     //draw a new card
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                    }
                     phase = StatePhase.STANDBY_PHASE;
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
                 } else {
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        if (username.equals(getCurrentPlayer())) {
+                            NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        } else {
+                            NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                        }
+                    }
                     //if there is a next player, we can go to the cannon phase
                     phase = StatePhase.CANNONS_PHASE;
                 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
@@ -9,6 +10,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -41,6 +43,11 @@ public class SmugglersState extends CargoState {
         this.reward = card.getReward();
         defeated = false;
         accepted = false;
+        for (String username: getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+            }
+        }
         phase = StatePhase.CANNONS_PHASE;
     }
 
@@ -57,6 +64,13 @@ public class SmugglersState extends CargoState {
         }
         if (phase != StatePhase.ACCEPT_PHASE) {
             throw new InvalidStateException("Card not defeated");
+        }
+        for (String username: getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(username, new AddCargoMessage(reward));
+            } else {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage( player.getUsername() + " accepted the card"));
+            }
         }
         accepted = true;
         phase = StatePhase.ADD_CARGO;
@@ -184,6 +198,13 @@ public class SmugglersState extends CargoState {
         //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
+            for (String username: getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Smugglers defeated, do you want to accept the card?"));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(player.getUsername() + " defeated the smugglers"));
+                }
+            }
             //won, the player can accept the card
             getController().getActiveCard().playCard();
             phase = StatePhase.ACCEPT_PHASE;
@@ -195,13 +216,31 @@ public class SmugglersState extends CargoState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw a new card
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Draw a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer()+ "is fighting the smugglers"));
+                    }
+                }
             }
             currentLostCargo = 0;
             return 0;
         } else {
+            for (String username: getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new RemoveCargoMessage(lostCargo));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(player.getUsername() + " lost the fight"));
+                }
+            }
             //lost, the player has to lose cargo
             phase = StatePhase.REMOVE_CARGO;
             currentLostCargo = lostCargo;
@@ -225,6 +264,9 @@ public class SmugglersState extends CargoState {
             if (accepted) {
                 getModel().movePlayer(player, -lostDays);
             }
+            for (String username: getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+            }
             phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
@@ -235,10 +277,20 @@ public class SmugglersState extends CargoState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw a new card
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + " is fighting the smugglers"));
+                    }
+                }
                 phase = StatePhase.CANNONS_PHASE;
             }
         }
@@ -251,9 +303,20 @@ public class SmugglersState extends CargoState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw new card
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                }
                 phase = StatePhase.STANDBY_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                for (String username: getController().getInGameConnectedPlayers()) {
+                    if (username.equals(getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + " is fighting the smugglers"));
+                    }
+                }
             }
         } else if (phase == StatePhase.ACCEPT_PHASE || phase == StatePhase.ADD_CARGO) {
             try {
