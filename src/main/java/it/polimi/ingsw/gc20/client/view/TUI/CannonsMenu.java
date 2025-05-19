@@ -25,6 +25,7 @@ public class CannonsMenu implements MenuState {
     }
 
     public void displayMenu(){
+        TUI.clearConsole(terminal);
         terminal.writer().println("Cannons Menu");
         terminal.writer().println(message);
         terminal.writer().println("1. Activate cannons");
@@ -41,7 +42,7 @@ public class CannonsMenu implements MenuState {
         // Handle user input for the cannons menu
         switch (choice) {
             case 1:
-                terminal.writer().println("Type the coordinates of the cannons you want to activate (x y):");
+                terminal.writer().println("Type the coordinates of the cannons you want to activate (for example, x1 y1 x2 y2...):");
                 terminal.writer().print(" > ");
                 String cannonInput = lineReader.readLine().trim();
                 String[] cannonCoordinates = cannonInput.split(" ");
@@ -51,7 +52,7 @@ public class CannonsMenu implements MenuState {
                     Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                     cannons.add(coordinates);
                 }
-                terminal.writer().println("Type the coordinates of the batteries you want to activate (x y):");
+                terminal.writer().println("Type the coordinates of the batteries you want to activate (for example, x1 y1 x2 y2...):");
                 terminal.writer().print(" > ");
                 String batteryInput = lineReader.readLine().trim();
                 String[] batteryCoordinates = batteryInput.split(" ");

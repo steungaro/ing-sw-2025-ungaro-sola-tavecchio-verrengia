@@ -24,6 +24,7 @@ public class CardAcceptanceMenu implements MenuState{
      * Displays the current menu to the player
      */
     public void displayMenu(){
+        TUI.clearConsole(terminal);
         terminal.writer().println("Card Acceptance Menu");
         terminal.writer().println(message);
         terminal.writer().println("1. Accept the card");

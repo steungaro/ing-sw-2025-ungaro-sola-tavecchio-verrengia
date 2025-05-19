@@ -53,4 +53,17 @@ public class Planet {
         this.player = player;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Reward:");
+        for (CargoColor color : reward) {
+            sb.append(" ").append(color);
+        }
+        sb.append(" Available: ").append(available);
+        if (player != null) {
+            sb.append(" Player: ").append(player.getUsername());
+        }
+        return sb.toString();
+    }
+
 }
