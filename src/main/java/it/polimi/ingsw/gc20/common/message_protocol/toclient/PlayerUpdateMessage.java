@@ -25,7 +25,6 @@ public record PlayerUpdateMessage(
     @Override
     public void handleMessage() {
         // Handle the player update message (client side)
-        //TODO ristampo anche la board, modifico la posizione del player in modulo
         ClientGameModel model = ClientGameModel.getInstance();
         ViewPlayer targetPlayer = model.getPlayers().stream()
                 .filter(player -> player.username.equals(username))

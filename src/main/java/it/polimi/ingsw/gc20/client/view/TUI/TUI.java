@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.jline.reader.LineReader;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
@@ -315,11 +316,6 @@ public class TUI extends ClientGameModel {
         display(menu);
     }
 
-    public void shieldsMenu(String message){
-        MenuState menu = new ShieldsMenu(terminal, message);
-        display(menu);
-    }
-
     public void validationMenu(){
         MenuState menu = new ValidationMenu(terminal);
         display(menu);
@@ -334,4 +330,26 @@ public class TUI extends ClientGameModel {
         display(menu);
     }
 
+    public void takeComponentMenu(){
+        //TODO: implement this method
+    }
+
+    public void shieldsMenu(FireType fireType, int direction, int line){
+        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
+        String Message = fireType + " from " + directions[direction]  +  " at line " + line;
+        MenuState state = new ShieldsMenu(getTerminal(), Message);
+        // ClientGameModel.display(state);
+    }
+
+    public void rollDiceMenu(FireType fireType, int direction){
+        //TODO: implement this method
+    }
+
+    public void cargoMenu(int cargoNum){
+        // TODO: implement this method
+    }
+
+    public void loseCrewMenu(int crewNum){
+        // TODO: implement this method
+    }
 }

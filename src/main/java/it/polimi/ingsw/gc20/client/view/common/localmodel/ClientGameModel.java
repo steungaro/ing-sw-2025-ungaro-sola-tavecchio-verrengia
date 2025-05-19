@@ -20,6 +20,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
+
 
 public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
@@ -353,7 +355,12 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void mainMenuState();
     public abstract void planetMenu(List<Planet> planets);
     public abstract void populateShipMenu();
-    public abstract void shieldsMenu(String message);
-    public abstract void validationMenu();
     public abstract void automaticAction(String message);
+    public abstract void validationMenu();
+    public abstract void takeComponentMenu();
+    public abstract void init();
+    public abstract void shieldsMenu(FireType fireType, int direction, int line);
+    public abstract void rollDiceMenu(FireType fireType, int direction);
+    public abstract void cargoMenu(int cargoNum);
+    public abstract void loseCrewMenu(int crewNum);
 }

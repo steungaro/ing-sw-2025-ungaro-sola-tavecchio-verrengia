@@ -11,8 +11,7 @@ public record StartGameMessage() implements Message {
 
     @Override
     public void handleMessage() {
-        // Handle the start game message (client side)
-        // ClientGameModel.getInstance().init();
+        ClientGameModel.getInstance().init();
     }
 
 }

@@ -12,6 +12,6 @@ public record RemoveBatteryMessage(
 
     @Override
     public void handleMessage() {
-        // ClientGameModel.getInstance().removeBatteryMenu(batteryNum);
+        // TODO
     }
 }

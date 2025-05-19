@@ -12,5 +12,6 @@ public record LoginFailedMessage(
 
     @Override
     public void handleMessage() {
+        // TODO Capire come gestire login
     }
 }

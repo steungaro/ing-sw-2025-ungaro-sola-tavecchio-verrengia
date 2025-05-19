@@ -15,6 +15,6 @@ public record LandOnPlanetPhase(
 
     @Override
     public void handleMessage() {
-
+        // TODO: non è già dentro ad adveture card?
     }
 }

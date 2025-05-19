@@ -18,11 +18,6 @@ public record ShieldPhaseMessage(
 
     @Override
     public void handleMessage() {
-        // String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
-        // String Message = fireType + " from " + directions[direction]  +  " at line " + line;
-        // MenuState state = new ShieldsMenu(ClientGameModel.getInstance().getTerminal(), Message);
-        // ClientGameModel.display(state);
-
-        // ClientGameModel.getInstance().shieldsMenu(fireType, direction, line);
+        ClientGameModel.getInstance().shieldsMenu(fireType, direction, line);
     }
 }

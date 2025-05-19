@@ -18,6 +18,6 @@ public record RollDiceMessage(
     }
     @Override
     public void handleMessage() {
-    // ClientGameModel.getInstance().rollDiceMenu(fireType, direction);
+        ClientGameModel.getInstance().rollDiceMenu(fireType, direction);
     }
 }

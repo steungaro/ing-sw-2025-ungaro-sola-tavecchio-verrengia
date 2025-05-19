@@ -13,6 +13,6 @@ public record PlaceComponentMessage(
 
     @Override
     public void handleMessage() {
-        // ClientGameModel.getInstance().placeComponentMenu(component);
+        // TODO: non mi dice dove, non posso aggiornare il model
     }
 }

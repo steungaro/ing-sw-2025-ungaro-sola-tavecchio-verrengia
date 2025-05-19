@@ -11,6 +11,6 @@ public record LoginSuccessfulMessage(
     }
     @Override
     public void handleMessage() {
-
+        // TODO Capire come gestire login
     }
 }

@@ -16,6 +16,6 @@ public record HourglassMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        //TODO dove cambio hourglass
     }
 }

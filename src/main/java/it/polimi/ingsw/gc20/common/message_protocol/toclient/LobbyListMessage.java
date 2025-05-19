@@ -17,6 +17,6 @@ public record LobbyListMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        //TODO capire come gestire lobby
     }
 }

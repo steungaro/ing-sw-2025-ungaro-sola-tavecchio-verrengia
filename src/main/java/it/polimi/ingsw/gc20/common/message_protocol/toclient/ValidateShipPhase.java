@@ -14,9 +14,6 @@ public record ValidateShipPhase() implements Message {
 
     @Override
     public void handleMessage() {
-        //MenuState state = new ValidationMenu(ClientGameModel.getInstance().getTerminal());
-        //ClientGameModel.display(state);
-
-        //ClientGameModel.getInstance().validationMenu();
+        ClientGameModel.getInstance().validationMenu();
     }
 }

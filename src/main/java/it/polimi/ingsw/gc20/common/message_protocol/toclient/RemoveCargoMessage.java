@@ -15,9 +15,6 @@ public record RemoveCargoMessage(
 
     @Override
     public void handleMessage() {
-        // MenuState state = new CargoMenu(ClientGameModel.getInstance().getTerminal(), );
-        // NOTE: CargoMenu stampa 2 volre i cargo da rimuovere, sia nel Message che successivamente
-
-        // ClientGameModel.getInstance().cargoMenu();
+        ClientGameModel.getInstance().cargoMenu(cargoNum);
     }
 }
