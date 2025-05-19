@@ -1,13 +1,17 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -25,6 +29,7 @@ public class AbandonedShipState extends PlayingState {
     private final int credits;
     private final int lostDays;
 
+
     /**
      * Default constructor
      */
@@ -33,6 +38,7 @@ public class AbandonedShipState extends PlayingState {
         this.lostCrew = card.getCrew();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
+        this.phase = StatePhase.ACCEPT_PHASE;
     }
 
     @Override
@@ -45,24 +51,51 @@ public class AbandonedShipState extends PlayingState {
     }
 
     /**
-     * This method is used to accept the card and lose crew
+     * This method is used to accept the card and take the player to the next phase
      * @param player the player who is losing crew
-     * @param cabins the cabins to get the crew from
-     * @throws IllegalStateException if the player doesn't have enough crew to lose
+     * @throws InvalidStateException if the player doesn't have enough crew to lose
      * @throws InvalidTurnException if it's not the player's turn
      */
-    @Override
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws IllegalStateException, InvalidTurnException, EmptyCabinException {
+    public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
+        //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        //check if the player has enough crew to accept the card
+        if (player.getShip().crew() < lostCrew) {
+            throw new InvalidStateException("You don't have enough crew to accept the card");
+        }
+        // la phase del current player diventa LOSE_CREW_PHASE,
+        // others will be in standby phase communicated via a message
+        phase = StatePhase.LOSE_CREW_PHASE;
+        getModel().movePlayer(player, lostDays);
+        getModel().addCredits(player, credits);
+    }
+    /**
+     * method to remove the crew from the ship of the player whose turn it is
+     * @param player the player who is losing crew
+     * @param cabins the cabins to get the crew from
+     * @throws InvalidStateException if the player doesn't have enough crew to lose
+     * @throws InvalidTurnException if it's not the player's turn
+     */
+    @Override
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, InvalidStateException, EmptyCabinException{
+        //check if the player is the current player
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
+        }
+        //check if the player is in the correct phase
+        if (phase != StatePhase.LOSE_CREW_PHASE) {
+            throw new InvalidStateException("You are not in the lose crew phase");
+        }
+        //remove the crew from the ship of the player
         if (cabins.size() < lostCrew) {
-            throw new IllegalStateException("You don't have enough crew to lose");
+            throw new InvalidStateException("You didn't select enough cabins");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
-        getModel().addCredits(player, credits);
-        getModel().movePlayer(player, -lostDays);
+        //mark the card as player and go to the standby phase
         getController().getActiveCard().playCard();
+        phase = StatePhase.STANDBY_PHASE;
         getController().setState(new PreDrawState(getController()));
     }
 
@@ -73,22 +106,33 @@ public class AbandonedShipState extends PlayingState {
      */
     @Override
     public void endMove(Player player) throws InvalidTurnException{
+        //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        //pass the turn to the next player if there is one
         nextPlayer();
+        // if there is no next player, go to the next card
         if (getCurrentPlayer() == null) {
+            phase = StatePhase.STANDBY_PHASE;
+            getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            //otherwise, the next player needs to decide if he accepts the card or not
+            phase = StatePhase.ACCEPT_PHASE;
         }
     }
 
+    /**
+     * This method is called if the current player quits the game
+     * @param player player who quits
+     */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        if (player.getUsername().equals(getCurrentPlayer())) {
+    public void currentQuit(Player player) {
+        try {
             endMove(player);
-        }
-        if (getCurrentPlayer() == null) {
-            getController().setState(new PreDrawState(getController()));
+        } catch (InvalidTurnException e) {
+            //cannot happen
         }
     }
 }

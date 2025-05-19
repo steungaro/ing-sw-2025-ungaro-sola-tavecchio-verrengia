@@ -19,7 +19,7 @@ import java.util.List;
  *      + move cargo from one cargo hold to another
  *      + end the move
  * - discard the card (end the move)
- * if the card is not accepted by any player, or if the card has been played, a new card is drawn
+ * if any player does not accept the card, or if the card has been played, a new card is drawn
  */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class AbandonedStationState extends CargoState {
@@ -35,6 +35,7 @@ public class AbandonedStationState extends CargoState {
         this.crewNeeded = card.getCrew();
         this.reward = card.getReward();
         this.lostDays = card.getLostDays();
+        this.phase = StatePhase.ACCEPT_PHASE;
     }
 
     @Override
@@ -49,17 +50,22 @@ public class AbandonedStationState extends CargoState {
     /**
      * This method is used to accept the card and land on the station
      * @param player the player who is landing on the station
-     * @throws IllegalStateException if the player doesn't have enough crew
+     * @throws InvalidStateException if the player doesn't have enough crew
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void acceptCard(Player player) throws InvalidTurnException, IllegalStateException {
+    public void acceptCard(Player player) throws InvalidTurnException, InvalidStateException {
+        //check if the player is the current player
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
+        //check if the player has enough crew to accept the card
         if(player.getShip().crew() < crewNeeded){
-            throw new IllegalStateException("You don't have enough crew to land on the station");
+            throw new InvalidStateException("You don't have enough crew to land on the station");
         }
+        //set the phase to the next phase
+        phase = StatePhase.ADD_CARGO;
+        //mark the card as played
         getController().getActiveCard().playCard();
     }
 
@@ -68,17 +74,24 @@ public class AbandonedStationState extends CargoState {
      * @param player the player who is loading the cargo
      * @param loaded the color of the cargo to be loaded
      * @param chTo the cargo hold to which the cargo is loaded
-     * @throws IllegalStateException if the station was not boarded and if the cargo is not in the reward
-     * @throws CargoException if the cargo is not in the reward
+     * @throws IllegalStateException if the station was not boarded, and if the cargo is not in the reward
+     * @throws CargoException if the cargo cannot be loaded,
      * @throws InvalidTurnException if it's not the player's turn
+     * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws IllegalArgumentException, CargoException, InvalidTurnException, CargoNotLoadable, CargoFullException {
-        if(getController().getActiveCard().isPlayed()){
-            throw new IllegalStateException("You can't load cargo unless you are on the station");
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, CargoException, InvalidTurnException, CargoNotLoadable, CargoFullException{
+        //check if we are in the correct phase
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("cannot load cargo in this state");
         }
+        //check if the player is the current player
+        if(!player.getUsername().equals(getCurrentPlayer())){
+            throw new InvalidTurnException("It's not your turn");
+        }
+        //check if the cargo the player is trying to load is in the reward
         if(!reward.contains(loaded)){
-            throw new CargoException("You can't load this cargo, it's not in the reward");
+            throw new CargoNotLoadable("You can't load this cargo, it's not in the reward");
         }
         reward.remove(loaded);
         super.loadCargo(player, loaded, chTo);
@@ -89,14 +102,19 @@ public class AbandonedStationState extends CargoState {
      * @param player the player who is unloading the cargo
      * @param unloaded the color of the cargo to be unloaded
      * @param ch the cargo hold from which the cargo is unloaded
-     * @throws IllegalArgumentException if the station was not boarded
-     * @throws CargoException if the cargo is not in the player's cargo hold
+     * @throws InvalidStateException if the player is not in the correct phase
+     * @throws InvalidCargoException if the cargo is not in the player's cargo hold
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws IllegalArgumentException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(getController().getActiveCard().isPlayed()){
-            throw new IllegalStateException("You can't unload cargo unless you are on the station");
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException{
+        //check if we are in the correct phase
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't unload cargo in this state");
+        }
+        //check if the player is the current player
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
         }
         super.unloadCargo(player, unloaded, ch);
     }
@@ -107,14 +125,22 @@ public class AbandonedStationState extends CargoState {
      * @param loaded the color of the cargo to be moved
      * @param chFrom the cargo hold from which the cargo is moved
      * @param chTo the cargo hold to which the cargo is moved
-     * @throws IllegalArgumentException if the station was not boarded
-     * @throws CargoException if the cargo is not in the player's cargo hold
      * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the player is not in the correct phase
+     * @throws InvalidCargoException if the cargo is not in the cargo hold from which the player is moving it
+     * @throws CargoNotLoadable if the cargo cannot be loaded
+     * @throws CargoFullException if the cargo hold is full
+     *
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws IllegalArgumentException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(getController().getActiveCard().isPlayed()){
-            throw new IllegalStateException("You can't move cargo unless you are on the station");
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, InvalidCargoException, CargoNotLoadable, CargoFullException {
+        //check if we are in the correct phase
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't move cargo in this state");
+        }
+        //check if the player is the current player
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
     }
@@ -127,28 +153,43 @@ public class AbandonedStationState extends CargoState {
      */
     @Override
     public void endMove(Player player) throws InvalidTurnException{
+        //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
+        //check if the card has been played
         if (getController().getActiveCard().isPlayed()) {
+            //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
+            //change the phase to standby phase
+            phase = StatePhase.STANDBY_PHASE;
+            //draw a new card
             getController().setState(new PreDrawState(getController()));
-
         } else {
+            //if the card has not been played, it's the turn of the next player
             nextPlayer();
+            //check if the next player is null, if it is, the card is over
             if (getCurrentPlayer() == null) {
+                phase = StatePhase.STANDBY_PHASE;
+                getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                //the next player is starting their turn
+                phase = StatePhase.ACCEPT_PHASE;
             }
         }
     }
 
+    /**
+     * This method is called when a player quits the game
+     * @param player who quits the game
+     */
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        if (player.getUsername().equals(getCurrentPlayer())) {
+    public void currentQuit(Player player) {
+        try {
             endMove(player);
-        }
-        if (getCurrentPlayer() == null) {
-            getController().setState(new PreDrawState(getController()));
+        } catch (InvalidTurnException e) {
+            //cannot happen
         }
     }
 }

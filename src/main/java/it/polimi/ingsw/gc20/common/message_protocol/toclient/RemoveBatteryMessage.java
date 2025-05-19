@@ -1,19 +1,17 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-public record CardDrawnMessage(
-        AdventureCard card
+public record RemoveBatteryMessage(
+        int batteryNum
 ) implements Message {
     @Override
     public String toString() {
-        return card.getName() +"has been drawn";
+        return "you ended tour cargo, select battery to remove: " + batteryNum;
     }
 
     @Override
     public void handleMessage() {
         //TODO
     }
-
 }

@@ -2,12 +2,12 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
-public record AcceptedCardMessage(
-        String username
+public record RemoveCargoMessage(
+        int cargoNum
 ) implements Message {
     @Override
     public String toString() {
-        return username + " accepted the card.";
+        return "Select cargo to remove: " + cargoNum;
     }
 
     @Override

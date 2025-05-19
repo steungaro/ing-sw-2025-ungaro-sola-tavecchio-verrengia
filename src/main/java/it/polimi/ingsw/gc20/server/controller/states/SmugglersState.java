@@ -6,16 +6,12 @@ import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
-import it.polimi.ingsw.gc20.server.model.components.CargoHold;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author GC20
@@ -45,26 +41,42 @@ public class SmugglersState extends CargoState {
         this.reward = card.getReward();
         defeated = false;
         accepted = false;
+        phase = StatePhase.CANNONS_PHASE;
     }
 
+    /**
+     * This method is used to accept the card
+     * @param player the player who is accepting the card
+     * @throws InvalidStateException if the game is not in the accept phase
+     * @throws InvalidTurnException if it's not the player's turn
+     */
     @Override
-    public void acceptCard(Player player) throws IllegalStateException, InvalidTurnException {
+    public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
-            throw new IllegalStateException("Card not defeated");
+        if (phase != StatePhase.ACCEPT_PHASE) {
+            throw new InvalidStateException("Card not defeated");
         }
         accepted = true;
+        phase = StatePhase.ADD_CARGO;
     }
 
+    /**
+     * This method is used to lose energy
+     * @param player the player who is losing energy
+     * @param battery the battery from which the energy is lost
+     * @throws InvalidStateException if the game is not in the battery phase
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws EnergyException if the player doesn't have enough energy
+     */
     @Override
-    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, EnergyException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
-            throw new IllegalStateException("Card not defeated. Cannot lose energy now");
+        if (phase != StatePhase.BATTERY_PHASE) {
+            throw new InvalidStateException("You are not in the battery phase");
         }
         super.loseEnergy(player, battery);
         currentLostCargo--;
@@ -78,20 +90,24 @@ public class SmugglersState extends CargoState {
      * @param player the player who is loading the cargo
      * @param loaded the color of the cargo to be loaded
      * @param chTo the cargo hold to which the cargo is loaded
-     * @throws IllegalArgumentException if it's not the player's turn
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the add cargo phase
+     * @throws CargoException if the cargo is not in the card reward list
+     * @throws CargoNotLoadable if the cargo is not loadable
+     * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws IllegalStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated || !accepted) {
-            throw new IllegalStateException("Card not defeated or accepted yet");
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new IllegalStateException("You are not in the add cargo phase");
         }
         if (!reward.contains(loaded)) {
             throw new CargoException("Not in the card reward");
         }
-        getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
+        super.loadCargo(player, loaded, chTo);
         reward.remove(loaded);
     }
 
@@ -100,17 +116,33 @@ public class SmugglersState extends CargoState {
      * @param player the player who is unloading the cargo
      * @param unloaded the color of the cargo to be unloaded
      * @param ch the cargo hold from which the cargo is unloaded
-     * @throws IllegalArgumentException if it's not the player's turn
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the remove cargo phase
+     * @throws InvalidCargoException if the cargo is not valid
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws IllegalStateException, InvalidTurnException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException {
         if(!player.getUsername().equals(getCurrentPlayer())){
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!defeated) {
-            currentLostCargo--;
+        if (phase != StatePhase.REMOVE_CARGO && phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You are not in the cargo managing phase");
         }
-        getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+        super.unloadCargo(player, unloaded, ch);
+        //check if the player has no more cargo
+        Map<CargoColor, Integer> cargo = player.getShip().getCargo();
+        boolean allZero = true;
+        for (Integer count: cargo.values()){
+            if (count > 0) {
+                allZero = false;
+                break;
+            }
+        }
+        //if all cargo is zero and there are still cargos to remove, go to remove battery phase
+        currentLostCargo--;
+        if (allZero && currentLostCargo > 0 && phase == StatePhase.REMOVE_CARGO) {
+            phase = StatePhase.BATTERY_PHASE;
+        }
     }
 
     @Override
@@ -123,11 +155,25 @@ public class SmugglersState extends CargoState {
                 '}';
     }
 
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws IllegalStateException, InvalidTurnException, InvalidCannonException, EnergyException {
+    /**
+     * This method is used to shoot the enemy
+     * @param player the player who is shooting
+     * @param cannons the cannons selected by the player
+     * @param batteries the batteries selected by the player
+     * @return 1 if the player wins, 0 if it's a tie, -1 if the player loses
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws IllegalStateException if the game is not in the cannon phase
+     * @throws InvalidCannonException if the cannon is not valid
+     * @throws EnergyException if the player doesn't have enough energy
+     */
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-
+        if (phase != StatePhase.CANNONS_PHASE) {
+            throw new InvalidStateException("You are not in the cannons phase");
+        }
+        //translate the cannons and batteries to the actual components
         Set<Cannon> cannonsComponents = new HashSet<>();
         if (Translator.getComponentAt(player, cannons, Cannon.class) != null)
             cannonsComponents.addAll(new HashSet<>(Translator.getComponentAt(player, cannons, Cannon.class)));
@@ -135,50 +181,86 @@ public class SmugglersState extends CargoState {
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
 
+        //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         if (firePower > this.firePower) {
+            //won, the player can accept the card
             getController().getActiveCard().playCard();
+            phase = StatePhase.ACCEPT_PHASE;
             defeated = true;
             currentLostCargo = 0;
             return 1;
         } else if (firePower == this.firePower) {
+            //draw, go to the next player
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                //draw a new card
+                phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             }
             currentLostCargo = 0;
             return 0;
         } else {
+            //lost, the player has to lose cargo
+            phase = StatePhase.REMOVE_CARGO;
             currentLostCargo = lostCargo;
             return -1;
         }
     }
 
+    /**
+     * This method is used to end the move
+     * @param player the player who is ending the move
+     * @throws InvalidTurnException if it's not the player's turn
+     * @throws InvalidStateException if the game is not in the correct phase
+     */
     @Override
-    public void endMove(Player player) throws IllegalStateException, InvalidTurnException {
+    public void endMove(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
         if (defeated) {
-            getModel().movePlayer(player, -lostDays);
+            //move the player and draw a new card
+            if (accepted) {
+                getModel().movePlayer(player, -lostDays);
+            }
+            phase = StatePhase.STANDBY_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
             if (currentLostCargo > 0) {
-                throw new IllegalStateException("Lose all your cargo before ending move");
+                throw new InvalidStateException("Lose all your cargo before ending move");
             }
             nextPlayer();
             if (getCurrentPlayer() == null) {
+                //draw a new card
+                phase = StatePhase.STANDBY_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                phase = StatePhase.CANNONS_PHASE;
             }
         }
     }
 
     @Override
     public void currentQuit(Player player) throws InvalidTurnException {
-        currentLostCargo = 0;
-        endMove(player);
+        //if the player is in the cannon phase, if he quit, we go to the next player
+        if (phase == StatePhase.CANNONS_PHASE || phase == StatePhase.REMOVE_CARGO || phase == StatePhase.BATTERY_PHASE) {
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                //draw new card
+                phase = StatePhase.STANDBY_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
+        } else if (phase == StatePhase.ACCEPT_PHASE || phase == StatePhase.ADD_CARGO) {
+            try {
+                endMove(player);
+            } catch (InvalidStateException | InvalidTurnException _) {
+                //ignore
+            }
+        }
     }
 }

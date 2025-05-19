@@ -11,6 +11,7 @@ public class PausedState extends State {
     public PausedState(State previousState, GameModel model, GameController controller) {
         super(model, controller);
         this.previousState = previousState;
+        this.phase = StatePhase.STANDBY_PHASE;
     }
 
     public void resume() {

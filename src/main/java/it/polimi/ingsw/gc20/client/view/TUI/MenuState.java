@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -15,7 +16,7 @@ public interface MenuState {
      * Handles user input for the current menu
      * @return true if the menu should continue, false if it should exit
      */
-    boolean handleInput() throws RemoteException;
+    boolean handleInput() throws IOException;
 
     /**
      * Get the name of the current state

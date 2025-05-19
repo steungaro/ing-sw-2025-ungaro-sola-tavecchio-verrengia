@@ -15,6 +15,7 @@ public class StardustState extends PlayingState {
      */
     public StardustState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
+        phase = StatePhase.AUTOMATIC_ACTION;
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.schedule(() -> {
             try {
@@ -30,11 +31,16 @@ public class StardustState extends PlayingState {
         return "StardustState";
     }
 
+    /**
+     * this method is called when the stardust card is drawn and the automatic action is performed
+     */
     @Override
     public void automaticAction() {
         getController().getInGameConnectedPlayers().stream()
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
+        //draw a new card
+        phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

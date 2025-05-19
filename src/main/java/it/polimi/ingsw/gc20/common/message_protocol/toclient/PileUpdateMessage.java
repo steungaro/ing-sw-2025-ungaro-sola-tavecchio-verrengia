@@ -9,7 +9,6 @@ public record PileUpdateMessage(
         String username,
         int unviewedSize,
         List<Component> viewed,
-        Component componentInHand,
         String action // can be "taken from viewed", taken from unviewed", "added to viewed"
         ) implements Message {
     @Override

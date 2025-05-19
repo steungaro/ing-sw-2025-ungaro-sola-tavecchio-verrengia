@@ -1,14 +1,13 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
-public record CardDrawnMessage(
-        AdventureCard card
+public record AcceptPhaseMessage(
+        String decision
 ) implements Message {
     @Override
     public String toString() {
-        return card.getName() +"has been drawn";
+        return decision;
     }
 
     @Override

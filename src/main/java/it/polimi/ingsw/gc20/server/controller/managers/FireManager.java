@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
-import it.polimi.ingsw.gc20.server.exceptions.DieNotRolledException;
-import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidShipException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
@@ -23,7 +20,6 @@ public class FireManager {
     private final GameModel gm;
     private final Validator validator;
     final Player player;
-
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
         this.fires = fires;
         this.skipNextFire = false;
@@ -32,10 +28,7 @@ public class FireManager {
         this.validator = new Validator();
     }
 
-    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
-        if (fires.getFirst().getFireType() != FireType.HEAVY_METEOR) {
-            throw new IllegalStateException("Cannot activate cannon in this state");
-        }
+    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, EnergyException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -51,10 +44,7 @@ public class FireManager {
         }
     }
 
-    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, IllegalStateException, EnergyException {
-        if (fires.getFirst().getFireType() != FireType.LIGHT_METEOR && fires.getFirst().getFireType() != FireType.LIGHT_FIRE) {
-            throw new IllegalStateException("Cannot activate shield in this state");
-        }
+    public void activateShield(Shield shield, Battery battery) throws InvalidShipException, EnergyException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -108,23 +98,23 @@ public class FireManager {
         return validator.isSplit();
     }
 
-    public boolean isFirstHeavyFire() {
+    /** posso modificare questa funzione in modo che ritorni il tipo di proeittile e null se è finito
+     * @return il tipo di proiettile
+     */
+    public FireType getFirstProjectile() {
         if (fires.isEmpty()) {
-            return false;
+            return null;
         }
-        return fires.getFirst().getFireType() == FireType.HEAVY_FIRE;
+        return fires.getFirst().getFireType();
     }
 
     public void chooseBranch(Player p, Pair<Integer, Integer> coordinates) throws InvalidTurnException {
         if (!p.equals(player)) {
             throw new InvalidTurnException("It's not your turn");
         }
-        if (!validator.isSplit()) {
-            // ignore
-        }
         try {
             validator.chooseBranch(p, coordinates.getValue0(), coordinates.getValue1());
-        } catch (IllegalStateException e){
+        } catch (InvalidStateException e){
             // ignore
         }
     }

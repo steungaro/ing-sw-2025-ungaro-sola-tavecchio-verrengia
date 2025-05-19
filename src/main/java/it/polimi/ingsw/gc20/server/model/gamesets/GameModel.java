@@ -261,7 +261,7 @@ public class GameModel {
      * @apiNote catch the exception if the position isn't valid
      * @param p        player that stops assembling
      * @param position position chosen by the player (1-4)
-     * @throws IllegalArgumentException if the position is already occupied
+     * @throws InvalidIndexException if the position is already occupied
      */
     public void stopAssembling(Player p, int position) throws InvalidIndexException {
         game.getBoard().removePlayer(p);
@@ -273,7 +273,21 @@ public class GameModel {
                     if (position == 1) {
                         player.setLeader();
                     }
-                    player.setPosition(position);
+                    if (level==2){
+                        switch (position){
+                            case 1 -> player.setPosition(6);
+                            case 2 -> player.setPosition(3);
+                            case 3 -> player.setPosition(1);
+                            case 4 -> player.setPosition(0);
+                        }
+                    }else{
+                        switch (position){
+                            case 1 -> player.setPosition(4);
+                            case 2 -> player.setPosition(2);
+                            case 3 -> player.setPosition(1);
+                            case 4 -> player.setPosition(0);
+                        }
+                    }
                 }
             }
         }

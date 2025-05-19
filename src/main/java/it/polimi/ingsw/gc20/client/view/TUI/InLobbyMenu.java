@@ -38,7 +38,7 @@ public class InLobbyMenu implements MenuState {
                 break;
             case 2:
                 if(menuContext.getLobby().getOwner().equals(menuContext.getUsername())){
-                    menuContext.getClient().killLobby(menuContext.getUsername());
+                    menuContext.getClient().killLobby(menuContext.getUsername());//TODO
                 }
                 break;
             default:

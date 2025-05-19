@@ -4,10 +4,12 @@ import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.InfoCmp;
 
+import java.io.Reader;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
@@ -54,11 +56,35 @@ public class TUI extends ClientGameModel {
         terminal.writer().println("╚██████╔╝██║  ██║███████╗██║  ██║██╔╝ ██╗   ██║          ██║   ██║  ██║╚██████╔╝╚██████╗██║  ██╗███████╗██║  ██║");
         terminal.writer().println(" ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝");
         terminal.flush();
+        terminal.writer().println("Press any key to continue...");
+        terminal.flush();
+        try {
+            // Hide cursor
+            terminal.puts(InfoCmp.Capability.cursor_invisible);
+            terminal.reader().read();
+        } catch (Exception e) {
+            LOGGER.warning("Error while waiting for user input: " + e.getMessage());
+        }
     }
 
     public void shutdown() {
         terminal.writer().println("Application shutting down.");
         terminal.flush();
+        client.stop();
+        try {
+            terminal.close();
+        } catch (Exception e) {
+            LOGGER.warning("Error while closing terminal: " + e.getMessage());
+        }
+        System.exit(0);
+    }
+
+    public void wait(int seconds) {
+        try {
+            Thread.sleep(seconds * 1000L);
+        } catch (InterruptedException e) {
+            LOGGER.warning("Error while waiting: " + e.getMessage());
+        }
     }
 
     public Terminal getTerminal() {
@@ -66,67 +92,120 @@ public class TUI extends ClientGameModel {
     }
 
     public void initNetwork() {
-        String type;
         String[] networkTypes = {"RMI", "Socket"};
+        int selectedIndex = 0; // To track the currently highlighted menu option
 
-        do {
+        try {
+
             do {
+                terminal.enterRawMode();
+                clearConsole();
                 terminal.writer().println("Select network type:");
+
                 for (int i = 0; i < networkTypes.length; i++) {
                     terminal.writer().println((i + 1) + ". " + networkTypes[i]);
                 }
                 terminal.flush();
 
-                type = reader.readLine(" > ").trim();
-            } while (!type.matches("[1-2]"));
+                // Hide cursor
+                terminal.puts(InfoCmp.Capability.cursor_invisible);
+                Attributes attributes = terminal.getAttributes();
+                attributes.setLocalFlag(Attributes.LocalFlag.ECHO, false);
+                terminal.setAttributes(attributes);
 
-            String address = reader.readLine("Insert server address (leave blank for default):\n > ").trim();
-            String port = reader.readLine("Insert server port (leave blank for default):\n > ").trim();
+                Reader treader = terminal.reader();
 
-            terminal.writer().println("Trying connection...");
-            terminal.flush();
+                // Read user input
+                do {
+                    int key = treader.read();
+                    if (key == 'q') {
+                        System.exit(0);
+                    } else if (key == '1') {
+                        break;
+                    } else if (key == '2') {
+                        selectedIndex = 1;
+                        break;
+                    }
+                } while (true);
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+                // Reset terminal attributes
+                attributes.setLocalFlag(Attributes.LocalFlag.ECHO, true);
+                terminal.setAttributes(attributes);
 
-            if (address.isBlank()) {
-                client = NetworkManager.initConnection(networkTypes[Integer.parseInt(type) - 1]);
-            } else if (port.isBlank()) {
-                client = NetworkManager.initConnection(networkTypes[Integer.parseInt(type) - 1], address);
-            } else {
-                client = NetworkManager.initConnection(networkTypes[Integer.parseInt(type) - 1], address, Integer.parseInt(port));
-            }
+                // Final selected network type
+                String selectedNetworkType = networkTypes[selectedIndex];
 
-            if (client == null || !client.isConnected()) {
-                terminal.writer().print("\033[31mConnection failed. Type [1] to try again, [2] to exit.\033[0m\n > ");
+                // Show cursor
+                terminal.puts(InfoCmp.Capability.cursor_visible);
+
+                // Ask for address and port
+                String address = reader.readLine("Insert server address (leave blank for default):\n > ").trim();
+                String port = reader.readLine("Insert server port (leave blank for default):\n > ").trim();
+
+                terminal.writer().println("Trying connection...");
                 terminal.flush();
-                String retry = reader.readLine("").trim();
-                if ("2".equals(retry)) {
-                    System.exit(0);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-                client = null;
+
+                // Establish the connection based on user input
+                if (address.isBlank()) {
+                    client = NetworkManager.initConnection(selectedNetworkType);
+                } else if (port.isBlank()) {
+                    client = NetworkManager.initConnection(selectedNetworkType, address);
+                } else {
+                    client = NetworkManager.initConnection(selectedNetworkType, address, Integer.parseInt(port));
+                }
+
+                if (client == null || !client.isConnected()) {
+                    // Hide cursor
+                    terminal.puts(InfoCmp.Capability.cursor_invisible);
+                    terminal.writer().println("\033[31mConnection failed. Press any key to try again, type [q] to exit.\033[0m");
+                    terminal.flush();
+
+                    // Wait for user input to retry or exit
+                    attributes.setLocalFlag(Attributes.LocalFlag.ECHO, false);
+                    terminal.setAttributes(attributes);
+
+                    int retry = treader.read();
+                    if (retry == 'q') {
+                        System.exit(0);
+                    }
+                    client = null;
+                }
+            } while (client == null || !client.isConnected());
+
+                // Connection established
+
+                terminal.writer().println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
+                terminal.writer().println("Use [q] to quit the application at any time (works in every menu).");
+                terminal.flush();
+
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+                clearConsole();
+        } catch (Exception e) {
+            terminal.writer().println("\033[31mAn error occurred: " + e.getMessage() + "\033[0m");
+            terminal.flush();
+        } finally {
+            try {
+                terminal.close();
+            } catch (Exception ex) {
+                terminal.writer().println("Terminal failed to close properly.");
             }
-
-        } while (client == null || !client.isConnected());
-
-        terminal.writer().println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
-        terminal.writer().println("Use [q] to quit the application at any time (works in every menu).");
-        terminal.flush();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
-
-        clearConsole();
     }
 
     public void login() {
         do {
+            clearConsole();
             String inputUsername = reader.readLine("Insert username:\n > ").trim();
 
             if (inputUsername.equalsIgnoreCase("q")) {
@@ -161,4 +240,3 @@ public class TUI extends ClientGameModel {
         }
     }
 }
-
