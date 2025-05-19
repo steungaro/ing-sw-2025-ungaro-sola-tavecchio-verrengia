@@ -44,7 +44,7 @@ public class TUI extends ClientGameModel {
         printLogo();
     }
 
-    public void clearConsole() {
+    public static void clearConsole(Terminal terminal) {
         terminal.puts(InfoCmp.Capability.clear_screen);
         terminal.flush();
     }
@@ -114,7 +114,7 @@ public class TUI extends ClientGameModel {
 
             do {
                 terminal.enterRawMode();
-                clearConsole();
+                clearConsole(terminal);
                 terminal.writer().println("Select network type:");
 
                 for (int i = 0; i < networkTypes.length; i++) {
@@ -197,7 +197,7 @@ public class TUI extends ClientGameModel {
                     throw new RuntimeException(e);
                 }
 
-                clearConsole();
+                clearConsole(terminal);
         } catch (Exception e) {
             terminal.writer().println("\033[31mAn error occurred: " + e.getMessage() + "\033[0m");
             terminal.flush();
@@ -212,7 +212,7 @@ public class TUI extends ClientGameModel {
 
     public void login() {
         do {
-            clearConsole();
+            clearConsole(terminal);
             String inputUsername = reader.readLine("Insert username:\n > ").trim();
 
             if (inputUsername.equalsIgnoreCase("q")) {

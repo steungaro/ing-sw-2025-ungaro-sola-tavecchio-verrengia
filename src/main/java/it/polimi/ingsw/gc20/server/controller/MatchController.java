@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;

@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -507,6 +508,16 @@ public class SocketClient implements Client {
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while killing lobby: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        try {
+            out.writeObject(new LobbyListRequest(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while getting lobbies: " + e.getMessage());
         }
     }
 }

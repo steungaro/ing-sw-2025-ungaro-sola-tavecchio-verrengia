@@ -1,44 +1,85 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class CannonsMenu {
-    private final MenuContext menuContext;
+public class CannonsMenu implements MenuState {
+    private final Terminal terminal;
+    private final LineReader lineReader;
     private List<Pair<Integer, Integer>> cannons;
     private List<Pair<Integer, Integer>> batteries;
+    private final String message;
 
-    public CannonsMenu(MenuContext menuContext) {
-        this.menuContext = menuContext;
+    public CannonsMenu(Terminal terminal, String message) {
+        this.terminal = terminal;
+        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+        this.message = message;
     }
 
-    public void display(){
-        System.out.println("Available cannons:");
-        System.out.println("1. End selecting cannons and their batteries");
-        for (Pair<Integer, Integer> cannon : cannons) {
-            System.out.println((cannons.indexOf(cannon) + 2) + ". Cannon coordinates: <" + cannon.getValue0() + "> <" + cannon.getValue1() + ">");
-        }
-        for( Pair<Integer, Integer> battery : batteries) {
-            System.out.println("Batteries:");
-            System.out.println((batteries.indexOf(battery) + cannons.size() + 2) + ". Battery coordinates: <" + battery.getValue0() + ">  <" + battery.getValue1() + ">");
-        }
+    public void displayMenu(){
+        terminal.writer().println("Cannons Menu");
+        terminal.writer().println(message);
+        terminal.writer().println("1. Activate cannons");
+        terminal.writer().println("2. Do not activate cannons");
+        terminal.flush();
     }
 
-    public void activateCannons() throws RemoteException {
-        List<Pair<Integer, Integer>> activatedCannons = menuContext.getShip().getCannons();
-        List<Pair<Integer, Integer>> activatedBatteries = menuContext.getShip().getBatteries();
-        int choice = menuContext.getScanner().nextInt();
-        if(choice == 1){
-            menuContext.getClient().activateCannons(menuContext.getUsername(), activatedCannons, activatedBatteries);
-        } else if (choice < cannons.size() + 2) {
-            activatedCannons.add(cannons.get(choice - 2));
-        } else if (choice < cannons.size() + batteries.size() + 2) {
-            activatedBatteries.add(batteries.get(choice - cannons.size() - 2));
+    public boolean handleInput() throws IOException {
+        // Hide cursor
+        TUI.hideCursor(terminal);
+        int choice = terminal.reader().read();
+        // Show cursor
+        TUI.showCursor(terminal);
+        // Handle user input for the cannons menu
+        switch (choice) {
+            case 1:
+                terminal.writer().println("Type the coordinates of the cannons you want to activate (x y):");
+                terminal.writer().print(" > ");
+                String cannonInput = lineReader.readLine().trim();
+                String[] cannonCoordinates = cannonInput.split(" ");
+                for (int i = 0; i < cannonCoordinates.length; i += 2) {
+                    int x = Integer.parseInt(cannonCoordinates[i]) - 5;
+                    int y = Integer.parseInt(cannonCoordinates[i + 1]) - 4;
+                    Pair<Integer, Integer> coordinates = new Pair<>(x, y);
+                    cannons.add(coordinates);
+                }
+                terminal.writer().println("Type the coordinates of the batteries you want to activate (x y):");
+                terminal.writer().print(" > ");
+                String batteryInput = lineReader.readLine().trim();
+                String[] batteryCoordinates = batteryInput.split(" ");
+                for (int i = 0; i < batteryCoordinates.length; i += 2) {
+                    int x = Integer.parseInt(batteryCoordinates[i]) - 5;
+                    int y = Integer.parseInt(batteryCoordinates[i + 1]) - 4;
+                    Pair<Integer, Integer> coordinates = new Pair<>(x, y);
+                    batteries.add(coordinates);
+                }
+                ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), cannons, batteries);
+                break;
+            case 2:
+                ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), null, null);
+                break;
+            default:
+                terminal.writer().println("Invalid choice. Please try again.");
+                return false;
         }
+        return true;
     }
 
-
+    /**
+     * Get the name of the current state
+     *
+     * @return State name
+     */
+    @Override
+    public String getStateName() {
+        return "Cannons Menu";
+    }
 }

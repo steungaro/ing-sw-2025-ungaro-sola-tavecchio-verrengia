@@ -38,6 +38,7 @@ public abstract class ClientGameModel implements ViewInterface {
     protected AdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
+    private List<ViewLobby> lobbyList;
 
     public ClientGameModel() {
         // Initialize default state if necessary
@@ -45,6 +46,15 @@ public abstract class ClientGameModel implements ViewInterface {
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+    }
+
+    public void setLobbyList(List<ViewLobby> lobbyList) {
+        this.lobbyList = lobbyList;
+        LOGGER.fine("Lobby list updated in model.");
+    }
+
+    public List<ViewLobby> getLobbyList() {
+        return lobbyList;
     }
 
     public String getUsername() {

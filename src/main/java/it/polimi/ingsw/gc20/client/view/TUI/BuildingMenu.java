@@ -1,41 +1,44 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 
 public class BuildingMenu implements MenuState{
-    private final MenuContext menuContext;
-    private final ViewShip ship;
-    private ViewComponent componentInHand;
-    public BuildingMenu(MenuContext menuContext, ViewShip ship) {
-        this.ship = ship;
-        this.menuContext = menuContext;
+    private final Terminal terminal;
+    private final LineReader lineReader;
+    private final String username = ClientGameModel.getInstance().getUsername();
+    
+    public BuildingMenu(Terminal terminal) {
+        this.terminal = terminal;
+        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
     }
 
     public void displayMenu(){
-        if(componentInHand == null) {
-            System.out.println("Building Ship Menu");
-            System.out.println("1. Take component from covered components with the argument: <componentIndex>");
-            System.out.println("2. Take component from uncovered components with the argument: <componentIndex>");
-            if(!ship.isLearner) {
-                System.out.println("3. Take component from the stored components with the argument: <componentIndex>");
-                System.out.println("4. Turn hourglass");
-                System.out.println("5. Check a deck of cards with argument: <deckIndex>");
+        TUI.clearConsole(terminal);
+        if(ClientGameModel.getInstance().getComponentInHand() == null) {
+            terminal.writer().println("Building Ship Menu");
+            terminal.writer().println("1. Take component from covered components");
+            terminal.writer().println("2. Take component from uncovered components");
+            terminal.writer().println("3. Stop assembling ship");
+            if(!ClientGameModel.getInstance().getShip(username).isLearner) {
+                terminal.writer().println("4. Take component from the booked components");
+                terminal.writer().println("5. Turn hourglass");
+                terminal.writer().println("6. Peek a deck of cards with argument");
             }
-        }else {
-            System.out.println("Building Ship Menu");
-            System.out.println("1. Put back the component in hand");
-            System.out.println("2. Add the component in hand to your ship with the arguments: <x> <y>");
-            System.out.println("3. Rotate the component in hand Clockwise with argument: <numberOfRotations>");
-            System.out.println("4. Rotate the component in hand Counter-Clockwise with argument: <numberOfRotations>");
-            if(!ship.isLearner) {
-                System.out.println("5. Add the component in hand to stored components");
-                System.out.println("6. Turn hourglass");
-                System.out.println("7. Check a deck of cards with argument: <deckIndex>");
+        } else {
+            terminal.writer().println("Building Ship Menu");
+            terminal.writer().println("1. Put the component in your hand back to the uncovered components");
+            terminal.writer().println("2. Add the component in your hand to your ship");
+            terminal.writer().println("3. Rotate the component in your hand Clockwise");
+            terminal.writer().println("4. Rotate the component in your hand Counter-Clockwise");
+            if(!ClientGameModel.getInstance().getShip(username).isLearner) {
+                terminal.writer().println("5. Add the component in your hand to booked components");
+                terminal.writer().println("6. Turn hourglass");
             }
         }
     }
@@ -44,66 +47,101 @@ public class BuildingMenu implements MenuState{
      * Handles user input for the current menu
      * @return true if the menu should continue, false if it should exit
      */
-    public boolean handleInput() throws RemoteException{
-        int choice = menuContext.getScanner().nextInt();
+    public boolean handleInput() throws IOException {
+        // Hide cursor
+        TUI.hideCursor(terminal);
+        int choice = terminal.reader().read();
+        // Show cursor
+        TUI.showCursor(terminal);
         // Handle user input for the building menu
-        if(componentInHand == null) {
+        if(ClientGameModel.getInstance().getComponentInHand() == null) {
             switch (choice) {
                 case 1:
-                    int num = menuContext.getScanner().nextInt();
-                    menuContext.getClient().takeComponentFromUnviewed(menuContext.getUsername(), num);
+                    terminal.writer().println("Type the index of the covered component you want to take:");
+                    terminal.writer().print(" > ");
+                    // Read the index of the component to take
+                    int index = Integer.parseInt(lineReader.readLine().trim());
+                    ClientGameModel.getInstance().getClient().takeComponentFromUnviewed(username, index);
                     break;
                 case 2:
-                    int num1 = menuContext.getScanner().nextInt();
-                    menuContext.getClient().takeComponentFromViewed(menuContext.getUsername(), num1);
+                    terminal.writer().println("Type the index of the uncovered component you want to take:");
+                    terminal.writer().print(" > ");
+                    // Read the index of the component to take
+                    int index1 = Integer.parseInt(lineReader.readLine().trim());
+                    ClientGameModel.getInstance().getClient().takeComponentFromViewed(username, index1);
                     break;
                 case 3:
-                    componentInHand = ship.getBooked(menuContext.getScanner().nextInt());
+                    terminal.writer().println("Type the index of the board where you want to start the game:");
+                    terminal.writer().print(" > ");
+                    // Read the index of the board to take
+                    int index3 = Integer.parseInt(lineReader.readLine().trim());
+                    ClientGameModel.getInstance().getClient().stopAssembling(username, index3);
                     break;
                 case 4:
-                    menuContext.getClient().turnHourglass(menuContext.getUsername());
+                    terminal.writer().println("Type the index of the booked component you want to take:");
+                    terminal.writer().print(" > ");
+                    // Read the index of the component to take
+                    int index2 = Integer.parseInt(lineReader.readLine().trim());
+                    ClientGameModel.getInstance().getClient().takeComponentFromBooked(username, index2);
                     break;
                 case 5:
-                    int deckIndex = menuContext.getScanner().nextInt();
-                    menuContext.getClient().peekDeck(menuContext.getUsername(), deckIndex);
+                    ClientGameModel.getInstance().getClient().turnHourglass(username);
+                    break;
+                case 6:
+                    terminal.writer().println("Type the index of the deck you want to peek:");
+                    terminal.writer().print(" > ");
+                    // Read the index of the deck to peek
+                    int index4 = Integer.parseInt(lineReader.readLine().trim());
+                    ClientGameModel.getInstance().getClient().peekDeck(username, index4);
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    terminal.writer().println("Invalid choice. Please try again.");
                     return false;
             }
         }else{
             switch (choice){
                 case 5:
-                    menuContext.getClient().addComponentToBooked(menuContext.getUsername());
+                    ClientGameModel.getInstance().getClient().addComponentToBooked(username);
                     break;
                 case 1:
-                    menuContext.getClient().addComponentToViewed(menuContext.getUsername());
+                    ClientGameModel.getInstance().getClient().addComponentToViewed(username);
                     break;
                 case 2:
-                    int x = menuContext.getScanner().nextInt();
-                    int y = menuContext.getScanner().nextInt();
-                    menuContext.getClient().placeComponent(menuContext.getUsername(), new Pair<>(x, y));
+                    terminal.writer().println("Type the coordinates of the component you want to add (x y):");
+                    terminal.writer().print(" > ");
+                    // Read the coordinates of the component to add
+                    String coordinates = lineReader.readLine().trim();
+                    String[] parts = coordinates.split(" ");
+                    int x = Integer.parseInt(parts[0]) - 5;
+                    int y = Integer.parseInt(parts[1]) - 4;
+                    Pair<Integer, Integer> coordinatesPair = new Pair<>(x, y);
+                    ClientGameModel.getInstance().getClient().placeComponent(username, coordinatesPair);
                     break;
                 case 3:
-                    int numRotations = menuContext.getScanner().nextInt();
+                    terminal.writer().println("Type the number of rotations:");
+                    terminal.writer().print(" > ");
+                    // Read the number of rotations
+                    int numRotations = Integer.parseInt(lineReader.readLine().trim());
+                    // Rotate the component in hand
                     for(int i = 0; i < numRotations; i++){
-                        menuContext.getClient().rotateComponentClockwise(menuContext.getUsername());
+                        ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
                     }
                     break;
                 case 4:
-                    int numRotations1 = menuContext.getScanner().nextInt();
-                    for(int i = 0; i < numRotations1; i++){
-                        menuContext.getClient().rotateComponentCounterclockwise(menuContext.getUsername());
+                    terminal.writer().println("Type the number of rotations:");
+                    terminal.writer().print(" > ");
+                    // Read the number of rotations
+                    int numRotationsCCW = Integer.parseInt(lineReader.readLine().trim());
+                    // Rotate the component in hand
+                    for(int i = 0; i < numRotationsCCW; i++){
+                        ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
                     }
                     break;
                 case 6:
-                    menuContext.getClient().turnHourglass(menuContext.getUsername());
-                    break;
-                case 7:
-                    menuContext.getClient().peekDeck(menuContext.getUsername(), menuContext.getScanner().nextInt());
+                    ClientGameModel.getInstance().getClient().turnHourglass(username);
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    terminal.writer().println("Invalid choice. Please try again.");
                     return false;
             }
         }

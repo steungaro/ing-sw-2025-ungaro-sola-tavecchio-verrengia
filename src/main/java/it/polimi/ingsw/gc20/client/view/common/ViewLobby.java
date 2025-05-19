@@ -27,4 +27,8 @@ public class ViewLobby {
     public int getLevel() {
         return level;
     }
+
+    public String toString(){
+        return name + " (owner: " + owner + ", players: " + players + "/" + maxPlayers + ", level: " + level + ")";
+    }
 }

@@ -3,12 +3,9 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
-import org.jline.utils.InfoCmp;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
 import java.util.Objects;
 
 public class MainMenuState implements MenuState{
@@ -23,8 +20,9 @@ public class MainMenuState implements MenuState{
 
     @Override
     public void displayMenu() {
+        TUI.clearConsole(terminal);
         terminal.writer().println("Welcome to the game! These are the active lobbies:");
-        //TODO print lobbies
+        ClientGameModel.getInstance().getLobbyList().forEach(lobby -> terminal.writer().println(lobby.toString()));
         terminal.writer().println("1. Join a lobby");
         terminal.writer().println("2. Create a new lobby");
         terminal.writer().println("3. Refresh lobby list");
@@ -71,7 +69,7 @@ public class MainMenuState implements MenuState{
                 break;
 
             case 3:
-                //TODO?
+                ClientGameModel.getInstance().getClient().getLobbies(username);
                 break;
             case 'q':
                 ClientGameModel.getInstance().shutdown();

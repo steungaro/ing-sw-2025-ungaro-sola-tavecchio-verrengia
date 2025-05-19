@@ -1,37 +1,27 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.terminal.Attributes;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.jline.terminal.Terminal;
-import org.jline.utils.InfoCmp;
 
-import java.awt.*;
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 public class InLobbyMenu implements MenuState {
     private final Terminal terminal;
-    private final LineReader reader;
-    private final String username = View.getInstance().username;
-    private final String stateName = "In Lobby Menu";
+    private final String username = ClientGameModel.getInstance().getUsername();
 
     public InLobbyMenu(Terminal terminal) {
         this.terminal = terminal;
-        this.reader = LineReaderBuilder.builder().terminal(terminal).build();
     }
 
     public void displayMenu() {
         //TODO
-            System.out.println("Lobby menu");
-            System.out.println("Current lobby: " + View.getInstance().getLobby());
-        if(View.getInstance().getLobby().getOwner().equals(username)){
-            System.out.println("1. Start game");
-            System.out.println("2. Quit lobby");
+            terminal.writer().println("Lobby menu");
+            terminal.writer().println("Current lobby: " + ClientGameModel.getInstance().getCurrentLobby());
+        if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
+            terminal.writer().println("1. Start game");
+            terminal.writer().println("2. Quit lobby");
         } else {
-            System.out.println("1. Leave lobby");
+            terminal.writer().println("1. Leave lobby");
         }
     }
 
@@ -42,31 +32,25 @@ public class InLobbyMenu implements MenuState {
         // Handle user input for the in lobby menu
         switch (choice) {
             case 1:
-                //TODO
-                if(menuContext.getLobby().getOwner().equals(menuContext.getUsername())){
-                    menuContext.getClient().startLobby(menuContext.getLobby().getID());
-                    ViewShip ship = new ViewShip();
-                    menuContext.setState(new BuildingMenu(menuContext, ship));
-                    menuContext.setShip(ship);
+                if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
+                    ClientGameModel.getInstance().getClient().startLobby(username);
                 } else {
-                    View.getInstance().getClient().leaveLobby(username);
+                    ClientGameModel.getInstance().getClient().leaveLobby(username);
                 }
                 break;
             case 2:
-                //TODO
-                if(menuContext.getLobby().getOwner().equals(menuContext.getUsername())){
-                    View.getInstance().getClient().killLobby(username);
-                    //TODO
+                if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
+                    ClientGameModel.getInstance().getClient().killLobby(username);
                 }
                 break;
             default:
-                System.out.println("Invalid choice. Please try again.");
+                terminal.writer().println("Invalid choice. Please try again.");
                 return false;
         }
         return true;
     }
 
     public String getStateName() {
-        return stateName;
+        return "In Lobby Menu";
     }
 }
