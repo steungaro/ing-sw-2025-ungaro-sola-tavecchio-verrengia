@@ -28,6 +28,8 @@ public class AssemblingState extends State {
             assembled.put(player, false);
             componentsInHand.put(player, null);
             playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+            // notify each player of the phase they are in
+            NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
         }
         for (int i = 1; i < 4; i++) {
             deckPeeked.put(i, null);
@@ -63,6 +65,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
+        //notify the player that they go to the PLACE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -91,6 +95,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
+        //notify the player that they go to the PLACE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -119,6 +125,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, component);
         // Set the player's phase to PLACE_COMPONENT
         playersPhase.put(player, StatePhase.PLACE_COMPONENT);
+        //notify the player that they go to the PLACE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -144,6 +152,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+        //notify the player that they go to the TAKE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
     }
 
     /**
@@ -165,6 +175,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+        //notify the player that they go to the TAKE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
     }
     /**
      * This method is used to place a component on the ship.
@@ -183,6 +195,8 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+        //notify the player that they go to the TAKE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
     }
     /**
      * This method is used to rotate a component clockwise.
@@ -197,6 +211,8 @@ public class AssemblingState extends State {
         }
         //rotate the component clockwise
         getModel().RotateClockwise(componentsInHand.get(player));
+        //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(componentsInHand.get(player).createViewComponent()));
     }
     /**
      * This method is used to rotate a component counterclockwise.
@@ -210,6 +226,8 @@ public class AssemblingState extends State {
         }
         //rotate the component counterclockwise
         getModel().RotateCounterclockwise(componentsInHand.get(player));
+        //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(componentsInHand.get(player).createViewComponent()));
     }
 
     /** this method is used to stop assembling the ship
@@ -225,10 +243,16 @@ public class AssemblingState extends State {
         }
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
+        //notify the player that the position has been set
+        for (String username : getController().getInGameConnectedPlayers()){
+            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
+        }
         //mark the player as assembled
         assembled.put(player, true);
         //put the player in standby phase
         playersPhase.put(player, StatePhase.STANDBY_PHASE);
+        //notify the player that they are in standby phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
     }
 
     /**
