@@ -92,6 +92,20 @@ public class TUI extends ClientGameModel {
         return terminal;
     }
 
+    public static void hideCursor(Terminal terminal) {
+        terminal.puts(InfoCmp.Capability.cursor_invisible);
+        Attributes attributes = terminal.getAttributes();
+        attributes.setLocalFlag(Attributes.LocalFlag.ECHO, false);
+        terminal.setAttributes(attributes);
+    }
+
+    public static void showCursor(Terminal terminal) {
+        terminal.puts(InfoCmp.Capability.cursor_visible);
+        Attributes attributes = terminal.getAttributes();
+        attributes.setLocalFlag(Attributes.LocalFlag.ECHO, true);
+        terminal.setAttributes(attributes);
+    }
+
     public void initNetwork() {
         String[] networkTypes = {"RMI", "Socket"};
         int selectedIndex = 0; // To track the currently highlighted menu option
@@ -109,10 +123,7 @@ public class TUI extends ClientGameModel {
                 terminal.flush();
 
                 // Hide cursor
-                terminal.puts(InfoCmp.Capability.cursor_invisible);
-                Attributes attributes = terminal.getAttributes();
-                attributes.setLocalFlag(Attributes.LocalFlag.ECHO, false);
-                terminal.setAttributes(attributes);
+                hideCursor(terminal);
 
                 Reader treader = terminal.reader();
 
@@ -130,8 +141,7 @@ public class TUI extends ClientGameModel {
                 } while (true);
 
                 // Reset terminal attributes
-                attributes.setLocalFlag(Attributes.LocalFlag.ECHO, true);
-                terminal.setAttributes(attributes);
+                showCursor(terminal);
 
                 // Final selected network type
                 String selectedNetworkType = networkTypes[selectedIndex];
@@ -163,13 +173,9 @@ public class TUI extends ClientGameModel {
 
                 if (client == null || !client.isConnected()) {
                     // Hide cursor
-                    terminal.puts(InfoCmp.Capability.cursor_invisible);
+                    hideCursor(terminal);
                     terminal.writer().println("\033[31mConnection failed. Press any key to try again, type [q] to exit.\033[0m");
                     terminal.flush();
-
-                    // Wait for user input to retry or exit
-                    attributes.setLocalFlag(Attributes.LocalFlag.ECHO, false);
-                    terminal.setAttributes(attributes);
 
                     int retry = treader.read();
                     if (retry == 'q') {

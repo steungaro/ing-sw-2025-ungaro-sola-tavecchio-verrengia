@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -20,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public abstract class ClientGameModel implements ViewInterface{
+public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -44,6 +45,10 @@ public abstract class ClientGameModel implements ViewInterface{
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public ViewComponent getComponentInHand() {
@@ -308,4 +313,10 @@ public abstract class ClientGameModel implements ViewInterface{
 
     public abstract void display();
     public abstract void display(MenuState menuState);
+
+    public Client getClient() {
+        return client;
+    }
+
+    public abstract void shutdown();
 }

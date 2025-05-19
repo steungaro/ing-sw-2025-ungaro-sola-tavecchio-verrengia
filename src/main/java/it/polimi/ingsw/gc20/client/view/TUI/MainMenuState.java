@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
+import org.jline.utils.InfoCmp;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -12,7 +14,7 @@ import java.util.Objects;
 public class MainMenuState implements MenuState{
     private final Terminal terminal;
     private final LineReader reader;
-    private final String username = View.getInstance().username;
+    private final String username = ClientGameModel.getInstance().getUsername();
 
     public MainMenuState(Terminal terminal) {
         this.terminal = terminal;
@@ -31,14 +33,18 @@ public class MainMenuState implements MenuState{
 
     @Override
     public boolean handleInput() throws IOException {
+        // Hide cursor
+        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
+        // Show cursor
+        TUI.showCursor(terminal);
         // Handle user input for the main menu
         switch(choice) {
             case 1:
                 terminal.writer().println("Type the name of the lobby you want to join:");
                 terminal.writer().print(" > ");
                 String lobbyName = reader.readLine().trim();
-                View.getInstance().getClient().joinLobby(lobbyName, username);
+                ClientGameModel.getInstance().getClient().joinLobby(lobbyName, username);
                 break;
             case 2:
                 terminal.writer().println("Type the name of the lobby you want to create:");
@@ -61,14 +67,14 @@ public class MainMenuState implements MenuState{
                     level = Objects.equals(reader.readLine().trim(), "L") ? 0 : Integer.parseInt(reader.readLine().trim());
                 } while(level != 0 && level != 2);
 
-                View.getInstance().getClient().createLobby(lobby, username, numPlayers, level);
+                ClientGameModel.getInstance().getClient().createLobby(lobby, username, numPlayers, level);
                 break;
 
             case 3:
                 //TODO?
                 break;
             case 'q':
-                View.getInstance().shutdown();
+                ClientGameModel.getInstance().shutdown();
                 break;
             default:
                 return false;
