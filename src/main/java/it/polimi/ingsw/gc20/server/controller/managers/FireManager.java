@@ -3,10 +3,7 @@ package it.polimi.ingsw.gc20.server.controller.managers;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import it.polimi.ingsw.gc20.server.model.components.Battery;
-import it.polimi.ingsw.gc20.server.model.components.Cannon;
-import it.polimi.ingsw.gc20.server.model.components.ConnectorEnum;
-import it.polimi.ingsw.gc20.server.model.components.Shield;
+import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
@@ -117,5 +114,11 @@ public class FireManager {
         } catch (InvalidStateException e){
             // ignore
         }
+    }
+    public Direction getFirstDirection() {
+        if (fires.isEmpty()) {
+            return null;
+        }
+        return fires.getFirst().getDirection();
     }
 }
