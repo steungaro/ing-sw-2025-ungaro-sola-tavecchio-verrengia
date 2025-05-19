@@ -257,7 +257,7 @@ public class TUI extends ClientGameModel {
         boolean input = false;
         while (client.isConnected() && !input) {
             try {
-                currentState.displayMenu(String message);
+                currentState.displayMenu();
                 input = currentState.handleInput();
             } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());
@@ -327,6 +327,11 @@ public class TUI extends ClientGameModel {
 
     public void automaticAction(String message){
         System.out.println(message);
+    }
+
+    public void mainMenuState(){
+        MenuState menu = new MainMenuState(terminal);
+        display(menu);
     }
 
 }
