@@ -784,7 +784,7 @@ public class GameController implements GameControllerInterface {
             state.turnHourglass(getPlayerByID(username));
             // notify players of an hourglass turn with an hourglass message
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new HourglassMessage(model.getTotalRemainingTime(),
+                NetworkService.getInstance().sendToClient(user, new HourglassMessage(
                         model.getRemainingTime(),
                         model.getTurnedHourglass()));
             }
@@ -811,7 +811,7 @@ public class GameController implements GameControllerInterface {
             }
             state.getHourglassTime(getPlayerByID(username));
             //notify the player of hourglass time
-            NetworkService.getInstance().sendToClient(username, new HourglassMessage(model.getTotalRemainingTime(),
+            NetworkService.getInstance().sendToClient(username, new HourglassMessage(
                     model.getRemainingTime(),
                     model.getTurnedHourglass()));
         } catch (Exception e) {

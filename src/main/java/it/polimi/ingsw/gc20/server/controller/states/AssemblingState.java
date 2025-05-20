@@ -304,7 +304,7 @@ public class AssemblingState extends State {
      */
     @Override
     public int getHourglassTime(Player player) {
-        NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTotalRemainingTime(), getModel().getRemainingTime(), getModel().getTurnedHourglass()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getRemainingTime(), getModel().getTurnedHourglass()));
         return getModel().getRemainingTime();
     }
 

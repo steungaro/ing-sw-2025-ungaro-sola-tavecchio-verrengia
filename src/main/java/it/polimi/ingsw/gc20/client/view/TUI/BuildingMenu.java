@@ -1,25 +1,33 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import org.javatuples.Pair;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 
 import java.io.IOException;
+import java.util.List;
 
 public class BuildingMenu implements MenuState{
     private final Terminal terminal;
     private final LineReader lineReader;
     private final String username = ClientGameModel.getInstance().getUsername();
+    private List<ViewAdventureCard> adventureCards;
     
-    public BuildingMenu(Terminal terminal) {
+    public BuildingMenu(Terminal terminal, List<ViewAdventureCard> adventureCards) {
         this.terminal = terminal;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+        this.adventureCards = adventureCards;
     }
 
     public void displayMenu(){
         TUI.clearConsole(terminal);
+        if(adventureCards!=null){
+            ClientGameModel.getInstance().printCardsInLine(adventureCards);
+        }
+
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
             terminal.writer().println("Building Ship Menu");
             terminal.writer().println("1. Take component from covered components");
@@ -51,6 +59,7 @@ public class BuildingMenu implements MenuState{
         // Hide cursor
         TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
+        adventureCards = null;
         // Show cursor
         TUI.showCursor(terminal);
         // Handle user input for the building menu

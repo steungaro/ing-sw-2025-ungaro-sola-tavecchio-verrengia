@@ -15,6 +15,6 @@ public record PlaceComponentMessage(
     @Override
     public void handleMessage() {
         ClientGameModel.getInstance().setComponentInHand(component);
-        ClientGameModel.getInstance().setComponentMenu();
+        ClientGameModel.getInstance().placeComponentMenu();
     }
 }

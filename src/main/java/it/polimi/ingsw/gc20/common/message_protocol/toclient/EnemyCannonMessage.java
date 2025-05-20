@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 public record EnemyCannonMessage(
@@ -7,13 +8,11 @@ public record EnemyCannonMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "EnemyCannonMessage{" +
-                "power=" + power +
-                '}';
+        return "Fighting an enemy with power="  + power;
     }
 
     @Override
     public void handleMessage() {
-        //TODO
+        ClientGameModel.getInstance().cannonsMenu(toString());
     }
 }

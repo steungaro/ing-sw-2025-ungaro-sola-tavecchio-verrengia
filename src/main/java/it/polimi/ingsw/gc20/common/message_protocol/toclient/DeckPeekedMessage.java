@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public record DeckPeekedMessage(
@@ -17,6 +19,12 @@ public record DeckPeekedMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        List<ViewAdventureCard> viewAdventureCards= new ArrayList<>();
+        for( AdventureCard card : cards) {
+            viewAdventureCards.add(ViewAdventureCard.createFrom(card));
+        }
+
+        ClientGameModel.getInstance().buildingMenu(viewAdventureCards);
+
     }
 }

@@ -18,15 +18,15 @@ public class ViewBoard {
     public ViewPlayer[] players;
     public boolean isLearner;
     public boolean assemblingState;
-    public boolean[] deckAvailability = new boolean[3];
     public int remainingTime;
+    public int numberOfRotations;
     public List<List<ViewAdventureCard>> decks;
     public int unviewedPile;
     public List<ViewComponent> viewedPile;
 
+
     public ViewBoard(boolean isLearner, ViewPlayer[] players) {
         this.isLearner = isLearner;
-        Arrays.fill(deckAvailability, true);
         this.players = Arrays.copyOf(players, players.length);
     }
 
@@ -163,7 +163,6 @@ public class ViewBoard {
             sb.append(EMPTY_ROW).append("\n");
 
             sb.append("│").append(" ".repeat(29)).append("       Deck 1       ").append("       Deck 2       ").append("       Deck 3       ").append(" ".repeat(29)).append("│").append("\n");
-            sb.append("│").append(" ".repeat(29)).append("     ").append(deckAvailability[0] ? " Available " : "Unavailable").append("     ").append("    ").append(deckAvailability[1] ? " Available " : "Unavailable").append("     ").append("    ").append(deckAvailability[2] ? " Available " : "Unavailable").append("    ").append(" ".repeat(29)).append("│").append("\n");
         }
         sb.append(EMPTY_ROW).append("\n");
 
@@ -180,7 +179,6 @@ public class ViewBoard {
         players[2] = new ViewPlayer("Tave", PlayerColor.GREEN, 2);
         players[3] = new ViewPlayer("Verri", PlayerColor.YELLOW, 3);
         ViewBoard board = new ViewBoard(false, players);
-        board.deckAvailability[0] = false;
 
         System.out.println(board.toString());
 

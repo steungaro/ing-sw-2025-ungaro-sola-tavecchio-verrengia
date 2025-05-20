@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,7 +28,7 @@ public class LoginController {
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) View.getInstance();
+        //guiView = (GUIView) View.getInstance();
 
         loginButton.setOnAction(event -> handleLogin());
     }

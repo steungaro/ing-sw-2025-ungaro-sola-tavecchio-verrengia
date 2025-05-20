@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 // Import GamePhaseType, ViewPlayer, etc.
@@ -310,7 +311,7 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void shutdown();
 
     public abstract void branchMenu();
-    public abstract void buildingMenu();
+    public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
     public abstract void cardAcceptanceMenu(String message);
     public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
@@ -329,4 +330,5 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void loseCrewMenu(int crewNum);
     public abstract void removeBatteryMenu(int batteryNum);
     public abstract void placeComponentMenu();
+    public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
 }

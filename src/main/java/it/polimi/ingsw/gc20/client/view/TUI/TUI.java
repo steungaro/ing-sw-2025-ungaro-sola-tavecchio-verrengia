@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.jline.reader.LineReader;
@@ -271,8 +272,8 @@ public class TUI extends ClientGameModel {
         display(menu);
     }
 
-    public void buildingMenu(){
-        MenuState menu = new BuildingMenu(terminal);
+    public void buildingMenu(List<ViewAdventureCard> adventureCards){
+        MenuState menu = new BuildingMenu(terminal, adventureCards);
         display(menu);
     }
 
@@ -361,4 +362,7 @@ public class TUI extends ClientGameModel {
         // TODO: implement this method
     }
 
+    public void leaderBoardMenu(Map<String, Integer> leaderBoard){
+        // TODO: implement this method
+    }
 }
