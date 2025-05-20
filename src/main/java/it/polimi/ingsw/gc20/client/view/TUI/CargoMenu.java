@@ -18,8 +18,8 @@ public class CargoMenu implements MenuState{
     private final int cargoToLose;
     private final Map<CargoColor, Integer> cargoToGain;
 
-    public CargoMenu(Terminal terminal, String message, int cargoToLose, Map<CargoColor, Integer> cargoToGain) {
-        this.terminal = terminal;
+    public CargoMenu(String message, int cargoToLose, Map<CargoColor, Integer> cargoToGain) {
+        this.terminal = null;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
         this.message = message;
         this.cargoToLose = cargoToLose;
@@ -28,7 +28,7 @@ public class CargoMenu implements MenuState{
 
     @Override
     public void displayMenu() {
-        TUI.clearConsole(terminal);
+        TUI.clearConsole();
         terminal.writer().println("Cargo Menu");
         terminal.writer().println(message);
         if (cargoToLose > 0) {
@@ -51,11 +51,7 @@ public class CargoMenu implements MenuState{
 
 
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         // Handle user input for the cargo menu
         switch (choice) {
             case 1:

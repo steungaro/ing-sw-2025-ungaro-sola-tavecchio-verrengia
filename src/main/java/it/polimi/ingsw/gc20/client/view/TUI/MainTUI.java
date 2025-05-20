@@ -18,19 +18,12 @@ public class MainTUI {
                 tui.login();
             } catch (UserInterruptException e) {
                 // Handle user interrupt (Ctrl+C)
-                tui.getTerminal().writer().println("\nUser interrupted the application.");
+                System.out.println("\nUser interrupted the application.");
                 tui.shutdown();
             } catch (Exception e) {
                 // Handle other exceptions
-                tui.getTerminal().writer().println("\nAn error occurred: " + e.getMessage());
+                System.out.println("\nAn error occurred: " + e.getMessage());
                 tui.shutdown();
-            } finally {
-                // Ensure the terminal is closed properly
-                try {
-                    tui.getTerminal().close();
-                } catch (Exception e) {
-                    tui.getTerminal().writer().println("Error closing terminal: " + e.getMessage());
-                }
             }
         }).start();
     }

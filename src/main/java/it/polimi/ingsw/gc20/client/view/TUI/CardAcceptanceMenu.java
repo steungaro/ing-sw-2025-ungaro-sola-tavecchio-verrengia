@@ -9,27 +9,24 @@ import org.jline.terminal.Terminal;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Scanner;
 
 public class CardAcceptanceMenu implements MenuState{
-    private final Terminal terminal;
-    private final LineReader lineReader;
+    private final Scanner scanner = new Scanner(System.in);
     private final String message;
 
-    public CardAcceptanceMenu(Terminal terminal, String message) {
-        this.terminal = terminal;
-        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+    public CardAcceptanceMenu(String message) {
         this.message = message;
     }
     /**
      * Displays the current menu to the player
      */
     public void displayMenu(){
-        TUI.clearConsole(terminal);
-        terminal.writer().println("Card Acceptance Menu");
-        terminal.writer().println(message);
-        terminal.writer().println("1. Accept the card");
-        terminal.writer().println("2. Reject the card");
-        terminal.flush();
+        TUI.clearConsole();
+        System.out.println("Card Acceptance Menu");
+        System.out.println(message);
+        System.out.println("1. Accept the card");
+        System.out.println("2. Reject the card");
     }
 
     /**
@@ -38,11 +35,7 @@ public class CardAcceptanceMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
-        int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
+        int choice = scanner.nextInt();
         // Handle user input for the card acceptance menu
         switch (choice) {
             case 1:
@@ -55,7 +48,7 @@ public class CardAcceptanceMenu implements MenuState{
                 ClientGameModel.getInstance().shutdown();
                 break;
             default:
-                terminal.writer().println("Invalid choice. Please try again.");
+                System.out.println("Invalid choice. Please try again.");
                 return false;
         }
         return true;

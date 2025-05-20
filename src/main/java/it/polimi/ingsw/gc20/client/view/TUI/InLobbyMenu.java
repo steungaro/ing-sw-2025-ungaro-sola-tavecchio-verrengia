@@ -9,8 +9,8 @@ public class InLobbyMenu implements MenuState {
     private final Terminal terminal;
     private final String username = ClientGameModel.getInstance().getUsername();
 
-    public InLobbyMenu(Terminal terminal) {
-        this.terminal = terminal;
+    public InLobbyMenu() {
+        this.terminal = null;
     }
 
     public void displayMenu() {
@@ -26,9 +26,7 @@ public class InLobbyMenu implements MenuState {
     }
 
     public boolean handleInput() throws IOException {
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        TUI.showCursor(terminal);
         // Handle user input for the in lobby menu
         switch (choice) {
             case 1:

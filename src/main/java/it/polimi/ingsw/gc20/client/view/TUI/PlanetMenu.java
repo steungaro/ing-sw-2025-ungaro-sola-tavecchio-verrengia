@@ -19,25 +19,21 @@ public class PlanetMenu implements MenuState{
     private final String username = ClientGameModel.getInstance().getUsername();
     private final List<Planet> planets;
 
-    public PlanetMenu(Terminal terminal, List<Planet> planets) {
-        this.terminal = terminal;
+    public PlanetMenu(List<Planet> planets) {
+        this.terminal = null;
         this.lineReader = new LineNumberReader(terminal.reader());
         this.planets = planets;
     }
 
     public void displayMenu() {
-        TUI.clearConsole(terminal);
+        TUI.clearConsole();
         terminal.writer().println("Planet Menu");
         terminal.writer().println("1. Land on a planet");
         terminal.writer().println("2. Don't land on a planet");
     }
 
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         // Handle user input for the planet menu
         switch (choice) {
             case 1:

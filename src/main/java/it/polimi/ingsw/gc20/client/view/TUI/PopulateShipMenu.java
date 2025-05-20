@@ -15,8 +15,8 @@ public class PopulateShipMenu implements MenuState{
     private final LineReader lineReader;
     private final String username = ClientGameModel.getInstance().getUsername();
 
-    public PopulateShipMenu(Terminal terminal) {
-        this.terminal = terminal;
+    public PopulateShipMenu() {
+        this.terminal = null;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
     }
     /**
@@ -35,11 +35,7 @@ public class PopulateShipMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         switch (choice) {
             case 1:
                 // End population phase
