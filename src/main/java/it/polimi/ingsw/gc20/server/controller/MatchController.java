@@ -34,9 +34,9 @@ public class MatchController implements MatchControllerInterface {
      */
     private MatchController() {
         this.games = new ArrayList<>();
-        this.playersInLobbies = new HashMap<>();
+        this.playersInLobbies = new LinkedHashMap<>();
         this.lobbies = new ArrayList<>();
-        this.playersInGames = new HashMap<>();
+        this.playersInGames = new LinkedHashMap<>();
     }
 
     /**
