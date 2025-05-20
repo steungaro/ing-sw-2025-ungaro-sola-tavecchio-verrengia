@@ -2,30 +2,28 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
-import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.*;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+// Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
 
-public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
+public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -43,17 +41,13 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
-    private MenuState currentMenuState;
-    public boolean busy;
-    private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
-    public ClientGameModel() throws RemoteException {
-        super();
-        // Initialize default state if necessary
+
+    public ClientGameModel() {
+        // Initialize the default state if necessary
         this.players = new ArrayList<>();
         this.loggedIn = false;
         this.username = null;
         this.client = null;
-        this.ships = new HashMap<>();
     }
     public ViewAdventureCard getCurrentCard() {
         return currentCard;
@@ -62,45 +56,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
     }
-
-    public MenuState getCurrentMenuState() {
-        return currentMenuState;
-    }
-    public void setBusy() {
-        busy = true;
-    }
-    public void setFree(){
-        busy = false;
-        while (!menuStateQueue.isEmpty()) {
-            currentMenuState = menuStateQueue.poll();
-            if (currentMenuState != null) {
-                TUI.clearConsole();
-                currentMenuState.displayMenu();
-            }
-        }
-    }
-    /**
-     * Sets the current menu state and displays it if the model is not busy.
-     * If the model is busy, the new state is added to a queue to be processed later.
-     *
-     * @param currentMenuState The new menu state to set.
-     * @apiNote This method is used to change the current menu state in the game model. GUI NEED TO REIMPLEMENT THIS METHOD
-     */
-    public void setCurrentMenuState(MenuState currentMenuState) {
-        if (busy){
-            menuStateQueue.add(currentMenuState);
-        } else {
-            if (menuStateQueue.isEmpty()) {
-                this.currentMenuState = currentMenuState;
-                TUI.clearConsole();
-                this.currentMenuState.displayMenu();
-            } else {
-                menuStateQueue.add(currentMenuState);
-            }
-        }
-    }
-
-    public abstract void displayErrorMessage(String message);
 
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = lobbyList;
@@ -113,6 +68,10 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
     }
 
     public ViewComponent getComponentInHand() {
@@ -151,6 +110,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     public void ping() {
+        LOGGER.info("Ping received from server, ponging back.");
         client.pong(username);
     }
 
@@ -175,7 +135,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
-            System.out.println(ship);
+            //TODO
+            ship.toString();
         } else {
             LOGGER.warning("No ship found for " + username);
         }
@@ -183,15 +144,31 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void printBoard() {
         if (board != null) {
-            System.out.println(board);
+            //TODO
+            board.toString();
         } else {
             LOGGER.warning("No board found.");
         }
     }
 
-    public void printCardsInLine(List<ViewAdventureCard> cards) {
+    public void printDeck(int index) {
+        if (board != null) {
+            List<ViewAdventureCard> cards = board.decks.get(index);
+            if (cards != null) {
+                String out = printCardsInLine(cards);
+                System.out.println(out);
+                LOGGER.info("Deck " + index + ":\n");
+            } else {
+                LOGGER.warning("No card found at index " + index);
+            }
+        } else {
+            LOGGER.warning("No deck found at index " + index);
+        }
+    }
+
+    public String printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
-            return;
+            return "";
         }
 
         final int cardsPerRow = 10;
@@ -204,37 +181,44 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
             List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
-            for (int i = 0; i < 11; i++) {
-                for (ViewAdventureCard rowCard : rowCards) {
-                    finalResult.append(rowCard.toLine(i));
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowCards.size(); j++) {
+                    finalResult.append(rowCards.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowCards.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
             }
-            finalResult.append("\n");
         }
-        System.out.println(finalResult);
+        return finalResult.toString();
+    }
+
+    public void printDeck(){
+        printDeck(0);
     }
 
     public void printCurrentCard() {
         if (currentCard != null) {
-            System.out.println(currentCard);
+            //TODO
+            currentCard.toString();
         } else {
-            System.out.println("No active card.");
+            LOGGER.warning("No current card found.");
         }
     }
 
     public void printViewedPile(){
         if (board != null) {
             List<ViewComponent> comps = board.viewedPile;
-            if (comps != null && !comps.isEmpty()) {
+            if (comps != null) {
                 String out = printComponentsInLine(comps);
                 System.out.println(out);
+                LOGGER.info("View Pile:\n");
             } else {
-                System.out.println("No components here.");
+                LOGGER.warning("No card found in view pile.");
             }
         } else {
-            LOGGER.warning("No board found.");
+            LOGGER.warning("No view pile found.");
         }
     }
 
@@ -253,12 +237,14 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int startIdx = componentRow * componentsPerRow;
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
-            for (int i = 0; i < 5; i++) {
-                for (ViewComponent rowComponent : rowComponents) {
-                    finalResult.append(rowComponent.toLine(i));
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowComponents.size(); j++) {
+                    finalResult.append(rowComponents.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowComponents.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
             }
         }
         return finalResult.toString();
@@ -309,14 +295,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-    public void login(){
-        throw new UnsupportedOperationException("Login not implemented yet.");
-    }
-
-    public void setUsername(String username){
-        this.username = username;
-    }
-
     // --- Getters ---
     public ViewShip getPlayerShip() { return playerShip; }
     public ViewLobby getCurrentLobby() { return currentLobby; }
@@ -325,16 +303,23 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public String getErrorMessage() { return errorMessage; }
 
 
+    public abstract void display(String message);
+
+    public abstract void display(MenuState menuState);
+
+
     public Client getClient() {
         return client;
     }
 
+    public abstract void login();
+    // -----
     public abstract void shutdown();
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
     public abstract void cardAcceptanceMenu(String message);
-    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing);
+    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
     public abstract void engineMenu(String message);
     public abstract void inLobbyMenu();
     public abstract void mainMenuState();
@@ -342,16 +327,15 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void populateShipMenu();
     public abstract void automaticAction(String message);
     public abstract void validationMenu();
+    public abstract void takeComponentMenu();
     public abstract void init();
     public abstract void shieldsMenu(FireType fireType, int direction, int line);
     public abstract void rollDiceMenu(FireType fireType, int direction);
     public abstract void cargoMenu(int cargoNum);
     public abstract void loseCrewMenu(int crewNum);
     public abstract void removeBatteryMenu(int batteryNum);
-    public abstract void AssemblingStateMenu();
+    public abstract void placeComponentMenu();
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
-    public abstract void idleMenu(String message);
-    public abstract void keepPlayingMenu();
 }

@@ -1,12 +1,9 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.client.view.common.View;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
@@ -41,7 +38,7 @@ public class NetworkController {
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) View.getInstance();
+        guiView = (GUIView) ClientGameModel.getInstance();
 
         // Inizializza il gruppo di toggle per i radio button
         connectionTypeGroup = new ToggleGroup();
