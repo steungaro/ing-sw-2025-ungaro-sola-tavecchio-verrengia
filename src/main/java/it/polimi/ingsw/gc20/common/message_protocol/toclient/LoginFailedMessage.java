@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 public record LoginFailedMessage(
@@ -12,6 +13,6 @@ public record LoginFailedMessage(
 
     @Override
     public void handleMessage() {
-        // TODO Capire come gestire login
+        ClientGameModel.getInstance().loginFailed(username);
     }
 }

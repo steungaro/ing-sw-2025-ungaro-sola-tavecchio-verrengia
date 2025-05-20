@@ -32,7 +32,7 @@ public abstract class ClientGameModel implements ViewInterface {
     private GamePhase currentPhase;
     private List<ViewPlayer> players;
     private String errorMessage;
-    protected boolean loggedIn;
+    public boolean loggedIn;
     protected String username;
     protected Client client;
     private ViewBoard board;
@@ -331,4 +331,6 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void removeBatteryMenu(int batteryNum);
     public abstract void placeComponentMenu();
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
+    public abstract void loginSuccessful(String username);
+    public abstract void loginFailed(String username);
 }

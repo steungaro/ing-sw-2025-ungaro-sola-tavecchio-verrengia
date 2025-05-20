@@ -221,9 +221,6 @@ public class TUI extends ClientGameModel {
             client.login(inputUsername);
             this.username = inputUsername;
         }
-
-        terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
-        terminal.flush();
     }
 
     public void display(MenuState menu) {
@@ -349,5 +346,20 @@ public class TUI extends ClientGameModel {
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){
         // TODO: implement this method
+    }
+
+    @Override
+    public void loginSuccessful(String username) {
+        clearConsole(terminal);
+        terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
+        terminal.flush();
+    }
+
+    @Override
+    public void loginFailed(String username) {
+        clearConsole(terminal);
+        terminal.writer().println("\033[31mLogin failed for user: " + username + "\033[0m");
+        terminal.flush();
+        login();
     }
 }
