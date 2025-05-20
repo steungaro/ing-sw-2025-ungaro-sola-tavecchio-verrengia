@@ -24,7 +24,6 @@ public class MainMenuController {
 
     private GUIView guiView;
     private String username;
-    private ClientController clientController;
 
     @FXML
     public void initialize() {
@@ -43,10 +42,10 @@ public class MainMenuController {
     }
 
     private void handleCreateLobby() {
-        guiView.showCreateLobbyScene();
+        guiView.showScene("createLobby");
     }
     private void handleViewLobbies() {
-        guiView.showLobbyListScene();
+        guiView.showScene("lobbiesList");
     }
 
     public void setClientController(ClientController clientController) {
@@ -54,6 +53,6 @@ public class MainMenuController {
     }
 
     private void handleLogout() {
-        guiView.showNetworkScene();
+        guiView.showScene("network");
     }
 }
