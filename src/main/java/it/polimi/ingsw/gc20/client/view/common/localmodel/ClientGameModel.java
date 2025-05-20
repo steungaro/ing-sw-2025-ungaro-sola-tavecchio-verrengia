@@ -309,7 +309,6 @@ public abstract class ClientGameModel implements ViewInterface {
     }
 
     public abstract void shutdown();
-
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
