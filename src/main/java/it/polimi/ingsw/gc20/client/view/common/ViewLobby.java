@@ -32,6 +32,10 @@ public class ViewLobby {
         return maxPlayers;
     }
 
+    public String getOwner(){
+        return playersList.get(0);
+    }
+
     public String toString(){
         return name + " " + level +" " + playersList;
     }
