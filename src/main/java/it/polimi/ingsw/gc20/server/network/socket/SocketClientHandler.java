@@ -40,7 +40,7 @@ public class SocketClientHandler implements ClientHandler {
                 processMessage(message);
             }
         } catch (IOException | ClassNotFoundException e) {
-            LOGGER.warning("Error while handling request: " + e.getMessage());
+            LOGGER.info("Error while handling request, user disconnected: " + e.getMessage());
             disconnect();
         }
     }

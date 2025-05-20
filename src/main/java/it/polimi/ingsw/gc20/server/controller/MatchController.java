@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyListMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LobbyListRequest;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
@@ -217,21 +218,22 @@ public class MatchController implements MatchControllerInterface {
                 Lobby l;
                 try {
                     l = playersInLobbies.get(username);
-                    lobbies.remove(l);
                     games.add(l.createGameController());
+                    lobbies.remove(l);
+                    List<String> usersToRemove = new ArrayList<>();
+                    for (String user : playersInLobbies.keySet()) {
+                        if (playersInLobbies.get(user).equals(l)) {
+                            usersToRemove.add(user);
+                        }
+                    }
+                    for (String user : usersToRemove) {
+                        playersInGames.put(user, games.getLast());
+                        playersInLobbies.remove(user);
+                    }
                 } catch (NoSuchElementException e) {
                     throw new LobbyException("No lobby for username: " + username);
-                }
-                List<String> usersToRemove = new ArrayList<>();
-                for (String user : playersInLobbies.keySet()) {
-                    if (playersInLobbies.get(user).equals(l)) {
-                        usersToRemove.add(user);
-                    }
-                }
-                for (String user : usersToRemove) {
-                    playersInGames.put(user, games.getLast());
-                    playersInLobbies.remove(user);
-                }
+                } catch (InvalidStateException _){}
+
             } catch (LobbyException e) {
                 logger.log(Level.WARNING, "No such Lobby", e);
             }
@@ -251,6 +253,7 @@ public class MatchController implements MatchControllerInterface {
                 lobby.kill();
                 lobbies.remove(lobby);
                 logger.log(Level.INFO, "Lobby killed");
+                getLobbies(username);
             }
         } else {
             //notify the player with an error message

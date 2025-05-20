@@ -40,24 +40,28 @@ public class GameController implements GameControllerInterface {
      * @param level     game difficulty level
      * @throws IllegalArgumentException if number of players is not between 2 and 4
      */
-    public GameController(String id, List<String> usernames, int level) {
+    public GameController(String id, List<String> usernames, int level) throws InvalidStateException{
         if(usernames.size() > 4 || usernames.size() < 2) {
-            throw new IllegalArgumentException("The number of players must be between 2 and 4");
-        }
+            this.gameID = null;
+            this.model = null;
+            NetworkService.getInstance().sendToClient(usernames.get(0), new ErrorMessage("The number of players must be between 2 and 4"));
+            throw new InvalidStateException("The number of players must be between 2 and 4");
+        } else {
 
-        this.gameID = id;
-        this.model = new GameModel();
+            this.gameID = id;
+            this.model = new GameModel();
 
-        try {
-            model.startGame(level, usernames, gameID);
-            state = new AssemblingState(model);
-            connectedPlayers.addAll(usernames);
-            //TODO: notify players of game start
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error starting game", e);
-            //notify all players of the error
-            for (String username : usernames) {
-                NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error starting game: " + e.getMessage()));
+            try {
+                model.startGame(level, usernames, gameID);
+                state = new AssemblingState(model);
+                connectedPlayers.addAll(usernames);
+                //TODO: notify players of game start
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Error starting game", e);
+                //notify all players of the error
+                for (String username : usernames) {
+                    NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error starting game: " + e.getMessage()));
+                }
             }
         }
     }

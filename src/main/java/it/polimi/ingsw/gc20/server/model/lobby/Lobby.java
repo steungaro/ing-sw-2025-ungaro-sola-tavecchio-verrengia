@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.lobby;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 
 import java.util.*;
@@ -101,7 +102,7 @@ public class Lobby {
      * @return the game controller created from the lobby
      * @see GameController
      */
-    public GameController createGameController() {
+    public GameController createGameController() throws InvalidStateException {
         return new GameController(id, users, level);
     }
 
