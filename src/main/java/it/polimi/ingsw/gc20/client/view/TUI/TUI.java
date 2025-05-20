@@ -31,6 +31,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void init() {
+        clearConsole();
         System.out.println("Welcome to Galaxy Trucker!");
         printLogo();
     }

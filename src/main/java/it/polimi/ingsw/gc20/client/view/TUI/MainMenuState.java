@@ -23,6 +23,7 @@ public class MainMenuState implements MenuState{
         System.out.println("1. Join a lobby");
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
+        System.out.print(" > ");
     }
 
 

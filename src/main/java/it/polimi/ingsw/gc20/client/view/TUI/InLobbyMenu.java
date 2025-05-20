@@ -14,15 +14,18 @@ public class InLobbyMenu implements MenuState {
     }
 
     public void displayMenu() {
-        //TODO
-            System.out.println("Lobby menu");
-            System.out.println("Current lobby: " + ClientGameModel.getInstance().getCurrentLobby());
+        TUI.clearConsole();
+        System.out.println("Lobby menu");
+        System.out.println("--------------------------------------------------");
+        System.out.println("Current lobby: " + ClientGameModel.getInstance().getCurrentLobby());
+        System.out.println("--------------------------------------------------");
         if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
             System.out.println("1. Start game");
             System.out.println("2. Quit lobby");
         } else {
             System.out.println("1. Leave lobby");
         }
+        System.out.print(" > ");
     }
 
     public boolean handleInput() throws IOException {
