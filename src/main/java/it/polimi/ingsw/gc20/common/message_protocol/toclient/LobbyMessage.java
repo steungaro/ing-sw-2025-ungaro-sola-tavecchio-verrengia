@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 import java.util.List;
@@ -20,6 +22,8 @@ public record LobbyMessage(
 
     @Override
     public void handleMessage() {
-        // TODO capire come gestire lobby
+        ViewLobby viewLobby = new ViewLobby(lobbyName, maxPlayers, level, players);
+        ClientGameModel.getInstance().updateLobby(viewLobby);
+        ClientGameModel.getInstance().inLobbyMenu();
     }
 }
