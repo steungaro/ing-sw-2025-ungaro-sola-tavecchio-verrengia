@@ -352,4 +352,13 @@ public class TUI extends ClientGameModel {
     public void loseCrewMenu(int crewNum){
         // TODO: implement this method
     }
+
+    public void removeBatteryMenu(int batteryNum){
+        // TODO: implement this method
+    }
+
+    public void placeComponentMenu(){
+        // TODO: implement this method
+    }
+
 }

@@ -21,7 +21,7 @@ public class ViewBoard {
     public boolean[] deckAvailability = new boolean[3];
     public int remainingTime;
     public List<List<ViewAdventureCard>> decks;
-    public List<ViewComponent> unviewedPile;
+    public int unviewedPile;
     public List<ViewComponent> viewedPile;
 
     public ViewBoard(boolean isLearner, ViewPlayer[] players) {
