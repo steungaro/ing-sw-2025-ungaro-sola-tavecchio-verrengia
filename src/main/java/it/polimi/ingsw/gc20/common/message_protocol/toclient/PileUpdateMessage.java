@@ -22,9 +22,7 @@ public record PileUpdateMessage(
     @Override
     public void handleMessage() {
         ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
-        if (viewBoard.unviewedPile != null && viewBoard.unviewedPile.size() > unviewedSize) {
-            viewBoard.unviewedPile = viewBoard.unviewedPile.subList(viewBoard.unviewedPile.size() - unviewedSize, viewBoard.unviewedPile.size()); // first out
-        }
+        viewBoard.unviewedPile = unviewedSize;
         List<ViewComponent> viewedPile = new ArrayList<>();
         if(viewed!=null){
             for (Component component : viewed) {

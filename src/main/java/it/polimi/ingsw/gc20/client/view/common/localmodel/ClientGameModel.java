@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
-@SuppressWarnings("unused")
+
 public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
@@ -327,4 +327,6 @@ public abstract class ClientGameModel implements ViewInterface {
     public abstract void rollDiceMenu(FireType fireType, int direction);
     public abstract void cargoMenu(int cargoNum);
     public abstract void loseCrewMenu(int crewNum);
+    public abstract void removeBatteryMenu(int batteryNum);
+    public abstract void placeComponentMenu();
 }
