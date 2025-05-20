@@ -179,6 +179,7 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    @Override
     public void login() {
         System.out.print("Insert username (or type [q] to quit):\n > ");
         String inputUsername = scanner.nextLine().trim();
