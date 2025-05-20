@@ -13,14 +13,14 @@ public class ShieldsMenu implements MenuState {
     private final LineReader lineReader;
     private final String message;
 
-    public ShieldsMenu(Terminal terminal, String message) {
-        this.terminal = terminal;
+    public ShieldsMenu(String message) {
+        this.terminal = null;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
         this.message = message;
     }
 
     public void displayMenu(){
-        TUI.clearConsole(terminal);
+        TUI.clearConsole();
         terminal.writer().println("Shields Menu");
         terminal.writer().println(message);
         terminal.writer().println("1. Activate a shield");
@@ -29,11 +29,7 @@ public class ShieldsMenu implements MenuState {
     }
 
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         // Handle user input for the engine menu
         switch (choice) {
             case 1:

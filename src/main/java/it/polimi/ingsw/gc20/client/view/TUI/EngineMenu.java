@@ -18,14 +18,14 @@ public class EngineMenu implements MenuState {
     private List<Pair<Integer, Integer>> batteries;
     private final String message;
 
-    public EngineMenu(Terminal terminal, String message) {
-        this.terminal = terminal;
+    public EngineMenu(String message) {
+        this.terminal = null;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
         this.message = message;
     }
 
     public void displayMenu(){
-        TUI.clearConsole(terminal);
+        TUI.clearConsole();
         terminal.writer().println("Engines Menu");
         terminal.writer().println(message);
         terminal.writer().println("1. Activate engines");
@@ -34,11 +34,7 @@ public class EngineMenu implements MenuState {
     }
 
     public boolean handleInput() throws IOException {
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         // Handle user input for the engine menu
         switch (choice) {
             case 1:

@@ -15,13 +15,13 @@ public class ValidationMenu implements MenuState{
     public final LineReader lineReader;
 
 
-    public ValidationMenu(Terminal terminal){
-        this.terminal = terminal;
+    public ValidationMenu(){
+        this.terminal = null;
         this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
     }
 
     public void displayMenu(){
-        TUI.clearConsole(terminal);
+        TUI.clearConsole();
         terminal.writer().println("Validation Menu");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             System.out.println("Ship is already valid! Wait for other players before going to the next phase.");
@@ -41,11 +41,7 @@ public class ValidationMenu implements MenuState{
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             return true;
         }
-        // Hide cursor
-        TUI.hideCursor(terminal);
         int choice = terminal.reader().read();
-        // Show cursor
-        TUI.showCursor(terminal);
         // Handle user input for the validation menu
         switch (choice) {
             case 1:
