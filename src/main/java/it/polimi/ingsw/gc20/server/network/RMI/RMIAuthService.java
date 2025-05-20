@@ -87,6 +87,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             RMIClientHandler clientHandler = (RMIClientHandler) NetworkService.getInstance().getClient(username);
             clientHandler.setView((ViewInterface) view);
             LOGGER.info("View set for user: " + username);
+            MatchController.getInstance().getLobbies(username);
             return true;
         } catch (Exception e) {
             LOGGER.severe("Error while setting the view: " + e.getMessage());
