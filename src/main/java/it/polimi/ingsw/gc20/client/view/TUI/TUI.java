@@ -204,6 +204,7 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    @Override
     public void login() {
         clearConsole(terminal);
         String inputUsername = reader.readLine("Insert username:\n > ").trim();

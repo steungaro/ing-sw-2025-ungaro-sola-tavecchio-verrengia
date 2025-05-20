@@ -43,7 +43,7 @@ public abstract class ClientGameModel implements ViewInterface {
     private List<ViewLobby> lobbyList;
 
     public ClientGameModel() {
-        // Initialize default state if necessary
+        // Initialize the default state if necessary
         this.players = new ArrayList<>();
         this.loggedIn = false;
         this.username = null;
@@ -68,6 +68,10 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public String getUsername() {
         return username;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
     }
 
     public ViewComponent getComponentInHand() {
@@ -308,6 +312,8 @@ public abstract class ClientGameModel implements ViewInterface {
         return client;
     }
 
+    public abstract void login();
+    // -----
     public abstract void shutdown();
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
