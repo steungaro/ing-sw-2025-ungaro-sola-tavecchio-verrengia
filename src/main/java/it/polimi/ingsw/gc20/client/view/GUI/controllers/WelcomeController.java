@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 
@@ -14,12 +14,12 @@ public class WelcomeController {
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) View.getInstance();
+        guiView = (GUIView) ClientGameModel.getInstance();
 
         playButton.setOnAction(event -> handlePlay());
     }
 
     private void handlePlay() {
-        guiView.showNetworkScene();
+        guiView.showScene("network");
     }
 }
