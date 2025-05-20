@@ -8,6 +8,6 @@ public interface RMIAuthInterface extends Remote {
     boolean login (String username) throws RemoteException;
     @Deprecated
     boolean logout (String username) throws RemoteException;
-    boolean setView(String username, UnicastRemoteObject view) throws RemoteException;
+    boolean setView(String username, ViewInterface view) throws RemoteException;
     void pong(String username) throws RemoteException;
 }

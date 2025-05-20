@@ -23,6 +23,7 @@ public class TUI extends ClientGameModel {
     public TUI() throws RemoteException{
         LOGGER.info("TUI created");
         scanner = new Scanner(System.in);
+        super();
     }
 
     @Override

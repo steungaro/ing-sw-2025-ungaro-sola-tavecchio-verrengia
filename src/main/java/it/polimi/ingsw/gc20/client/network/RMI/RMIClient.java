@@ -77,24 +77,16 @@ public class RMIClient implements Client {
                     LOGGER.warning("Failed to login for user: " + username);
                 }
             }
-        } catch (RemoteException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.warning("Error during login: " + e.getMessage());
         }
     }
 
     @Override
     public void stop() {
-        try {
-            if (registry != null) {
-                registry.unbind("AuthService");
-                registry.unbind("GameService");
-                registry.unbind("MatchService");
-            }
-            connected = false;
-            LOGGER.info("Disconnected from RMI server.");
-        } catch (RemoteException | NotBoundException e) {
-            LOGGER.warning("Error while stopping RMI client: " + e.getMessage());
-        }
+        connected = false;
+        LOGGER.info("Disconnected from RMI server.");
     }
 
     @Override
