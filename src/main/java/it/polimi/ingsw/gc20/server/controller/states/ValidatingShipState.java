@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.AlienPlacementePhaseMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.BoardUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.ValidateShipPhase;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
@@ -27,10 +28,12 @@ public class ValidatingShipState extends State {
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
+            NetworkService.getInstance().sendToClient(player.getUsername(), new BoardUpdateMessage(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
             }
             phaseMap.put (player, StatePhase.VALIDATE_SHIP_PHASE); //set all the phase to validate ship phase
+
         }
     }
 
