@@ -1,23 +1,19 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
+import java.util.List;
+
 public class ViewLobby {
     private final String name;
-    private final String owner;
     private final int maxPlayers;
-    private int players;
+    List<String> playersList;
     private final int level;
-    private String currentPlayer;
 
 
-    public ViewLobby(String name, String owner, int maxPlayers, int level) {
+    public ViewLobby(String name, int maxPlayers, int level, List<String> playersList) {
         this.name = name;
-        this.owner = owner;
+        this.playersList = playersList;
         this.maxPlayers = maxPlayers;
         this.level = level;
-    }
-
-    public Object getOwner() {
-        return owner;
     }
 
     public String getID() {
@@ -26,5 +22,20 @@ public class ViewLobby {
 
     public int getLevel() {
         return level;
+    }
+
+    public List<String> getPlayersList() {
+        return playersList;
+    }
+    public int getMaxPlayers(){
+        return maxPlayers;
+    }
+
+    public String getOwner(){
+        return playersList.getFirst();
+    }
+
+    public String toString(){
+        return name + " " + level +" " + playersList;
     }
 }

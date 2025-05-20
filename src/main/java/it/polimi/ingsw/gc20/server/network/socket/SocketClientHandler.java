@@ -19,17 +19,12 @@ public class SocketClientHandler implements ClientHandler {
     private final String username;
     private boolean connected = true;
 
-    public SocketClientHandler(String username, Socket clientSocket) {
+    public SocketClientHandler(String username, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out) {
         this.clientSocket = clientSocket;
         this.username = username;
-        try {
-            // Creating input and output streams (output first to avoid deadlock)
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            LOGGER.severe("Error while initializing streams: " + e.getMessage());
-            disconnect();
-        }
+        this.in = in;
+        this.out = out;
+        LOGGER.info("ClientHandler created for user: " + username);
     }
 
     /**

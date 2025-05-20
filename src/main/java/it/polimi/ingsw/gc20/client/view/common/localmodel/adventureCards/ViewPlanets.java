@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 
 import java.util.List;
 
-public class ViewPlanets extends ViewAdvetnureCard{
+public class ViewPlanets extends ViewAdventureCard {
 
     List<int[]> planets; // red, yellow, green, blue
     int lostDays;
@@ -38,66 +38,81 @@ public class ViewPlanets extends ViewAdvetnureCard{
         this.lostDays = adventureCard.getLostDays();
     }
 
+    public ViewPlanets() {
+        super();
+    }
+
+    @Override
+    public String toLine(int i) {
+        String string = toString();
+        String[] lines = string.split("\n");
+        if (i < 0 || i >= lines.length) {
+            return "";
+        }
+        return lines[i];
+    }
+
     @Override
     public String toString(){
         return
-        up() + "\n" +
-                lateral() + "  Planets             " + lateral() + "\n" +
-                lateral() + EMPTY_ROW + lateral() + "\n" +
+        UP + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + "       Planets        " + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 planets() +
-                lateral() + "  LostDays: " + lostDays + "         " + lateral() + "\n" +
-                emprtyRows() +
-                down();
+                LATERAL + "  LostDays: " + lostDays + "         " + LATERAL + "\n" +
+                emptyRows() +
+                DOWN;
     }
 
     private String planets(){
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
         for(int i=0; i<planets.size(); i++){
-            result += lateral() + "  ";
-            result += "P" + i + ": ";
+            result.append(LATERAL + "  ");
+            result.append("P").append(i).append(": ");
 
-            result += reward(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3]);
-            result += spaces(16 - rewardSize(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3]));
-            result += lateral() + "\n";
+            result.append(reward(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3]));
+            result.append(" ".repeat(16 - rewardSize(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3])));
+            result.append(LATERAL + "\n");
         }
 
 
-        return result;
+        return result.toString();
     }
 
     private String reward(int redCargo, int yellowCargo, int greenCargo, int blueCargo){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int j = 0;
         for(int i = 0; i < redCargo; i++){
             if(i==0)
-                result += "R";
+                result.append("R");
             else
-                result += " R";
+                result.append(" R");
             j++;
         }
         for(int i = 0; i < yellowCargo; i++){
             if(j==0)
-                result += "Y";
+                result.append("Y");
             else
-                result += " Y";
+                result.append(" Y");
             j++;
         }
         for(int i = 0; i < greenCargo; i++){
             if(j==0)
-                result += "G";
+                result.append("G");
             else
-                result += " G";
+                result.append(" G");
             j++;
         }
         for(int i = 0; i < blueCargo; i++){
             if(j==0)
-                result += "B";
+                result.append("B");
             else
-                result += " B";
+                result.append(" B");
             j++;
         }
-        return result;
+        return result.toString();
     }
 
     private int rewardSize(int redCargo, int yellowCargo, int greenCargo, int blueCargo){
@@ -114,11 +129,7 @@ public class ViewPlanets extends ViewAdvetnureCard{
         return (result-1)*2 + 1;
     }
 
-    private String emprtyRows(){
-        String result = "";
-        for(int i=0; i<5-planets.size(); i++){
-            result += lateral() + EMPTY_ROW + lateral() + "\n";
-        }
-        return result;
+    private String emptyRows(){
+        return (LATERAL + EMPTY_ROW + LATERAL + "\n").repeat(Math.max(0, 5 - planets.size()));
     }
 }

@@ -31,7 +31,6 @@ public interface GameControllerInterface extends Remote {
     void validateShip(String username) throws RemoteException;
     void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
     void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) throws RemoteException;
-    void readyToFly(String username) throws RemoteException;
 
     // Gameplay
     void chooseBranch(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
@@ -45,6 +44,7 @@ public interface GameControllerInterface extends Remote {
     void endMove(String username) throws RemoteException;
     void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
     void giveUp(String username) throws RemoteException;
+    void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
 
     // Activate ship components
     void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws RemoteException;

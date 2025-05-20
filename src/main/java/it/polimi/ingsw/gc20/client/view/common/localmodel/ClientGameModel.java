@@ -1,14 +1,17 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
+import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdvetnureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 // Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,9 +20,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
-public abstract class ClientGameModel implements ViewInterface{
+
+public abstract class ClientGameModel implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -28,14 +32,15 @@ public abstract class ClientGameModel implements ViewInterface{
     private GamePhase currentPhase;
     private List<ViewPlayer> players;
     private String errorMessage;
-    protected boolean loggedIn;
+    public boolean loggedIn;
     protected String username;
     protected Client client;
     private ViewBoard board;
     private Map<String, ViewShip> ships;
-    protected AdventureCard currentCard;
+    protected ViewAdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
+    private List<ViewLobby> lobbyList;
 
     public ClientGameModel() {
         // Initialize default state if necessary
@@ -43,6 +48,26 @@ public abstract class ClientGameModel implements ViewInterface{
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+    }
+    public ViewAdventureCard getCurrentCard() {
+        return currentCard;
+    }
+
+    public void setCurrentCard(ViewAdventureCard currentCard) {
+        this.currentCard = currentCard;
+    }
+
+    public void setLobbyList(List<ViewLobby> lobbyList) {
+        this.lobbyList = lobbyList;
+        LOGGER.fine("Lobby list updated in model.");
+    }
+
+    public List<ViewLobby> getLobbyList() {
+        return lobbyList;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public ViewComponent getComponentInHand() {
@@ -76,6 +101,10 @@ public abstract class ClientGameModel implements ViewInterface{
         ships.put(username, ship);
     }
 
+    public void setPlayers(List<ViewPlayer> players) {
+        this.players = players;
+    }
+
     public void ping() {
         LOGGER.info("Ping received from server, ponging back.");
         client.pong(username);
@@ -102,6 +131,7 @@ public abstract class ClientGameModel implements ViewInterface{
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
+            //TODO
             ship.toString();
         } else {
             LOGGER.warning("No ship found for " + username);
@@ -110,6 +140,7 @@ public abstract class ClientGameModel implements ViewInterface{
 
     public void printBoard() {
         if (board != null) {
+            //TODO
             board.toString();
         } else {
             LOGGER.warning("No board found.");
@@ -118,7 +149,7 @@ public abstract class ClientGameModel implements ViewInterface{
 
     public void printDeck(int index) {
         if (board != null) {
-            List<ViewAdvetnureCard> cards = board.decks.get(index);
+            List<ViewAdventureCard> cards = board.decks.get(index);
             if (cards != null) {
                 String out = printCardsInLine(cards);
                 System.out.println(out);
@@ -131,13 +162,7 @@ public abstract class ClientGameModel implements ViewInterface{
         }
     }
 
-    /**
-     * Metodo che consente di visualizzare multiple carte sulla stessa riga orizzontale,
-     * andando a capo ogni 10 carte
-     * @param cards Lista di ViewAdventureCard da visualizzare
-     * @return Stringa con la rappresentazione delle carte affiancate
-     */
-    public String printCardsInLine(List<ViewAdvetnureCard> cards) {
+    public String printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return "";
         }
@@ -151,28 +176,15 @@ public abstract class ClientGameModel implements ViewInterface{
         for (int cardRow = 0; cardRow < numCardRows; cardRow++) {
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
-            List<ViewAdvetnureCard> rowCards = cards.subList(startIdx, endIdx);
-
-            List<String> cardStrings = rowCards.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-
-            List<String[]> cardLines = cardStrings.stream()
-                    .map(card -> card.split("\n"))
-                    .collect(Collectors.toList());
-
-            int numRows = cardLines.get(0).length;
-
-            for (int i = 0; i < numRows; i++) {
-                for (String[] cardLine : cardLines) {
-                    finalResult.append(cardLine[i]);
+            List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowCards.size(); j++) {
+                    finalResult.append(rowCards.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowCards.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
-            }
-
-            if (cardRow < numCardRows - 1) {
-                finalResult.append("\n");
             }
         }
         return finalResult.toString();
@@ -184,17 +196,18 @@ public abstract class ClientGameModel implements ViewInterface{
 
     public void printCurrentCard() {
         if (currentCard != null) {
+            //TODO
             currentCard.toString();
         } else {
             LOGGER.warning("No current card found.");
         }
     }
 
-    public void printViewPile(){
+    public void printViewedPile(){
         if (board != null) {
-            List<ViewComponent> cards = board.viewedPile;
-            if (cards != null) {
-                String out = printComponentsInLine(cards);
+            List<ViewComponent> comps = board.viewedPile;
+            if (comps != null) {
+                String out = printComponentsInLine(comps);
                 System.out.println(out);
                 LOGGER.info("View Pile:\n");
             } else {
@@ -205,12 +218,6 @@ public abstract class ClientGameModel implements ViewInterface{
         }
     }
 
-    /**
-     * Metodo che consente di visualizzare multipli componenti sulla stessa riga orizzontale,
-     * andando a capo ogni 10 componenti
-     * @param components Lista di ViewComponent da visualizzare
-     * @return Stringa con la rappresentazione dei componenti affiancati
-     */
     public String printComponentsInLine(List<ViewComponent> components) {
         if (components == null || components.isEmpty()) {
             return "";
@@ -226,27 +233,14 @@ public abstract class ClientGameModel implements ViewInterface{
             int startIdx = componentRow * componentsPerRow;
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
-
-            List<String> componentStrings = rowComponents.stream()
-                    .map(Object::toString)
-                    .collect(Collectors.toList());
-
-            List<String[]> componentLines = componentStrings.stream()
-                    .map(component -> component.split("\n"))
-                    .collect(Collectors.toList());
-
-            int numRows = componentLines.get(0).length;
-
-            for (int i = 0; i < numRows; i++) {
-                for (String[] componentLine : componentLines) {
-                    finalResult.append(componentLine[i]);
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < rowComponents.size(); j++) {
+                    finalResult.append(rowComponents.get(j).toLine(i));
                     finalResult.append("  ");
+                    if (j == rowComponents.size() - 1) {
+                        finalResult.append("\n");
+                    }
                 }
-                finalResult.append("\n");
-            }
-
-            if (componentRow < numComponentRows - 1) {
-                finalResult.append("\n");
             }
         }
         return finalResult.toString();
@@ -303,4 +297,40 @@ public abstract class ClientGameModel implements ViewInterface{
     public GamePhase getCurrentPhase() { return currentPhase; }
     public List<ViewPlayer> getPlayers() { return players; }
     public String getErrorMessage() { return errorMessage; }
+
+
+    public abstract void display(String message);
+
+    public abstract void display(MenuState menuState);
+
+
+    public Client getClient() {
+        return client;
+    }
+
+    public abstract void shutdown();
+
+    public abstract void branchMenu();
+    public abstract void buildingMenu(List<ViewAdventureCard> cards);
+    public abstract void cannonsMenu(String message);
+    public abstract void cardAcceptanceMenu(String message);
+    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
+    public abstract void engineMenu(String message);
+    public abstract void inLobbyMenu();
+    public abstract void mainMenuState();
+    public abstract void planetMenu(List<Planet> planets);
+    public abstract void populateShipMenu();
+    public abstract void automaticAction(String message);
+    public abstract void validationMenu();
+    public abstract void takeComponentMenu();
+    public abstract void init();
+    public abstract void shieldsMenu(FireType fireType, int direction, int line);
+    public abstract void rollDiceMenu(FireType fireType, int direction);
+    public abstract void cargoMenu(int cargoNum);
+    public abstract void loseCrewMenu(int crewNum);
+    public abstract void removeBatteryMenu(int batteryNum);
+    public abstract void placeComponentMenu();
+    public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
+    public abstract void loginSuccessful(String username);
+    public abstract void loginFailed(String username);
 }

@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
-public class ViewSmugglers extends ViewAdvetnureCard {
+public class ViewSmugglers extends ViewAdventureCard {
     int firePower;
     int lostCargo;
     int redCargo = 0;
@@ -14,9 +14,7 @@ public class ViewSmugglers extends ViewAdvetnureCard {
     int blueCargo = 0;
     int lostDays;
 
-    // In ViewSlavers.java
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    protected ViewSmugglers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.lostCargo = adventureCard.getLostCargo();
@@ -41,66 +39,72 @@ public class ViewSmugglers extends ViewAdvetnureCard {
         this.lostDays = adventureCard.getLostDays();
     }
 
+    public ViewSmugglers() {
+        super();
+    }
+
+    @Override
+    public String toLine(int i) {
+        return switch (i) {
+            case 0 -> UP;
+            case 1, 3, 6, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 2 -> LATERAL + "      Smugglers       " + LATERAL;
+            case 4 -> LATERAL + "     FirePower: " + firePower + "     " + LATERAL;
+            case 5 -> LATERAL + "     Lost cargo: " + lostCargo + "     " + LATERAL;
+            case 7 -> LATERAL + " ".repeat(7 - reward().length()/2) + "Reward: " + reward() +  " ".repeat(6-reward().length()/2 + (reward().length() % 2 == 0 ? 1 : 0)) + LATERAL;
+            case 8 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 10 -> DOWN;
+            default -> "";
+        };
+    }
+
     @Override
     public String toString() {
         return
-                up() + "\n" +
-                        lateral() + "  Smugglers           " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  FirePower: " + firePower + "        " + lateral() + "\n" +
-                        lateral() + "  LostCargo: " + lostCargo + "        " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  Reward: " + reward() +  spaces(12-rewardSize()) + lateral() + "\n" +
-                        lateral() + "  LostDays: " + lostDays + "         " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        down();
+                UP + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "      Smugglers       " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "     FirePower: " + firePower + "     " + LATERAL + "\n" +
+                        LATERAL + "     LostCargo: " + lostCargo + "     " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + " ".repeat(7 - reward().length()/2) + "Reward: " + reward() +  " ".repeat(6-reward().length()/2 + (reward().length() % 2 == 0 ? 1 : 0)) + LATERAL + "\n" +
+                        LATERAL + "     Lost days: " + lostDays + "     " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        DOWN;
     }
 
     private String reward(){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int j = 0;
         for(int i = 0; i < redCargo; i++){
             if(i==0)
-                result += "R";
+                result.append("R");
             else
-                result += " R";
+                result.append(" R");
             j++;
         }
         for(int i = 0; i < yellowCargo; i++){
             if(j==0)
-                result += "Y";
+                result.append("Y");
             else
-                result += " Y";
+                result.append(" Y");
             j++;
         }
         for(int i = 0; i < greenCargo; i++){
             if(j==0)
-                result += "G";
+                result.append("G");
             else
-                result += " G";
+                result.append(" G");
             j++;
         }
         for(int i = 0; i < blueCargo; i++){
             if(j==0)
-                result += "B";
+                result.append("B");
             else
-                result += " B";
+                result.append(" B");
             j++;
         }
-        return result;
-    }
-
-    private int rewardSize(){
-        int result = 0;
-        if(redCargo > 0)
-            result++;
-        if(yellowCargo > 0)
-            result++;
-        if(greenCargo > 0)
-            result++;
-        if(blueCargo > 0)
-            result++;
-
-        return (result-1)*2 + 1;
+        return result.toString();
     }
 }

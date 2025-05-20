@@ -9,4 +9,5 @@ public interface MatchControllerInterface extends Remote {
     void leaveLobby(String userid) throws RemoteException;
     void startLobby(String id) throws RemoteException;
     void killLobby(String username) throws RemoteException;
+    void getLobbies(String username) throws RemoteException;
 }

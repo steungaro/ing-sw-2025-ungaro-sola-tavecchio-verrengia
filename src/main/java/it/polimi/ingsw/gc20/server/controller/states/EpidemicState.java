@@ -1,8 +1,13 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,15 +20,12 @@ public class EpidemicState extends PlayingState {
      */
     public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
+        //notify the players that the epidemic is starting and a automatic action is going to be performed
+        for (String player : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage("An epidemic is Starting!, you will lose 1 crew member for each populated adjacent cabins"));
+        }
         phase = StatePhase.AUTOMATIC_ACTION;
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.schedule(() -> {
-            try {
-                automaticAction();
-            } finally {
-                scheduler.shutdown();
-            }
-        }, 5, TimeUnit.SECONDS);
+        automaticAction();
     }
 
     @Override
@@ -42,8 +44,20 @@ public class EpidemicState extends PlayingState {
         getModel().getInGamePlayers().stream()
                 .filter(p -> getController().getInGameConnectedPlayers().contains(p.getUsername()))
                 .forEach(p -> p.getShip().epidemic());
+        //notify all the players with all the ship updates
+        for (String user : getController().getInGameConnectedPlayers()) {
+            Player p = getController().getPlayerByID(user);
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new UpdateShipMessage(p.getUsername(), p.getShip(), "epidemic"));
+            }
+        }
+
         //effect ended, draw a new card
         phase = StatePhase.STANDBY_PHASE;
+        //notify all the players that the epidemic effect is over and we wait a new card
+        for (String player : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(player, new StandbyMessage("waiting for a new card"));
+        }
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

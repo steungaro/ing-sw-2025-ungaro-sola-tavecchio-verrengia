@@ -5,14 +5,13 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
-public class ViewPirates extends ViewAdvetnureCard {
+public class ViewPirates extends ViewAdventureCard {
     int firePower;
     List<Projectile> projectiles;
     int credits;
     int lostDays;
 
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    protected ViewPirates(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.projectiles = adventureCard.getProjectiles();
@@ -20,19 +19,39 @@ public class ViewPirates extends ViewAdvetnureCard {
         this.lostDays = adventureCard.getLostDays();
     }
 
+    public ViewPirates() {
+        super();
+    }
+
     @Override
     public String toString() {
         return
-                up() + "\n" +
-                        lateral() + "  Pirates             " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  FirePower: " + firePower + "        " + lateral() + "\n" +
-                        lateral() + "  Fires: " + cannonFires() + spaces(13-firesSize()) + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  Credits: " + credits + "$         " + lateral() + "\n" +
-                        lateral() + "  LostDays: " + lostDays + "         " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        down();
+                UP + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "       Pirates        " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "     FirePower: " + firePower + "     " + LATERAL + "\n" +
+                        LATERAL + " ".repeat((22 - 7 - cannonFires().length())/2) + "Fires: " + cannonFires() + " ".repeat((22 - 7 - cannonFires().length())/2 + (cannonFires().length() % 2 == 0 ? 1 : 0)) + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        LATERAL + "      Credits: " + credits + "      " + LATERAL + "\n" +
+                        LATERAL + "     Lost days: " + lostDays + "     " + LATERAL + "\n" +
+                        LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                        DOWN;
+    }
+
+    @Override
+    public String toLine(int i) {
+        return switch (i) {
+            case 0 -> UP;
+            case 1, 3, 6, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 2 -> LATERAL + "       Pirates        " + LATERAL;
+            case 4 -> LATERAL + "     FirePower: " + firePower + "     " + LATERAL;
+            case 5 -> LATERAL + " ".repeat((22 - 7 - cannonFires().length())/2) + "Fires: " + cannonFires() + " ".repeat((22 - 7 - cannonFires().length())/2 + (cannonFires().length() % 2 == 0 ? 1 : 0)) + LATERAL;
+            case 7 -> LATERAL + "      Credits: " + credits + "      " + LATERAL;
+            case 8 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 10 -> DOWN;
+            default -> "";
+        };
     }
 
     private String cannonFires(){
@@ -69,9 +88,4 @@ public class ViewPirates extends ViewAdvetnureCard {
     }
 
     // ↑→↓←
-
-    private int firesSize(){
-        int result = projectiles.size();
-        return (result-1)*3 + 2;
-    }
 }

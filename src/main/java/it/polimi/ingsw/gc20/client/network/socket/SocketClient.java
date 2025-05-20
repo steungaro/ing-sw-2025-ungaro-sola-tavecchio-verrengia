@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -73,6 +74,7 @@ public class SocketClient implements Client {
                 
                 // Receive the message
                 Message message = (Message) in.readObject();
+                LOGGER.info("Received message: " + message.getClass().getSimpleName());
 
                 ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
@@ -130,8 +132,9 @@ public class SocketClient implements Client {
             socket = new Socket(serverAddress, serverPort);
             LOGGER.info("Connected to server at " + serverAddress + ":" + serverPort);
             // Start a thread to handle incoming messages
-            in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream());
             Thread messageReceiverThread = new Thread(() -> {
                 try {
                     receiveMessages();
@@ -311,16 +314,6 @@ public class SocketClient implements Client {
     }
 
     @Override
-    public void readyToFly(String username) {
-        try {
-            out.writeObject(new ReadyToFlyMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while readying to fly: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
         try {
             out.writeObject(new ChooseBranchMessage(username, coordinates));
@@ -431,6 +424,16 @@ public class SocketClient implements Client {
     }
 
     @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        try {
+            out.writeObject(new LoseEnergyMessage(username, coordinates));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while losing energy: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
         try {
             out.writeObject(new ActivateDoubleEnginesMessage(username, engines, batteries));
@@ -507,6 +510,16 @@ public class SocketClient implements Client {
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while killing lobby: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        try {
+            out.writeObject(new LobbyListRequest(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while getting lobbies: " + e.getMessage());
         }
     }
 }

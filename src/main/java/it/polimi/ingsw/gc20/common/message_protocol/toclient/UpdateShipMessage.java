@@ -74,7 +74,7 @@ public record UpdateShipMessage(
         viewShip.setBooked(1, componentsBooked[1]);
         viewShip.setValid(isValid);
         // da capire dove mettere il component in hand
-        View.getInstance().setShip(username, viewShip);
+        //View.getInstance().setShip(username, viewShip);
 
     }
 

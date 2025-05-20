@@ -49,4 +49,10 @@ public class RMIMatchControllerService extends UnicastRemoteObject implements Ma
         LOGGER.fine("Received RMI call: killLobby from " + username);
         queueHandler.enqueue(new KillLobbyMessage(username));
     }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        LOGGER.fine("Received RMI call: requestLobbyList from " + username);
+        queueHandler.enqueue(new LobbyListRequest(username));
+    }
 }

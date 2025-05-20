@@ -1,51 +1,66 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class ShieldsMenu implements MenuState {
-    private final MenuContext menuContext;
-    private final String stateName = "Open Space Menu";
-    private List<Pair<Integer, Integer>> shields = new ArrayList<>();
-    private List<Pair<Integer, Integer>> batteries = new ArrayList<>();
+    private final Terminal terminal;
+    private final LineReader lineReader;
+    private final String message;
 
-    public ShieldsMenu(MenuContext menuContext) {
-        this.menuContext = menuContext;
+    public ShieldsMenu(String message) {
+        this.terminal = null;
+        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+        this.message = message;
     }
 
-    public void displayMenu() {
-        System.out.println("Activate your engines");
-        System.out.println(menuContext.getShip().toString());
-        shields = menuContext.getShip().getShields();
-        for (Pair<Integer, Integer> shield : shields) {
-            System.out.println("1. End Turn, don't activate any shield");
-            System.out.println((shields.indexOf(shield) + 2) + ". shields coordinates: <" + shield.getValue0() + "> <" + shield.getValue1() + ">");
-        }
-        batteries = menuContext.getShip().getBatteries();
-        for (Pair<Integer, Integer> battery : batteries) {
-            System.out.println("Batteries:");
-            System.out.println((shields.indexOf(battery) + shields.size() + 2) + ". Battery coordinates: <" + battery.getValue0() + "> <" + battery.getValue1() + ">");
-        }
-        System.out.println("Choose the battery you want to use by entering its number");
+    public void displayMenu(){
+        TUI.clearConsole();
+        terminal.writer().println("Shields Menu");
+        terminal.writer().println(message);
+        terminal.writer().println("1. Activate a shield");
+        terminal.writer().println("2. Do not activate a shield");
+        terminal.flush();
     }
 
-    public boolean handleInput() throws RemoteException {
-        int choice1 = menuContext.getScanner().nextInt();
-        int choice2 = menuContext.getScanner().nextInt();
-        if(choice1 == 1){
-            menuContext.getClient().activateShield(menuContext.getUsername(), null, null);
-        }else if(choice1 < shields.size() + 1 && choice2 < shields.size() + batteries.size() + 1) {
-            menuContext.getClient().activateShield(menuContext.getUsername(), shields.get(choice1), batteries.get(choice2));
-        } else if (choice2 < shields.size() + 1 && choice1 < shields.size() + batteries.size() + 1) {
-            menuContext.getClient().activateShield(menuContext.getUsername(), shields.get(choice2), batteries.get(choice1));
+    public boolean handleInput() throws IOException {
+        int choice = terminal.reader().read();
+        // Handle user input for the engine menu
+        switch (choice) {
+            case 1:
+                terminal.writer().println("Type the coordinates of the shield you want to activate (x y):");
+                terminal.writer().print(" > ");
+                String input = lineReader.readLine().trim();
+                String[] inputCoord = input.split(" ");
+                int xs = Integer.parseInt(inputCoord[0]) - 5;
+                int ys = Integer.parseInt(inputCoord[1]) - 4;
+                terminal.writer().println("Type the coordinates of the battery you want to activate (x y):");
+                terminal.writer().print(" > ");
+                String batteryInput = lineReader.readLine().trim();
+                String[] batteryCoord = batteryInput.split(" ");
+                int xb = Integer.parseInt(batteryCoord[0]) - 5;
+                int yb = Integer.parseInt(batteryCoord[1]) - 4;
+                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), new Pair<Integer, Integer>(xs, ys), new Pair<Integer, Integer>(xb, yb));
+                break;
+            case 2:
+                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), null, null);
+                break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
+                break;
+            default:
+                terminal.writer().println("Invalid choice. Please try again.");
+                return false;
         }
         return true;
     }
 
     public String getStateName() {
-        return stateName;
+        return "Shields Menu";
     }
 }

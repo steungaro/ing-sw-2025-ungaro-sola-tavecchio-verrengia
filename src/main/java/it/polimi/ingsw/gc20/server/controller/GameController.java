@@ -12,6 +12,8 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
+
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -244,6 +246,9 @@ public class GameController implements GameControllerInterface {
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
+            for (String user : getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(user, getPlayerByID(username).getShip(), "activated cannons"));
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating cannons", e);
             //notify the player of the error
@@ -779,7 +784,7 @@ public class GameController implements GameControllerInterface {
             state.turnHourglass(getPlayerByID(username));
             // notify players of an hourglass turn with an hourglass message
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new HourglassMessage(model.getTotalRemainingTime(),
+                NetworkService.getInstance().sendToClient(user, new HourglassMessage(
                         model.getRemainingTime(),
                         model.getTurnedHourglass()));
             }
@@ -795,7 +800,6 @@ public class GameController implements GameControllerInterface {
      * Gets the remaining time for the hourglass
      *
      * @param username Username of the player checking the hourglass
-     * @return Remaining time in seconds
      */
     public void getHourglassTime(String username) {
         try {
@@ -807,7 +811,7 @@ public class GameController implements GameControllerInterface {
             }
             state.getHourglassTime(getPlayerByID(username));
             //notify the player of hourglass time
-            NetworkService.getInstance().sendToClient(username, new HourglassMessage(model.getTotalRemainingTime(),
+            NetworkService.getInstance().sendToClient(username, new HourglassMessage(
                     model.getRemainingTime(),
                     model.getTurnedHourglass()));
         } catch (Exception e) {
@@ -865,27 +869,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Sets the player to be ready to fly
-     * @param username is the username of the player that wants to fly
-     * @apiNote be careful to add aliens before calling this function
-     */
-    public void readyToFly(String username) {
-        try{
-            state.readyToFly(getPlayerByID(username));
-            if (state.allShipsReadyToFly()) {
-                state.initAllShips();
-                //TODO: inside the state: notify all players of the ships changed (all of them are initialized)
-                model.createDeck();
-                drawCard();
-            }
-        } catch (Exception e) {
-            //notify the player of the error
-            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error ready to fly: " + e.getMessage()));
-            logger.log(Level.SEVERE, "Error ready to fly", e);
-        }
-    }
-
     public void defeated(String username) {
         model.giveUp(getPlayerByID(username));
     }
@@ -925,6 +908,22 @@ public class GameController implements GameControllerInterface {
             MatchController.getInstance().endGame(this.getGameID());
         } else {
             logger.log(Level.SEVERE, "Player " + username + " is not connected to the game but tried to kill it");
+        }
+    }
+
+    @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) {
+        try {
+            state.loseEnergy(getPlayerByID(username), coordinates);
+            //notify players of the energy lost
+            //TODO CONTROLLARE
+            for (String user : getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "lost energy"));
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error losing energy", e);
+            //notify the player of the error
+            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error losing energy: " + e.getMessage()));
         }
     }
 }

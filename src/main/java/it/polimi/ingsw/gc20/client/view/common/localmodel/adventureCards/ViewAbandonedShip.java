@@ -1,17 +1,17 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
-import java.util.List;
-
-public class ViewAbandonedShip extends ViewAdvetnureCard {
+public class ViewAbandonedShip extends ViewAdventureCard {
     int lostCrew;
     int credits;
     int lostDays;
 
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    public ViewAbandonedShip() {
+        super();
+    }
+
+    protected ViewAbandonedShip(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCrew = adventureCard.getCrew();
         this.credits = adventureCard.getCredits();
@@ -21,15 +21,30 @@ public class ViewAbandonedShip extends ViewAdvetnureCard {
     @Override
     public String toString() {
         return
-                up() + "\n" +
-                        lateral() + "  Abandoned Ship      " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  LostCrew: " + lostCrew + "         " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + "  Credits: " + credits + "$         " + lateral() + "\n" +
-                        lateral() + "  LostDays: " + lostDays + "         " + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        lateral() + EMPTY_ROW + lateral() + "\n" +
-                        down();
+                UP + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + "    Abandoned Ship    " + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + "     Lost crew: "  + lostCrew  + "     " + LATERAL + "\n" +
+                LATERAL + "      Credits: "    + credits   + "      " + LATERAL + "\n" +
+                LATERAL + "     Lost days: "  + lostDays  + "     " + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                LATERAL + EMPTY_ROW + LATERAL + "\n" +
+                DOWN;
+    }
+
+    @Override
+    public String toLine(int i) {
+        return switch (i) {
+            case 0 -> UP;
+            case 1, 3, 4, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 2 -> LATERAL + "    Abandoned Ship    " + LATERAL;
+            case 5 -> LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL;
+            case 6 -> LATERAL + "      Credits: " + credits + "      " + LATERAL;
+            case 7 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 10 -> DOWN;
+            default -> "";
+        };
     }
 }

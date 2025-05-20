@@ -1,61 +1,123 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.util.Map;
 
 public class CargoMenu implements MenuState{
-    private final MenuContext menuContext;
+    private final Terminal terminal;
+    private final LineReader lineReader;
+    private final String username = ClientGameModel.getInstance().getUsername();
+    private final String message;
+    private final int cargoToLose;
+    private final Map<CargoColor, Integer> cargoToGain;
 
-    public CargoMenu(MenuContext menuContext) {
-        this.menuContext = menuContext;
+    public CargoMenu(String message, int cargoToLose, Map<CargoColor, Integer> cargoToGain) {
+        this.terminal = null;
+        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
+        this.message = message;
+        this.cargoToLose = cargoToLose;
+        this.cargoToGain = cargoToGain;
     }
 
     @Override
     public void displayMenu() {
-        System.out.println("Cargo holds in the ship:");
-        System.out.println(menuContext.getShip().getCargo().toString());
-        System.out.println("1. Load cargo from planet with the arguments: <CargoColor> <DestinationX> <DestinationY>");
-        System.out.println("2. Unload cargo from ship with the arguments: <CargoColor> <FromX> <FromY>");
-        System.out.println("3. Move cargo from a CargoHold to another with the arguments: <CargoColor> <FromX> <FromY> <ToX> <ToY>");
-        System.out.println("4. End turn");
+        TUI.clearConsole();
+        terminal.writer().println("Cargo Menu");
+        terminal.writer().println(message);
+        if (cargoToLose > 0) {
+            terminal.writer().println("You have to lose " + cargoToLose + " cargo.");
+            terminal.writer().println("1. Lose cargo");
+            terminal.writer().println("2. Move cargo");
+            terminal.writer().println("3. Lose energy (only if you don't have enough cargo to lose)");
+            terminal.writer().println("4. End turn");
+        } else {
+            terminal.writer().println("You have to gain " +
+                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue()) +
+                    " cargo.");
+            terminal.writer().println("1. Unload cargo");
+            terminal.writer().println("2. Move cargo");
+            terminal.writer().println("3. Load cargo");
+            terminal.writer().println("4. End turn");
+        }
+        terminal.flush();
     }
 
 
-    public boolean handleInput() throws RemoteException {
-        int choice = menuContext.getIntInput(1, 4);
-        String cargoColor;
-        switch(choice){
+    public boolean handleInput() throws IOException {
+        int choice = terminal.reader().read();
+        // Handle user input for the cargo menu
+        switch (choice) {
             case 1:
-                cargoColor = menuContext.getScanner().next();
-                int x = menuContext.getScanner().nextInt();
-                int y = menuContext.getScanner().nextInt();
-                menuContext.getClient().loadCargo(menuContext.getUsername(), CargoColor.valueOf(cargoColor), new Pair<>(x, y));
+                terminal.writer().println("Type the coordinates of the cargo you want to lose (x y):");
+                terminal.writer().print(" > ");
+                String cargoInput = lineReader.readLine().trim();
+                int x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
+                int y = Integer.parseInt(cargoInput.split(" ")[1]) - 4;
+                Pair<Integer, Integer> coordinates = new Pair<>(x, y);
+
+                terminal.writer().println("Type the color of the cargo you want to lose (RED/YELLOW/GREEN/BLUE):");
+                terminal.writer().print(" > ");
+                String cargoColorInput = lineReader.readLine().trim();
+                CargoColor cargoColor = CargoColor.valueOf(cargoColorInput.toUpperCase());
+                ClientGameModel.getInstance().getClient().unloadCargo(username, cargoColor, coordinates);
                 break;
             case 2:
-                cargoColor = menuContext.getScanner().next();
-                x = menuContext.getScanner().nextInt();
-                y = menuContext.getScanner().nextInt();
-                menuContext.getClient().unloadCargo(menuContext.getUsername(), CargoColor.valueOf(cargoColor), new Pair<>(x, y));
+                terminal.writer().println("Type the coordinates of the cargo you want to move from (x y):");
+                terminal.writer().print(" > ");
+                String moveInput = lineReader.readLine().trim();
+                int moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
+                int moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
+                Pair<Integer, Integer> moveCoordinates = new Pair<>(moveX, moveY);
+                terminal.writer().println("Type the coordinates of the cargo you want to move to (x y):");
+                terminal.writer().print(" > ");
+                String moveToInput = lineReader.readLine().trim();
+                int moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
+                int moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
+                Pair<Integer, Integer> moveToCoordinates = new Pair<>(moveToX, moveToY);
+                terminal.writer().println("Type the color of the cargo you want to move (RED/YELLOW/GREEN/BLUE):");
+                terminal.writer().print(" > ");
+                String moveCargoColorInput = lineReader.readLine().trim();
+                CargoColor moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
+                ClientGameModel.getInstance().getClient().moveCargo(username, moveCargoColor, moveCoordinates, moveToCoordinates);
                 break;
             case 3:
-                cargoColor = menuContext.getScanner().next();
-                int fromX = menuContext.getScanner().nextInt();
-                int fromY = menuContext.getScanner().nextInt();
-                int toX = menuContext.getScanner().nextInt();
-                int toY = menuContext.getScanner().nextInt();
-                menuContext.getClient().moveCargo(menuContext.getUsername(), CargoColor.valueOf(cargoColor),
-                        new Pair<>(fromX, fromY), new Pair<>(toX, toY));
+                if (cargoToLose > 0) {
+                    terminal.writer().println("Type the coordinates of the battery you want to lose energy from (x y):");
+                    terminal.writer().print(" > ");
+                    String batteryInput = lineReader.readLine().trim();
+                    Pair<Integer, Integer> batteryCoordinates = new Pair<>(Integer.parseInt(batteryInput.split(" ")[0]) - 5, Integer.parseInt(batteryInput.split(" ")[1]) - 4);
+                    ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
+                } else {
+                    terminal.writer().println("Type the coordinates of the cargo hold you want to load to (x y):");
+                    terminal.writer().print(" > ");
+                    String loadInput = lineReader.readLine().trim();
+                    int loadX = Integer.parseInt(loadInput.split(" ")[0]) - 5;
+                    int loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
+                    Pair<Integer, Integer> loadCoordinates = new Pair<>(loadX, loadY);
+                    terminal.writer().println("Type the color of the cargo you want to load (RED/YELLOW/GREEN/BLUE):");
+                    terminal.writer().print(" > ");
+                    String loadCargoColorInput = lineReader.readLine().trim();
+                    CargoColor loadCargoColor = CargoColor.valueOf(loadCargoColorInput.toUpperCase());
+                    ClientGameModel.getInstance().getClient().loadCargo(username, loadCargoColor, loadCoordinates);
+                }
                 break;
             case 4:
-                menuContext.getClient().endMove(menuContext.getUsername());
+                ClientGameModel.getInstance().getClient().endMove(username);
+                break;
+            case 'q':
+                ClientGameModel.getInstance().shutdown();
                 break;
             default:
-                System.out.println("Invalid choice. Please try again.");
+                terminal.writer().println("Invalid choice. Please try again.");
                 return false;
         }
-
         return true;
     }
 

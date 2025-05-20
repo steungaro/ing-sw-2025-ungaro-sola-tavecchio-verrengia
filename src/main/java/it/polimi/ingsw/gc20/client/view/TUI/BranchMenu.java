@@ -1,30 +1,35 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
+import java.util.Scanner;
 
-public class BranchMenu implements MenuState{
-    private final MenuContext menuContext;
-    private final String stateName = "Branch Menu";
+public class BranchMenu implements MenuState {
+    private final Scanner scanner = new Scanner(System.in);
+    private final String username = ClientGameModel.getInstance().getUsername();
 
-    public BranchMenu(MenuContext menuContext) {
-        this.menuContext = menuContext;
+    public BranchMenu() {
     }
 
     public void displayMenu() {
-        System.out.println("Your ship is split, you can only keep one branch, choose wisely:");
-        System.out.println(menuContext.getShip().toString());
+        TUI.clearConsole();
+        System.out.println("Branch Menu");
+        System.out.println("Your ship has split into two branches.");
     }
 
     public boolean handleInput() throws RemoteException {
-        int x = menuContext.getScanner().nextInt();
-        int y = menuContext.getScanner().nextInt();
-        menuContext.getClient().chooseBranch(menuContext.getUsername(), new Pair<>(x, y));
+        System.out.println("Type the coordinates of the branch you want to keep (x y):");
+        System.out.print(" > ");
+        String branchInput = scanner.nextLine().trim();
+        int x = Integer.parseInt(branchInput.split(" ")[0]) - 5;
+        int y = Integer.parseInt(branchInput.split(" ")[1]) - 4;
+        ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(x, y) );
         return true;
     }
 
     public String getStateName() {
-        return stateName;
+        return "BranchMenu";
     }
 }

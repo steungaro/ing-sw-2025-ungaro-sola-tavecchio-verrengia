@@ -47,10 +47,10 @@ public class SocketAuthService {
                 // If the client is not already registered
                 if (existingClient == null) {
                     // Create a new client handler
-                    newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
+                    newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                     socketServer.registerClient(newClient);
                     LOGGER.info("Client " + loginRequest + " connected.");
-
+                    MatchController.getInstance().getLobbies(loginRequest.username());
                 // If the client is already registered check if it is connected (reconnection)
                 } else {
                     // If the client is connected, refuse this connection and wait for a new username
@@ -61,7 +61,7 @@ public class SocketAuthService {
                         // newClient is still null, so the loop continues
                     } else {
                         // Reconnect the client (maybe it was RMI before or connection crashed)
-                        newClient = new SocketClientHandler(loginRequest.username(), clientSocket);
+                        newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                         socketServer.updateClient(loginRequest.username(), newClient);
                         MatchController.getInstance().getGameControllerForPlayer(loginRequest.username()).reconnectPlayer(loginRequest.username());
                         LOGGER.info("Client " + loginRequest + " reconnected.");

@@ -8,13 +8,12 @@ public record BoardUpdateMessage(
         ViewBoard board
 ) implements Message {
 
-    /*public BoardUpdateMessage (Board board){
-        ViewBoard viewBoard = new ViewBoard();
-        viewBoard.isLearner = board.isLearner();
-
-        this (viewBoard);
-    }
-     */
+//    public BoardUpdateMessage (Board board){
+//        ViewBoard viewBoard = new ViewBoard();
+//        viewBoard.isLearner = board.isLearner();
+//
+//        this (viewBoard);
+//    }
     @Override
     public void handleMessage() {
         //TODO

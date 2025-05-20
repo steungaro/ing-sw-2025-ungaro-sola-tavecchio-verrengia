@@ -256,15 +256,6 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void readyToFly(String username)  {
-        try {
-            gameService.readyToFly(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during ready to fly: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates)  {
         try {
             gameService.chooseBranch(username, coordinates);
@@ -364,6 +355,15 @@ public class RMIClient implements Client {
     }
 
     @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        try {
+            gameService.loseEnergy(username, coordinates);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during losing energy: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries)  {
         try {
             gameService.activateEngines(username, engines, batteries);
@@ -434,5 +434,14 @@ public class RMIClient implements Client {
             LOGGER.warning("Error during killing lobby: " + e.getMessage());
         }
 
+    }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        try {
+            matchService.getLobbies(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during getting lobbies: " + e.getMessage());
+        }
     }
 }

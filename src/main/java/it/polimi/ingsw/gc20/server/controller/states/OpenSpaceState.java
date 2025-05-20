@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.EngineActivationPhaseMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
@@ -10,6 +13,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -24,6 +28,13 @@ public class OpenSpaceState extends PlayingState {
     public OpenSpaceState(GameModel model, GameController controller, AdventureCard card) {
 
         super(model, controller);
+        for (String username : getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(username, new EngineActivationPhaseMessage());
+            } else {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to select engines"));
+            }
+        }
         phase = StatePhase.ENGINES_PHASE;
     }
 
@@ -62,9 +73,19 @@ public class OpenSpaceState extends PlayingState {
         //go to the next player
         nextPlayer();
         if (getCurrentPlayer() == null) {
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("moving player and drawing a new card"));
+            }
             phase = StatePhase.AUTOMATIC_ACTION;
             endTurn();
         } else {
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new EngineActivationPhaseMessage());
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to select engines"));
+                }
+            }
             phase = StatePhase.ENGINES_PHASE;
             //manderemo messaggio al controller di cambio fase tutti in standby tranne a chi serve selezionare i motori
         }
@@ -85,6 +106,12 @@ public class OpenSpaceState extends PlayingState {
                 getController().defeated(key.getUsername());
             }
         });
+        //notify all players that all the player position has been updated
+        for (String player : getController().getInGameConnectedPlayers()) {
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
+            }
+        }
         phase = StatePhase.STANDBY_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

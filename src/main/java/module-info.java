@@ -7,7 +7,6 @@ module it.polimi.ingsw.gc20 {
     requires javatuples;
     requires java.rmi;
     requires java.logging;
-    requires com.googlecode.lanterna;
     requires java.desktop;
     requires org.jline;
     opens it.polimi.ingsw.gc20 to javafx.fxml;
@@ -17,6 +16,9 @@ module it.polimi.ingsw.gc20 {
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.gamesets to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.player to com.fasterxml.jackson.databind;
-    //opens it.polimi.ingsw.gc20.client.view.common.localmodel.components to com.fasterxml.jackson.databind;
+    opens it.polimi.ingsw.gc20.client.view.common.localmodel.components to com.fasterxml.jackson.databind;
+    exports it.polimi.ingsw.gc20.common.interfaces to java.rmi;
+    opens it.polimi.ingsw.gc20.common.interfaces to java.rmi;
+    opens it.polimi.ingsw.gc20.server.network.RMI to java.rmi;
 
 }

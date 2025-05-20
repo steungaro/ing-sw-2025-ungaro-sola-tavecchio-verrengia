@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,9 +34,9 @@ public class MatchController implements MatchControllerInterface {
      */
     private MatchController() {
         this.games = new ArrayList<>();
-        this.playersInLobbies = new HashMap<>();
+        this.playersInLobbies = new LinkedHashMap<>();
         this.lobbies = new ArrayList<>();
-        this.playersInGames = new HashMap<>();
+        this.playersInGames = new LinkedHashMap<>();
     }
 
     /**
@@ -101,7 +102,7 @@ public class MatchController implements MatchControllerInterface {
     public void getLobbies(String username) {
         List<LobbyListMessage.LobbyInfo> lobbies = new ArrayList<>();
         for (Lobby l : this.lobbies) {
-            lobbies.add(new LobbyListMessage.LobbyInfo(l.getName(), l.getMaxPlayers(), l.getLevel()));
+            lobbies.add(new LobbyListMessage.LobbyInfo(l.getName(), l.getMaxPlayers(), l.getLevel(), l.getUsers()));
         }
         NetworkService.getInstance().sendToClient(username, new LobbyListMessage(lobbies));
     }
@@ -131,7 +132,7 @@ public class MatchController implements MatchControllerInterface {
                     playersInLobbies.put(user, l);
                     //notify the players in the lobby with a lobby message
                     for (String u : l.getUsers()) {
-                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(l.getUsers(), l.getName(), l.getLevel()));
+                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(l.getUsers(), l.getName(), l.getLevel(), l.getMaxPlayers()));
                     }
                 } catch (FullLobbyException e) {
                     //notify the player with a error message
@@ -157,7 +158,7 @@ public class MatchController implements MatchControllerInterface {
         } else {
             Lobby l = new Lobby(id, name, user, maxPlayers, level);
             //notify the player with a lobby message
-            NetworkService.getInstance().sendToClient(user, new LobbyMessage(l.getUsers(), name, level));
+            NetworkService.getInstance().sendToClient(user, new LobbyMessage(l.getUsers(), name, level, maxPlayers));
             playersInLobbies.put(user, l);
             lobbies.add(l);
         }
@@ -176,7 +177,7 @@ public class MatchController implements MatchControllerInterface {
                 playersInLobbies.remove(userid);
                 //notify the players in the lobby with a lobby message
                 for (String u : playersInLobbies.get(userid).getUsers()) {
-                    NetworkService.getInstance().sendToClient(u, new LobbyMessage(playersInLobbies.get(userid).getUsers(), playersInLobbies.get(userid).getName(), playersInLobbies.get(userid).getLevel()));
+                    NetworkService.getInstance().sendToClient(u, new LobbyMessage(playersInLobbies.get(userid).getUsers(), playersInLobbies.get(userid).getName(), playersInLobbies.get(userid).getLevel(), playersInLobbies.get(userid).getMaxPlayers()));
                 }
             } catch (LobbyException e) {
                 //notify the player with a error message
