@@ -17,7 +17,9 @@ public class MainMenuState implements MenuState{
     public void displayMenu() {
         TUI.clearConsole();
         System.out.println("Welcome to the game! These are the active lobbies:");
+        System.out.println("--------------------------------------------------");
         ClientGameModel.getInstance().getLobbyList().forEach(lobby -> System.out.println(lobby.toString()));
+        System.out.println("--------------------------------------------------");
         System.out.println("1. Join a lobby");
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
