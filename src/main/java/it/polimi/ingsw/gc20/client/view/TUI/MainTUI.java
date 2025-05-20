@@ -14,10 +14,8 @@ public class MainTUI {
                 // Start the TUI
                 tui.init();
                 tui.initNetwork();
-                tui.wait(1);
+                tui.wait(2);
                 tui.login();
-                //tui.gameLoop();
-                tui.shutdown();
             } catch (UserInterruptException e) {
                 // Handle user interrupt (Ctrl+C)
                 tui.getTerminal().writer().println("\nUser interrupted the application.");

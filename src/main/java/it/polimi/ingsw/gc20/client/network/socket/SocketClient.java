@@ -131,8 +131,9 @@ public class SocketClient implements Client {
             socket = new Socket(serverAddress, serverPort);
             LOGGER.info("Connected to server at " + serverAddress + ":" + serverPort);
             // Start a thread to handle incoming messages
-            in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream());
             Thread messageReceiverThread = new Thread(() -> {
                 try {
                     receiveMessages();

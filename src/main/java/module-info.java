@@ -7,7 +7,6 @@ module it.polimi.ingsw.gc20 {
     requires javatuples;
     requires java.rmi;
     requires java.logging;
-    requires com.googlecode.lanterna;
     requires java.desktop;
     requires org.jline;
     opens it.polimi.ingsw.gc20 to javafx.fxml;

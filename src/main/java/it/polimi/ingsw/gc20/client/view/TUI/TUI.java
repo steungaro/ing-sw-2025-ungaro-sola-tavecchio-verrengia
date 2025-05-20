@@ -198,44 +198,29 @@ public class TUI extends ClientGameModel {
                 terminal.writer().println("Use [q] to quit the application at any time (works in every menu).");
                 terminal.flush();
 
-                try {
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
                 clearConsole(terminal);
         } catch (Exception e) {
             terminal.writer().println("\033[31mAn error occurred: " + e.getMessage() + "\033[0m");
             terminal.flush();
-        } finally {
-            try {
-                terminal.close();
-            } catch (Exception ex) {
-                terminal.writer().println("Terminal failed to close properly.");
-            }
         }
     }
 
     public void login() {
-        do {
-            clearConsole(terminal);
-            String inputUsername = reader.readLine("Insert username:\n > ").trim();
+        clearConsole(terminal);
+        String inputUsername = reader.readLine("Insert username:\n > ").trim();
 
-            if (inputUsername.equalsIgnoreCase("q")) {
-                System.exit(0);
-            }
+        if (inputUsername.equalsIgnoreCase("q")) {
+            shutdown();
+            System.exit(0);
+        }
 
-            if (inputUsername.isBlank() || inputUsername.equals("__BROADCAST__")) {
-                terminal.writer().println("\033[31mUsername not valid. Please try again.\033[0m");
-                terminal.flush();
-                continue;
-            }
-
+        if (inputUsername.isBlank() || inputUsername.equals("__BROADCAST__")) {
+            terminal.writer().println("\033[31mUsername not valid. Please try again.\033[0m");
+            terminal.flush();
+        } else {
             client.login(inputUsername);
             this.username = inputUsername;
-
-        } while (!loggedIn);
+        }
 
         terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
         terminal.flush();
