@@ -1,24 +1,14 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.NetworkController;
-import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.jline.terminal.impl.CursorSupport;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GUIView extends ClientGameModel {
 
@@ -47,7 +37,7 @@ public class GUIView extends ClientGameModel {
         }
     }
 
-    public void setupConnection(String ipAddress, int port, boolean isRMI, NetworkController controller) {
+    public void setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
         System.out.println("Connessione a " + ipAddress + ":" + port);
@@ -67,7 +57,7 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client == null || !client.isConnected()) {
-            controller.showError("Connection failed");
+            System.out.println("errore creazione client");
             client = null;
         }
 
@@ -76,13 +66,18 @@ public class GUIView extends ClientGameModel {
         }
     }
 
+    @Override
+    public void mainMenuState(){
+
+    }
 
     @Override
     public void notifyDisconnection() throws RemoteException {
         // TODO: Implementare la notifica di disconnessione
     }
 
-    public void login(String username, String server, int port) {
+    @Override
+    public void login() {
         client.login(username);
         this.username = username;
     }
