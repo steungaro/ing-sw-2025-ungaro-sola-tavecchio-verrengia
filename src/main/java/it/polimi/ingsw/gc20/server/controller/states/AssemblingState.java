@@ -288,13 +288,16 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
+
         //check if the deck has already been peeked
         if (deckPeeked.get(num) == null) {
             deckPeeked.put(num, player);
         } else {
             throw new InvalidIndexException("Deck already peeked");
         }
-        return getModel().viewDeck(num);
+        List<AdventureCard> deck = getModel().viewDeck(num);
+        NetworkService.getInstance().sendToClient(player.getUsername(), new DeckPeekedMessage(player.getUsername(), deck));
+        return deck;
     }
 
     /**
