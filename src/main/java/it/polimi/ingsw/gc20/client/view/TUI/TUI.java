@@ -24,8 +24,8 @@ import java.util.logging.Logger;
 public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
 
-    private Terminal terminal;
-    private LineReader reader;
+    private static Terminal terminal;
+    private static LineReader reader;
     private MenuState currentState;
 
     public TUI() {
@@ -120,7 +120,6 @@ public class TUI extends ClientGameModel {
         try {
 
             do {
-                terminal.enterRawMode();
                 clearConsole(terminal);
                 terminal.writer().println("Select network type:");
 
@@ -226,9 +225,11 @@ public class TUI extends ClientGameModel {
     public void display(MenuState menu) {
         currentState = menu;
         boolean input = false;
-        while (client.isConnected() && !input) {
+        while (!input) {
             try {
+                LOGGER.info("Displaying menu: " + currentState.getClass().getSimpleName());
                 currentState.displayMenu();
+                LOGGER.info("Menu displayed: " + currentState.getClass().getSimpleName());
                 input = currentState.handleInput();
             } catch (IOException e){
                 LOGGER.warning("Error while handling input: " + e.getMessage());
@@ -239,7 +240,7 @@ public class TUI extends ClientGameModel {
     //Display the menu after we get an error, it does not change the state, simply returns to last menu
     public void display(String message) {
         boolean input = false;
-        while (client.isConnected() && !input) {
+        while (!input) {
             try {
                 currentState.displayMenu();
                 input = currentState.handleInput();
@@ -310,6 +311,7 @@ public class TUI extends ClientGameModel {
 
     public void mainMenuState(){
         MenuState menu = new MainMenuState(terminal);
+        LOGGER.info("Main menu displayed");
         display(menu);
     }
 
@@ -353,6 +355,7 @@ public class TUI extends ClientGameModel {
         clearConsole(terminal);
         terminal.writer().println("\033[32mLogged in as: " + username + "\033[0m");
         terminal.flush();
+        wait(1);
     }
 
     @Override

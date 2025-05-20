@@ -21,19 +21,25 @@ public class MainMenuState implements MenuState{
     @Override
     public void displayMenu() {
         TUI.clearConsole(terminal);
+        TUI.showCursor(terminal);
         terminal.writer().println("Welcome to the game! These are the active lobbies:");
         ClientGameModel.getInstance().getLobbyList().forEach(lobby -> terminal.writer().println(lobby.toString()));
         terminal.writer().println("1. Join a lobby");
         terminal.writer().println("2. Create a new lobby");
         terminal.writer().println("3. Refresh lobby list");
+        terminal.flush();
     }
 
 
     @Override
     public boolean handleInput() throws IOException {
         // Hide cursor
+        terminal.writer().println("Choose an option:");
         TUI.hideCursor(terminal);
-        int choice = terminal.reader().read();
+        int choice;
+        do {
+            choice = terminal.reader().read();
+        } while (choice == -1);
         // Show cursor
         TUI.showCursor(terminal);
         // Handle user input for the main menu
