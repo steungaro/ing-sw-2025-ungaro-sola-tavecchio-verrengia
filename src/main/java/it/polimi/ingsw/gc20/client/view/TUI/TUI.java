@@ -20,7 +20,7 @@ public class TUI extends ClientGameModel {
 
     private final Scanner scanner;
 
-    public TUI() {
+    public TUI() throws RemoteException{
         LOGGER.info("TUI created");
         scanner = new Scanner(System.in);
     }

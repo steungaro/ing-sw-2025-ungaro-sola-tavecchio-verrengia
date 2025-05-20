@@ -2,8 +2,10 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import org.jline.reader.UserInterruptException;
 
+import java.rmi.RemoteException;
+
 public class MainTUI {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         TUI.setInstance(new TUI());
         TUI tui = (TUI) TUI.getInstance();
 
