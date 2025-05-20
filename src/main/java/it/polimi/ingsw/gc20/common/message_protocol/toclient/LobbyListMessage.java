@@ -9,7 +9,7 @@ public record LobbyListMessage(
     List<LobbyInfo> lobbies
 ) implements Message {
 
-    public record LobbyInfo(String lobbyName, int maxNumberOfPlayers, int level) implements Serializable {}
+    public record LobbyInfo(String lobbyName, int maxNumberOfPlayers, int level, List<String>players) implements Serializable {}
     @Override
     public String toString() {
         return "lobbies=" + lobbies;

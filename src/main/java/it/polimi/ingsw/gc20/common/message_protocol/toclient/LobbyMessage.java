@@ -7,7 +7,8 @@ import java.util.List;
 public record LobbyMessage(
         List<String> players,
         String lobbyName,
-        int level
+        int level,
+        int maxPlayers
 ) implements Message {
     @Override
     public String toString() {
