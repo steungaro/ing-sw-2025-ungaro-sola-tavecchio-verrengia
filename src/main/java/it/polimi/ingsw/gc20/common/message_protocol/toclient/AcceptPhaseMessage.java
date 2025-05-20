@@ -15,7 +15,7 @@ public record AcceptPhaseMessage(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().CardsAcceptanceMenu(decision);
+        ClientGameModel.getInstance().cardAcceptanceMenu(decision);
     }
 
 }
