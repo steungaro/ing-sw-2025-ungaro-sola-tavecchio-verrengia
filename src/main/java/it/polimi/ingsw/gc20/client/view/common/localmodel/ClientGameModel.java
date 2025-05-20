@@ -49,6 +49,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+        super();
     }
     public ViewAdventureCard getCurrentCard() {
         return currentCard;

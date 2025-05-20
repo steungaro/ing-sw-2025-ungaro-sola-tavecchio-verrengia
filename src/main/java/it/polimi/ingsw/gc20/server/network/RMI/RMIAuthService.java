@@ -82,10 +82,10 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
     }
 
     @Override
-    public boolean setView(String username, UnicastRemoteObject view) throws RemoteException {
+    public boolean setView(String username, ViewInterface view) throws RemoteException {
         try {
             RMIClientHandler clientHandler = (RMIClientHandler) NetworkService.getInstance().getClient(username);
-            clientHandler.setView((ViewInterface) view);
+            clientHandler.setView(view);
             LOGGER.info("View set for user: " + username);
             return true;
         } catch (Exception e) {
