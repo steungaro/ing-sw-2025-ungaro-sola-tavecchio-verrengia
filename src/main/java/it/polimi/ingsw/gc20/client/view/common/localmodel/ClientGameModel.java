@@ -291,10 +291,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public GamePhase getCurrentPhase() { return currentPhase; }
     public List<ViewPlayer> getPlayers() { return players; }
     public String getErrorMessage() { return errorMessage; }
-
-
     public abstract void display(String message);
-
     public abstract void display(MenuState menuState);
 
 
