@@ -249,7 +249,6 @@ public class TUI extends ClientGameModel {
 
     public void mainMenuState(){
         MenuState menu = new MainMenuState();
-        LOGGER.info("Main menu displayed");
         display(menu);
     }
 
