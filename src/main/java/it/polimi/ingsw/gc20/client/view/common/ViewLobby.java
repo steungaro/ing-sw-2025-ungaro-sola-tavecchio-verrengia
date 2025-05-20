@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.client.view.common;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewLobby {
