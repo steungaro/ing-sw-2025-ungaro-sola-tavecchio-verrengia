@@ -33,7 +33,7 @@ public class ViewLobby {
     }
 
     public String getOwner(){
-        return playersList.get(0);
+        return playersList.getFirst();
     }
 
     public String toString(){
