@@ -339,7 +339,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     public abstract void shutdown();
-
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
