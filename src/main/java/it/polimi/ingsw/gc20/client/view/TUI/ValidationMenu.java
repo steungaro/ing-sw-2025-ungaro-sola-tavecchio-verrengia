@@ -2,33 +2,28 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.terminal.Terminal;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.util.Scanner;
 
 public class ValidationMenu implements MenuState{
-    public final Terminal terminal;
+    public final Scanner scanner = new Scanner(System.in);
     public String username = ClientGameModel.getInstance().getUsername();
-    public final LineReader lineReader;
 
 
     public ValidationMenu(){
-        this.terminal = null;
-        this.lineReader = LineReaderBuilder.builder().terminal(terminal).build();
     }
 
     public void displayMenu(){
         TUI.clearConsole();
-        terminal.writer().println("Validation Menu");
+        System.out.println("Validation Menu");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             System.out.println("Ship is already valid! Wait for other players before going to the next phase.");
         } else {
             System.out.println("Ship is not valid");
             System.out.println("1. Validate ship");
             System.out.println("2. Remove a component from the ship with the arguments");
+            System.out.print(" > ");
         }
     }
 
@@ -37,32 +32,28 @@ public class ValidationMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
-        // Check if the ship is valid
-        if(ClientGameModel.getInstance().getShip(username).isValid()){
-            return true;
-        }
-        int choice = terminal.reader().read();
+        String choice = scanner.nextLine().trim();
         // Handle user input for the validation menu
         switch (choice) {
-            case 1:
+            case "1":
                 // Validate ship
                 ClientGameModel.getInstance().getClient().validateShip(ClientGameModel.getInstance().getUsername());
                 break;
-            case 2:
+            case "2":
                 // Remove a component from the ship
-                terminal.writer().println("Type the coordinates of the component you want to remove (x y):");
-                terminal.writer().print(" > ");
-                String componentName = lineReader.readLine().trim();
+                System.out.println("Type the coordinates of the component you want to remove (x y):");
+                System.out.print(" > ");
+                String componentName = scanner.nextLine().trim();
                 int x = Integer.parseInt(componentName.split(" ")[0]) - 5;
                 int y = Integer.parseInt(componentName.split(" ")[1]) - 4;
                 Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                 ClientGameModel.getInstance().getClient().removeComponentFromShip(ClientGameModel.getInstance().getUsername(), coordinates);
                 break;
-            case 'q':
+            case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
             default:
-                terminal.writer().println("Invalid choice. Please try again.");
+                System.out.println("Invalid choice. Please try again.");
                 return false;
         }
         return true;

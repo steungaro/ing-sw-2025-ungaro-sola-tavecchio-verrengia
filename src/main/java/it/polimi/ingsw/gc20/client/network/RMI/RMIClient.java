@@ -79,7 +79,6 @@ public class RMIClient implements Client {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.warning("Error during login: " + e.getMessage());
         }
     }

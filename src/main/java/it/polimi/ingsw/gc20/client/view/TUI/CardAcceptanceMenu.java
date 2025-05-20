@@ -1,14 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import org.javatuples.Triplet;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.terminal.Terminal;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.List;
 import java.util.Scanner;
 
 public class CardAcceptanceMenu implements MenuState{

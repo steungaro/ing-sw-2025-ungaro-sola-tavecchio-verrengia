@@ -8,7 +8,6 @@ module it.polimi.ingsw.gc20 {
     requires java.rmi;
     requires java.logging;
     requires java.desktop;
-    requires org.jline;
     opens it.polimi.ingsw.gc20 to javafx.fxml;
     exports it.polimi.ingsw.gc20;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
