@@ -13,7 +13,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -72,8 +71,7 @@ public class RMIClient implements Client {
             boolean result = authService.login(username);
             if (result) {
                 // Register the view with the server
-                registry.rebind("View " + username, UnicastRemoteObject.exportObject(ClientGameModel.getInstance(), 0));
-                if (authService.setView(username)) {
+                if (authService.setView(username, ClientGameModel.getInstance())) {
                     LOGGER.info("Successfully logged in as: " + username);
                 } else {
                     LOGGER.warning("Failed to login for user: " + username);

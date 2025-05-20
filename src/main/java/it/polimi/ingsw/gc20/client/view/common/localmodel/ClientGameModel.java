@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 // Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
 
-public abstract class ClientGameModel implements ViewInterface {
+public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -42,7 +43,7 @@ public abstract class ClientGameModel implements ViewInterface {
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
 
-    public ClientGameModel() {
+    public ClientGameModel() throws RemoteException {
         // Initialize default state if necessary
         this.players = new ArrayList<>();
         this.loggedIn = false;

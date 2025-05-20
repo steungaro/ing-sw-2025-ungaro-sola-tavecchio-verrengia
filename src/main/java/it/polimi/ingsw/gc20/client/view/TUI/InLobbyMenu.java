@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import org.jline.terminal.Terminal;
 
 import java.io.IOException;
 import java.util.Scanner;
@@ -21,7 +20,7 @@ public class InLobbyMenu implements MenuState {
         System.out.println("--------------------------------------------------");
         if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
             System.out.println("1. Start game");
-            System.out.println("2. Quit lobby");
+            System.out.println("2. Kill lobby");
         } else {
             System.out.println("1. Leave lobby");
         }
