@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 
 import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
@@ -40,8 +41,6 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
             LOGGER.info(String.format("User logged via RMI: " + username));
-            MatchController.getInstance().getLobbies(username);
-
             return true;
         }
         // Case 2: the username is already in use -- verify if it is connected
@@ -88,6 +87,7 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             clientHandler.setView(view);
             LOGGER.info("View set for user: " + username);
             MatchController.getInstance().getLobbies(username);
+            NetworkService.getInstance().sendToClient(username, new LoginSuccessfulMessage(username));
             return true;
         } catch (Exception e) {
             LOGGER.severe("Error while setting the view: " + e.getMessage());
