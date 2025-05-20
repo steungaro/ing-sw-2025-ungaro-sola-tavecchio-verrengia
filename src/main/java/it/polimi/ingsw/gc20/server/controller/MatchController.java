@@ -245,15 +245,15 @@ public class MatchController implements MatchControllerInterface {
         if (playersInLobbies.containsKey(username)) {
             Lobby lobby = playersInLobbies.get(username);
             if (lobby.getOwnerUsername().equals(username)) {
-                //notify the players in the lobby with a errore message
-                for (String user : lobby.getUsers()) {
-                    NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby killed by owner, restart the client"));
-                }
                 lobby.getUsers().forEach(playersInLobbies::remove);
                 lobby.kill();
+                List<String> players = lobby.getUsers();
                 lobbies.remove(lobby);
+                //notify the players in the lobby with a errore message
+                for (String user : players) {
+                    getLobbies(user);
+                }
                 logger.log(Level.INFO, "Lobby killed");
-                getLobbies(username);
             }
         } else {
             //notify the player with an error message
