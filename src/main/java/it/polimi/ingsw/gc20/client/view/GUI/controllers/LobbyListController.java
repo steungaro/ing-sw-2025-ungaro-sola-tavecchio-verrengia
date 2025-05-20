@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.ClientController;
-
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,7 +18,7 @@ import java.util.List;
 public class LobbyListController {
 
     @FXML
-    private ListView<Lobby> lobbiesListView;
+    private ListView<ViewLobby> lobbiesListView;
     
     @FXML
     private Button joinLobbyButton;
@@ -28,18 +28,12 @@ public class LobbyListController {
     
     @FXML
     private Button backButton;
-    
-    private ClientController clientController;
-    
-    public void setClientController(ClientController clientController) {
-        this.clientController = clientController;
-    }
-    
+
     @FXML
     private void initialize() {
         lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         
-        lobbiesListView.setCellFactory(// TODO);
+        lobbiesListView.setCellFactory(); // TODO
 
         lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             joinLobbyButton.setDisable(newVal == null);
@@ -55,15 +49,15 @@ public class LobbyListController {
     
     private void loadLobbies() {
         // Implementazione per caricare le lobby dal server
-        if (clientController != null) {
-            List<Lobby> lobbies = clientController.getAvailableLobbies();
+        if (ClientGameModel.getInstance().getClient() != null) {
+            List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
             lobbiesListView.getItems().clear();
-            // lobbiesListView.getItems().addAll(lobbies);
+            lobbiesListView.getItems().addAll(lobbies);
         }
     }
     
     private void onJoinLobby() {
-        Lobby selectedLobby = lobbiesListView.getSelectionModel().getSelectedItem();
+        ViewLobby selectedLobby = lobbiesListView.getSelectionModel().getSelectedItem();
         if (selectedLobby != null) {
             // 1. Invia richiesta al server per entrare nella lobby
             boolean joinSuccessful = joinLobbyOnServer(selectedLobby);
