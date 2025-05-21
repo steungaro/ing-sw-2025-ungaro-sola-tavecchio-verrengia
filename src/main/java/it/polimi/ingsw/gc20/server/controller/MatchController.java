@@ -177,11 +177,20 @@ public class MatchController implements MatchControllerInterface {
                 lobbies.remove(playersInLobbies.get(userid));
             }
             try {
-                playersInLobbies.get(userid).removePlayer(userid);
-                playersInLobbies.remove(userid);
-                //notify the players in the lobby with a lobby message
-                for (String u : playersInLobbies.get(userid).getUsers()) {
-                    NetworkService.getInstance().sendToClient(u, new LobbyMessage(playersInLobbies.get(userid).getUsers(), playersInLobbies.get(userid).getName(), playersInLobbies.get(userid).getLevel(), playersInLobbies.get(userid).getMaxPlayers()));
+                if (playersInLobbies.get(userid).getOwnerUsername().equals(userid)){
+                    killLobby(userid);
+                } else {
+                    playersInLobbies.get(userid).removePlayer(userid);
+                    playersInLobbies.remove(userid);
+                    //notify the players in the lobby with a lobby message
+                    for (String u : playersInLobbies.get(userid).getUsers()) {
+                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(playersInLobbies.get(userid).getUsers(), playersInLobbies.get(userid).getName(), playersInLobbies.get(userid).getLevel(), playersInLobbies.get(userid).getMaxPlayers()));
+                    }
+                    List<LobbyListMessage.LobbyInfo> lobbies = new ArrayList<>();
+                    for (Lobby l : this.lobbies) {
+                        lobbies.add(new LobbyListMessage.LobbyInfo(l.getName(), l.getMaxPlayers(), l.getLevel(), l.getUsers()));
+                    }
+                    NetworkService.getInstance().sendToClient(userid, new LobbyListMessage(lobbies));
                 }
             } catch (LobbyException e) {
                 //notify the player with a error message

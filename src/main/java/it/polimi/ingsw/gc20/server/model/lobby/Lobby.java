@@ -80,7 +80,7 @@ public class Lobby {
      *             the owner of the lobby can't leave the lobby
      */
     public void removePlayer(String user) throws LobbyException{
-        if (user.equals(ownerUsername)) {
+        if (user.equals(ownerUsername) && users.size() != 1) {
             throw new LobbyException("The owner of the lobby can't leave the lobby");
         } else {
             this.users.remove(user);
