@@ -9,10 +9,8 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
-// Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ import it.polimi.ingsw.gc20.server.model.cards.FireType;
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private ViewShip playerShip;
     private ViewLobby currentLobby;
     private GamePhase currentPhase;
