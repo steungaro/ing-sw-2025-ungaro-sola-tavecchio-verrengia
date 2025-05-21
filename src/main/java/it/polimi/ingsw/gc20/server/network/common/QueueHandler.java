@@ -36,7 +36,7 @@ public class QueueHandler {
 
         try {
             messageQueue.put(message);
-            LOGGER.fine("Message enqueued: " + message);
+            LOGGER.info("Message enqueued: " + message);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.log(Level.WARNING, "Interrupted while enqueuing message", e);
@@ -50,7 +50,7 @@ public class QueueHandler {
             try {
                 // Take() will block until a message is available
                 Message message = messageQueue.take();
-                LOGGER.fine("Processing message: " + message);
+                LOGGER.info("Processing message: " + message);
                 // Delegate to appropriate controller method based on message type
                 message.handleMessage();
             } catch (InterruptedException e) {
