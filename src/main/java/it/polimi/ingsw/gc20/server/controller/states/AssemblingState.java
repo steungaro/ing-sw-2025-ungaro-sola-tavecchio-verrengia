@@ -25,10 +25,12 @@ public class AssemblingState extends State {
      */
     public AssemblingState(GameModel model, GameController controller) {
         super(model, controller);
+        //init the state
         for (Player player : getModel().getInGamePlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
             playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+            //init all the local model of the view
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "init all ship"));
             }
@@ -41,6 +43,7 @@ public class AssemblingState extends State {
             deckPeeked.put(i, null);
         }
         getModel().initCountdown();
+        //TODO hourglass message
     }
 
     @Override
@@ -67,18 +70,7 @@ public class AssemblingState extends State {
         // take the component from the unviewed pile
         Component component =Translator.getFromUnviewed(getModel(), index);
         getModel().componentFromUnviewed(component);
-        // Add component to player's hand
-        componentsInHand.put(player, component);
-        // Set the player's phase to PLACE_COMPONENT
-        playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        //notify the player that they go to the PLACE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
-        // if the player has peeked at the deck, remove the peek so others can peek
-        for (int i = 1; i < 4; i++) {
-            if (deckPeeked.get(i) == player) {
-                deckPeeked.put(i, null);
-            }
-        }
+        takeComponent(player, component);
     }
 
     /**
@@ -97,18 +89,7 @@ public class AssemblingState extends State {
         //take the component from the viewed pile
         Component component =Translator.getFromViewed(getModel(), index);
         getModel().componentFromViewed(component);
-        // Add component to player's hand
-        componentsInHand.put(player, component);
-        // Set the player's phase to PLACE_COMPONENT
-        playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        //notify the player that they go to the PLACE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
-        // if the player has peeked at the deck, remove the peek so others can peek
-        for (int i = 1; i < 4; i++) {
-            if (deckPeeked.get(i) == player) {
-                deckPeeked.put(i, null);
-            }
-        }
+        takeComponent(player, component);
 
     }
     /**
@@ -127,18 +108,7 @@ public class AssemblingState extends State {
         // take the component from the booked pile
         Component component =Translator.getFromBooked(player, index);
         getModel().componentFromBooked(component, player);
-        // Add component to player's hand
-        componentsInHand.put(player, component);
-        // Set the player's phase to PLACE_COMPONENT
-        playersPhase.put(player, StatePhase.PLACE_COMPONENT);
-        //notify the player that they go to the PLACE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
-        // if the player has peeked at the deck, remove the peek so others can peek
-        for (int i = 1; i < 4; i++) {
-            if (deckPeeked.get(i) == player) {
-                deckPeeked.put(i, null);
-            }
-        }
+        takeComponent(player, component);
     }
 
     /**
@@ -336,6 +306,21 @@ public class AssemblingState extends State {
         //turn the hourglass
         getModel().turnHourglass();
         //if the player has peeked a deck, remove the peek so others can peek
+        for (int i = 1; i < 4; i++) {
+            if (deckPeeked.get(i) == player) {
+                deckPeeked.put(i, null);
+            }
+        }
+    }
+
+    private void takeComponent (Player player, Component component){
+        // Add component to player's hand
+        componentsInHand.put(player, component);
+        // Set the player's phase to PLACE_COMPONENT
+        playersPhase.put(player, StatePhase.PLACE_COMPONENT);
+        //notify the player that they go to the PLACE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
+        // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
                 deckPeeked.put(i, null);

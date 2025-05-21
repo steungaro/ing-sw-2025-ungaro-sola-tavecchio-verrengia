@@ -765,8 +765,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.stopAssembling(getPlayerByID(username), position);
             if (state.allAssembled()) {
-                state = new ValidatingShipState(model);
-                //TODO: notify players of state change in the state
+                state = new ValidatingShipState(model, this);
             }
         } catch (Exception e) {
             //notify the player of the error

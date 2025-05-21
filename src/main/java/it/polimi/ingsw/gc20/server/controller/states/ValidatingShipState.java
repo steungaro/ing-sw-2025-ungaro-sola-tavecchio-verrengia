@@ -4,11 +4,11 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.AlienPlacementePhas
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.BoardUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.ValidateShipPhase;
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
-import it.polimi.ingsw.gc20.server.model.gamesets.Board;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
@@ -24,8 +24,8 @@ public class ValidatingShipState extends State {
     /**
      * Default constructor
      */
-    public ValidatingShipState(GameModel model) {
-        super(model);
+    public ValidatingShipState(GameModel model, GameController controller) {
+        super(model, controller);
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
@@ -128,8 +128,8 @@ public class ValidatingShipState extends State {
     }
 
     /**
-     * this method is called to end the placing aline phase
-     * @param player the player that is ending the placing aline phase
+     * this method is called to end the placing alien phase
+     * @param player the player that is ending the placing alien phase
      * @throws InvalidStateException if the game is not in the add alien phase
      */
     @Override
@@ -138,7 +138,17 @@ public class ValidatingShipState extends State {
             throw new InvalidStateException("Cannot end move in this phase");
         }
         readyToFly.put(player, true);
-        NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
         phaseMap.put(player, StatePhase.STANDBY_PHASE);
+        //check if all the players are ready to fly
+        if (allShipsReadyToFly()) {
+            //if all the players are ready to fly, go to the next phase
+            for (String username : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("All players are ready to fly, draw a card"));
+            }
+            getController().setState(new PreDrawState(getController()));
+        } else {
+            //notify all the players that the ship is valid and waiting for other players
+            NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+        }
     }
 }
