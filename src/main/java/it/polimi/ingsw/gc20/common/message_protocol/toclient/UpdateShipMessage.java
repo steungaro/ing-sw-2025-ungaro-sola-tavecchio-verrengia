@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
@@ -79,7 +80,7 @@ public record UpdateShipMessage(
         viewShip.setBooked(1, componentsBooked[1]);
         viewShip.setValid(isValid);
         // da capire dove mettere il component in hand
-        //View.getInstance().setShip(username, viewShip);
+        ClientGameModel.getInstance().setShip(username, viewShip);
 
     }
 
