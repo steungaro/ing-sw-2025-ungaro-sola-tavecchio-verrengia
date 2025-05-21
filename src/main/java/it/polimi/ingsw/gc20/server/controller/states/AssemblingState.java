@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -22,8 +23,8 @@ public class AssemblingState extends State {
     /**
      * Default constructor
      */
-    public AssemblingState(GameModel model) {
-        super(model);
+    public AssemblingState(GameModel model, GameController controller) {
+        super(model, controller);
         for (Player player : getModel().getInGamePlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);

@@ -42,7 +42,12 @@ public record UpdateShipMessage(
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
             for (int j = 0; j < ship.getCols(); j++) {
-                components[i][j] = ship.getComponentAt(i, j).createViewComponent();
+                Component component = ship.getComponentAt(i, j);
+                if (component == null) {
+                    components[i][j] = null;
+                } else {
+                    components[i][j] = component.createViewComponent();
+                }
             }
         }
         ViewComponent[] booked = new ViewComponent[2];
