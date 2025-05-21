@@ -15,6 +15,12 @@ public class  MainServer {
         networkFactory.createServer(NetworkFactory.ServerType.SOCKET);
         networkFactory.startAllServers();
 
+        // Start the heartbeat service
+        HeartbeatService.getInstance().start();
+
+        // Start the queue handler
+        QueueHandler.getInstance();
+
         // Add shutdown hook to stop servers on exit
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             networkFactory.stopAllServers();
