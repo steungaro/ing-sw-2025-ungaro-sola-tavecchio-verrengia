@@ -5,12 +5,13 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ViewBoard {
+public class ViewBoard  implements Serializable {
     private static final String TOPPER = "╭" + "─".repeat(118) + "╮";
     private static final String BOTTOM = "╰" + "─".repeat(118) + "╯";
     private static final String SEPARATOR = "├" + "─".repeat(118) + "┤";

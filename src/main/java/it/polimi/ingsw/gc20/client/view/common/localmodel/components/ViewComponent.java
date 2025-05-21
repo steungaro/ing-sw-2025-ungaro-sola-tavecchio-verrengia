@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
         @JsonSubTypes.Type(value = ViewShield.class, name = "Shield")
         // Add other component types as needed
 })
-public class ViewComponent {
+public class ViewComponent implements Serializable {
     public int id;
     public int rotation; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
     public int upConnectors;
