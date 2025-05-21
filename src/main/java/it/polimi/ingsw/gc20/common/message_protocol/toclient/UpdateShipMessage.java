@@ -68,7 +68,7 @@ public record UpdateShipMessage(
     }
     @Override
     public void handleMessage() {
-        ViewShip viewShip = ClientGameModel.getInstance().getShip(username);
+        ViewShip viewShip = new ViewShip();
         viewShip.aliens = aliens;
         viewShip.astronauts = astronauts;
         viewShip.baseEnginePower = baseEnginePower;
