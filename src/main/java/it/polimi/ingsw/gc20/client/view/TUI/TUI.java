@@ -86,6 +86,7 @@ public class TUI extends ClientGameModel {
                     if (input.equals("q")) {
                         System.exit(0);
                     } else if (input.equals("1")) {
+                        selectedIndex = 0;
                         break;
                     } else if (input.equals("2")) {
                         selectedIndex = 1;
@@ -93,16 +94,15 @@ public class TUI extends ClientGameModel {
                     }
                 } while (true);
 
-                // Final selected network type
-                String selectedNetworkType = networkTypes[selectedIndex];
-
                 // Ask for address and port
                 System.out.print("Insert server address (leave blank for default):\n > ");
                 String address = scanner.nextLine().trim();
                 System.out.print("Insert server port (leave blank for default):\n > ");
                 String port = scanner.nextLine().trim();
 
-                System.out.println("Trying connection...");
+                clearConsole();
+
+                System.out.println("\033[33mTrying " + networkTypes[selectedIndex] + " connection...\033[0m");
 
                 try {
                     Thread.sleep(1000);
@@ -112,15 +112,22 @@ public class TUI extends ClientGameModel {
 
                 // Establish the connection based on user input
                 if (address.isBlank()) {
-                    client = NetworkManager.initConnection(selectedNetworkType);
+                    client = NetworkManager.initConnection(networkTypes[selectedIndex]);
                 } else if (port.isBlank()) {
-                    client = NetworkManager.initConnection(selectedNetworkType, address);
+                    client = NetworkManager.initConnection(networkTypes[selectedIndex], address);
                 } else {
-                    client = NetworkManager.initConnection(selectedNetworkType, address, Integer.parseInt(port));
+                    client = NetworkManager.initConnection(networkTypes[selectedIndex], address, Integer.parseInt(port));
                 }
 
+                clearConsole();
+
                 if (client == null || !client.isConnected()) {
-                    System.out.println("\033[31mConnection failed. Press any key to try again, type [q] to exit.\033[0m");
+                    System.out.println("\033[31mConnection failed. Type any key to try again, type [q] to exit.\033[0m");
+                    System.out.print(" > ");
+
+                    if (client != null) {
+                        client.stop();
+                    }
 
                     String retry = scanner.nextLine().trim();
                     if (retry.equals("q")) {
@@ -128,7 +135,6 @@ public class TUI extends ClientGameModel {
                     }
                     client = null;
                 }
-                clearConsole();
             } while (client == null || !client.isConnected());
 
                 // Connection established
@@ -136,16 +142,12 @@ public class TUI extends ClientGameModel {
                 System.out.println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
                 System.out.println("Use [q] to quit the application at any time (works in every menu).");
 
-                wait(2);
-
-                clearConsole();
         } catch (Exception e) {
             System.out.println("\033[31mAn error occurred: " + e.getMessage() + "\033[0m");
         }
     }
 
     public void login() {
-        clearConsole();
         System.out.print("Insert username (or type [q] to quit):\n > ");
         String inputUsername = scanner.nextLine().trim();
 
@@ -157,6 +159,7 @@ public class TUI extends ClientGameModel {
         if (inputUsername.isBlank() || inputUsername.equals("__BROADCAST__")) {
             System.out.println("\033[31mUsername not valid. Please try again.\033[0m");
         } else {
+            System.out.println("\033[33mLogging in as: " + inputUsername + "\033[0m");
             client.login(inputUsername);
             this.username = inputUsername;
         }
