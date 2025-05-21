@@ -53,7 +53,6 @@ public class GameController implements GameControllerInterface {
 
             try {
                 model.startGame(level, usernames, gameID);
-                state = new AssemblingState(model);
                 connectedPlayers.addAll(usernames);
                 //TODO: notify players of game start
             } catch (Exception e) {
@@ -66,6 +65,10 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    public void startGame() {
+        state = new AssemblingState(model, this);
+        setState(state);
+    }
     /**
      * Changes the game state and notifies players of the change
      * @param state is the new state of the game

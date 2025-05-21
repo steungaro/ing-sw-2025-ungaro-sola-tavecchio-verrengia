@@ -4,10 +4,12 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.ErrorMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyListMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LobbyListRequest;
+import it.polimi.ingsw.gc20.server.controller.states.AssemblingState;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
+import it.polimi.ingsw.gc20.server.model.gamesets.Game;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
@@ -127,12 +129,13 @@ public class MatchController implements MatchControllerInterface {
      */
     public void joinLobby(String id, String user) {
         for(Lobby l: lobbies){
-            if(l.getId().equals(id)){
+            if(l.getName().equals(id)){
                 try {
                     l.addPlayer(user);
                     playersInLobbies.put(user, l);
                     //notify the players in the lobby with a lobby message
                     for (String u : l.getUsers()) {
+                        logger.log(Level.INFO, "User " + u + " joined lobby " + l.getName());
                         NetworkService.getInstance().sendToClient(u, new LobbyMessage(l.getUsers(), l.getName(), l.getLevel(), l.getMaxPlayers()));
                     }
                 } catch (FullLobbyException e) {
@@ -218,8 +221,11 @@ public class MatchController implements MatchControllerInterface {
                 Lobby l;
                 try {
                     l = playersInLobbies.get(username);
-                    games.add(l.createGameController());
+                    GameController gamecontroller= l.createGameController();
+                    games.add(gamecontroller);
                     lobbies.remove(l);
+                    gamecontroller.startGame();
+
                     List<String> usersToRemove = new ArrayList<>();
                     for (String user : playersInLobbies.keySet()) {
                         if (playersInLobbies.get(user).equals(l)) {
