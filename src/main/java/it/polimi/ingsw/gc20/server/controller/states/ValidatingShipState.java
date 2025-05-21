@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
+import it.polimi.ingsw.gc20.server.model.gamesets.Board;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
@@ -28,7 +29,7 @@ public class ValidatingShipState extends State {
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, false);
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
-            NetworkService.getInstance().sendToClient(player.getUsername(), new BoardUpdateMessage(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+            NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
             }

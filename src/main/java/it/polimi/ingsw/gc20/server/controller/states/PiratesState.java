@@ -238,7 +238,7 @@ public class PiratesState extends PlayingState {
                     }
                 } catch (InvalidShipException e) {
                     for (String username1 : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+                        NetworkService.getInstance().sendToClient(username1, UpdateShipMessage.fromShip(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
                     }
                     for (String username : getController().getInGameConnectedPlayers()) {
 
@@ -401,7 +401,7 @@ public class PiratesState extends PlayingState {
                 }
             } catch (InvalidShipException e) {
                 for (String username1 : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+                    NetworkService.getInstance().sendToClient(username1, UpdateShipMessage.fromShip(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
                 }
                 for (String username : getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
@@ -416,7 +416,7 @@ public class PiratesState extends PlayingState {
             }
         } catch (InvalidShipException e){
             for (String username1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username1, new UpdateShipMessage(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+                NetworkService.getInstance().sendToClient(username1, UpdateShipMessage.fromShip(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
             }
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
@@ -471,7 +471,7 @@ public class PiratesState extends PlayingState {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new UpdateShipMessage(player.getUsername(), player.getShip(), "chose a branch"));
+                    NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 }
                 if (phase != StatePhase.STANDBY_PHASE){
                     phase = StatePhase.STANDBY_PHASE;

@@ -37,7 +37,7 @@ public record UpdateShipMessage(
      * @param username nome dell'utente che sta assemblando la nave
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
      */
-    public UpdateShipMessage(String username, Ship ship, String action) {
+    public static UpdateShipMessage fromShip(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
@@ -58,7 +58,7 @@ public record UpdateShipMessage(
         }
         ViewComponent hand = null;
 
-        this (username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
+        return new UpdateShipMessage(username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
     }
     @Override
     public void handleMessage() {

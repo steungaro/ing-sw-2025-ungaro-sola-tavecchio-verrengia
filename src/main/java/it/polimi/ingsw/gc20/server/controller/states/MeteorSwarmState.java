@@ -115,7 +115,7 @@ public class MeteorSwarmState extends PlayingState {
                 }
             } catch (InvalidShipException e) {
                 for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
                 }
                 phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
                 //phase is used to store the previous phase of the player
@@ -254,7 +254,7 @@ public class MeteorSwarmState extends PlayingState {
                 }
             } catch (InvalidShipException e) {
                 for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
                 }
                 phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
                 //phase is used to store the previous phase of the player
@@ -271,7 +271,7 @@ public class MeteorSwarmState extends PlayingState {
             }
         } catch (InvalidShipException e) {
             for (String p : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(p, new UpdateShipMessage(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
             }
             phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
             //phase is used to store the previous phase of the player
@@ -427,7 +427,7 @@ public class MeteorSwarmState extends PlayingState {
                 //auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, new UpdateShipMessage(player.getUsername(), player.getShip(), "automatically chose a branch"));
+                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "automatically chose a branch"));
                 }
             } catch (InvalidTurnException | InvalidStateException e) {
                 //cannot happen

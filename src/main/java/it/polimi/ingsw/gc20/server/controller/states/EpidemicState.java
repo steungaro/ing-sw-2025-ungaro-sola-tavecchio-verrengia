@@ -48,7 +48,7 @@ public class EpidemicState extends PlayingState {
         for (String user : getController().getInGameConnectedPlayers()) {
             Player p = getController().getPlayerByID(user);
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new UpdateShipMessage(p.getUsername(), p.getShip(), "epidemic"));
+                NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(p.getUsername(), p.getShip(), "epidemic"));
             }
         }
 

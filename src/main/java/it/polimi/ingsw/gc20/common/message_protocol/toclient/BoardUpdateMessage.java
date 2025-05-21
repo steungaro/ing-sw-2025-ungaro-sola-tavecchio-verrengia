@@ -13,15 +13,15 @@ public record BoardUpdateMessage(
         ViewBoard viewBoard
 ) implements Message {
 
-    public BoardUpdateMessage (Board board, List<Player> players, Boolean assemblingState){
+    public static BoardUpdateMessage fromBoard(Board board, List<Player> players, Boolean assemblingState){
         List<ViewPlayer> playerList = new ArrayList<>();
         for (Player player: players ){
             ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), 0);
             playerList.add(p);
         }
         ViewBoard viewBoard = new ViewBoard(board.isLearner(), playerList.toArray(new ViewPlayer[0]));
-        this (viewBoard);
-
+        viewBoard.assemblingState = assemblingState;
+        return new BoardUpdateMessage(viewBoard);
     }
     @Override
     public void handleMessage() {

@@ -167,7 +167,7 @@ public class GameController implements GameControllerInterface {
             state.loadCargo(player, loaded, ch);
             //notify players of the cargo loaded
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "loaded cargo"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "loaded cargo"));
             }
         } catch (Exception e){
             logger.log(Level.SEVERE, "Error loading cargo", e);
@@ -189,7 +189,7 @@ public class GameController implements GameControllerInterface {
             state.unloadCargo(getPlayerByID(username), lost, ch);
             //notify players of the cargo unloaded
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "unloaded cargo"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "unloaded cargo"));
             }
         } catch (Exception e){
             //notify the player of the error
@@ -212,7 +212,7 @@ public class GameController implements GameControllerInterface {
             state.moveCargo(getPlayerByID(username), cargo, from, to);
             //notify players of the cargo moved
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "moved cargo"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "moved cargo"));
             }
         } catch (Exception e){
             //notify the player of the error
@@ -251,7 +251,7 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(user, getPlayerByID(username).getShip(), "activated cannons"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(user, getPlayerByID(username).getShip(), "activated cannons"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating cannons", e);
@@ -287,7 +287,7 @@ public class GameController implements GameControllerInterface {
             state.loseCrew(getPlayerByID(username), cabins);
             //notify players of the crew lost
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "lost crew"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "lost crew"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -308,7 +308,7 @@ public class GameController implements GameControllerInterface {
             state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
             //notify players of the battery used
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "activated shield"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "activated shield"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -351,7 +351,7 @@ public class GameController implements GameControllerInterface {
             state.activateEngines(getPlayerByID(username), engines, batteries);
             //notify players of the engines activated
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "activated engines"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "activated engines"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating engines", e);
@@ -371,7 +371,7 @@ public class GameController implements GameControllerInterface {
             state.chooseBranch(getPlayerByID(username), coordinates);
             //notify players of the branch chosen
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "chose branch"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "chose branch"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error choosing branch", e);
@@ -606,7 +606,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromBooked(getPlayerByID(username), index);
             // notify players of a component taken and update the ship
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "took component from booked"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "took component from booked"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -628,7 +628,7 @@ public class GameController implements GameControllerInterface {
             state.addComponentToBooked(getPlayerByID(username));
             // notify players of a component booked and update the ship
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "added component to booked"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "added component to booked"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -670,7 +670,7 @@ public class GameController implements GameControllerInterface {
             state.placeComponent(getPlayerByID(username), coordinates);
             //notify the players of the ship changes
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "placed component"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "placed component"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -724,7 +724,7 @@ public class GameController implements GameControllerInterface {
             state.removeComp(getPlayerByID(username), coordinates);
             //notify the players of the ship changes
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "removed component"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "removed component"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -864,7 +864,7 @@ public class GameController implements GameControllerInterface {
             state.addAlien(getPlayerByID(username), color, cabin);
             //notify players of the alien added, update ship
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "added alien"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "added alien"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -922,7 +922,7 @@ public class GameController implements GameControllerInterface {
             //notify players of the energy lost
             //TODO CONTROLLARE
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new UpdateShipMessage(username, getPlayerByID(username).getShip(), "lost energy"));
+                NetworkService.getInstance().sendToClient(user, UpdateShipMessage.fromShip(username, getPlayerByID(username).getShip(), "lost energy"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error losing energy", e);
