@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 public class SocketClientHandler implements ClientHandler {
     private static final Logger LOGGER = Logger.getLogger(SocketClientHandler.class.getName());
     private final Socket clientSocket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final String username;
     private boolean connected = true;
 
