@@ -65,6 +65,7 @@ public class HeartbeatService {
 
         for (String clientUsername : offlineClients) {
             NetworkService.getInstance().getClient(clientUsername).disconnect();
+            clientPingTime.remove(clientUsername);
             LOGGER.info("Disconnected offline client: " + clientUsername);
         }
     }
