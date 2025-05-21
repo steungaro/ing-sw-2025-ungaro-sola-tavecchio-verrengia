@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
@@ -25,12 +26,11 @@ public record BoardUpdateMessage(
     }
     @Override
     public void handleMessage() {
-        //TODO
+        ClientGameModel.getInstance().setBoard(viewBoard);
     }
 
     @Override
     public String toString() {
-        //TODO
-        return null;
+        return  "Board Updated";
     }
 }

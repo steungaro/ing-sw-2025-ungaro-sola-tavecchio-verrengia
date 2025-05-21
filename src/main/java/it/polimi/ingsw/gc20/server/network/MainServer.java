@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.network.common.HeartbeatService;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
 
 public class  MainServer {
-    public static void main() {
+    public static void main(String[] args) {
         NetworkFactory networkFactory = new NetworkFactory();
         networkFactory.initialize();
 
