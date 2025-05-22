@@ -86,7 +86,7 @@ public class AbandonedShipState extends PlayingState {
         // la phase del current player diventa LOSE_CREW_PHASE,
         // others will be in standby phase communicated via a message
         phase = StatePhase.LOSE_CREW_PHASE;
-        //notify the current player of the change of phase with a LoseCrewMessage
+        //notify the current player about the change of phase with a LoseCrewMessage
         NetworkService.getInstance().sendToClient(player.getUsername(), new LoseCrewMessage(lostCrew));
     }
     /**
@@ -113,7 +113,7 @@ public class AbandonedShipState extends PlayingState {
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
         //mark the card as player and go to the standby phase
         getController().getActiveCard().playCard();
-        //notify all the players that the card has been played and next card will be drawn
+        //notify all the players that the card has been played and the next card will be drawn
         for (String username: getController().getInGameConnectedPlayers()) {
             NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for the next card to be drawn"));
         }
@@ -132,29 +132,7 @@ public class AbandonedShipState extends PlayingState {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
-        //pass the turn to the next player if there is one
-        nextPlayer();
-        // if there is no next player, go to the next card
-        if (getCurrentPlayer() == null) {
-            //notify all the players that the card has been played and next card will be drawn
-            for (String username: getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for the next card to be drawn"));
-            }
-            phase = StatePhase.STANDBY_PHASE;
-            getController().getActiveCard().playCard();
-            getController().setState(new PreDrawState(getController()));
-        } else {
-            //otherwise, the next player needs to decide if he accepts the card or not
-            phase = StatePhase.ACCEPT_PHASE;
-            //notify the players connected that the current players has to accept the card
-            for (String username: getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Do you want to accept the card?"));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " turn"));
-                }
-            }
-        }
+        abandonedEndMove();
     }
 
     /**
