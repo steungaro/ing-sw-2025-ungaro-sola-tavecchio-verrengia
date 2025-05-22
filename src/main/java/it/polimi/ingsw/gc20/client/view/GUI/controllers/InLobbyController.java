@@ -51,6 +51,7 @@ public class InLobbyController {
 
     @FXML
     private void initialize() {
+        setupLobby(currentLobby, currentUsername);
         startGameButton.setOnAction(event -> onStartGame());
         leaveLobbyButton.setOnAction(event -> onLeaveLobby());
         killLobbyButton.setOnAction(event -> onKillLobby());
@@ -131,7 +132,7 @@ public class InLobbyController {
             e.printStackTrace();
             return;
         }
-        ((GUIView)ClientGameModel.getInstance()).showScene("login");
+        ((GUIView)ClientGameModel.getInstance()).showScene("game");
     }
 
     private void onLeaveLobby() {
