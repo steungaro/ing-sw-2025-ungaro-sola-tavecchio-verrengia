@@ -486,7 +486,7 @@ public class GameController implements GameControllerInterface {
             connectedPlayers.addLast(username);
             //needs to update the local model of the player with all the ship of the other players
             for (String player : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player, getPlayerByID(player).getShip(), "init all ship"));
+                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player, getPlayerByID(player).getShip(), "init all ship"));
             }
             NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
         }

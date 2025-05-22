@@ -12,6 +12,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
@@ -88,7 +89,7 @@ public class MeteorSwarmState extends PlayingState {
                 }
             } catch (InvalidShipException e) {
                 for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                    NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
                 }
                 phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
                 //phase is used to store the previous phase of the player
@@ -237,7 +238,7 @@ public class MeteorSwarmState extends PlayingState {
             }
         } catch (InvalidShipException e) {
             for (String p : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
             }
             phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
             //phase is used to store the previous phase of the player
@@ -352,7 +353,7 @@ public class MeteorSwarmState extends PlayingState {
                 //auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "automatically chose a branch"));
+                    NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "automatically chose a branch"));
                 }
             } catch (InvalidTurnException | InvalidStateException e) {
                 //cannot happen

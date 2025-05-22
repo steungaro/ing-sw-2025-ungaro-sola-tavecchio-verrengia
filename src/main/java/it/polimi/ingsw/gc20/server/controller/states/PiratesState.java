@@ -12,6 +12,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
@@ -386,7 +387,7 @@ public class PiratesState extends PlayingState {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "chose a branch"));
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 }
                 if (phase != StatePhase.STANDBY_PHASE){
                     phase = StatePhase.STANDBY_PHASE;
@@ -438,7 +439,7 @@ public class PiratesState extends PlayingState {
 
     private void notifyInvalidShip(){
         for (String username1 : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username1, UpdateShipMessage.fromShip(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
+            NetworkService.getInstance().sendToClient(username1, Ship.messageFromShip(username1, getController().getPlayerByID(username1).getShip(), "hit by heavy fire"));
         }
         for (String username : getController().getInGameConnectedPlayers()) {
             if (username.equals(getCurrentPlayer())) {
