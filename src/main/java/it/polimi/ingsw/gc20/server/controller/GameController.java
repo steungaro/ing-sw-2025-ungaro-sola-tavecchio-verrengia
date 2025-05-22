@@ -13,8 +13,6 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
-
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,13 +37,13 @@ public class GameController implements GameControllerInterface {
      * @param id        unique identifier for this game
      * @param usernames list of player usernames
      * @param level     game difficulty level
-     * @throws IllegalArgumentException if number of players is not between 2 and 4
+     * @throws IllegalArgumentException if the number of players is not between 2 and 4
      */
     public GameController(String id, List<String> usernames, int level) throws InvalidStateException{
         if(usernames.size() > 4 || usernames.size() < 2) {
             this.gameID = null;
             this.model = null;
-            NetworkService.getInstance().sendToClient(usernames.get(0), new ErrorMessage("The number of players must be between 2 and 4"));
+            NetworkService.getInstance().sendToClient(usernames.getFirst(), new ErrorMessage("The number of players must be between 2 and 4"));
             throw new InvalidStateException("The number of players must be between 2 and 4");
         } else {
 
@@ -143,8 +141,8 @@ public class GameController implements GameControllerInterface {
     /**
      * Shoots an enemy (pirates, slavers, smugglers)
      * @param username is the username of the player that wants to shoot the enemy
-     * @param cannons is the list of coordinates of the cannons that the player wants to use to shoot
-     * @param batteries is the list of coordinates of the batteries that the player wants to use to shoot
+     * @param cannons is the list of coordinates of the cannons that the player wants to use to shoot?
+     * @param batteries is the list of coordinates of the batteries that the player wants to use to shoot?
      */
     @Override
     public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
@@ -160,7 +158,7 @@ public class GameController implements GameControllerInterface {
     /**
      * Loads cargo onto the player's ship
      * @param username is the username of the player that wants to load the cargo
-     * @param loaded is the cargo that the player wants to load
+     * @param loaded the cargo that the player wants to load
      * @param ch are the coordinates of the cargo hold where the player wants to load the cargo
      * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
      */
@@ -183,9 +181,11 @@ public class GameController implements GameControllerInterface {
     /**
      * Unloads cargo from the player's ship
      * @param username is the username of the player that wants to unload the cargo
-     * @param lost is the cargo that the player wants to unload
+     * @param lost the cargo that the player wants to unload
      * @param ch are the coordinates of the cargo hold where the player wants to unload the cargo
-     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station (to unload without limits) or after smugglers, combat zone (to remove most valuable one)
+     * @apiNote To be used after accepting a planet, accepting a smuggler,
+     * accepting an abandoned station (to unload without limits) or after smugglers, combat zone
+     * (to remove the most valuable one)
      */
     @Override
     public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) {
@@ -205,7 +205,7 @@ public class GameController implements GameControllerInterface {
     /**
      * Moves cargo from one cargo hold to another
      * @param username is the username of the player that wants to move the cargo
-     * @param cargo is the cargo that the player wants to move
+     * @param cargo is the cargo that the player wants to move?
      * @param from are the coordinates of the cargo hold where the player wants to move the cargo from
      * @param to are the coordinates of the cargo hold where the player wants to move the cargo to
      * @apiNote To be used in losing/gaining cargo
@@ -247,8 +247,8 @@ public class GameController implements GameControllerInterface {
     /**
      * To be called when a player wants to activate their cannons
      * @param username is the username of the player that wants to activate their cannons
-     * @param cannons is the list of coordinates of the cannons that the player wants to activate
-     * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the cannons
+     * @param cannons the list of coordinates of the cannons that the player wants to activate
+     * @param batteries the list of coordinates of the batteries that the player wants to use to activate the cannons
      */
     @Override
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
@@ -265,11 +265,11 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * @return the score of the game
+     * this method gets the score of the game
      */
-    public Map<String, Integer> getScore() {
+    public void getScore() {
         try{
-            return state.getScore();
+            state.getScore();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error getting score", e);
             //notify players of the error
@@ -277,13 +277,12 @@ public class GameController implements GameControllerInterface {
                 NetworkService.getInstance().sendToClient(user, new ErrorMessage("Error getting score: " + e.getMessage()));
             }
         }
-        return null;
     }
 
     /**
      * To be called when a player wants to lose crew
      * @param username is the username of the player that wants to lose crew
-     * @param cabins is the list of coordinates of the cabins that the player wants to lose crew from
+     * @param cabins the list of coordinates of the cabins that the player wants to lose crew from
      */
     @Override
     public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) {
@@ -346,8 +345,8 @@ public class GameController implements GameControllerInterface {
     /**
      * To be called when a player activates their engines
      * @param username is the username of the player that wants to activate their engines
-     * @param engines is the list of coordinates of the engines that the player wants to activate
-     * @param batteries is the list of coordinates of the batteries that the player wants to use to activate the engines
+     * @param engines the list of coordinates of the engines that the player wants to activate
+     * @param batteries the list of coordinates of the batteries that the player wants to use to activate the engines
      */
     @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
@@ -365,7 +364,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * To be called when a player needs to choose one of the two branches a ship is divided into after a fire.
+     * To be called when a player needs to choose one of the two branches, a ship is divided into after a fire.
      * @param username is the username of the player that wants to choose a branch
      * @param coordinates are the coordinates of the branch that the player wants to choose
      */
@@ -386,8 +385,8 @@ public class GameController implements GameControllerInterface {
 
 
     /**
-     * @param asker is the username of the player asking for data
-     * @param asked is the username of the player being asked for data
+     * @param asker the username of the player asking for data
+     * @param asked the username of the player being asked for data
      * @return player data, if the asker is the same as the asked, return the full data, otherwise return only public data
      */
     public Player getPlayerData(String asker, String asked) {
@@ -458,18 +457,18 @@ public class GameController implements GameControllerInterface {
      */
     public void reconnectPlayer(String username) {
         try{
-            // Check if player was originally in this game
+            // Check if the player was originally in this game
             if (getPlayerByID(username) == null) {
                 throw new IllegalArgumentException("Player was never part of this game");
             }
 
-            // Check if player is in the disconnected list
+            // Check if the player is in the disconnected list
             if (!isPlayerDisconnected(username)) {
                 // Player isn't disconnected, nothing to do
                 return;
             }
 
-            // Remove player from disconnected list
+            // Remove player from the disconnected list
             disconnectedPlayers.remove(username);
             pendingPlayers.add(username);
 
@@ -483,6 +482,14 @@ public class GameController implements GameControllerInterface {
     }
 
     public void preDrawConnect(){
+        for (String username : pendingPlayers){
+            connectedPlayers.addLast(username);
+            //needs to update the local model of the player with all the ship of the other players
+            for (String player : getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player, getPlayerByID(player).getShip(), "init all ship"));
+            }
+            NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+        }
         pendingPlayers.forEach(connectedPlayers::addLast);
     }
 
@@ -541,7 +548,7 @@ public class GameController implements GameControllerInterface {
      * Checks if a player is currently disconnected
      *
      * @param username Username to check
-     * @return true if player is disconnected, false otherwise
+     * @return true if the player is disconnected, false otherwise
      */
     public boolean isPlayerDisconnected(String username) {
         return disconnectedPlayers.contains(username);
@@ -575,14 +582,14 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player taking the component
      * @param index Index of the component in the viewed pile
-     * @throws IllegalStateException if game is not in ASSEMBLING state
+     * @throws IllegalStateException if the game is not in ASSEMBLING state
      * @throws NoSuchElementException if the component is not in the viewed pile
-     * @throws IllegalArgumentException if the player already has a component in hand
+     * @throws IllegalArgumentException if the player already has a component in the hand
      */
     public synchronized void takeComponentFromViewed(String username, int index) {
         try{
             state.takeComponentFromViewed(getPlayerByID(username), index);
-            //notify players of component taken
+            //notify players of the component taken
             for (String user : getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(user, new PileUpdateMessage(username,
                         getModel().getGame().getPile().getUnviewed().size(),
@@ -620,7 +627,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Adds the component in hand to player's booked list (Level 2 only)
+     * Adds the component in the hand to the player's booked list (Level 2 only)
      *
      * @param username Username of the player booking the component
      */
@@ -642,7 +649,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Adds the component in hand to the viewed pile so other players can see it
+     * Adds the component in the hand to the viewed pile so other players can see it
      *
      * @param username Username of the player adding the component
      */
@@ -664,7 +671,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Places the component in hand on the player's ship at specified coordinates
+     * Places the component in the hand on the player's ship at specified coordinates
      *
      * @param username Username of the player placing the component
      * @param coordinates Coordinates where the component will be placed
@@ -684,7 +691,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Rotates the component in hand clockwise
+     * Rotates the component in the hand clockwise
      *
      * @param username Username of the player rotating the component
      */
@@ -700,7 +707,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Rotates the component in hand counterclockwise
+     * Rotates the component in the hand counterclockwise
      *
      * @param username Username of the player rotating the component
      */
@@ -716,7 +723,7 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Removes a component from the player's ship (only during validating phase and if the ship is not valid)
+     * Removes a component from the player's ship (only during the validating phase and if the ship is not valid)
      *
      * @param username Username of the player removing the component
      * @param coordinates Coordinates of the component to be removed
@@ -741,7 +748,7 @@ public class GameController implements GameControllerInterface {
      * Validates the player's ship
      *
      * @param username Username of the player that wants to validate the ship
-     * @throws IllegalStateException if game is not in VALIDATING state
+     * @throws IllegalStateException if the game is not in a VALIDATING state
      * @apiNote this function must be called in a loop from the view until the ship is valid
      * @implNote this function will also draw a card if all players have valid ships (and will change the state)
      */

@@ -1,7 +1,9 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LeaderboardMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,15 +36,18 @@ public class EndgameState extends State {
         return "EndgameState";
     }
 
-    /** this method returns the score of the game
-     * @return a map with the username and the score of each player
+    /** this method returns the score of the game to the player via a leaderboard message
+     *
      */
     @Override
-    public Map<String, Integer> getScore() {
-        return getModel().calculateScore()
+    public void getScore() {
+        Map<String, Integer> score = getModel().calculateScore()
                 .entrySet()
                 .stream()
                 .map(entry -> Map.entry(entry.getKey().getUsername(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        for (String player : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(player, new LeaderboardMessage(score));
+        }
     }
 }

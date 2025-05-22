@@ -192,13 +192,13 @@ public class TUI extends ClientGameModel {
     }
 
     public void branchMenu(){
-        MenuState menu = new BranchMenu();
-        display(menu);
+        currentState = new BranchMenu();
+        display(currentState);
     }
 
     public void buildingMenu(List<ViewAdventureCard> adventureCards){
-        MenuState menu = new BuildingMenu(adventureCards);
-        display(menu);
+        currentState= new BuildingMenu(adventureCards);
+        display(currentState);
     }
 
     public void inLobbyMenu(){
@@ -256,14 +256,15 @@ public class TUI extends ClientGameModel {
     }
 
     public void takeComponentMenu(){
-        //TODO: implement this method
+        MenuState menu = new BuildingMenu(null);
+        display(menu);
     }
 
     public void shieldsMenu(FireType fireType, int direction, int line){
         String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
         String Message = fireType + " from " + directions[direction]  +  " at line " + line;
-        MenuState state = new ShieldsMenu(Message);
-        // ClientGameModel.display(state);
+        MenuState menu = new ShieldsMenu(Message);
+        display(menu);
     }
 
     public void rollDiceMenu(FireType fireType, int direction){
@@ -271,7 +272,8 @@ public class TUI extends ClientGameModel {
     }
 
     public void cargoMenu(int cargoNum){
-        // TODO: implement this method
+        MenuState menu = new CargoMenu(null, cargoNum, new HashMap<>());
+        display(menu);
     }
 
     public void loseCrewMenu(int crewNum){
@@ -283,7 +285,8 @@ public class TUI extends ClientGameModel {
     }
 
     public void placeComponentMenu(){
-        // TODO: implement this method
+        MenuState menu = new BuildingMenu(null);
+        display(menu);
     }
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){

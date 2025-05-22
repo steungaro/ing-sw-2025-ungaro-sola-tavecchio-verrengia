@@ -11,7 +11,7 @@ public record TakeComponentMessage() implements Message {
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().takeComponentMenu();
         ClientGameModel.getInstance().setComponentInHand(null);
+        ClientGameModel.getInstance().takeComponentMenu();
     }
 }

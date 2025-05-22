@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.server.network.socket;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginFailedMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LoginRequest;
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
@@ -63,7 +64,12 @@ public class SocketAuthService {
                         // Reconnect the client (maybe it was RMI before or connection crashed)
                         newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                         socketServer.updateClient(loginRequest.username(), newClient);
-                        MatchController.getInstance().getGameControllerForPlayer(loginRequest.username()).reconnectPlayer(loginRequest.username());
+                        GameController gameController = MatchController.getInstance().getGameControllerForPlayer(loginRequest.username());
+                        if (gameController != null) {
+                            gameController.reconnectPlayer(loginRequest.username());
+                        }else {
+                            MatchController.getInstance().getLobbies(loginRequest.username());
+                        }
                         LOGGER.info("Client " + loginRequest + " reconnected.");
                     }
                 }

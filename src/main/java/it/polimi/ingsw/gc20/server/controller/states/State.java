@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -149,9 +150,8 @@ public abstract class State{
     public void killGame() throws InvalidStateException {
         exception();
     }
-    public Map<String, Integer> getScore() throws InvalidStateException {
+    public void getScore() throws InvalidStateException {
         exception();
-        return null;
     }
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         exception();

@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
@@ -41,6 +42,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
             LOGGER.info(String.format("User logged via RMI: " + username));
+
+            MatchController.getInstance().getLobbies(username);
             return true;
         }
         // Case 2: the username is already in use -- verify if it is connected
@@ -48,7 +51,12 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             // Update the client handler
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.updateClient(username, clientHandler);
-            MatchController.getInstance().getGameControllerForPlayer(username).reconnectPlayer(username);
+            GameController gameController = MatchController.getInstance().getGameControllerForPlayer(username);
+            if (gameController != null) {
+                gameController.reconnectPlayer(username);
+            }else {
+                MatchController.getInstance().getLobbies(username);
+            }
             LOGGER.info(String.format("User reconnected via RMI: " + username));
             return true;
         }
