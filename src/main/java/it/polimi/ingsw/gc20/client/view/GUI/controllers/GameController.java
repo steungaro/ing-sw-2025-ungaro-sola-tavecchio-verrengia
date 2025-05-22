@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -38,6 +37,7 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        // Inizializza gli elementi UI
         messageLabel.setText("Benvenuto nella partita");
         changeBoardView();
     }
@@ -65,9 +65,9 @@ public class GameController implements Initializable {
 
     public void changeBoardView() {
         if(ClientGameModel.getInstance().getCurrentLobby().getLevel()==0){
-            changeView("/fxml/ship0.fxml");
+            changeView("/fxml/board0.fxml");
         } else {
-            changeView("/fxml/ship2.fxml");
+            changeView("/fxml/board2.fxml");
         }
     }
 
@@ -76,7 +76,7 @@ public class GameController implements Initializable {
         playerInfoLabel.setText("Giocatore: " + username);
     }
 
-    public void addPlayerShips(List<String> playerNames) {
+    public void addPlayerShips(java.util.List<String> playerNames) {
         shipsButtonContainer.getChildren().clear();
         playerShipButtons.clear();
 
@@ -101,6 +101,7 @@ public class GameController implements Initializable {
 
         highlightCurrentShip(playerName);
 
+        // TODO: Carica e mostra la nave del giocatore nel gameContent
         displayMessage("Visualizzazione nave di " + playerName);
     }
 
