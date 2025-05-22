@@ -107,7 +107,7 @@ public class PlanetsState extends CargoState {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidTurnException("You can't load cargo unless you are on the planet");
         }
-        //cehck if the planet is available
+        //check if the planet is available
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't load cargo unless you are on the planet");
         }

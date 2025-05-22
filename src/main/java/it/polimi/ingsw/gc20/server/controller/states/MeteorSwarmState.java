@@ -78,38 +78,11 @@ public class MeteorSwarmState extends PlayingState {
                 //if all the player has received this projectile
                 if (getCurrentPlayer() == null) {
                     //verify if the first player has received all the meteors
-                    setCurrentPlayer(getController().getFirstOnlinePlayer());
-                    if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
-                        //if we finished the projectile, we draw a new card
-                        for (String p : getController().getInGameConnectedPlayers()) {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
-                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                        }
-                        getModel().getActiveCard().playCard();
-                        getController().setState(new PreDrawState(getController()));
-                    } else {
-                        //if there are still projectiles to shoot, the leader is set to the roll dice phase
-                        for (String p : getController().getInGameConnectedPlayers()) {
-                            if (p.equals(getCurrentPlayer())) {
-                                NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
-                                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
-                            } else {
-                                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
-                                phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                            }
-                        }
-
-                    }
+                    RestartTurn();
                 } else {
                     //if there is a next player,
                     // we set the phase of the current player to standby and the next player to cannon phase
-                    for (String p : getController().getInGameConnectedPlayers()) {
-                        if (p.equals(getCurrentPlayer())) {
-                            NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                        } else {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
-                        }
-                    }
+                    NotifyDefensiveCannon();
                     phaseMap.put(player, StatePhase.STANDBY_PHASE);
                     phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.CANNONS_PHASE);
                 }
@@ -134,6 +107,45 @@ public class MeteorSwarmState extends PlayingState {
             phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
             //phase is used to store the previous phase of the player
             phase = StatePhase.CANNONS_PHASE;
+        }
+    }
+
+    private void NotifyDefensiveCannon() {
+        for (String p : getController().getInGameConnectedPlayers()) {
+            if (p.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
+            } else {
+                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
+            }
+        }
+    }
+
+    private void RestartTurn() {
+        setCurrentPlayer(getController().getFirstOnlinePlayer());
+        if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
+            //if we finished the projectile, we draw a new card
+            for (String p : getController().getInGameConnectedPlayers()) {
+                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
+                phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+            }
+            getModel().getActiveCard().playCard();
+            getController().setState(new PreDrawState(getController()));
+        } else {
+            //if there are still projectiles to shoot, the leader is set to the roll dice phase
+            NotifyRollDice();
+
+        }
+    }
+
+    private void NotifyRollDice() {
+        for (String p : getController().getInGameConnectedPlayers()) {
+            if (p.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
+                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
+            } else {
+                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+            }
         }
     }
 
@@ -210,64 +222,18 @@ public class MeteorSwarmState extends PlayingState {
         try {
             //activate the shield
             fireManagerMap.get(player).activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-            try {
-                fireManagerMap.get(player).fire();
-                nextPlayer();
-                //if all the player has received this projectile
-                if (getCurrentPlayer() == null) {
-                    //verify if the first player has received all the meteors
-                    setCurrentPlayer(getController().getFirstOnlinePlayer());
-                    //check if we finished shooting the meteors
-                    if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
-                        //if we finished the projectiles, we draw a new card
-                        for (String p : getController().getInGameConnectedPlayers()) {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
-                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                        }
-                        getModel().getActiveCard().playCard();
-                        getController().setState(new PreDrawState(getController()));
-                    } else {
-                        //else the leader rolls again the dice
-                        for (String p : getController().getInGameConnectedPlayers()) {
-                            if (p.equals(getCurrentPlayer())) {
-                                NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
-                                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
-                            } else {
-                                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
-                                phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                            }
-                        }
-
-                    }
-                } else {
-                    //if there is a next player,
-                    // we set the phase of the current player to standby and the next player to shield phase
-                    phaseMap.put(player, StatePhase.STANDBY_PHASE);
-                    phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.SELECT_SHIELD);
-                    for (String p : getController().getInGameConnectedPlayers()) {
-                        if (p.equals(getCurrentPlayer())) {
-                            NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                        } else {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
-                        }
-                    }
-                }
-            } catch (InvalidShipException e) {
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
-                }
-                phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
-                //phase is used to store the previous phase of the player
-                phase = StatePhase.SELECT_SHIELD;
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(p, new ChooseBranchMessage());
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
-                    }
-                }
-            } catch (DieNotRolledException _){
-                //cannot happen
+            fireManagerMap.get(player).fire();
+            nextPlayer();
+            //if all the player has received this projectile
+            if (getCurrentPlayer() == null) {
+                //verify if the first player has received all the meteors
+                RestartTurn();
+            } else {
+                //if there is a next player,
+                // we set the phase of the current player to standby and the next player to shield phase
+                phaseMap.put(player, StatePhase.STANDBY_PHASE);
+                phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.SELECT_SHIELD);
+                notifyDefensiveShield();
             }
         } catch (InvalidShipException e) {
             for (String p : getController().getInGameConnectedPlayers()) {
@@ -282,6 +248,18 @@ public class MeteorSwarmState extends PlayingState {
                 } else {
                     NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
                 }
+            }
+        } catch (DieNotRolledException _) {
+            //cannot happen
+        }
+    }
+
+    private void notifyDefensiveShield() {
+        for (String p : getController().getInGameConnectedPlayers()) {
+            if (p.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
+            } else {
+                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
             }
         }
     }
@@ -309,45 +287,12 @@ public class MeteorSwarmState extends PlayingState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             //if there is no next player, we set the current player to the first player
-            setCurrentPlayer(getController().getFirstOnlinePlayer());
-            //we verify if we shot all the projectiles
-            if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()){
-                //we set all the player phase to standby, and we can go to the next card
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
-                    phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                }
-                getModel().getActiveCard().playCard();
-                getController().setState(new PreDrawState(getController()));
-            } else {
-                //if is not finished we set the first player to the roll dice phase and the others to the standby phase
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())){
-                        NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
-                        phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
-                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                    }
-                }
-            }
+            RestartTurn();
         } else {
             if (phase == StatePhase.CANNONS_PHASE) {
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
-                    }
-                }
+                NotifyDefensiveCannon();
             } else if (phase == StatePhase.SELECT_SHIELD) {
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
-                    }
-                }
+                notifyDefensiveShield();
             }
             //if there is a next player, we modify the state to the correct phase, memorized in the phase attribute
             phaseMap.put(player, StatePhase.STANDBY_PHASE);
@@ -362,7 +307,7 @@ public class MeteorSwarmState extends PlayingState {
     @Override
     public void currentQuit(Player player) {
         //if we are in the rolling dice phase, we need to auto roll the dice for the others player
-        //if we are in the cannon phase or in the shield phase we skip the turn of the player
+        //if we are in the cannon phase or in the shield phase, we skip the turn of the player
         //if we are in the validate ship phase we auto choose the branch
         if (phaseMap.get(player) == StatePhase.ROLL_DICE_PHASE) {
             try {
@@ -389,34 +334,14 @@ public class MeteorSwarmState extends PlayingState {
                     getController().setState(new PreDrawState(getController()));
                 } else {
                     //if is not finished we set the first player to the roll dice phase and the others to the standby phase
-                    for (String p : getController().getInGameConnectedPlayers()) {
-                        if (p.equals(getCurrentPlayer())) {
-                            NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
-                            phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.ROLL_DICE_PHASE);
-                        } else {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
-                            phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                        }
-                    }
+                    NotifyRollDice();
                 }
             } else {
                 //if there is a next player,
                 if (phase == StatePhase.CANNONS_PHASE) {
-                    for (String p : getController().getInGameConnectedPlayers()) {
-                        if (p.equals(getCurrentPlayer())) {
-                            NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                        } else {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
-                        }
-                    }
+                    NotifyDefensiveCannon();
                 } else if (phase == StatePhase.SELECT_SHIELD) {
-                    for (String p : getController().getInGameConnectedPlayers()) {
-                        if (p.equals(getCurrentPlayer())) {
-                            NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                        } else {
-                            NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
-                        }
-                    }
+                    notifyDefensiveShield();
                 }
                 // we put the current player to standby and the next player to the correct phase
                 phaseMap.put(player, StatePhase.STANDBY_PHASE);

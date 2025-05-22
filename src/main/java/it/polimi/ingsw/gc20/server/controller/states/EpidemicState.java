@@ -9,10 +9,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 @SuppressWarnings("unused") // dynamically created by Cards
 public class EpidemicState extends PlayingState {
     /**
@@ -20,7 +16,7 @@ public class EpidemicState extends PlayingState {
      */
     public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
-        //notify the players that the epidemic is starting and a automatic action is going to be performed
+        //notify the players that the epidemic is starting, and an automatic action is going to be performed
         for (String player : getController().getInGameConnectedPlayers()) {
             NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage("An epidemic is Starting!, you will lose 1 crew member for each populated adjacent cabins"));
         }
@@ -54,7 +50,7 @@ public class EpidemicState extends PlayingState {
 
         //effect ended, draw a new card
         phase = StatePhase.STANDBY_PHASE;
-        //notify all the players that the epidemic effect is over and we wait a new card
+        //notify all the players that the epidemic effect is over, and we wait for a new card
         for (String player : getController().getInGameConnectedPlayers()) {
             NetworkService.getInstance().sendToClient(player, new StandbyMessage("waiting for a new card"));
         }

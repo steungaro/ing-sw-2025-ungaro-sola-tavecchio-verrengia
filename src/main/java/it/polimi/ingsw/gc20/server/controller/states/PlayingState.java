@@ -14,15 +14,6 @@ public abstract class PlayingState extends State {
         super(model, controller);
         currentPlayer = controller.getFirstOnlinePlayer();
     }
-
-    /*public PlayingState(GameController controller) {
-        super(controller);
-    }
-
-    public PlayingState(GameModel model) {
-        super(model);
-    }*/
-
     @Override
     public String getCurrentPlayer() {
         return currentPlayer;
