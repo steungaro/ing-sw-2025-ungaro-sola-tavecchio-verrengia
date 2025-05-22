@@ -14,7 +14,6 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -66,9 +65,9 @@ public class GameController implements Initializable {
 
     public void changeBoardView() {
         if(ClientGameModel.getInstance().getCurrentLobby().getLevel()==0){
-            changeView("/fxml/ship0.fxml");
+            changeView("/fxml/board0.fxml");
         } else {
-            changeView("/fxml/ship2.fxml");
+            changeView("/fxml/board2.fxml");
         }
     }
 
@@ -77,7 +76,7 @@ public class GameController implements Initializable {
         playerInfoLabel.setText("Giocatore: " + username);
     }
 
-    public void addPlayerShips(List<String> playerNames) {
+    public void addPlayerShips(java.util.List<String> playerNames) {
         shipsButtonContainer.getChildren().clear();
         playerShipButtons.clear();
 
