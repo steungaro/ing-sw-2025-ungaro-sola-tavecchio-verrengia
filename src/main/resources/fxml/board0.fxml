@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="Board0Controller">
-    
-    <ImageView fx:id="boardImageView" preserveRatio="true" fitWidth="800">
-        <Image url="@cardboard/cardboard-1.jpg"/>
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
+
+    <ImageView fx:id="boardImageView" fitWidth="800" preserveRatio="true">
+        <Image url="@cardboard/cardboard-1.jpg" />
     </ImageView>
-    
+
+    <Pane fx:id="gridWrapper" pickOnBounds="false">
+        <GridPane fx:id="componentsGrid">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="20" />
+                <ColumnConstraints percentWidth="20" />
+            </columnConstraints>
+
+            <rowConstraints>
+                <RowConstraints percentHeight="20" />
+                <RowConstraints percentHeight="20" />
+                <RowConstraints percentHeight="20" />
+                <RowConstraints percentHeight="20" />
+                <RowConstraints percentHeight="20" />
+            </rowConstraints>
+        </GridPane>
+    </Pane>
+
+    <HBox alignment="TOP_LEFT" spacing="10" StackPane.alignment="TOP_LEFT">
+        <Label fx:id="X_Label" text="X: 0.00" style="-fx-text-fill: white;" />
+        <Label fx:id="Y_Label" text="Y: 0.00" style="-fx-text-fill: white;" />
+    </HBox>
+
 </StackPane>
