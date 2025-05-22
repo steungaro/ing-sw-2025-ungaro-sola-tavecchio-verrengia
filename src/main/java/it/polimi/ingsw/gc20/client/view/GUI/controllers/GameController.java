@@ -14,6 +14,7 @@ import javafx.scene.layout.StackPane;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -76,7 +77,7 @@ public class GameController implements Initializable {
         playerInfoLabel.setText("Giocatore: " + username);
     }
 
-    public void addPlayerShips(java.util.List<String> playerNames) {
+    public void addPlayerShips(List<String> playerNames) {
         shipsButtonContainer.getChildren().clear();
         playerShipButtons.clear();
 
