@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.concurrent.Executors;
@@ -48,7 +49,7 @@ public class EpidemicState extends PlayingState {
         for (String user : getController().getInGameConnectedPlayers()) {
             Player p = getController().getPlayerByID(user);
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(p.getUsername(), p.getShip(), "epidemic"));
+                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "epidemic"));
             }
         }
 

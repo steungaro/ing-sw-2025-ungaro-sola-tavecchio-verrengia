@@ -47,6 +47,18 @@ public class ViewShip {
     private ViewComponent[] booked;
     private List<ViewComponent> waste;
 
+    public ViewShip() {
+        this.baseFirepower = 0;
+        this.baseEnginePower = 0;
+        this.astronauts = 0;
+        this.aliens = AlienColor.NONE;
+        this.isLearner = false;
+        this.isValid = false;
+        this.components = new ViewComponent[5][7];
+        this.booked = new ViewComponent[2];
+        this.waste = new ArrayList<>();
+    }
+
     public void setValid(boolean isValid) {
         this.isValid = isValid;
         fireChange();
