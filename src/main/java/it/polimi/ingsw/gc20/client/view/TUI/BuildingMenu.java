@@ -54,53 +54,53 @@ public class BuildingMenu implements MenuState{
      */
     public boolean handleInput() throws IOException {
         System.out.print(" > ");
-        int choice = scanner.nextInt();
+        String choice = scanner.nextLine().trim();
         adventureCards = null;
         // Handle user input for the building menu
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
             switch (choice) {
-                case 1:
+                case "1":
                     System.out.println("Type the index of the covered component you want to take:");
                     System.out.print(" > ");
                     // Read the index of the component to take
                     int index = Integer.parseInt(scanner.nextLine().trim());
                     ClientGameModel.getInstance().getClient().takeComponentFromUnviewed(username, index);
                     break;
-                case 2:
+                case "2":
                     System.out.println("Type the index of the uncovered component you want to take:");
                     System.out.print(" > ");
                     // Read the index of the component to take
                     int index1 = Integer.parseInt(scanner.nextLine().trim());
                     ClientGameModel.getInstance().getClient().takeComponentFromViewed(username, index1);
                     break;
-                case 3:
+                case "3":
                     System.out.println("Type the index of the board where you want to start the game:");
                     System.out.print(" > ");
                     // Read the index of the board to take
                     int index3 = Integer.parseInt(scanner.nextLine().trim());
                     ClientGameModel.getInstance().getClient().stopAssembling(username, index3);
                     break;
-                case 4:
+                case "4":
                     System.out.println("Type the index of the booked component you want to take:");
                     System.out.print(" > ");
                     // Read the index of the component to take
                     int index2 = Integer.parseInt(scanner.nextLine().trim());
                     ClientGameModel.getInstance().getClient().takeComponentFromBooked(username, index2);
                     break;
-                case 5:
+                case "5":
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
                     break;
-                case 6:
+                case "6":
                     System.out.println("Type the index of the deck you want to peek:");
                     System.out.print(" > ");
                     // Read the index of the deck to peek
                     int index4 = Integer.parseInt(scanner.nextLine().trim());
                     ClientGameModel.getInstance().getClient().peekDeck(username, index4);
                     break;
-                case 'q':
+                case "q":
                     ClientGameModel.getInstance().shutdown();
                     break;
-                case 'v':
+                case "v":
                     TUI.viewOptionsMenu();
                     return false;
                 default:
@@ -109,13 +109,13 @@ public class BuildingMenu implements MenuState{
             }
         }else{
             switch (choice){
-                case 5:
+                case "5":
                     ClientGameModel.getInstance().getClient().addComponentToBooked(username);
                     break;
-                case 1:
+                case "1":
                     ClientGameModel.getInstance().getClient().addComponentToViewed(username);
                     break;
-                case 2:
+                case "2":
                     System.out.println("Type the coordinates of the component you want to add (x y):");
                     System.out.print(" > ");
                     // Read the coordinates of the component to add
@@ -126,7 +126,7 @@ public class BuildingMenu implements MenuState{
                     Pair<Integer, Integer> coordinatesPair = new Pair<>(x, y);
                     ClientGameModel.getInstance().getClient().placeComponent(username, coordinatesPair);
                     break;
-                case 3:
+                case "3":
                     System.out.println("Type the number of rotations:");
                     System.out.print(" > ");
                     // Read the number of rotations
@@ -136,7 +136,7 @@ public class BuildingMenu implements MenuState{
                         ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
                     }
                     break;
-                case 4:
+                case "4":
                     System.out.println("Type the number of rotations:");
                     System.out.print(" > ");
                     // Read the number of rotations
@@ -146,13 +146,13 @@ public class BuildingMenu implements MenuState{
                         ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
                     }
                     break;
-                case 6:
+                case "6":
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
                     break;
-                case 'q':
+                case "q":
                     ClientGameModel.getInstance().shutdown();
                     break;
-                case 'v':
+                case "v":
                     TUI.viewOptionsMenu();
                     return false;
                 default:
