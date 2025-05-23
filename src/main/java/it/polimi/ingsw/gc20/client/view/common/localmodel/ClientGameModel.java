@@ -149,20 +149,20 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-    public void printDeck(int index) {
-        if (board != null) {
-            List<ViewAdventureCard> cards = board.decks.get(index);
-            if (cards != null) {
-                String out = printCardsInLine(cards);
-                System.out.println(out);
-                LOGGER.info("Deck " + index + ":\n");
-            } else {
-                LOGGER.warning("No card found at index " + index);
-            }
-        } else {
-            LOGGER.warning("No deck found at index " + index);
-        }
-    }
+//    public void printDeck(int index) {
+//        if (board != null) {
+//            List<ViewAdventureCard> cards = board.decks.get(index);
+//            if (cards != null) {
+//                String out = printCardsInLine(cards);
+//                System.out.println(out);
+//                LOGGER.info("Deck " + index + ":\n");
+//            } else {
+//                LOGGER.warning("No card found at index " + index);
+//            }
+//        } else {
+//            LOGGER.warning("No deck found at index " + index);
+//        }
+//    }
 
     public String printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
