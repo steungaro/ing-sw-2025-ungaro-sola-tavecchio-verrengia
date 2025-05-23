@@ -25,8 +25,6 @@ public record LobbyListMessage(
             viewLobbies.add(new ViewLobby(lobby.lobbyName, lobby.maxNumberOfPlayers, lobby.level, lobby.players));
         }
         ClientGameModel.getInstance().setLobbyList(viewLobbies);
-        if (ClientGameModel.getInstance().loggedIn) {
-            ClientGameModel.getInstance().mainMenuState();
-        }
+        ClientGameModel.getInstance().mainMenuState();
     }
 }
