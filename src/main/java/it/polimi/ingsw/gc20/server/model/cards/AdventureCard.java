@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.server.controller.states.State;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  * @author GC20
  */
 
-public class AdventureCard {
+public class AdventureCard implements Serializable {
     private String name;
     private int level;
     private int IDCard;

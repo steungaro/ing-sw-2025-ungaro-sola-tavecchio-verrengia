@@ -35,7 +35,7 @@ public class HeartbeatService {
     }
 
     public void handlePingResponse(String clientUsername) {
-        long currentTime = (System.currentTimeMillis() / 1000);
+        long currentTime = (System.currentTimeMillis());
         clientPingTime.put(clientUsername, currentTime);
     }
 
@@ -54,11 +54,11 @@ public class HeartbeatService {
     }
 
     public void removeOfflineClients() {
-        long currentTime = System.currentTimeMillis() / 1000;
+        long currentTime = System.currentTimeMillis();
         List<String> offlineClients = new ArrayList<>();
 
         for (Map.Entry<String, Long> entry : clientPingTime.entrySet()) {
-            if (currentTime - entry.getValue() > TIMEOUT_MS / 1000) {
+            if (currentTime - entry.getValue() > TIMEOUT_MS) {
                 offlineClients.add(entry.getKey());
             }
         }
