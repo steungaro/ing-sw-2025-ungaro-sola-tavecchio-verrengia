@@ -66,9 +66,9 @@ public class GameController implements Initializable {
 
     public void changeBoardView() {
         if(ClientGameModel.getInstance().getCurrentLobby().getLevel()==0){
-            changeView("/fxml/board0.fxml");
+            changeView("/fxml/ship0.fxml");
         } else {
-            changeView("/fxml/board2.fxml");
+            changeView("/fxml/ship2.fxml");
         }
     }
 
