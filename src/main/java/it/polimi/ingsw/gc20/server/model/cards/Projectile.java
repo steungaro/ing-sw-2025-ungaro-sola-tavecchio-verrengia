@@ -6,10 +6,12 @@ import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+import java.io.Serializable;
+
 /**
  * @author GC20
  */
-public class Projectile {
+public class Projectile implements Serializable {
     private Direction direction;
     private FireType fireType;
 

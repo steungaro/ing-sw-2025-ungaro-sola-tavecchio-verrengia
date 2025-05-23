@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.server.model.gamesets;
 
+import java.io.Serializable;
+
 /**
  * 
  */
-public enum CargoColor {
+public enum CargoColor implements Serializable {
     BLUE,
     GREEN,
     YELLOW,
