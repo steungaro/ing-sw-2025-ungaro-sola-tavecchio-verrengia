@@ -24,30 +24,31 @@ public class CargoMenu implements MenuState{
     @Override
     public void displayMenu() {
         TUI.clearConsole();
-        System.out.println("Cargo Menu");
+        System.out.println("\u001B[1mCargo Menu\u001B[0m");
         System.out.println(message);
         if (cargoToLose > 0) {
-            System.out.println("You have to lose " + cargoToLose + " cargo.");
+            System.out.println("You have to lose \u001B[31m" + cargoToLose + "\u001B[0m cargo.");
             System.out.println("1. Lose cargo");
             System.out.println("2. Move cargo");
             System.out.println("3. Lose energy (only if you don't have enough cargo to lose)");
             System.out.println("4. End turn");
         } else {
             System.out.println("You have to gain " +
-                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue()) +
+                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue().toString()) +
                     " cargo.");
             System.out.println("1. Unload cargo");
             System.out.println("2. Move cargo");
             System.out.println("3. Load cargo");
             System.out.println("4. End turn");
         }
-        System.out.print(" > ");
+        System.out.println("v. Viewing game options");
     }
 
 
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         String choice = scanner.nextLine().trim();
-        // Handle user input for the cargo menu
+        // Handle user input from the cargo menu
         switch (choice) {
             case "1":
                 System.out.println("Type the coordinates of the cargo you want to lose (x y):");
@@ -109,6 +110,9 @@ public class CargoMenu implements MenuState{
             case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

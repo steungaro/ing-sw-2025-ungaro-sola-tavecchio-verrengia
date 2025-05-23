@@ -24,7 +24,7 @@ public class BuildingMenu implements MenuState{
         }
 
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
-            System.out.println("Building Ship Menu");
+            System.out.println("\u001B[1mBuilding Ship Menu\u001B[22m");
             System.out.println("1. Take component from covered components");
             System.out.println("2. Take component from uncovered components");
             System.out.println("3. Stop assembling ship");
@@ -33,6 +33,7 @@ public class BuildingMenu implements MenuState{
                 System.out.println("5. Turn hourglass");
                 System.out.println("6. Peek a deck of cards");
             }
+            System.out.println("v. Viewing game options");
         } else {
             System.out.println("Building Ship Menu");
             System.out.println("1. Put the component in your hand back to the uncovered components");
@@ -43,6 +44,7 @@ public class BuildingMenu implements MenuState{
                 System.out.println("5. Add the component in your hand to booked components");
                 System.out.println("6. Turn hourglass");
             }
+            System.out.println("v. Viewing game options");
         }
     }
 
@@ -51,6 +53,7 @@ public class BuildingMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         int choice = scanner.nextInt();
         adventureCards = null;
         // Handle user input for the building menu
@@ -97,6 +100,9 @@ public class BuildingMenu implements MenuState{
                 case 'q':
                     ClientGameModel.getInstance().shutdown();
                     break;
+                case 'v':
+                    TUI.viewOptionsMenu();
+                    return false;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     return false;
@@ -143,6 +149,12 @@ public class BuildingMenu implements MenuState{
                 case 6:
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
                     break;
+                case 'q':
+                    ClientGameModel.getInstance().shutdown();
+                    break;
+                case 'v':
+                    TUI.viewOptionsMenu();
+                    return false;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     return false;

@@ -15,7 +15,7 @@ public class BranchMenu implements MenuState {
 
     public void displayMenu() {
         TUI.clearConsole();
-        System.out.println("Branch Menu");
+        System.out.println("\u001B[1mBranch Menu\u001B[22m");
         System.out.println("Your ship has split into two branches.");
     }
 

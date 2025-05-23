@@ -36,6 +36,6 @@ public class ViewLobby {
     }
 
     public String toString(){
-        return name + " " + level +" " + playersList;
+        return "Name: " + name + "|" + " Level: " + (level == 0 ? "Learner" : "Normal") +" | Owner: " + playersList.getFirst() + " | Players: " + playersList.size() + "/" + maxPlayers;
     }
 }

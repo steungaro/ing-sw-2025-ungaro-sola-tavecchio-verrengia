@@ -47,7 +47,6 @@ public record UpdateShipMessage(
         viewShip.setValid(isValid);
         // da capire dove mettere il component in hand
         ClientGameModel.getInstance().setShip(username, viewShip);
-        ClientGameModel.getInstance().buildingMenu(null);
     }
 
 }

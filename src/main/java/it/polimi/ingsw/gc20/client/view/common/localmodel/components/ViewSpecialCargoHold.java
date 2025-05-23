@@ -6,8 +6,8 @@ public class ViewSpecialCargoHold extends ViewCargoHold {
         String row1;
         String row2;
 
-        row0 = "R ".repeat(red) + "G ".repeat(green) + "B ".repeat(blue) + "Y ".repeat(yellow);
-        row1 = " ".repeat((14 - row0.length())/2) + row0 + " ".repeat((13 - row0.length())/2);
+        row0 = "\u001B[31mR \u001B[0m".repeat(red) + "\u001B[32mG \u001B[0m".repeat(green) + "\u001B[34mB \u001B[0m".repeat(blue) + "\u001B[33mY \u001B[0m".repeat(yellow);
+        row1 = " ".repeat((14 - (red + yellow + green + blue) * 2) / 2) + row0 + " ".repeat((13 - (red + yellow + green + blue) * 2) / 2);
         row2 = " ".repeat(7 - free) + "F ".repeat(free) + " ".repeat(6 - free);
 
 
@@ -24,8 +24,8 @@ public class ViewSpecialCargoHold extends ViewCargoHold {
         String row1;
         String row2;
 
-        row0 = "R ".repeat(red) + "G ".repeat(green) + "B ".repeat(blue) + "Y ".repeat(yellow);
-        row1 = " ".repeat((14 - row0.length())/2) + row0 + " ".repeat((13 - row0.length())/2);
+        row0 = "\u001B[31mR \u001B[0m".repeat(red) + "\u001B[32mG \u001B[0m".repeat(green) + "\u001B[34mB \u001B[0m".repeat(blue) + "\u001B[\u001B[33mY \u001B[0m".repeat(yellow);
+        row1 = " ".repeat((14 - (red+yellow+green+blue)*2)/2) + row0 + " ".repeat((13 - (red+yellow+green+blue)*2)/2);
         row2 = " ".repeat(7 - free) + "F ".repeat(free) + " ".repeat(6 - free);
 
         return switch (i) {

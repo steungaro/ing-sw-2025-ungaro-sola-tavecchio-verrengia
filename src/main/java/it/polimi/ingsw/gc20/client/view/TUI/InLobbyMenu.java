@@ -14,7 +14,7 @@ public class InLobbyMenu implements MenuState {
 
     public void displayMenu() {
         TUI.clearConsole();
-        System.out.println("Lobby menu");
+        System.out.println("\u001B[1mLobby menu\u001B[22m");
         System.out.println("--------------------------------------------------");
         System.out.println("Current lobby: " + ClientGameModel.getInstance().getCurrentLobby());
         System.out.println("--------------------------------------------------");

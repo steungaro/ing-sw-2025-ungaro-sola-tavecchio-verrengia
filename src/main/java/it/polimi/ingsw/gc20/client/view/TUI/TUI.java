@@ -18,12 +18,11 @@ public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
     private MenuState currentState;
 
-    private final Scanner scanner;
+    private static final Scanner scanner = new Scanner(System.in);
 
     public TUI() throws RemoteException{
         super();
         LOGGER.info("TUI created");
-        scanner = new Scanner(System.in);
     }
 
     @Override
@@ -65,9 +64,10 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    @SuppressWarnings("BusyWait")
     public void initNetwork() {
         String[] networkTypes = {"RMI", "Socket"};
-        int selectedIndex = 0; // To track the currently highlighted menu option
+        int selectedIndex; // To track the currently highlighted menu option
 
         try {
 
@@ -81,16 +81,18 @@ public class TUI extends ClientGameModel {
                 System.out.print(" > ");
 
                 // Read user input
+                label:
                 do {
                     String input = scanner.nextLine().trim();
-                    if (input.equals("q")) {
-                        System.exit(0);
-                    } else if (input.equals("1")) {
-                        selectedIndex = 0;
-                        break;
-                    } else if (input.equals("2")) {
-                        selectedIndex = 1;
-                        break;
+                    switch (input) {
+                        case "q":
+                            System.exit(0);
+                        case "1":
+                            selectedIndex = 0;
+                            break label;
+                        case "2":
+                            selectedIndex = 1;
+                            break label;
                     }
                 } while (true);
 
@@ -147,6 +149,36 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    public static void viewOptionsMenu() {
+        clearConsole();
+        System.out.println("\u001B[1mViewing options:\u001B[0m");
+        System.out.println("1. View game board");
+        System.out.println("2. View a player's ship");
+        System.out.println("3. View uncovered components");
+        System.out.println("4. View current card");
+        System.out.println("b. Back to the main menu");
+        System.out.print(" > ");
+
+        String input = scanner.nextLine().trim();
+        switch (input) {
+            case "1" -> ClientGameModel.getInstance().printBoard();
+            case "2" -> {
+                System.out.print("Insert the username of the player you want to view:\n > ");
+                String player = scanner.nextLine().trim();
+                if (ClientGameModel.getInstance().getShip(player) != null) {
+                    ClientGameModel.getInstance().printShip(player);
+                } else {
+                    System.out.println("\033[31mPlayer not found.\033[0m");
+                }
+            }
+            case "3" -> ClientGameModel.getInstance().printViewedPile();
+            case "4" -> ClientGameModel.getInstance().printCurrentCard();
+            case "b" -> {
+            }
+            default -> System.out.println("\033[31mInvalid option. Back to the main menu.\033[0m");
+        }
+    }
+
     public void login() {
         System.out.print("Insert username (or type [q] to quit):\n > ");
         String inputUsername = scanner.nextLine().trim();
@@ -178,7 +210,7 @@ public class TUI extends ClientGameModel {
         }
     }
 
-    //Display the menu after we get an error, it does not change the state, simply returns to last menu
+    //Display the menu after we get an error, it does not change the state, simply returns to the last menu
     public void display(String message) {
         boolean input = false;
         while (!input) {
@@ -224,9 +256,7 @@ public class TUI extends ClientGameModel {
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain){
         //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
-        cargoToGain.forEach(cargoColor -> {
-            cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1);
-        });
+        cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
         MenuState menu = new CargoMenu(message, cargoToLose, cargoMap);
         display(menu);
     }

@@ -20,18 +20,19 @@ public class CannonsMenu implements MenuState {
 
     public void displayMenu(){
         TUI.clearConsole();
-        System.out.println("Cannons Menu");
+        System.out.println("\u001B[1mCannons Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate cannons");
         System.out.println("2. Do not activate cannons");
+        System.out.println("v. Viewing game options");
     }
 
     public boolean handleInput() throws IOException {
-        TUI.clearConsole();
-        int choice = scanner.nextInt();
+        System.out.print(" > ");
+        String input = scanner.nextLine().trim();
         // Handle user input from the cannon menu
-        switch (choice) {
-            case 1:
+        switch (input) {
+            case "1":
                 System.out.println("Type the coordinates of the cannons you want to activate (for example, x1 y1 x2 y2...):");
                 System.out.print(" > ");
                 String cannonInput = scanner.nextLine().trim();
@@ -54,12 +55,15 @@ public class CannonsMenu implements MenuState {
                 }
                 ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), cannons, batteries);
                 break;
-            case 2:
+            case "2":
                 ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), null, null);
                 break;
-            case 'q':
+            case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

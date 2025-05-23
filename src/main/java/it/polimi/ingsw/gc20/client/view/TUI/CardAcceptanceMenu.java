@@ -17,10 +17,11 @@ public class CardAcceptanceMenu implements MenuState{
      */
     public void displayMenu(){
         TUI.clearConsole();
-        System.out.println("Card Acceptance Menu");
+        System.out.println("\u001B[1mCard Acceptance Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Accept the card");
         System.out.println("2. Reject the card");
+        System.out.println("v. Viewing game options");
     }
 
     /**
@@ -29,18 +30,22 @@ public class CardAcceptanceMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
-        int choice = scanner.nextInt();
+        System.out.print(" > ");
+        String choice = scanner.nextLine().trim();
         // Handle user input for the card acceptance menu
         switch (choice) {
-            case 1:
+            case "1":
                 ClientGameModel.getInstance().getClient().acceptCard(ClientGameModel.getInstance().getUsername());
                 break;
-            case 2:
+            case "2":
                 ClientGameModel.getInstance().getClient().endMove(ClientGameModel.getInstance().getUsername());
                 break;
-            case 'q':
+            case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

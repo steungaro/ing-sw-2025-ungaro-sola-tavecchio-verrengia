@@ -192,16 +192,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         return finalResult.toString();
     }
 
-    public void printDeck(){
-        printDeck(0);
-    }
-
     public void printCurrentCard() {
         if (currentCard != null) {
-            //TODO
-            currentCard.toString();
+            System.out.println(currentCard);
         } else {
-            LOGGER.warning("No current card found.");
+            System.out.println("No active card.");
         }
     }
 
@@ -211,12 +206,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             if (comps != null) {
                 String out = printComponentsInLine(comps);
                 System.out.println(out);
-                LOGGER.info("View Pile:\n");
             } else {
-                LOGGER.warning("No card found in view pile.");
+                System.out.println("No view pile found.");
             }
         } else {
-            LOGGER.warning("No view pile found.");
+            LOGGER.warning("No board found.");
         }
     }
 

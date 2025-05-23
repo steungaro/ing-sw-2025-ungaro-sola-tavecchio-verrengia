@@ -17,7 +17,7 @@ public class ViewEngine extends ViewComponent {
                 firstRow() + "\n" +
                 leftCol(0) + (power == 1 ? "Single" : "Double") + " Engine" + rightCol(0) + "\n" +
                 leftCol(1) + EMPTY_ROW + rightCol(1) + "\n" +
-                leftCol(2) + "      " + direction + "      " + rightCol(2) + "\n" +
+                leftCol(2) + "      \u001B[33m" + direction + "\u001B[0m      " + rightCol(2) + "\n" +
                 lastRow();
     }
 
@@ -34,7 +34,7 @@ public class ViewEngine extends ViewComponent {
             case 0 -> firstRow();
             case 1 -> leftCol(0) + (power == 1 ? "Single" : "Double") + " Engine" + rightCol(0);
             case 2 -> leftCol(1) + EMPTY_ROW + rightCol(1);
-            case 3 -> leftCol(2) + "      " + direction + "      " + rightCol(2);
+            case 3 -> leftCol(2) + "      \u001B[33m" + direction + "\u001B[0m      " + rightCol(2);
             case 4 -> lastRow();
             default -> "";
         };

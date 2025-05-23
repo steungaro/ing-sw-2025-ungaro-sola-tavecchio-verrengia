@@ -19,10 +19,11 @@ public class EngineMenu implements MenuState {
 
     public void displayMenu(){
         TUI.clearConsole();
-        System.out.println("Engines Menu");
+        System.out.println("\u001B[1mEngines Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate engines");
         System.out.println("2. Do not activate engines");
+        System.out.println("v. Viewing game options");
         System.out.print(" > ");
     }
 
@@ -55,6 +56,9 @@ public class EngineMenu implements MenuState {
             case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

@@ -32,13 +32,13 @@ public class ViewShield extends ViewComponent {
         String sides;
 
         if (up && left) {
-            sides = "     ← ↑     ";
+            sides = "\u001B[32m     ← ↑     \u001B[0m";
         } else if (up && right) {
-            sides = "     ↑ →     ";
+            sides = "\u001B[32m     ↑ →     \u001B[0m";
         } else if (down && left) {
-            sides = "     ← ↓     ";
+            sides = "\u001B[32m     ← ↓     \u001B[0m";
         } else if (down && right) {
-            sides = "     ↓ →     ";
+            sides = "\u001B[32m     ↓ →     \u001B[0m";
         } else {
             sides = EMPTY_ROW;
         }
