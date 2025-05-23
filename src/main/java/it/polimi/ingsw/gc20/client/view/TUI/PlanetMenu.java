@@ -20,15 +20,16 @@ public class PlanetMenu implements MenuState{
 
     public void displayMenu() {
         TUI.clearConsole();
-        System.out.println("Planet Menu");
+        System.out.println("\u001B[1mPlanets Menu\u001B[22m");
         System.out.println("1. Land on a planet");
         System.out.println("2. Don't land on a planet");
-        System.out.print(" > ");
+        System.out.println("v. Viewing game options");
     }
 
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         String choice = scanner.nextLine().trim();
-        // Handle user input for the planet menu
+        // Handle user input from the planet menu
         switch (choice) {
             case "1":
                 System.out.println("Available planets:");
@@ -47,6 +48,9 @@ public class PlanetMenu implements MenuState{
             case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

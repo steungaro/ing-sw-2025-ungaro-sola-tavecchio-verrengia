@@ -16,10 +16,11 @@ public class ShieldsMenu implements MenuState {
 
     public void displayMenu(){
         TUI.clearConsole();
-        System.out.println("Shields Menu");
+        System.out.println("\u001B[1mShields Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate a shield");
         System.out.println("2. Do not activate a shield");
+        System.out.println("v. Viewing game options");
         System.out.print(" > ");
     }
 
@@ -47,6 +48,9 @@ public class ShieldsMenu implements MenuState {
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();
+                break;
+            case "v":
+                TUI.viewOptionsMenu();
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");

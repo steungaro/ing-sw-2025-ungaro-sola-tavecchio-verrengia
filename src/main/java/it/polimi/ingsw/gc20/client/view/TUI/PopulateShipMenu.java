@@ -17,12 +17,13 @@ public class PopulateShipMenu implements MenuState{
      * Displays the current menu to the player
      */
     public void displayMenu(){
-        System.out.println("Populate Ship Menu");
+        TUI.clearConsole();
+        System.out.println("\u001B[1mPopulate Ship Menu\u001B[22m");
         System.out.println("1. End population phase, all other cabins will be filled with astronauts");
         if(!ClientGameModel.getInstance().getShip(username).isLearner) {
             System.out.println("2. Add alien to a Cabin");
         }
-        System.out.print(" > ");
+        System.out.println("v. Viewing game options");
     }
 
     /**
@@ -30,6 +31,7 @@ public class PopulateShipMenu implements MenuState{
      * @return true if the menu should continue, false if it should exit
      */
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         String choice = scanner.nextLine().trim();
         switch (choice) {
             case "1":
@@ -55,6 +57,9 @@ public class PopulateShipMenu implements MenuState{
             case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
+            case "v":
+                TUI.viewOptionsMenu();
+                return false;
             default:
                 System.out.println("Invalid choice. Please try again.");
                 return false;

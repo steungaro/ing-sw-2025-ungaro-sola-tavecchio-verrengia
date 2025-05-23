@@ -16,9 +16,9 @@ public class ValidationMenu implements MenuState{
 
     public void displayMenu(){
         TUI.clearConsole();
-        System.out.println("Validation Menu");
+        System.out.println("\u001B[1mValidation Menu\u001B[22m");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
-            System.out.println("Ship is already valid! Wait for other players before going to the next phase.");
+            System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
         } else {
             System.out.println("Ship is not valid");
             System.out.println("1. Validate ship");
@@ -33,6 +33,10 @@ public class ValidationMenu implements MenuState{
      */
     public boolean handleInput() throws IOException {
         String choice = scanner.nextLine().trim();
+        if (ClientGameModel.getInstance().getShip(username).isValid()){
+            // If the ship is already valid, wait for other players
+            return true;
+        }
         // Handle user input for the validation menu
         switch (choice) {
             case "1":
@@ -51,6 +55,9 @@ public class ValidationMenu implements MenuState{
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();
+                break;
+            case "v":
+                TUI.viewOptionsMenu();
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
