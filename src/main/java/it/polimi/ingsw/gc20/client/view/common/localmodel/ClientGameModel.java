@@ -133,8 +133,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
-            //TODO
-            ship.toString();
+            System.out.println(ship);
         } else {
             LOGGER.warning("No ship found for " + username);
         }
@@ -142,8 +141,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void printBoard() {
         if (board != null) {
-            //TODO
-            board.toString();
+            System.out.println(board);
         } else {
             LOGGER.warning("No board found.");
         }
@@ -164,9 +162,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 //        }
 //    }
 
-    public String printCardsInLine(List<ViewAdventureCard> cards) {
+    public void printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
-            return "";
+            return;
         }
 
         final int cardsPerRow = 10;
@@ -189,7 +187,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
                 }
             }
         }
-        return finalResult.toString();
+        System.out.println(finalResult);
     }
 
     public void printCurrentCard() {
