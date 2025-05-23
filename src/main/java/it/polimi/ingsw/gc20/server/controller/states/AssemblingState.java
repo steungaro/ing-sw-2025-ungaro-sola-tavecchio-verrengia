@@ -74,6 +74,12 @@ public class AssemblingState extends State {
         Component component =Translator.getFromUnviewed(getModel(), index);
         getModel().componentFromUnviewed(component);
         takeComponent(player, component);
+        //if the player has peeked a deck, remove the peek so others can peek
+        for (int i = 1; i < 4; i++) {
+            if (deckPeeked.get(i) == player) {
+                deckPeeked.put(i, null);
+            }
+        }
     }
 
     /**
@@ -93,6 +99,12 @@ public class AssemblingState extends State {
         Component component =Translator.getFromViewed(getModel(), index);
         getModel().componentFromViewed(component);
         takeComponent(player, component);
+        //if the player has peeked a deck, remove the peek so others can peek
+        for (int i = 1; i < 4; i++) {
+            if (deckPeeked.get(i) == player) {
+                deckPeeked.put(i, null);
+            }
+        }
 
     }
     /**
@@ -112,6 +124,12 @@ public class AssemblingState extends State {
         Component component =Translator.getFromBooked(player, index);
         getModel().componentFromBooked(component, player);
         takeComponent(player, component);
+        //if the player has peeked a deck, remove the peek so others can peek
+        for (int i = 1; i < 4; i++) {
+            if (deckPeeked.get(i) == player) {
+                deckPeeked.put(i, null);
+            }
+        }
     }
 
     /**

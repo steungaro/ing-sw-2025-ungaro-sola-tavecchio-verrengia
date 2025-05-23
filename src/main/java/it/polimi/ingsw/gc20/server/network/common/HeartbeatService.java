@@ -16,7 +16,7 @@ public class HeartbeatService {
     private static final String BROADCAST = "__BROADCAST__";
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private static HeartbeatService instance;
-    private final Map<String, Integer> clientPingTime = new HashMap<>();
+    private final Map<String, Long> clientPingTime = new HashMap<>();
 
     private HeartbeatService() {
         // Private constructor for singleton
@@ -35,7 +35,7 @@ public class HeartbeatService {
     }
 
     public void handlePingResponse(String clientUsername) {
-        int currentTime = (int) (System.currentTimeMillis() / 1000);
+        long currentTime = (System.currentTimeMillis() / 1000);
         clientPingTime.put(clientUsername, currentTime);
     }
 
@@ -57,7 +57,7 @@ public class HeartbeatService {
         long currentTime = System.currentTimeMillis() / 1000;
         List<String> offlineClients = new ArrayList<>();
 
-        for (Map.Entry<String, Integer> entry : clientPingTime.entrySet()) {
+        for (Map.Entry<String, Long> entry : clientPingTime.entrySet()) {
             if (currentTime - entry.getValue() > TIMEOUT_MS / 1000) {
                 offlineClients.add(entry.getKey());
             }

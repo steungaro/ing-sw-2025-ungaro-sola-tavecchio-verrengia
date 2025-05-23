@@ -23,8 +23,6 @@ public record DeckPeekedMessage(
         for( AdventureCard card : cards) {
             viewAdventureCards.add(ViewAdventureCard.createFrom(card));
         }
-
         ClientGameModel.getInstance().buildingMenu(viewAdventureCards);
-
     }
 }
