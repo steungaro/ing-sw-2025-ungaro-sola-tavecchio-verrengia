@@ -155,6 +155,8 @@ public class ValidatingShipState extends State {
     }
 
     public void rejoin(String username){
+        NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+
         if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 0){
             NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
         } else if (readyToFly.get(getController().getPlayerByID(username))) {

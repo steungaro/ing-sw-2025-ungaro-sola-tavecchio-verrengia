@@ -187,16 +187,16 @@ public class AssemblingState extends State {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
 
-        //notify the players of the ship changes
-        for (String user : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
-        }
         //add the component in the hand to the ship
         getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
         // Remove component from player's hand
         componentsInHand.put(player, null);
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+        //notify the players of the ship changes
+        for (String user : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
+        }
         //notify the player that they go to the TAKE_COMPONENT phase
         NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
     }
@@ -357,6 +357,10 @@ public class AssemblingState extends State {
     }
 
     public void rejoin(String username){
+        //notify the player that they are in the TAKE_COMPONENT phase after updating the model
+        NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+
+        NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
         if (componentsInHand.get(getController().getPlayerByID(username))==null){
             NetworkService.getInstance().sendToClient(username, new TakeComponentMessage());
         }else {

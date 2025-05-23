@@ -473,9 +473,14 @@ public class GameController implements GameControllerInterface {
             // Remove player from the disconnected list
             disconnectedPlayers.remove(username);
             if (state.isConcurrent()){
+                //init all the local model of the view
+                for (String u : getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "reconnection"));
+                }
                 state.rejoin(username);
+            } else {
+                pendingPlayers.add(username);
             }
-            pendingPlayers.add(username);
 
             if(connectedPlayers.size() == 1){
                 connectedPlayers.add(username);

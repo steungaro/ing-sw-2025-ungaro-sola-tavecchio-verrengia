@@ -183,6 +183,7 @@ public abstract class State{
         return false;
     }
 
-    public void rejoin(String username) {
+    public void rejoin(String username) throws InvalidStateException {
+        exception();
     }
 }

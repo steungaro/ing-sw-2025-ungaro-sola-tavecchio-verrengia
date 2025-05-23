@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 
 import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginFailedMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.server.controller.GameController;
@@ -34,13 +35,19 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
      * @return True if the user was logged in successfully, false otherwise.
      */
     @Override
-    public boolean login(String username) {
+    public boolean login(String username, ViewInterface view) throws RemoteException {
         ClientHandler existingClient = NetworkService.getInstance().getClient(username);
 
         // Case 1: it is a new username
         if (existingClient==null) {
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.registerClient(clientHandler);
+
+            // Set the view for the client
+            if (setView(username, view)) {
+                LOGGER.warning("Error while setting the view");
+                return false;
+            }
             LOGGER.info(String.format("User logged via RMI: " + username));
 
             MatchController.getInstance().getLobbies(username);
@@ -51,10 +58,19 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
             // Update the client handler
             RMIClientHandler clientHandler = new RMIClientHandler(username);
             server.updateClient(username, clientHandler);
+            // Set the view for the client
+            if (setView(username, view)) {
+                LOGGER.warning("Error while setting the view");
+                return false;
+            }
+            NetworkService.getInstance().sendToClient(username, new LoginSuccessfulMessage(username));
+
             GameController gameController = MatchController.getInstance().getGameControllerForPlayer(username);
             if (gameController != null) {
+                // Reconnect the player to the game
                 gameController.reconnectPlayer(username);
-            }else {
+            } else {
+                // If the player is not in a game, get the lobbies
                 MatchController.getInstance().getLobbies(username);
             }
             LOGGER.info(String.format("User reconnected via RMI: " + username));
@@ -62,6 +78,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
         }
         // Case 3: if the username is already in use and connected
         else {
+            // Notify the client that the username is already taken
+            NetworkService.getInstance().sendToClient(username, new LoginFailedMessage(username));
             LOGGER.warning("Username already taken");
             return false;
         }
@@ -88,18 +106,17 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
         }
     }
 
-    @Override
-    public boolean setView(String username, ViewInterface view) throws RemoteException {
+    private boolean setView(String username, ViewInterface view) throws RemoteException {
         try {
             RMIClientHandler clientHandler = (RMIClientHandler) NetworkService.getInstance().getClient(username);
             clientHandler.setView(view);
             LOGGER.info("View set for user: " + username);
             MatchController.getInstance().getLobbies(username);
             NetworkService.getInstance().sendToClient(username, new LoginSuccessfulMessage(username));
-            return true;
+            return false;
         } catch (Exception e) {
             LOGGER.severe("Error while setting the view: " + e.getMessage());
-            return false;
+            return true;
         }
     }
 

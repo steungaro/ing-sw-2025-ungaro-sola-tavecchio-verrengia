@@ -68,15 +68,11 @@ public class RMIClient implements Client {
         if (!connected) return;
 
         try {
-            boolean result = authService.login(username);
+            boolean result = authService.login(username, ClientGameModel.getInstance());
             if (result) {
-                // Register the view with the server
-                if (authService.setView(username, ClientGameModel.getInstance())) {
-                    ClientGameModel.getInstance().loggedIn = true;
-                    LOGGER.info("Successfully logged in as: " + username);
-                } else {
-                    LOGGER.warning("Failed to login for user: " + username);
-                }
+                ClientGameModel.getInstance().loggedIn = true;
+            } else {
+                LOGGER.warning("Login failed.");
             }
         } catch (Exception e) {
             LOGGER.warning("Error during login: " + e.getMessage());

@@ -242,7 +242,7 @@ public class MatchController implements MatchControllerInterface {
                         }
                     }
                     for (String user : usersToRemove) {
-                        playersInGames.put(user, games.getLast());
+                        playersInGames.put(user, gamecontroller);
                         playersInLobbies.remove(user);
                     }
                 } catch (NoSuchElementException e) {
