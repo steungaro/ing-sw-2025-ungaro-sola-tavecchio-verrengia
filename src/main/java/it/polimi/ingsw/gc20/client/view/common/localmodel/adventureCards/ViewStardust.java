@@ -14,7 +14,7 @@ public class ViewStardust extends ViewAdventureCard {
         return
                 UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "       Stardust       " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m       Stardust       \u001B[22m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
@@ -30,7 +30,7 @@ public class ViewStardust extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 4, 5, 7, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "       Stardust       " + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m       Stardust       \u001B[22m" + LATERAL;
             case 6 -> LATERAL + "          ֎֎          " + LATERAL;
             case 10 -> DOWN;
             default -> "";

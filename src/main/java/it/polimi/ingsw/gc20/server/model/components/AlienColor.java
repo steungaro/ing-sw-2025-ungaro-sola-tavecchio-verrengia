@@ -12,8 +12,8 @@ public enum AlienColor {
 
     public String getColorChar() {
         return switch (this) {
-            case PURPLE -> "P";
-            case BROWN -> "B";
+            case PURPLE -> "\u001B[35mP\u001B[0m";
+            case BROWN -> "\u001B[33mB\u001B[0m";
             case BOTH -> "*";
             case NONE -> "X";
         };

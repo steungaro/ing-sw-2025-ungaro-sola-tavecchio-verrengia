@@ -31,7 +31,7 @@ public class BuildingMenu implements MenuState{
             if(!ClientGameModel.getInstance().getShip(username).isLearner) {
                 System.out.println("4. Take component from the booked components");
                 System.out.println("5. Turn hourglass");
-                System.out.println("6. Peek a deck of cards with argument");
+                System.out.println("6. Peek a deck of cards");
             }
         } else {
             System.out.println("Building Ship Menu");

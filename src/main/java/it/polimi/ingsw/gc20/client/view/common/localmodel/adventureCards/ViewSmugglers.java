@@ -66,13 +66,13 @@ public class ViewSmugglers extends ViewAdventureCard {
         return
                 UP + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                        LATERAL + "      Smugglers       " + LATERAL + "\n" +
+                        LATERAL + "\u001B[1m      Smugglers       \u001B[0m" + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                        LATERAL + "     FirePower: " + firePower + "     " + LATERAL + "\n" +
-                        LATERAL + "     LostCargo: " + lostCargo + "     " + LATERAL + "\n" +
+                        LATERAL + "     FirePower: \u001B[31m" + firePower + "\u001B[0m     " + LATERAL + "\n" +
+                        LATERAL + "     LostCargo: \u001B[31m" + lostCargo + "\u001B[0m     " + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
                         LATERAL + " ".repeat(7 - size/2) + "Reward: " + reward() +  " ".repeat(6-size/2 + (size % 2 == 0 ? 1 : 0)) + LATERAL + "\n" +
-                        LATERAL + "     Lost days: " + lostDays + "     " + LATERAL + "\n" +
+                        LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
                         DOWN;
     }
