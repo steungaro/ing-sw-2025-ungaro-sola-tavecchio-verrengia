@@ -22,7 +22,7 @@ public class ViewBoard  implements Serializable {
     public boolean assemblingState;
     public int remainingTime;
     public int numberOfRotations;
-    public List<List<ViewAdventureCard>> decks;
+    //public List<List<ViewAdventureCard>> decks;
     public int unviewedPile;
     public List<ViewComponent> viewedPile;
     public int hourglassRemainingTime;
@@ -284,13 +284,13 @@ public class ViewBoard  implements Serializable {
         sb.append(EMPTY_ROW).append("\n");
 
 
-        if (!isLearner && assemblingState) {
-            sb.append(SEPARATOR).append("\n");
-            sb.append(EMPTY_ROW).append("\n");
-
-            sb.append("│").append(" ".repeat(29)).append("       Deck 1       ").append("       Deck 2       ").append("       Deck 3       ").append(" ".repeat(29)).append("│").append("\n");
-            sb.append("│").append(" ".repeat(29)).append(decks.get(0) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(decks.get(1) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(decks.get(2) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(" ".repeat(29)).append("│").append("\n");
-        }
+//        if (!isLearner && assemblingState) {
+//            sb.append(SEPARATOR).append("\n");
+//            sb.append(EMPTY_ROW).append("\n");
+//
+//            sb.append("│").append(" ".repeat(29)).append("       Deck 1       ").append("       Deck 2       ").append("       Deck 3       ").append(" ".repeat(29)).append("│").append("\n");
+//            sb.append("│").append(" ".repeat(29)).append(decks.get(0) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(decks.get(1) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(decks.get(2) != null ? "\u001B[32m      Available     \u001B[0m":"\u001B[31m     Unavailable    \u001B[0m").append(" ".repeat(29)).append("│").append("\n");
+//        }
         sb.append(EMPTY_ROW).append("\n");
 
         sb.append(BOTTOM).append("\n");
@@ -306,10 +306,10 @@ public class ViewBoard  implements Serializable {
         players[2] = new ViewPlayer("Tave", PlayerColor.GREEN, 2);
         players[3] = new ViewPlayer("Verri", PlayerColor.YELLOW, 3);
         ViewBoard board = new ViewBoard(false, players);
-        board.decks = new ArrayList<>();
-        board.decks.add(null);
-        board.decks.add(null);
-        board.decks.add(null);
+        //board.decks = new ArrayList<>();
+        //board.decks.add(null);
+        //board.decks.add(null);
+        //board.decks.add(null);
         board.assemblingState = true;
 
         System.out.println(board.toString());
