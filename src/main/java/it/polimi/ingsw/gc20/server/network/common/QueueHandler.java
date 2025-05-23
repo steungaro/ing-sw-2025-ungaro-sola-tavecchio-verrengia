@@ -3,8 +3,7 @@ package it.polimi.ingsw.gc20.server.network.common;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class QueueHandler {
     private static final Logger LOGGER = Logger.getLogger(QueueHandler.class.getName());
@@ -50,7 +49,6 @@ public class QueueHandler {
             try {
                 // Take() will block until a message is available
                 Message message = messageQueue.take();
-                LOGGER.info("Processing message: " + message);
                 // Delegate to appropriate controller method based on message type
                 message.handleMessage();
             } catch (InterruptedException e) {

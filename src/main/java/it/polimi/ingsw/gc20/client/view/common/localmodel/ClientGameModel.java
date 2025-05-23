@@ -108,7 +108,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     public void ping() {
-        LOGGER.info("Ping received from server, ponging back.");
         client.pong(username);
     }
 

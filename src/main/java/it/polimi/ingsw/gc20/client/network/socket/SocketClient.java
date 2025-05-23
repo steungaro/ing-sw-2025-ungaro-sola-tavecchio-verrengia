@@ -74,7 +74,6 @@ public class SocketClient implements Client {
                 
                 // Receive the message
                 Message message = (Message) in.readObject();
-                LOGGER.info("Received message: " + message.getClass().getSimpleName());
 
                 ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
