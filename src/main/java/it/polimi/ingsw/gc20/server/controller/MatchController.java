@@ -260,9 +260,9 @@ public class MatchController implements MatchControllerInterface {
         if (playersInLobbies.containsKey(username)) {
             Lobby lobby = playersInLobbies.get(username);
             if (lobby.getOwnerUsername().equals(username)) {
+                List<String> players = new ArrayList<>( lobby.getUsers() );
                 lobby.getUsers().forEach(playersInLobbies::remove);
                 lobby.kill();
-                List<String> players = lobby.getUsers();
                 lobbies.remove(lobby);
                 //notify the players in the lobby with a errore message
                 for (String user : players) {

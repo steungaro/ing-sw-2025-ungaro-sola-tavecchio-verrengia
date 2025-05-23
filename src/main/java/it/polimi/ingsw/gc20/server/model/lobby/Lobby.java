@@ -76,7 +76,7 @@ public class Lobby {
     }
 
     /**
-     * @param user is the username of the player that wants to leave the lobby
+     * @param user the username of the player that wants to leave the lobby,
      *             the owner of the lobby can't leave the lobby
      */
     public void removePlayer(String user) throws LobbyException{
