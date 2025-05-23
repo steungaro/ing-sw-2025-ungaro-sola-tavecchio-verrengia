@@ -346,4 +346,16 @@ public class AssemblingState extends State {
             }
         }
     }
+
+    public boolean isConcurrent(){
+        return true;
+    }
+
+    public void rejoin(String username){
+        if (componentsInHand.get(getController().getPlayerByID(username))==null){
+            NetworkService.getInstance().sendToClient(username, new TakeComponentMessage());
+        }else {
+            NetworkService.getInstance().sendToClient(username, new PlaceComponentMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
+        }
+    }
 }

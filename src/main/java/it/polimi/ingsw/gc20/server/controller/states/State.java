@@ -170,7 +170,6 @@ public abstract class State{
         exception();
     }
     public String getCurrentPlayer() throws InvalidStateException{
-        exception();
         return null;
     }
     public void currentQuit(Player playerByID) throws InvalidTurnException, InvalidShipException, InvalidStateException {
@@ -178,5 +177,12 @@ public abstract class State{
     }
     public void endTurn()throws InvalidStateException{
         exception();
+    }
+
+    public boolean isConcurrent() {
+        return false;
+    }
+
+    public void rejoin(String username) {
     }
 }

@@ -470,6 +470,9 @@ public class GameController implements GameControllerInterface {
 
             // Remove player from the disconnected list
             disconnectedPlayers.remove(username);
+            if (state.isConcurrent()){
+                state.rejoin(username);
+            }
             pendingPlayers.add(username);
 
             if(connectedPlayers.size() == 1){
@@ -567,7 +570,7 @@ public class GameController implements GameControllerInterface {
             for (String user : getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
-                        getModel().getGame().getPile().getUnviewed(),
+                        getModel().getGame().getPile().getViewed(),
                         "taken from unviewed"));
             }
         } catch (Exception e) {
@@ -593,7 +596,7 @@ public class GameController implements GameControllerInterface {
             for (String user : getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
-                        getModel().getGame().getPile().getUnviewed(),
+                        getModel().getGame().getPile().getViewed(),
                         "taken from viewed"));
             }
         } catch (Exception e) {
@@ -660,7 +663,7 @@ public class GameController implements GameControllerInterface {
             for (String user : getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
-                        getModel().getGame().getPile().getUnviewed(),
+                        getModel().getGame().getPile().getViewed(),
                         "added to viewed"));
             }
         } catch (Exception e) {

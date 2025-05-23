@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.AlienPlacementePhaseMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.BoardUpdateMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.ValidateShipPhase;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
@@ -149,6 +146,22 @@ public class ValidatingShipState extends State {
         } else {
             //notify all the players that the ship is valid and waiting for other players
             NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+        }
+    }
+
+
+    public boolean isConcurrent(){
+        return true;
+    }
+
+    public void rejoin(String username){
+        if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 0){
+            NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
+        } else if (readyToFly.get(getController().getPlayerByID(username))) {
+            NetworkService.getInstance().sendToClient(username, new StandbyMessage("ship is valid waiting for other players"));
+        } else {
+            NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
+
         }
     }
 }
