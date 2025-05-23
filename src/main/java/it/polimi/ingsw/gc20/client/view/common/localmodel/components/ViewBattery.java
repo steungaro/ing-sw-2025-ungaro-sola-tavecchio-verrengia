@@ -2,14 +2,14 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
 public class ViewBattery extends ViewComponent {
     public int availableEnergy;
-    public int availableSlots;
+    public int totalSlots;
 
     @Override
     public String toString() {
         String energyRow;
         String result;
 
-        energyRow = "     " +availableEnergy + "/" + (availableSlots+availableEnergy) + "     ";
+        energyRow = "     " +availableEnergy + "/" + (totalSlots +availableEnergy) + "     ";
 
         result =
                 firstRow() + "\n" +
@@ -26,7 +26,7 @@ public class ViewBattery extends ViewComponent {
             case 1 -> leftCol(0) + "   Battery   " + rightCol(0);
             case 2 -> leftCol(1) + EMPTY_ROW + rightCol(1);
             case 3 ->
-                    leftCol(2) + "     " + availableEnergy + "/" + (availableSlots + availableEnergy) + "     " + rightCol(2);
+                    leftCol(2) + "     " + availableEnergy + "/" + (totalSlots + availableEnergy) + "     " + rightCol(2);
             case 4 -> lastRow();
             default -> "";
         };
@@ -39,7 +39,7 @@ public class ViewBattery extends ViewComponent {
         battery.leftConnectors = 1;
         battery.rightConnectors = 0;
         battery.availableEnergy = 2;
-        battery.availableSlots = 3;
+        battery.totalSlots = 3;
         System.out.println(battery);
     }
 

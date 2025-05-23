@@ -696,15 +696,15 @@ public abstract class Ship {
      * @param ship nave del giocatore da cui estrarre la tabella di componenti
      */
     public static UpdateShipMessage messageFromShip(String username, Ship ship, String action) {
-        ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
+        ViewComponent[][] components = new ViewComponent[5][7];
         List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
         for (int i = 0; i < ship.getRows(); i++) {
             for (int j = 0; j < ship.getCols(); j++) {
                 Component component = ship.getComponentAt(i, j);
                 if (component == null) {
-                    components[i][j] = null;
+                    components[i][j + (ship.isNormal()? 0: 1)] = null;
                 } else {
-                    components[i][j] = component.createViewComponent();
+                    components[i][j + (ship.isNormal()? 0: 1)] = component.createViewComponent();
                 }
             }
         }

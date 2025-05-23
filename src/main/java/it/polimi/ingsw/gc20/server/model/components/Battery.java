@@ -63,7 +63,7 @@ public class Battery extends Component {
     public ViewComponent createViewComponent() {
         ViewBattery battery= new ViewBattery();
         battery.availableEnergy = availableEnergy;
-        battery.availableSlots = slots;
+        battery.totalSlots = slots;
         this.initializeViewComponent(battery);
         return battery;
     }

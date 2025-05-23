@@ -200,11 +200,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public void printViewedPile(){
         if (board != null) {
             List<ViewComponent> comps = board.viewedPile;
-            if (comps != null) {
+            if (comps != null && !comps.isEmpty()) {
                 String out = printComponentsInLine(comps);
                 System.out.println(out);
             } else {
-                System.out.println("No view pile found.");
+                System.out.println("No components here.");
             }
         } else {
             LOGGER.warning("No board found.");

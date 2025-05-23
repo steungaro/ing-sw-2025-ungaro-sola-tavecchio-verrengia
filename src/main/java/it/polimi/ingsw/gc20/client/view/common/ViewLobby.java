@@ -5,7 +5,7 @@ import java.util.List;
 public class ViewLobby {
     private final String name;
     private final int maxPlayers;
-    List<String> playersList;
+    private final List<String> playersList;
     private final int level;
 
 
@@ -36,6 +36,6 @@ public class ViewLobby {
     }
 
     public String toString(){
-        return "Name: " + name + "|" + " Level: " + (level == 0 ? "Learner" : "Normal") +" | Owner: " + playersList.getFirst() + " | Players: " + playersList.size() + "/" + maxPlayers;
+        return "Name: " + name + " |" + " Level: " + (level == 0 ? "Learner" : "Normal") +" | Owner: " + playersList.getFirst() + " | Players: " + playersList.size() + "/" + maxPlayers;
     }
 }
