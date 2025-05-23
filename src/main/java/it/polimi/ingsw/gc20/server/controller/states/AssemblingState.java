@@ -35,7 +35,7 @@ public class AssemblingState extends State {
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
             }
-            NetworkService.getInstance().sendToClient(player.getUsername(), new PileUpdateMessage(player.getUsername(), 152, getModel().getGame().getPile().getUnviewed(), "init unviewed pile"));
+            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getUnviewed(), "init unviewed pile"));
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
             // notify each player of the phase they are in
             NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());

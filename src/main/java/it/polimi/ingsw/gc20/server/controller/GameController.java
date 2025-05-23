@@ -565,7 +565,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromUnviewed(getPlayerByID(username), index);
             // notify players of the pile update
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new PileUpdateMessage(username,
+                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getUnviewed(),
                         "taken from unviewed"));
@@ -591,7 +591,7 @@ public class GameController implements GameControllerInterface {
             state.takeComponentFromViewed(getPlayerByID(username), index);
             //notify players of the component taken
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new PileUpdateMessage(username,
+                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getUnviewed(),
                         "taken from viewed"));
@@ -658,7 +658,7 @@ public class GameController implements GameControllerInterface {
             state.addComponentToViewed(getPlayerByID(username));
             //notify the players of the component added and update the pile
             for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new PileUpdateMessage(username,
+                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getUnviewed(),
                         "added to viewed"));

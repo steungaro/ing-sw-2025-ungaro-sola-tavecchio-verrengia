@@ -12,9 +12,21 @@ import java.util.List;
 public record PileUpdateMessage(
         String username,
         int unviewedSize,
-        List<Component> viewed,
+        List<ViewComponent> viewed,
         String action // can be "taken from viewed", taken from unviewed", "added to viewed"
         ) implements Message {
+
+    public static PileUpdateMessage fromComponent(String username, int unviewedSize, List<Component> viewed, String action) {
+        List<ViewComponent> viewComponents = new ArrayList<>();
+        if(viewed!=null){
+            for (Component component : viewed) {
+                if (component != null) {
+                    viewComponents.add(component.createViewComponent());
+                }
+            }
+        }
+        return new PileUpdateMessage(username, unviewedSize, viewComponents, action);
+    }
     @Override
     public String toString() {
         return username + "has" + action + "a component";
@@ -23,14 +35,6 @@ public record PileUpdateMessage(
     public void handleMessage() {
         ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
         viewBoard.unviewedPile = unviewedSize;
-        List<ViewComponent> viewedPile = new ArrayList<>();
-        if(viewed!=null){
-            for (Component component : viewed) {
-                if (component != null) {
-                    viewedPile.add(component.createViewComponent());
-                }
-            }
-        }
-        viewBoard.viewedPile = viewedPile;
+        viewBoard.viewedPile = viewed;
     }
 }
