@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -12,7 +12,7 @@ public class GUIApplication extends Application {
     public void start(Stage primaryStage) {
         // Inizializza la GUIView
         guiView = new GUIView();
-        View.setInstance(guiView);
+        ClientGameModel.setInstance(guiView);
         guiView.initGUI(primaryStage);
 
         primaryStage.setTitle("Galaxy Trucker");
