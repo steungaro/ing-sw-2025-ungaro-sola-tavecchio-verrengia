@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -147,9 +148,11 @@ public class ViewComponent implements Serializable {
 
     public static void main(String[] args) {
         List<ViewComponent> allComponents = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = JsonMapper.builder()
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
+
         Logger logger = Logger.getLogger(ViewComponent.class.getName());
         try {
             allComponents = Arrays.asList(mapper.readValue(ViewComponent.class.getResourceAsStream("/components.json"), ViewComponent[].class));
