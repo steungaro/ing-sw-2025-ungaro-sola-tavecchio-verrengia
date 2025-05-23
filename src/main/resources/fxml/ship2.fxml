@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
+
+    <ImageView fx:id="boardImageView" fitWidth="800" preserveRatio="true">
+        <Image url="@cardboard/cardboard-1b.jpg" />
+    </ImageView>
+
+    <GridPane fx:id="componentsGrid">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="14.2857" /> <!-- 100 / 7 = 14.2857... -->
+            <ColumnConstraints percentWidth="14.2857" />
+            <ColumnConstraints percentWidth="14.2857" />
+            <ColumnConstraints percentWidth="14.2857" />
+            <ColumnConstraints percentWidth="14.2857" />
+            <ColumnConstraints percentWidth="14.2857" />
+            <ColumnConstraints percentWidth="14.2857" />
+        </columnConstraints>
+
+        <rowConstraints>
+            <RowConstraints percentHeight="20" /> <!-- 100 / 5 = 20 -->
+            <RowConstraints percentHeight="20" />
+            <RowConstraints percentHeight="20" />
+            <RowConstraints percentHeight="20" />
+            <RowConstraints percentHeight="20" />
+        </rowConstraints>
+    </GridPane>
+</StackPane>
