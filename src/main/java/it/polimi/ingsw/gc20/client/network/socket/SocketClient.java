@@ -78,7 +78,7 @@ public class SocketClient implements Client {
 
                 ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
-                LOGGER.warning("Error while receiving messages: " + e.getMessage());
+                e.printStackTrace();
                 disconnect();
             }
         }
@@ -139,7 +139,7 @@ public class SocketClient implements Client {
                 try {
                     receiveMessages();
                 } catch (Exception e) {
-                    LOGGER.warning("Error while receiving messages: " + e.getMessage());
+                    e.printStackTrace();
                 }
             });
             messageReceiverThread.start();
