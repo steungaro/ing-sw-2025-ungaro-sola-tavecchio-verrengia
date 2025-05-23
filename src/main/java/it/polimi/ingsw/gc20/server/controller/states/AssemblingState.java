@@ -37,7 +37,7 @@ public class AssemblingState extends State {
             }
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
 
-            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getUnviewed(), "init unviewed pile"));
+            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
 
             // notify each player of the phase they are in
             NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
@@ -185,6 +185,11 @@ public class AssemblingState extends State {
         //check if the player is in the PLACE_COMPONENT phase
         if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+        }
+
+        //notify the players of the ship changes
+        for (String user : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
         }
         //add the component in the hand to the ship
         getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());

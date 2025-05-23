@@ -430,8 +430,10 @@ public class GameController implements GameControllerInterface {
         try{
             // Find player with matching username
             if (connectedPlayers.contains(username)) {
-                if(state.getCurrentPlayer().equals(username)){
-                    state.currentQuit(getPlayerByID(username));
+                if (state.getCurrentPlayer() != null) {
+                    if(state.getCurrentPlayer().equals(username)) {
+                        state.currentQuit(getPlayerByID(username));
+                    }
                 }
                 connectedPlayers.remove(username);
                 disconnectedPlayers.add(username);
@@ -682,10 +684,7 @@ public class GameController implements GameControllerInterface {
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
         try{
             state.placeComponent(getPlayerByID(username), coordinates);
-            //notify the players of the ship changes
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "placed component"));
-            }
+
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error placing component: " + e.getMessage()));

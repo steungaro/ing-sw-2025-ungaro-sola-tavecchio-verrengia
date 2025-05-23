@@ -217,6 +217,7 @@ public class TUI extends ClientGameModel {
         boolean input = false;
         while (!input) {
             try {
+                System.out.println(message);
                 currentState.displayMenu();
                 input = currentState.handleInput();
             } catch (IOException e){

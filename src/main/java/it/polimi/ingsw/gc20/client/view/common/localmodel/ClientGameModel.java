@@ -227,7 +227,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
             for (int j = 0; j < 5; j++) {
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i <rowComponents.size(); i++) {
                     finalResult.append(rowComponents.get(i).toLine(j));
                     finalResult.append("  ");
                     if (j == rowComponents.size() - 1) {
