@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
@@ -32,7 +33,7 @@ public class AssemblingState extends State {
             playersPhase.put(player, StatePhase.TAKE_COMPONENT);
             //init all the local model of the view
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, UpdateShipMessage.fromShip(player.getUsername(), player.getShip(), "init all ship"));
+                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
             }
             NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getUnviewed(), "init unviewed pile"));
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));

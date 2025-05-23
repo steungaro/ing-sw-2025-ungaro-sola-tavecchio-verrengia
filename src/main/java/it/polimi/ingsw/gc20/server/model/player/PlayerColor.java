@@ -11,10 +11,14 @@ public enum PlayerColor {
 
     public String TUIPrint() {
         return switch (this) {
-            case BLUE -> "P1";
-            case RED -> "P2";
-            case GREEN -> "P3";
-            case YELLOW -> "P4";
+            case BLUE -> //blue text
+                    "\u001B[34m" + "P1" + "\u001B[0m";
+            case RED -> //red text
+                    "\u001B[31m" + "P2" + "\u001B[0m";
+            case GREEN -> //green text
+                    "\u001B[32m" + "P3" + "\u001B[0m";
+            case YELLOW -> //yellow text
+                    "\u001B[33m" + "P4" + "\u001B[0m";
         };
     }
 }

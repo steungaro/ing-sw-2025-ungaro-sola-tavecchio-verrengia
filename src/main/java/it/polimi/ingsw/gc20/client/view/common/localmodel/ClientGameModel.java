@@ -14,6 +14,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -48,6 +49,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+        this.ships = new HashMap<>();
     }
     public ViewAdventureCard getCurrentCard() {
         return currentCard;

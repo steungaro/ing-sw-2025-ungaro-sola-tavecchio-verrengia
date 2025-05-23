@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.ship;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -687,5 +689,38 @@ public abstract class Ship {
         return AlienColor.NONE; //default implementation
     }
 
+    /**
+     * Costruttore statico factory per creare un messaggio partendo dalla nave
+     *
+     * @param username nome dell'utente che sta assemblando la nave
+     * @param ship nave del giocatore da cui estrarre la tabella di componenti
+     */
+    public static UpdateShipMessage messageFromShip(String username, Ship ship, String action) {
+        ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
+        List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
+        for (int i = 0; i < ship.getRows(); i++) {
+            for (int j = 0; j < ship.getCols(); j++) {
+                Component component = ship.getComponentAt(i, j);
+                if (component == null) {
+                    components[i][j] = null;
+                } else {
+                    components[i][j] = component.createViewComponent();
+                }
+            }
+        }
+        ViewComponent[] booked = new ViewComponent[2];
+        if (ship.isNormal()){
+            NormalShip normalShip = (NormalShip) ship;
+            for (int i = 0; i < normalShip.getBooked().size(); i++) {
+                if (normalShip.getBooked().get(i) != null) {
+                    booked[i] = normalShip.getBooked().get(i).createViewComponent();
+                } else {
+                    booked[i] = null;
+                }
+            }
+        }
+        ViewComponent hand = null;
 
+        return new UpdateShipMessage(username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
+    }
 }

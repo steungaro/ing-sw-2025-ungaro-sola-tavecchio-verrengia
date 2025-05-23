@@ -26,13 +26,13 @@ public class ViewCombatZone0 extends ViewAdventureCard {
         return
                 UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "     Combat Zone      " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m     Combat Zone      \u001B[22m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "  Less Crew: -" + lostDays + " days  " + LATERAL + "\n" +
-                LATERAL + " Less Engines:-" + lostCrew + " crew " + LATERAL + "\n" +
+                LATERAL + "  Less Crew: \u001B[31m-" + lostDays + " days\u001B[0m  " + LATERAL + "\n" +
+                LATERAL + " Less Engines:\u001B[31m-" + lostCrew + " crew\u001B[0m " + LATERAL + "\n" +
                 LATERAL + "     Less Cannons:    "+ LATERAL + "\n" +
-                LATERAL + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL + "\n" +
+                LATERAL + " ".repeat(10 - cannonFires().length()/2) + "\u001B[33m" + cannonFires() + "\u001B[0m" +  " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 DOWN;
     }
@@ -42,11 +42,11 @@ public class ViewCombatZone0 extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 4, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "     Combat Zone      " + LATERAL;
-            case 5 -> LATERAL + "  Less Crew: -" + lostDays + " days  " + LATERAL;
-            case 6 -> LATERAL + " Less Engines:-" + lostCrew + " crew " + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m     Combat Zone      \u001B[22m" + LATERAL;
+            case 5 -> LATERAL + "  Less Crew: \u001B[31m-" + lostDays + " days\u001B[0m  " + LATERAL;
+            case 6 -> LATERAL + " Less Engines:\u001B[31m-" + lostCrew + " crew\u001B[0m " + LATERAL;
             case 7 -> LATERAL + "     Less Cannons:    "+ LATERAL;
-            case 8 -> LATERAL + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL;
+            case 8 -> LATERAL + " ".repeat(10 - cannonFires().length()/2) + "\u001B[33m" + cannonFires() + "\u001B[0m" +  " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL;
             case 10 -> DOWN;
             default -> "";
         };
@@ -80,9 +80,4 @@ public class ViewCombatZone0 extends ViewAdventureCard {
     }
 
     // ↑→↓←
-
-    private int firesSize(){
-        int result = projectiles.size();
-        return (result-1)*3 + 2;
-    }
 }

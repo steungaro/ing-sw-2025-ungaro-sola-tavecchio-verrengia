@@ -57,10 +57,10 @@ public class ViewPlanets extends ViewAdventureCard {
         return
         UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "       Planets        " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m       Planets        \u001B[0m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 planets() +
-                LATERAL + "  LostDays: " + lostDays + "         " + LATERAL + "\n" +
+                LATERAL + "  LostDays: \u001B[31m" + lostDays + "\u001B[0m         " + LATERAL + "\n" +
                 emptyRows() +
                 DOWN;
     }
@@ -70,7 +70,7 @@ public class ViewPlanets extends ViewAdventureCard {
 
         for(int i=0; i<planets.size(); i++){
             result.append(LATERAL + "  ");
-            result.append("P").append(i).append(": ");
+            result.append("\u001B[36mP").append(i+1).append("\u001B[0m: ");
 
             result.append(reward(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3]));
             result.append(" ".repeat(16 - rewardSize(planets.get(i)[0], planets.get(i)[1], planets.get(i)[2], planets.get(i)[3])));
@@ -86,30 +86,30 @@ public class ViewPlanets extends ViewAdventureCard {
         int j = 0;
         for(int i = 0; i < redCargo; i++){
             if(i==0)
-                result.append("R");
+                result.append("\u001B[31mR\u001B[0m");
             else
-                result.append(" R");
+                result.append("\u001B[31m R\u001B[0m");
             j++;
         }
         for(int i = 0; i < yellowCargo; i++){
             if(j==0)
-                result.append("Y");
+                result.append("\u001B[33mY\u001B[0m");
             else
-                result.append(" Y");
+                result.append("\u001B[33m Y\u001B[0m");
             j++;
         }
         for(int i = 0; i < greenCargo; i++){
             if(j==0)
-                result.append("G");
+                result.append("\u001B[32mG\u001B[0m");
             else
-                result.append(" G");
+                result.append("\u001B[32m G\u001B[0m");
             j++;
         }
         for(int i = 0; i < blueCargo; i++){
             if(j==0)
-                result.append("B");
+                result.append("\u001B[34mB\u001B[0m");
             else
-                result.append(" B");
+                result.append("\u001B[34m B\u001B[0m");
             j++;
         }
         return result.toString();

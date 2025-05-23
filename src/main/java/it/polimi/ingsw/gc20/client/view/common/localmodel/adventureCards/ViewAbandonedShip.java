@@ -23,12 +23,12 @@ public class ViewAbandonedShip extends ViewAdventureCard {
         return
                 UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "    Abandoned Ship    " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m    Abandoned Ship    \u001B[22m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "     Lost crew: "  + lostCrew  + "     " + LATERAL + "\n" +
-                LATERAL + "      Credits: "    + credits   + "      " + LATERAL + "\n" +
-                LATERAL + "     Lost days: "  + lostDays  + "     " + LATERAL + "\n" +
+                LATERAL + "     Lost crew: \u001B[31m"  + lostCrew  + "\u001B[0m     " + LATERAL + "\n" +
+                LATERAL + "      Credits: \u001B[32m"    + credits   + "\u001B[0m      " + LATERAL + "\n" +
+                LATERAL + "     Lost days: \u001B[31m"  + lostDays  + "\u001B[0m     " + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 DOWN;
@@ -39,10 +39,10 @@ public class ViewAbandonedShip extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 4, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "    Abandoned Ship    " + LATERAL;
-            case 5 -> LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL;
-            case 6 -> LATERAL + "      Credits: " + credits + "      " + LATERAL;
-            case 7 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m    Abandoned Ship    \u001B[22m" + LATERAL;
+            case 5 -> LATERAL + "     Lost crew: \u001B[31m" + lostCrew + "\u001B[0m     " + LATERAL;
+            case 6 -> LATERAL + "      Credits: \u001B[32m" + credits + "\u001B[0m      " + LATERAL;
+            case 7 -> LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL;
             case 10 -> DOWN;
             default -> "";
         };

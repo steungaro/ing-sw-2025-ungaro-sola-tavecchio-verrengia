@@ -26,13 +26,13 @@ public class ViewCombatZone1 extends ViewAdventureCard {
         return
                 UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "     Combat Zone      " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m     Combat Zone      \u001B[22m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "Less Cannons: -" + lostDays +  " days " + LATERAL + "\n" +
-                LATERAL + "Less Engines: -" + lostCargo + " cargo" + LATERAL + "\n" +
+                LATERAL + "Less Cannons: \u001B[31m-" + lostDays +  " days\u001B[0m " + LATERAL + "\n" +
+                LATERAL + "Less Engines: \u001B[31m-" + lostCargo + " cargo\u001B[0m" + LATERAL + "\n" +
                 LATERAL + "      Less Crew:      "+ LATERAL + "\n" +
-                LATERAL + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL + "\n" +
+                LATERAL + "\u001B[33m" + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + "\u001B[0m" + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 DOWN;
     }
@@ -72,11 +72,11 @@ public class ViewCombatZone1 extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 4, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "     Combat Zone      " + LATERAL;
-            case 5 -> LATERAL + "Less Cannons: -" + lostDays +  " days " + LATERAL;
-            case 6 -> LATERAL + "Less Engines: -" + lostCargo + " cargo" + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m     Combat Zone      \u001B[22m" + LATERAL;
+            case 5 -> LATERAL + "Less Cannons: \u001B[31m-" + lostDays +  " days\u001B[0m " + LATERAL;
+            case 6 -> LATERAL + "Less Engines: \u001B[31m-" + lostCargo + " cargo\u001B[0m" + LATERAL;
             case 7 -> LATERAL + "      Less Crew:      "+ LATERAL;
-            case 8 -> LATERAL + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL;
+            case 8 -> LATERAL + "\u001B[33m" + " ".repeat(10 - cannonFires().length()/2) + cannonFires() + "\u001B[0m" + " ".repeat(10 - cannonFires().length()/2 + (cannonFires().length() % 2 == 0 ? 0 : 1)) + LATERAL;
             case 10 -> DOWN;
             default -> "";
         };

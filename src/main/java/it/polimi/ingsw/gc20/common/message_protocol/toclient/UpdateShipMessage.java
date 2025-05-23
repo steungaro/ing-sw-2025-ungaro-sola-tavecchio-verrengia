@@ -32,40 +32,6 @@ public record UpdateShipMessage(
         return username + " has " + action;
     }
 
-    /**
-     * Costruttore statico factory per creare un messaggio partendo dalla nave
-     *
-     * @param username nome dell'utente che sta assemblando la nave
-     * @param ship nave del giocatore da cui estrarre la tabella di componenti
-     */
-    public static UpdateShipMessage fromShip(String username, Ship ship, String action) {
-        ViewComponent[][] components = new ViewComponent[ship.getRows()][ship.getCols()];
-        List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
-        for (int i = 0; i < ship.getRows(); i++) {
-            for (int j = 0; j < ship.getCols(); j++) {
-                Component component = ship.getComponentAt(i, j);
-                if (component == null) {
-                    components[i][j] = null;
-                } else {
-                    components[i][j] = component.createViewComponent();
-                }
-            }
-        }
-        ViewComponent[] booked = new ViewComponent[2];
-        if (ship.isNormal()){
-            NormalShip normalShip = (NormalShip) ship;
-            for (int i = 0; i < normalShip.getBooked().size(); i++) {
-                if (normalShip.getBooked().get(i) != null) {
-                    booked[i] = normalShip.getBooked().get(i).createViewComponent();
-                } else {
-                    booked[i] = null;
-                }
-            }
-        }
-        ViewComponent hand = null;
-
-        return new UpdateShipMessage(username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
-    }
     @Override
     public void handleMessage() {
         ViewShip viewShip = new ViewShip();
@@ -81,7 +47,7 @@ public record UpdateShipMessage(
         viewShip.setValid(isValid);
         // da capire dove mettere il component in hand
         ClientGameModel.getInstance().setShip(username, viewShip);
-
+        ClientGameModel.getInstance().buildingMenu(null);
     }
 
 }

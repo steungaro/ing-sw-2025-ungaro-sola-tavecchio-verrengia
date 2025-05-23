@@ -25,13 +25,13 @@ public class ViewSlavers extends ViewAdventureCard {
         return
                         UP + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                        LATERAL + "       Slavers        " + LATERAL + "\n" +
+                        LATERAL + "\u001B[1m       Slavers        \u001B[0m" + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                        LATERAL + "     FirePower: " + firePower + "     " + LATERAL + "\n" +
-                        LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL + "\n" +
+                        LATERAL + "     FirePower: \u001B[31m" + firePower + "\u001B[0m     " + LATERAL + "\n" +
+                        LATERAL + "     Lost crew: \u001B[31m" + lostCrew + "\u001B[0m     " + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                        LATERAL + "      Credits: " + credits + "      " + LATERAL + "\n" +
-                        LATERAL + "     Lost days: " + lostDays + "     " + LATERAL + "\n" +
+                        LATERAL + "      Credits: \u001B[32m" + credits + "\u001B[0m      " + LATERAL + "\n" +
+                        LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL + "\n" +
                         LATERAL + EMPTY_ROW + LATERAL + "\n" +
                         DOWN;
     }
@@ -41,11 +41,11 @@ public class ViewSlavers extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 6, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "       Slavers        " + LATERAL;
-            case 4 -> LATERAL + "     FirePower: " + firePower + "     " + LATERAL;
-            case 5 -> LATERAL + "     Lost crew: " + lostCrew + "     " + LATERAL;
-            case 7 -> LATERAL + "      Credits: " + credits + "      " + LATERAL;
-            case 8 -> LATERAL + "     Lost days: " + lostDays + "     " + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m       Slavers        \u001B[0m" + LATERAL;
+            case 4 -> LATERAL + "     FirePower: \u001B[31m" + firePower + "\u001B[0m     " + LATERAL;
+            case 5 -> LATERAL + "     Lost crew: \u001B[31m" + lostCrew + "\u001B[0m     " + LATERAL;
+            case 7 -> LATERAL + "      Credits: \u001B[32m" + credits + "\u001B[0m      " + LATERAL;
+            case 8 -> LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL;
             case 10 -> DOWN;
             default -> "";
         };

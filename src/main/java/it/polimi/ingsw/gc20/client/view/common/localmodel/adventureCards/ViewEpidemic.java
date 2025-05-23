@@ -18,7 +18,7 @@ public class ViewEpidemic extends ViewAdventureCard {
         return switch (i) {
             case 0 -> UP;
             case 1, 3, 4, 5, 6, 7, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
-            case 2 -> LATERAL + "       Epidemic       " + LATERAL;
+            case 2 -> LATERAL + "\u001B[1m       Epidemic       \u001B[0m" + LATERAL;
             case 10 -> DOWN;
             default -> "";
         };
@@ -29,7 +29,7 @@ public class ViewEpidemic extends ViewAdventureCard {
         return
                 UP + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
-                LATERAL + "       Epidemic       " + LATERAL + "\n" +
+                LATERAL + "\u001B[1m       Epidemic       \u001B[0m" + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
                 LATERAL + EMPTY_ROW + LATERAL + "\n" +
