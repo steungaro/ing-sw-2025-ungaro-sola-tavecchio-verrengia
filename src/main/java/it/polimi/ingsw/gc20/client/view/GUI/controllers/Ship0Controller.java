@@ -40,10 +40,13 @@ public class Ship0Controller {
                     double boardHeight = boardImageView.getBoundsInParent().getHeight();
 
                     // Calculate grid position and dimensions
-                    double gridX = boardWidth * 0.25;
-                    double gridY = boardHeight * 0.18;
-                    double gridWidth = boardWidth * 0.5;
-                    double gridHeight = boardHeight * 0.64;
+                    // Questi valori determinano la porzione dell'immagine che la griglia occuperà.
+                    // gridX e gridY sono l'offset dall'angolo in alto a sinistra dell'immagine.
+                    // gridWidth e gridHeight sono la larghezza e l'altezza della griglia.
+                    double gridX = boardWidth * 0.25; // Esempio: inizia al 25% della larghezza dell'immagine
+                    double gridY = boardHeight * 0.18; // Esempio: inizia al 18% dell'altezza dell'immagine
+                    double gridWidth = boardWidth * 0.5;  // Esempio: la griglia è larga il 50% dell'immagine
+                    double gridHeight = boardHeight * 0.64; // Esempio: la griglia è alta il 64% dell'immagine
 
                     // Apply layout to grid
                     componentsGrid.setLayoutX(gridX);
