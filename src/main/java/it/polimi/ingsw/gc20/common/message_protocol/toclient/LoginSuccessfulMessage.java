@@ -15,6 +15,5 @@ public record LoginSuccessfulMessage(
     public void handleMessage() {
         ClientGameModel.getInstance().loginSuccessful(username);
         ClientGameModel.getInstance().loggedIn = true;
-        ClientGameModel.getInstance().mainMenuState();
     }
 }

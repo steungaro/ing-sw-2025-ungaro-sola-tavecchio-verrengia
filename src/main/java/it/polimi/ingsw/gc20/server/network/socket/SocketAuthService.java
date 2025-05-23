@@ -51,6 +51,11 @@ public class SocketAuthService {
                     newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                     socketServer.registerClient(newClient);
                     LOGGER.info("Client " + loginRequest + " connected.");
+
+                    // Notify the client that the connection was successful
+                    out.writeObject(new LoginSuccessfulMessage(loginRequest.username()));
+                    out.flush();
+
                     MatchController.getInstance().getLobbies(loginRequest.username());
                 // If the client is already registered check if it is connected (reconnection)
                 } else {
@@ -64,10 +69,15 @@ public class SocketAuthService {
                         // Reconnect the client (maybe it was RMI before or connection crashed)
                         newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                         socketServer.updateClient(loginRequest.username(), newClient);
+
+                        // Notify the client that the reconnection was successful
+                        out.writeObject(new LoginSuccessfulMessage(loginRequest.username()));
+                        out.flush();
+
                         GameController gameController = MatchController.getInstance().getGameControllerForPlayer(loginRequest.username());
                         if (gameController != null) {
                             gameController.reconnectPlayer(loginRequest.username());
-                        }else {
+                        } else {
                             MatchController.getInstance().getLobbies(loginRequest.username());
                         }
                         LOGGER.info("Client " + loginRequest + " reconnected.");
@@ -75,9 +85,6 @@ public class SocketAuthService {
                 }
             } while (newClient == null);
 
-            // Notify the client that the reconnection was successful
-            out.writeObject(new LoginSuccessfulMessage(loginRequest.username()));
-            out.flush();
 
             // Start the handler thread
             newClient.handleRequests();
