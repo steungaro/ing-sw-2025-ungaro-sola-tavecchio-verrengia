@@ -32,18 +32,33 @@ public class EngineMenu implements MenuState {
         // Handle user input for the engine menu
         switch (choice) {
             case "1":
-                System.out.println("Type the coordinates of the engines you want to activate (for example, x1 y1 x2 y2...):");
+                System.out.println("Type the coordinates of the engines you want to activate separated by spaces (for example, row1 col1 row2 col2):");
                 System.out.print(" > ");
+                engines.clear();
                 String engineInput = scanner.nextLine().trim();
                 String[] engineCoordinates = engineInput.split(" ");
-                for (int i = 0; i < engineCoordinates.length; i += 2) {
-                    Pair<Integer, Integer> coordinates = new Pair<>(Integer.parseInt(engineCoordinates[i]) - 5, Integer.parseInt(engineCoordinates[i + 1]) - 4);
-                    engines.add(coordinates);
+                if (engineCoordinates.length % 2 != 0) {
+                    System.out.println("\u001B[31mInvalid input. Please enter an even number of coordinates.\u001B[0m");
+                    return false;
                 }
-                System.out.println("Type the coordinates of the batteries you want to activate (for example, x1 y1 x2 y2...):");
+                for (int i = 0; i < engineCoordinates.length; i += 2) {
+                    try {
+                        Pair<Integer, Integer> coordinates = new Pair<>(Integer.parseInt(engineCoordinates[i]) - 5, Integer.parseInt(engineCoordinates[i + 1]) - 4);
+                        engines.add(coordinates);
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter valid integers for coordinates.\u001B[0m");
+                        return false;
+                    }
+                }
+                System.out.println("Type the coordinates of the batteries you want to activate separated by spaces (for example, row1 col1 row2 col2):");
                 System.out.print(" > ");
+                batteries.clear();
                 String batteryInput = scanner.nextLine().trim();
                 String[] batteryCoordinates = batteryInput.split(" ");
+                if (batteryCoordinates.length % 2 != 0) {
+                    System.out.println("\u001B[31mInvalid input. Please enter an even number of coordinates.\u001B[0m");
+                    return false;
+                }
                 for (int i = 0; i < batteryCoordinates.length; i += 2) {
                     Pair<Integer, Integer> coordinates = new Pair<>(Integer.parseInt(batteryCoordinates[i]) - 5, Integer.parseInt(batteryCoordinates[i + 1]) - 4);
                     batteries.add(coordinates);

@@ -20,12 +20,22 @@ public class BranchMenu implements MenuState {
     }
 
     public boolean handleInput() throws RemoteException {
-        System.out.println("Type the coordinates of the branch you want to keep (x y):");
-        System.out.print(" > ");
-        String branchInput = scanner.nextLine().trim();
-        int x = Integer.parseInt(branchInput.split(" ")[0]) - 5;
-        int y = Integer.parseInt(branchInput.split(" ")[1]) - 4;
-        ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(x, y) );
+            int row;
+            int col;
+        do {
+            System.out.println("Type the coordinates of the branch you want to keep (row col):");
+            System.out.print(" > ");
+            String branchInput = scanner.nextLine().trim();
+            try {
+                row = Integer.parseInt(branchInput.split(" ")[0]) - 5;
+                col = Integer.parseInt(branchInput.split(" ")[1]) - 4;
+            } catch (NumberFormatException e) {
+                System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                row = -1;
+                col = -1;
+            }
+        } while (row < 0 || row > 4 || col < 0 || col > 6);
+        ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(row, col) );
         return true;
     }
 

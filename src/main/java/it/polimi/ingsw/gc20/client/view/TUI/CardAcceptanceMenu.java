@@ -47,7 +47,7 @@ public class CardAcceptanceMenu implements MenuState{
                 TUI.viewOptionsMenu();
                 return false;
             default:
-                System.out.println("Invalid choice. Please try again.");
+                System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
                 return false;
         }
         return true;

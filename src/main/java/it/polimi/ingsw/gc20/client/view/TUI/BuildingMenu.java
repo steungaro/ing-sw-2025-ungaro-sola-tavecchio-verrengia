@@ -79,7 +79,7 @@ public class BuildingMenu implements MenuState{
                             index = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
                             index = -1;
-                            System.out.println("Invalid input. Please enter a valid index.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                         }
                     } while (index < 0 || index >= ClientGameModel.getInstance().getBoard().unviewedPile);
                     ClientGameModel.getInstance().getClient().takeComponentFromUnviewed(username, index);
@@ -93,7 +93,7 @@ public class BuildingMenu implements MenuState{
                         try {
                             index1 = Integer.parseInt(scanner.nextLine().trim());
                         } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a valid index.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                             index1 = -1;
                         }
                     } while (index1 < 0 || index1 >= ClientGameModel.getInstance().getBoard().viewedPile.size());
@@ -109,7 +109,7 @@ public class BuildingMenu implements MenuState{
                             index3 = Integer.parseInt(scanner.nextLine().trim());
                         } catch (NumberFormatException e) {
                             index3 = -1;
-                            System.out.println("Invalid input. Please enter a valid index.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                         }
                     } while (index3 < 0 || index3 > 4);
                     ClientGameModel.getInstance().getClient().stopAssembling(username, index3);
@@ -124,7 +124,7 @@ public class BuildingMenu implements MenuState{
                             index2 = Integer.parseInt(scanner.nextLine().trim());
                         } catch (NumberFormatException e) {
                             index2 = -1;
-                            System.out.println("Invalid input. Please enter a valid index.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                         }
                     } while (index2 < 0 || index2 > 1);
                     ClientGameModel.getInstance().getClient().takeComponentFromBooked(username, index2);
@@ -142,7 +142,7 @@ public class BuildingMenu implements MenuState{
                             index4 = Integer.parseInt(scanner.nextLine().trim());
                         } catch (NumberFormatException e) {
                             index4 = -1;
-                            System.out.println("Invalid input. Please enter a valid index.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                         }
                     } while (index4 < 0 || index4 > 2);
                     ClientGameModel.getInstance().getClient().peekDeck(username, index4);
@@ -154,7 +154,7 @@ public class BuildingMenu implements MenuState{
                     TUI.viewOptionsMenu();
                     return false;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
                     return false;
             }
         }else{
@@ -178,7 +178,7 @@ public class BuildingMenu implements MenuState{
                             row = Integer.parseInt(parts[0]) - 5;
                             col = Integer.parseInt(parts[1]) - 4;
                         } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter valid coordinates.");
+                            System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         }
                     } while (row < 0 || row > 4 || col < 0 || col > 6);
                     Pair<Integer, Integer> coordinatesPair = new Pair<>(row, col);
@@ -193,7 +193,7 @@ public class BuildingMenu implements MenuState{
                         try {
                             numRotations = Integer.parseInt(scanner.nextLine().trim());
                         } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a valid number of rotations.");
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid number of rotations.\u001B[0m");
                             numRotations = 0;
                         }
                     } while (numRotations < 0);
@@ -219,7 +219,7 @@ public class BuildingMenu implements MenuState{
                     TUI.viewOptionsMenu();
                     return false;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
                     return false;
             }
         }
