@@ -24,17 +24,15 @@ public class LoginController {
     }
 
     private void handleLogin() {
-        String username;
-        do {
-            username = usernameField.getText().trim();
-            if (username.isEmpty()) {
-                System.out.println("Username cannot be empty");
-            }
-        } while(username.isEmpty());
+        String username = usernameField.getText().trim();
+
+        if (username.isEmpty()) {
+            System.out.println("Username cannot be empty");
+            return;
+        }
 
         ClientGameModel.getInstance().setUsername(username);
         ClientGameModel.getInstance().login();
-        // Passa al MainMenu
         guiView.showScene("mainMenu");
     }
 }
