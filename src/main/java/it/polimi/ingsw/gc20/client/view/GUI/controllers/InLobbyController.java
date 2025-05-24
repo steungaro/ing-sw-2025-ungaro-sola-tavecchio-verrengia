@@ -120,7 +120,7 @@ public class InLobbyController {
     }
 
     private void startLobbyUpdateTimer() {
-        // TODO: Implementa il timer per aggiornare lo stato della lobby
+        // TODO: Maybe
     }
 
     private void onStartGame() {
