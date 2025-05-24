@@ -304,7 +304,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     public void login(){
-        // TODO
+        throw new UnsupportedOperationException("Login not implemented yet.");
     }
 
     public void setUsername(String username){
