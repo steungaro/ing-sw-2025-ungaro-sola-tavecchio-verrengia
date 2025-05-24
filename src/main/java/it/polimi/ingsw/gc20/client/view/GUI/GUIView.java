@@ -210,6 +210,8 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
+
+
         client.login(username);
         this.username = username;
     }
