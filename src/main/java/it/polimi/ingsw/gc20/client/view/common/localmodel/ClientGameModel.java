@@ -285,6 +285,14 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    public void login(){
+        // TODO
+    }
+
+    public void setUsername(String username){
+        this.username = username;
+    }
+
     // --- Getters ---
     public ViewShip getPlayerShip() { return playerShip; }
     public ViewLobby getCurrentLobby() { return currentLobby; }

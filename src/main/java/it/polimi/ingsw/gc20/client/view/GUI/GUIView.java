@@ -21,7 +21,7 @@ public class GUIView extends ClientGameModel {
 
     private static Stage primaryStage;
 
-    public GUIView() {
+    public GUIView() throws RemoteException {
         super();
     }
 
