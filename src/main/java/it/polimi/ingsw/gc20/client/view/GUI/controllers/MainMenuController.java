@@ -1,8 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.ClientController;
-import it.polimi.ingsw.gc20.client.view.common.View;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -27,9 +26,7 @@ public class MainMenuController {
 
     @FXML
     public void initialize() {
-        guiView = (GUIView) View.getInstance();
-
-
+        guiView = (GUIView) ClientGameModel.getInstance();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
         viewLobbiesButton.setOnAction( event -> handleViewLobbies());
@@ -45,14 +42,10 @@ public class MainMenuController {
         guiView.showScene("createLobby");
     }
     private void handleViewLobbies() {
-        guiView.showScene("lobbiesList");
+        guiView.showScene("lobbyList");
     }
-
-    public void setClientController(ClientController clientController) {
-        this.clientController = clientController;
-    }
-
     private void handleLogout() {
+
         guiView.showScene("network");
     }
 }
