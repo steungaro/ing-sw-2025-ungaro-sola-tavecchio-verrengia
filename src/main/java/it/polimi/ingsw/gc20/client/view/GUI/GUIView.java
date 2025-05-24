@@ -1,23 +1,20 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
+import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.NetworkController;
-import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.jline.terminal.impl.CursorSupport;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GUIView extends ClientGameModel {
@@ -47,7 +44,7 @@ public class GUIView extends ClientGameModel {
         }
     }
 
-    public void setupConnection(String ipAddress, int port, boolean isRMI, NetworkController controller) {
+    public void setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
         System.out.println("Connessione a " + ipAddress + ":" + port);
@@ -67,7 +64,7 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client == null || !client.isConnected()) {
-            controller.showError("Connection failed");
+            System.out.println("errore creazione client");
             client = null;
         }
 
@@ -76,13 +73,145 @@ public class GUIView extends ClientGameModel {
         }
     }
 
+    @Override
+    public void mainMenuState(){
+        showScene("mainMenu");
+    }
+
+    @Override
+    public void planetMenu(List<Planet> planets) {
+
+    }
+
+    @Override
+    public void populateShipMenu() {
+
+    }
+
+    @Override
+    public void automaticAction(String message) {
+
+    }
+
+    @Override
+    public void validationMenu() {
+
+    }
+
+    @Override
+    public void takeComponentMenu() {
+
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public void shieldsMenu(FireType fireType, int direction, int line) {
+
+    }
+
+    @Override
+    public void rollDiceMenu(FireType fireType, int direction) {
+
+    }
+
+    @Override
+    public void cargoMenu(int cargoNum) {
+
+    }
+
+    @Override
+    public void loseCrewMenu(int crewNum) {
+
+    }
+
+    @Override
+    public void removeBatteryMenu(int batteryNum) {
+
+    }
+
+    @Override
+    public void placeComponentMenu() {
+
+    }
+
+    @Override
+    public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
+
+    }
+
+    @Override
+    public void loginSuccessful(String username) {
+
+    }
+
+    @Override
+    public void loginFailed(String username) {
+
+    }
 
     @Override
     public void notifyDisconnection() throws RemoteException {
         // TODO: Implementare la notifica di disconnessione
     }
 
-    public void login(String username, String server, int port) {
+    @Override
+    public void display(String message) {
+        // TODO
+    }
+
+    @Override
+    public void display(MenuState menuState) {
+        // TODO
+    }
+
+    @Override
+    public void shutdown() {
+        // TODO
+    }
+
+    @Override
+    public void branchMenu(){
+        // TODO
+    }
+
+    @Override
+    public void buildingMenu(List<ViewAdventureCard> cards) {
+
+    }
+
+    @Override
+    public void cannonsMenu(String message) {
+
+    }
+
+    @Override
+    public void cardAcceptanceMenu(String message) {
+
+    }
+
+    @Override
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain) {
+
+    }
+
+    @Override
+    public void engineMenu(String message) {
+
+    }
+
+    @Override
+    public void inLobbyMenu() {
+
+    }
+
+    @Override
+    public void login() {
+
+
         client.login(username);
         this.username = username;
     }
