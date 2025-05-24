@@ -43,15 +43,12 @@ public class NetworkController {
     public void initialize() {
         guiView = (GUIView) View.getInstance();
 
-        // Inizializza il gruppo di toggle per i radio button
         connectionTypeGroup = new ToggleGroup();
         socketRadioButton.setToggleGroup(connectionTypeGroup);
         rmiRadioButton.setToggleGroup(connectionTypeGroup);
 
-        // Seleziona Socket come default
         socketRadioButton.setSelected(true);
 
-        // Valori predefiniti
         ipAddressField.setText("localhost");
         portField.setText("502");
 

@@ -102,7 +102,6 @@ public class LobbyListController {
             Parent mainMenuRoot = loader.load();
             
             MainMenuController mainMenuController = loader.getController();
-            // TODO Disconnect client
 
             Stage stage = (Stage) backButton.getScene().getWindow();
             
