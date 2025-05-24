@@ -30,69 +30,94 @@ public class CreateLobbyController {
 
     private String username;
 
-    /**
-     * Inizializza il controller
-     */
+
     @FXML
     public void initialize() {
-        // Inizializza la combobox per il numero di giocatori (2-4)
         numPlayersComboBox.getItems().addAll(2, 3, 4);
         numPlayersComboBox.setValue(2);
 
-        // Inizializza la combobox per il livello (L o 2)
         levelComboBox.getItems().addAll("L", "2");
         levelComboBox.setValue("L");
 
-        // Nasconde l'etichetta di errore all'inizio
         errorLabel.setVisible(false);
     }
 
-    /**
-     * Imposta il nome utente
-     * @param username il nome utente
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * Gestisce l'azione del pulsante di creazione lobby
-     */
     @FXML
     private void handleCreateButton() {
         String lobbyName = lobbyNameField.getText().trim();
-        
+
         if (lobbyName.isEmpty()) {
             errorLabel.setText("Il nome della lobby non può essere vuoto");
             errorLabel.setVisible(true);
             return;
         }
 
+        createButton.setDisable(true);
+        errorLabel.setVisible(false);
+
         Integer numPlayers = numPlayersComboBox.getValue();
-        
-        // Converti il valore del livello in intero (L = 0, 2 = 2)
         int level = levelComboBox.getValue().equals("L") ? 0 : 2;
 
-        try {
-            ClientGameModel.getInstance().getClient().createLobby(lobbyName, username, numPlayers, level);
-            closeStage();
-        } catch (Exception e) {
-            errorLabel.setText("Errore nella creazione della lobby: " + e.getMessage());
-            errorLabel.setVisible(true);
-        }
+        new Thread(() -> {
+            try {
+                ClientGameModel.getInstance().getClient().createLobby(lobbyName, username, numPlayers, level);
+
+                String createdLobbyName = lobbyName;
+                long startTime = System.currentTimeMillis();
+                boolean success = false;
+
+                try {
+                    // Attendi fino a 10 secondi per la creazione della lobby
+                    while (System.currentTimeMillis() - startTime < 10000) {
+                        var lobbyList = ClientGameModel.getInstance().getLobbyList();
+
+                        // Controlla che lobbyList non sia null prima di usarlo
+                        if (lobbyList != null && lobbyList.stream()
+                                .anyMatch(lobby -> lobby.getID().equals(createdLobbyName))) {
+                            success = true;
+                            break;
+                        }
+                        Thread.sleep(100); // Polling interval
+                    }
+
+                    // Mostra messaggio in base al risultato
+                    boolean finalSuccess = success;
+                    javafx.application.Platform.runLater(() -> {
+                        if (finalSuccess) {
+                            errorLabel.setText("Lobby creata con successo!");
+                            errorLabel.setStyle("-fx-text-fill: green;");
+                        } else {
+                            errorLabel.setText("Timeout: la lobby potrebbe non essere stata creata");
+                        }
+                        errorLabel.setVisible(true);
+                        createButton.setDisable(false);
+                    });
+                } catch (InterruptedException e) {
+                    javafx.application.Platform.runLater(() -> {
+                        errorLabel.setText("Operazione interrotta");
+                        errorLabel.setVisible(true);
+                        createButton.setDisable(false);
+                    });
+                }
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    errorLabel.setText("Errore nella creazione della lobby: " + e.getMessage());
+                    errorLabel.setVisible(true);
+                    createButton.setDisable(false);
+                });
+            }
+        }).start();
     }
 
-    /**
-     * Gestisce l'azione del pulsante di annullamento
-     */
     @FXML
     private void handleCancelButton() {
         closeStage();
     }
 
-    /**
-     * Chiude la finestra corrente
-     */
     private void closeStage() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();

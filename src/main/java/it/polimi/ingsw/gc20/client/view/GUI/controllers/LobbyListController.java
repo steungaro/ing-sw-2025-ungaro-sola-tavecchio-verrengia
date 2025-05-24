@@ -68,7 +68,8 @@ public class LobbyListController {
         if (ClientGameModel.getInstance().getClient() != null) {
             List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
             lobbiesListView.getItems().clear();
-            lobbiesListView.getItems().addAll(lobbies);
+            if(lobbies != null && !lobbies.isEmpty())
+                lobbiesListView.getItems().addAll(lobbies);
         }
     }
     
