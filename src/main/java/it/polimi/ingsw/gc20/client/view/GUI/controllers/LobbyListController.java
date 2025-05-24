@@ -11,11 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.stage.Stage;
-import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
-import org.jline.utils.Log;
 import javafx.scene.control.ListCell;
-import javafx.util.Callback;
-
 import java.io.Console;
 import java.io.IOException;
 import java.util.List;
