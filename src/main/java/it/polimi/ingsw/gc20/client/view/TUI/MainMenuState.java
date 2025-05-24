@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
 import java.io.IOException;
@@ -26,31 +27,53 @@ public class MainMenuState implements MenuState{
         System.out.println("1. Join a lobby");
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
-        System.out.print(" > ");
     }
 
 
     @Override
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         String choice = scanner.nextLine().trim();
         switch(choice) {
             case "1":
-                System.out.println("Type the name of the lobby you want to join:");
-                System.out.print(" > ");
-                String lobbyName = scanner.nextLine().trim();
+                String lobbyName;
+                do {
+                    System.out.println("Type the name of the lobby you want to join:");
+                    System.out.print(" > ");
+                    lobbyName = scanner.nextLine().trim();
+                    if (lobbyName.isEmpty() || ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobbyName)) {
+                        System.out.println("Lobby not found. Please try again.");
+                    } else {
+                        break;
+                    }
+                } while (true);
+
                 ClientGameModel.getInstance().getClient().joinLobby(lobbyName, username);
                 break;
             case "2":
-                System.out.println("Type the name of the lobby you want to create:");
-                System.out.print(" > ");
-                String lobby = scanner.nextLine().trim();
+                String lobby;
+                do {
+                    System.out.println("Type the name of the lobby you want to create:");
+                    System.out.print(" > ");
+                    lobby = scanner.nextLine().trim();
+                    if (lobby.isEmpty() || ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobby)) {
+                        System.out.println("Lobby name already in use. Please try again.");
+                    } else {
+                        break;
+                    }
+                } while(lobby.isEmpty() || ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobby));
 
                 int numPlayers;
 
                 do {
                     System.out.println("Type the number of players that can play [2-4]:");
                     System.out.print(" > ");
-                    numPlayers = Integer.parseInt(scanner.nextLine().trim());
+                    String input = scanner.nextLine().trim();
+                    try {
+                        numPlayers = Integer.parseInt(input);
+                    } catch (NumberFormatException e) {
+                        numPlayers = 0;
+                    }
                 } while(numPlayers < 2 || numPlayers > 4);
 
                 int level;
@@ -59,7 +82,11 @@ public class MainMenuState implements MenuState{
                     System.out.println("Type the level of the game [L/2]:");
                     System.out.print(" > ");
                     String input = scanner.nextLine().trim();
-                    level = Objects.equals(input, "L") ? 0 : Integer.parseInt(input);
+                    try {
+                        level = Objects.equals(input, "L") ? 0 : Integer.parseInt(input);
+                    } catch (NumberFormatException e) {
+                        level = -1;
+                    }
                 } while(level != 0 && level != 2);
 
                 ClientGameModel.getInstance().getClient().createLobby(lobby, username, numPlayers, level);

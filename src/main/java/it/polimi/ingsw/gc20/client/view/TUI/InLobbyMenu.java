@@ -24,10 +24,10 @@ public class InLobbyMenu implements MenuState {
         } else {
             System.out.println("1. Leave lobby");
         }
-        System.out.print(" > ");
     }
 
     public boolean handleInput() throws IOException {
+        System.out.print(" > ");
         String choice = scanner.nextLine().trim();
         // Handle user input for the in lobby menu
         switch (choice) {

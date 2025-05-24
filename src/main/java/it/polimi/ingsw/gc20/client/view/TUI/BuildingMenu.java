@@ -64,45 +64,87 @@ public class BuildingMenu implements MenuState{
         System.out.print(" > ");
         String choice = scanner.nextLine().trim();
         adventureCards = null;
-        // Handle user input for the building menu
+        // Handle user input from the building menu
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
             switch (choice) {
                 case "1":
-                    System.out.println("Type the index of the covered component you want to take:");
-                    System.out.print(" > ");
-                    // Read the index of the component to take
-                    int index = Integer.parseInt(scanner.nextLine().trim());
+                        int index;
+                    do {
+                        System.out.println("Type the index of the covered component you want to take: (0 to " + (ClientGameModel.getInstance().getBoard().unviewedPile - 1) + ")");
+                        System.out.print(" > ");
+                        // Read the index of the component to take
+                        // Check if the index is valid
+                        String input = scanner.nextLine().trim();
+                        try {
+                            index = Integer.parseInt(input);
+                        } catch (NumberFormatException e) {
+                            index = -1;
+                            System.out.println("Invalid input. Please enter a valid index.");
+                        }
+                    } while (index < 0 || index >= ClientGameModel.getInstance().getBoard().unviewedPile);
                     ClientGameModel.getInstance().getClient().takeComponentFromUnviewed(username, index);
                     break;
                 case "2":
-                    System.out.println("Type the index of the uncovered component you want to take:");
-                    System.out.print(" > ");
-                    // Read the index of the component to take
-                    int index1 = Integer.parseInt(scanner.nextLine().trim());
+                        int index1;
+                    do {
+                        System.out.println("Type the index of the uncovered component you want to take: (0 to " + (ClientGameModel.getInstance().getBoard().viewedPile.size() - 1) + ")");
+                        System.out.print(" > ");
+                        // Read the index of the component to take
+                        try {
+                            index1 = Integer.parseInt(scanner.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid index.");
+                            index1 = -1;
+                        }
+                    } while (index1 < 0 || index1 >= ClientGameModel.getInstance().getBoard().viewedPile.size());
                     ClientGameModel.getInstance().getClient().takeComponentFromViewed(username, index1);
                     break;
                 case "3":
-                    System.out.println("Type the index of the board where you want to start the game:");
-                    System.out.print(" > ");
-                    // Read the index of the board to take
-                    int index3 = Integer.parseInt(scanner.nextLine().trim());
+                    int index3;
+                    do {
+                        System.out.println("Type the index of the board where you want to start the game: (0 to 4)");
+                        System.out.print(" > ");
+                        // Read the index of the board to take
+                        try {
+                            index3 = Integer.parseInt(scanner.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            index3 = -1;
+                            System.out.println("Invalid input. Please enter a valid index.");
+                        }
+                    } while (index3 < 0 || index3 > 4);
                     ClientGameModel.getInstance().getClient().stopAssembling(username, index3);
                     break;
                 case "4":
-                    System.out.println("Type the index of the booked component you want to take:");
-                    System.out.print(" > ");
-                    // Read the index of the component to take
-                    int index2 = Integer.parseInt(scanner.nextLine().trim());
+                    int index2;
+                    do {
+                        System.out.println("Type the index of the booked component you want to take: (0 to 1");
+                        System.out.print(" > ");
+                        // Read the index of the component to take
+                        try {
+                            index2 = Integer.parseInt(scanner.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            index2 = -1;
+                            System.out.println("Invalid input. Please enter a valid index.");
+                        }
+                    } while (index2 < 0 || index2 > 1);
                     ClientGameModel.getInstance().getClient().takeComponentFromBooked(username, index2);
                     break;
                 case "5":
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
                     break;
                 case "6":
-                    System.out.println("Type the index of the deck you want to peek:");
-                    System.out.print(" > ");
-                    // Read the index of the deck to peek
-                    int index4 = Integer.parseInt(scanner.nextLine().trim());
+                    int index4;
+                    do {
+                        System.out.println("Type the index of the deck you want to peek: (0 to 2)");
+                        System.out.print(" > ");
+                        // Read the index of the deck to peek
+                        try {
+                            index4 = Integer.parseInt(scanner.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            index4 = -1;
+                            System.out.println("Invalid input. Please enter a valid index.");
+                        }
+                    } while (index4 < 0 || index4 > 2);
                     ClientGameModel.getInstance().getClient().peekDeck(username, index4);
                     break;
                 case "q":
@@ -124,34 +166,47 @@ public class BuildingMenu implements MenuState{
                     ClientGameModel.getInstance().getClient().addComponentToViewed(username);
                     break;
                 case "2":
-                    System.out.println("Type the coordinates of the component you want to add (x y):");
-                    System.out.print(" > ");
-                    // Read the coordinates of the component to add
-                    String coordinates = scanner.nextLine().trim();
-                    String[] parts = coordinates.split(" ");
-                    int x = Integer.parseInt(parts[0]) - 5;
-                    int y = Integer.parseInt(parts[1]) - 4;
-                    Pair<Integer, Integer> coordinatesPair = new Pair<>(x, y);
+                    int row = 0;
+                    int col = 0;
+                    do {
+                        System.out.println("Type the coordinates of the component you want to add (row col):");
+                        System.out.print(" > ");
+                        // Read the coordinates of the component to add
+                        String coordinates = scanner.nextLine().trim();
+                        String[] parts = coordinates.split(" ");
+                        try {
+                            row = Integer.parseInt(parts[0]) - 5;
+                            col = Integer.parseInt(parts[1]) - 4;
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter valid coordinates.");
+                        }
+                    } while (row < 0 || row > 4 || col < 0 || col > 6);
+                    Pair<Integer, Integer> coordinatesPair = new Pair<>(row, col);
                     ClientGameModel.getInstance().getClient().placeComponent(username, coordinatesPair);
                     break;
-                case "3":
-                    System.out.println("Type the number of rotations:");
-                    System.out.print(" > ");
-                    // Read the number of rotations
-                    int numRotations = Integer.parseInt(scanner.nextLine().trim());
+                case "3", "4":
+                    int numRotations;
+                    do {
+                        System.out.println("Type the number of rotations:");
+                        System.out.print(" > ");
+                        // Read the number of rotations
+                        try {
+                            numRotations = Integer.parseInt(scanner.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid input. Please enter a valid number of rotations.");
+                            numRotations = 0;
+                        }
+                    } while (numRotations < 0);
                     // Rotate the component in hand
-                    for(int i = 0; i < numRotations; i++){
-                        ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
-                    }
-                    break;
-                case "4":
-                    System.out.println("Type the number of rotations:");
-                    System.out.print(" > ");
-                    // Read the number of rotations
-                    int numRotationsCCW = Integer.parseInt(scanner.nextLine().trim());
-                    // Rotate the component in hand
-                    for(int i = 0; i < numRotationsCCW; i++){
-                        ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
+                    // TODO check if this approach is correct
+                    if (choice.equals("3")) {
+                        for(int i = 0; i < numRotations; i++){
+                            ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
+                        }
+                    } else {
+                        for(int i = 0; i < numRotations; i++){
+                            ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
+                        }
                     }
                     break;
                 case "6":
