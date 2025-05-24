@@ -31,30 +31,22 @@ public class Ship0Controller {
 
     @FXML
     private void initialize() {
-        // Setup grid to match the actual displayed image bounds
         boardImageView.imageProperty().addListener((obs, oldImg, newImg) -> {
             if (newImg != null) {
-                // Wait for image to be loaded and layout to be calculated
                 Platform.runLater(() -> {
                     double boardWidth = boardImageView.getBoundsInParent().getWidth();
                     double boardHeight = boardImageView.getBoundsInParent().getHeight();
 
-                    // Calculate grid position and dimensions
-                    // Questi valori determinano la porzione dell'immagine che la griglia occuperà.
-                    // gridX e gridY sono l'offset dall'angolo in alto a sinistra dell'immagine.
-                    // gridWidth e gridHeight sono la larghezza e l'altezza della griglia.
                     double gridX = boardWidth * 0.25; // Esempio: inizia al 25% della larghezza dell'immagine
                     double gridY = boardHeight * 0.18; // Esempio: inizia al 18% dell'altezza dell'immagine
                     double gridWidth = boardWidth * 0.5;  // Esempio: la griglia è larga il 50% dell'immagine
                     double gridHeight = boardHeight * 0.64; // Esempio: la griglia è alta il 64% dell'immagine
 
-                    // Apply layout to grid
                     componentsGrid.setLayoutX(gridX);
                     componentsGrid.setLayoutY(gridY);
                     componentsGrid.setPrefSize(gridWidth, gridHeight);
                     componentsGrid.setMaxSize(gridWidth, gridHeight);
 
-                    // Update coordinate labels
                     updateCoordinateLabels(gridX, gridY);
                 });
             }
