@@ -38,7 +38,6 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Inizializza gli elementi UI
         messageLabel.setText("Benvenuto nella partita");
         changeBoardView();
     }
@@ -102,7 +101,6 @@ public class GameController implements Initializable {
 
         highlightCurrentShip(playerName);
 
-        // TODO: Carica e mostra la nave del giocatore nel gameContent
         displayMessage("Visualizzazione nave di " + playerName);
     }
 
