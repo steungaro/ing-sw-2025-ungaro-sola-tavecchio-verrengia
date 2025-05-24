@@ -64,7 +64,7 @@ public class CreateLobbyController {
 
         new Thread(() -> {
             try {
-                ClientGameModel.getInstance().getClient().createLobby(lobbyName, username, numPlayers, level);
+                ClientGameModel.getInstance().getClient().createLobby(lobbyName, ClientGameModel.getInstance().getUsername(), numPlayers, level);
 
                 String createdLobbyName = lobbyName;
                 long startTime = System.currentTimeMillis();
@@ -84,7 +84,6 @@ public class CreateLobbyController {
                         Thread.sleep(100); // Polling interval
                     }
 
-                    // Mostra messaggio in base al risultato
                     boolean finalSuccess = success;
                     javafx.application.Platform.runLater(() -> {
                         if (finalSuccess) {
