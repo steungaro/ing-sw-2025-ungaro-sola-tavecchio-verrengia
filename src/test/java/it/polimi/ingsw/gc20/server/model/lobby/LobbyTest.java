@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.server.model.lobby;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,8 +80,12 @@ public class LobbyTest {
         } catch (FullLobbyException e) {
             fail("Lobby should not be full");
         }
-        GameController gameController= lobby.createGameController();
-        assertNotNull(gameController);
+        try {
+            GameController gameController = lobby.createGameController();
+            assertNotNull(gameController);
+        } catch (InvalidStateException e) {
+            fail();
+        }
 
     }
 }

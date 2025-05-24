@@ -111,12 +111,12 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
-     * @param id is the id of the lobby
-     * @return the lobby with the given id
+     * @param name the name of the lobby
+     * @return the lobby with the given name
      */
-    public Lobby getLobby(String id) {
+    public Lobby getLobby(String name) {
         for(Lobby l: lobbies){
-            if(l.getId().equals(id)){
+            if(l.getName().equals(name)){
                 return l;
             }
         }

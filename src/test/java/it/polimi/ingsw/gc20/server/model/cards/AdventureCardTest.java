@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.cards;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -111,9 +112,9 @@ class AdventureCardTest {
     }
 
     @Test
-    void testSetState() {
+    void testSetState() throws InvalidStateException {
         List<String> players = List.of("Player1", "Player2");
-        GameController controller = new GameController("1234", players, 2);
+            GameController controller = new GameController("1234", players, 2);
         GameModel model = controller.getModel();
 
         adventureCard.setName("Stardust");

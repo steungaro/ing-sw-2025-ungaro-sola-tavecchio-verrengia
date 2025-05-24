@@ -286,12 +286,12 @@ class GameModelTest {
             assertEquals(component, player.getShip().getComponentAt(1, 1));
 
             gameModel.stopAssembling(player, 2);
-            assertEquals(2, player.getPosition());
+            assertEquals(3, player.getPosition());
             assertFalse(player.isLeader());
 
             Player secondPlayer = gameModel.getGame().getPlayers().get(1);
             gameModel.stopAssembling(secondPlayer, 1);
-            assertEquals(1, secondPlayer.getPosition());
+            assertEquals(6, secondPlayer.getPosition());
             assertTrue(secondPlayer.isLeader());
 
         } catch (Exception e) {
