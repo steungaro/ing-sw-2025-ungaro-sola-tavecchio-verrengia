@@ -475,9 +475,10 @@ public class GameController implements GameControllerInterface {
             if (state.isConcurrent()){
                 //init all the local model of the view
                 for (String u : getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "reconnection"));
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(u, getPlayerByID(u).getShip(), "reconnection"));
                 }
                 state.rejoin(username);
+                connectedPlayers.add(username);
             } else {
                 pendingPlayers.add(username);
             }
@@ -803,42 +804,11 @@ public class GameController implements GameControllerInterface {
                 throw new InvalidStateException("Hourglass is only available in level 2 games");
             }
             state.turnHourglass(getPlayerByID(username));
-            // notify players of an hourglass turn with an hourglass message
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new HourglassMessage(
-                        model.getRemainingTime(),
-                        model.getTurnedHourglass()));
-            }
 
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error turning hourglass: " + e.getMessage()));
             logger.log(Level.SEVERE, "Error turning hourglass", e);
-        }
-    }
-
-    /**
-     * Gets the remaining time for the hourglass
-     *
-     * @param username Username of the player checking the hourglass
-     */
-    public void getHourglassTime(String username) {
-        try {
-            if (model.getLevel() != 2) {
-                throw new IllegalStateException("Hourglass is only available in level 2 games");
-            }
-            if (isPlayerDisconnected(username)) {
-                throw new IllegalArgumentException("Player disconnected");
-            }
-            state.getHourglassTime(getPlayerByID(username));
-            //notify the player of hourglass time
-            NetworkService.getInstance().sendToClient(username, new HourglassMessage(
-                    model.getRemainingTime(),
-                    model.getTurnedHourglass()));
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting hourglass", e);
-            //notify the player of the error
-            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error getting hourglass: " + e.getMessage()));
         }
     }
 

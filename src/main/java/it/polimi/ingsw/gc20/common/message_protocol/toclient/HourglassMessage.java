@@ -5,7 +5,8 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 public record HourglassMessage(
         int remainingTime,
-        int numberOfRotations
+        int numberOfRotations,
+        long timestamp
 ) implements Message {
     @Override
     public String toString() {
