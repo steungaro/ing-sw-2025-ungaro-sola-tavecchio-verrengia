@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -11,8 +12,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.application.Platform;
 
 import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +33,22 @@ public class GUIView extends ClientGameModel {
         showScene("welcome");
     }
 
-    public void showScene(String fileName){
+    public void showScene(String fileName) {
         try {
             String path = "/fxml/" + fileName + ".fxml";
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            URL resourceUrl = getClass().getResource(path);
+
+            if (resourceUrl == null) {
+                System.err.println("ERRORE: File FXML non trovato: " + path);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
 
             Scene scene = new Scene(root, 600, 400);
             primaryStage.setScene(scene);
+            primaryStage.setTitle("Space Venture");
             primaryStage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,6 +82,17 @@ public class GUIView extends ClientGameModel {
         if (client != null) {
             showScene("login");
         }
+    }
+
+    @Override
+    public void updateView(Message message) {
+        Platform.runLater(() -> {
+            try {
+                message.handleMessage();
+            } catch (Exception e) {
+                System.out.println("Error while handling message: " + e.getMessage());
+            }
+        });
     }
 
     @Override
