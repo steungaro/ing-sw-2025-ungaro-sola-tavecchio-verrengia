@@ -1,7 +1,5 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -9,16 +7,11 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
-
-public class Board2Controller extends BoardController{
-
+public class Board2Controller {
     @FXML private Circle circle0;
     @FXML private Circle circle1;
     @FXML private Circle circle2;
@@ -43,6 +36,9 @@ public class Board2Controller extends BoardController{
     @FXML private Circle circle21;
     @FXML private Circle circle22;
     @FXML private Circle circle23;
+
+    private List<Circle> circles = new ArrayList<>();
+    private List<Label> circleLabels = new ArrayList<>();
 
     @FXML
     private void initialize() {
@@ -89,4 +85,9 @@ public class Board2Controller extends BoardController{
         }
     }
 
+    public void setNumberInCircle(int circleIndex, int number) {
+        if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
+            circleLabels.get(circleIndex).setText(String.valueOf(number));
+        }
+    }
 }
