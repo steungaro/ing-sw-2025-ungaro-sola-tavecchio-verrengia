@@ -16,7 +16,6 @@ public class GUIApplication extends Application {
         guiView = new GUIView();
         ClientGameModel.setInstance(guiView);
         guiView.initGUI(primaryStage);
-
         primaryStage.setTitle("Galaxy Trucker");
         primaryStage.show();
     }
