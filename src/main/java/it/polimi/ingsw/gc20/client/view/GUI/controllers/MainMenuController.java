@@ -42,10 +42,10 @@ public class MainMenuController {
         guiView.showScene("createLobby");
     }
     private void handleViewLobbies() {
-        guiView.showScene("lobbiesList");
+        guiView.showScene("lobbyList");
     }
     private void handleLogout() {
-        // TODO Disconnect
+
         guiView.showScene("network");
     }
 }
