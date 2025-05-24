@@ -9,12 +9,12 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
-// Import GamePhaseType, ViewPlayer, etc.
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -23,10 +23,10 @@ import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
 
-public abstract class ClientGameModel implements ViewInterface {
+public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private ViewShip playerShip;
     private ViewLobby currentLobby;
     private GamePhase currentPhase;
@@ -42,12 +42,14 @@ public abstract class ClientGameModel implements ViewInterface {
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
 
-    public ClientGameModel() {
-        // Initialize the default state if necessary
+    public ClientGameModel() throws RemoteException {
+        super();
+        // Initialize default state if necessary
         this.players = new ArrayList<>();
         this.loggedIn = false;
         this.username = null;
         this.client = null;
+        this.ships = new HashMap<>();
     }
     public ViewAdventureCard getCurrentCard() {
         return currentCard;
@@ -68,10 +70,6 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username){
-        this.username = username;
     }
 
     public ViewComponent getComponentInHand() {
@@ -110,7 +108,6 @@ public abstract class ClientGameModel implements ViewInterface {
     }
 
     public void ping() {
-        LOGGER.info("Ping received from server, ponging back.");
         client.pong(username);
     }
 
@@ -135,8 +132,7 @@ public abstract class ClientGameModel implements ViewInterface {
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
-            //TODO
-            ship.toString();
+            System.out.println(ship);
         } else {
             LOGGER.warning("No ship found for " + username);
         }
@@ -144,31 +140,30 @@ public abstract class ClientGameModel implements ViewInterface {
 
     public void printBoard() {
         if (board != null) {
-            //TODO
-            board.toString();
+            System.out.println(board);
         } else {
             LOGGER.warning("No board found.");
         }
     }
 
-    public void printDeck(int index) {
-        if (board != null) {
-            List<ViewAdventureCard> cards = board.decks.get(index);
-            if (cards != null) {
-                String out = printCardsInLine(cards);
-                System.out.println(out);
-                LOGGER.info("Deck " + index + ":\n");
-            } else {
-                LOGGER.warning("No card found at index " + index);
-            }
-        } else {
-            LOGGER.warning("No deck found at index " + index);
-        }
-    }
+//    public void printDeck(int index) {
+//        if (board != null) {
+//            List<ViewAdventureCard> cards = board.decks.get(index);
+//            if (cards != null) {
+//                String out = printCardsInLine(cards);
+//                System.out.println(out);
+//                LOGGER.info("Deck " + index + ":\n");
+//            } else {
+//                LOGGER.warning("No card found at index " + index);
+//            }
+//        } else {
+//            LOGGER.warning("No deck found at index " + index);
+//        }
+//    }
 
-    public String printCardsInLine(List<ViewAdventureCard> cards) {
+    public void printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
-            return "";
+            return;
         }
 
         final int cardsPerRow = 10;
@@ -191,34 +186,28 @@ public abstract class ClientGameModel implements ViewInterface {
                 }
             }
         }
-        return finalResult.toString();
-    }
-
-    public void printDeck(){
-        printDeck(0);
+        System.out.println(finalResult);
     }
 
     public void printCurrentCard() {
         if (currentCard != null) {
-            //TODO
-            currentCard.toString();
+            System.out.println(currentCard);
         } else {
-            LOGGER.warning("No current card found.");
+            System.out.println("No active card.");
         }
     }
 
     public void printViewedPile(){
         if (board != null) {
             List<ViewComponent> comps = board.viewedPile;
-            if (comps != null) {
+            if (comps != null && !comps.isEmpty()) {
                 String out = printComponentsInLine(comps);
                 System.out.println(out);
-                LOGGER.info("View Pile:\n");
             } else {
-                LOGGER.warning("No card found in view pile.");
+                System.out.println("No components here.");
             }
         } else {
-            LOGGER.warning("No view pile found.");
+            LOGGER.warning("No board found.");
         }
     }
 
@@ -237,14 +226,15 @@ public abstract class ClientGameModel implements ViewInterface {
             int startIdx = componentRow * componentsPerRow;
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < rowComponents.size(); j++) {
-                    finalResult.append(rowComponents.get(j).toLine(i));
+            for (int j = 0; j < 5; j++) {
+                for (int i = 0; i <rowComponents.size(); i++) {
+                    finalResult.append(rowComponents.get(i).toLine(j));
                     finalResult.append("  ");
                     if (j == rowComponents.size() - 1) {
                         finalResult.append("\n");
                     }
                 }
+                finalResult.append("\n");
             }
         }
         return finalResult.toString();
@@ -301,7 +291,10 @@ public abstract class ClientGameModel implements ViewInterface {
     public GamePhase getCurrentPhase() { return currentPhase; }
     public List<ViewPlayer> getPlayers() { return players; }
     public String getErrorMessage() { return errorMessage; }
+
+
     public abstract void display(String message);
+
     public abstract void display(MenuState menuState);
 
 
@@ -309,9 +302,8 @@ public abstract class ClientGameModel implements ViewInterface {
         return client;
     }
 
-    public abstract void login();
-    // -----
     public abstract void shutdown();
+
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
