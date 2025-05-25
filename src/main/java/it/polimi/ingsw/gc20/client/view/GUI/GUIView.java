@@ -1,6 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
@@ -34,6 +36,10 @@ public class GUIView extends ClientGameModel {
     }
 
     public void showScene(String fileName) {
+        showScene(fileName, null);
+    }
+
+    public void showScene(String fileName, Object data) {
         try {
             String path = "/fxml/" + fileName + ".fxml";
             URL resourceUrl = getClass().getResource(path);
@@ -46,6 +52,14 @@ public class GUIView extends ClientGameModel {
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
 
+            if (data != null) {
+                Object controller = loader.getController();
+                if (fileName.equals("inLobby") && controller instanceof InLobbyController) {
+                    ViewLobby lobby = getCurrentLobby();
+                    ((InLobbyController) controller).initLobbyData(lobby, getUsername());
+                }
+            }
+
             Scene scene = new Scene(root, 600, 400);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Space Venture");
@@ -54,6 +68,7 @@ public class GUIView extends ClientGameModel {
             e.printStackTrace();
         }
     }
+
 
     public void setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
@@ -227,7 +242,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void inLobbyMenu() {
-
+        showScene("inLobby", true);
     }
 
     @Override
