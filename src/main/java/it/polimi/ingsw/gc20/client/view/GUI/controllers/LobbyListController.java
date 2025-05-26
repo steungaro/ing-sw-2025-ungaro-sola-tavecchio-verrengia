@@ -85,7 +85,7 @@ public class LobbyListController {
         Client client = ClientGameModel.getInstance().getClient();
         if (client != null) {
             try {
-                client.joinLobby(lobby.getID(), lobby.getOwner());
+                client.joinLobby(lobby.getID(), ClientGameModel.getInstance().getUsername());
             } catch (java.rmi.RemoteException e){
                 System.out.println("Errore di connessione al server: " + e.getMessage());
             }
