@@ -16,14 +16,15 @@ import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused") // dynamically created by Cards
 public class MeteorSwarmState extends PlayingState {
     private final List<Projectile> meteors;
-    private Map<Player, FireManager> fireManagerMap;
-    private Map<Player, StatePhase> phaseMap;
+    private final Map<Player, FireManager> fireManagerMap = new HashMap<>();
+    private final Map<Player, StatePhase> phaseMap = new HashMap<>();
     private int result;
     /**
      * Default constructor

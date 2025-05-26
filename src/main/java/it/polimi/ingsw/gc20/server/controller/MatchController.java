@@ -173,18 +173,27 @@ public class MatchController implements MatchControllerInterface {
      */
     public void leaveLobby(String userid) {
         if (playersInLobbies.containsKey(userid)) {
-            if (playersInLobbies.get(userid).getUsers().isEmpty()) {
-                lobbies.remove(playersInLobbies.get(userid));
+
+            Lobby lobby = playersInLobbies.get(userid);
+            if (lobby == null){
+                //notify the player with a error message
+                NetworkService.getInstance().sendToClient(userid, new ErrorMessage("User not found in lobbies"));
+                logger.log(Level.WARNING, "User not found in lobbies");
+                return;
             }
             try {
-                if (playersInLobbies.get(userid).getOwnerUsername().equals(userid)){
+                if (lobby.getOwnerUsername().equals(userid)){
                     killLobby(userid);
                 } else {
-                    playersInLobbies.get(userid).removePlayer(userid);
+                    lobby.removePlayer(userid);
                     playersInLobbies.remove(userid);
+                    if (lobby.getUsers().isEmpty()) {
+                        //if the lobby is empty, remove it
+                        lobbies.remove(lobby);
+                    }
                     //notify the players in the lobby with a lobby message
-                    for (String u : playersInLobbies.get(userid).getUsers()) {
-                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(playersInLobbies.get(userid).getUsers(), playersInLobbies.get(userid).getName(), playersInLobbies.get(userid).getLevel(), playersInLobbies.get(userid).getMaxPlayers()));
+                    for (String u : lobby.getUsers()) {
+                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(lobby.getUsers(), lobby.getName(), lobby.getLevel(), lobby.getMaxPlayers()));
                     }
                     List<LobbyListMessage.LobbyInfo> lobbies = new ArrayList<>();
                     for (Lobby l : this.lobbies) {
@@ -247,7 +256,9 @@ public class MatchController implements MatchControllerInterface {
                     }
                 } catch (NoSuchElementException e) {
                     throw new LobbyException("No lobby for username: " + username);
-                } catch (InvalidStateException _){}
+                } catch (InvalidStateException _){
+                    NetworkService.getInstance().sendToClient(username, new ErrorMessage("the number of players must be between 2 and 4"));
+                }
 
             } catch (LobbyException e) {
                 logger.log(Level.WARNING, "No such Lobby", e);

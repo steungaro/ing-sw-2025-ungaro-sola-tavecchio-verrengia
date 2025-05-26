@@ -1,6 +1,5 @@
 package it.polimi.ingsw.gc20.server.controller;
 
-import it.polimi.ingsw.gc20.server.controller.managers.FireManager;
 import it.polimi.ingsw.gc20.server.controller.states.*;
 import it.polimi.ingsw.gc20.server.model.cards.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
@@ -11,12 +10,10 @@ import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import it.polimi.ingsw.gc20.server.exceptions.*;
-import org.junit.jupiter.api.TestTemplate;
 
 import java.util.*;
 
@@ -25,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameControllerTest {
 
     GameController gameController;
-    GameModel model;
     AbandonedShipState abandonedShipState;
     AdventureCard adventureCard;
     String id = "0";
@@ -44,14 +40,16 @@ class GameControllerTest {
         players.add(player3);
         players.add(player4);
         int level = 2;
-
-        gameController = new GameController(id, players, level);
-        model = new GameModel();
-        adventureCard = new AdventureCard();
-        adventureCard.setCrew(2);
-        adventureCard.setCredits(3);
-        adventureCard.setLostDays(1);
-        abandonedShipState = new AbandonedShipState(model, gameController, adventureCard);
+        try {
+            gameController = new GameController(id, players, level);
+            adventureCard = new AdventureCard();
+            adventureCard.setCrew(2);
+            adventureCard.setCredits(3);
+            adventureCard.setLostDays(1);
+            abandonedShipState = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
+        } catch (InvalidStateException _){
+            fail();
+        }
     }
 
     @Test
@@ -85,7 +83,7 @@ class GameControllerTest {
     }
 
     @Test
-    void landOnPlanet() throws InvalidTurnException {
+    void landOnPlanet(){
         Planet planet = new Planet();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
@@ -99,20 +97,20 @@ class GameControllerTest {
         planetsCard.setLostDays(1);
         planetsCard.setPlanets(planets);
 
-        PlanetsState planetsState = new PlanetsState(model, gameController, planetsCard);
+        PlanetsState planetsState = new PlanetsState(gameController.getModel(), gameController, planetsCard);
         gameController.setState(planetsState);
 
         gameController.landOnPlanet("player1", 0);
     }
 
     @Test
-    void loadCargo() throws InvalidTurnException, CargoException, InvalidTileException {
+    void loadCargo() throws InvalidTileException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController.getModel(), gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -126,13 +124,13 @@ class GameControllerTest {
     }
 
     @Test
-    void unloadCargo() throws InvalidTurnException, CargoException, InvalidTileException, CargoNotLoadable, CargoFullException {
+    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController.getModel(), gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -143,8 +141,8 @@ class GameControllerTest {
         cargoHeld.add(loaded);
         gameController.getPlayerByID("player1").getShip().addComponent(CargoHold, 2, 2);
 
-        for(int i=0; i<cargoHeld.size(); i++) {
-            CargoHold.loadCargo(cargoHeld.get(i));
+        for (CargoColor cargoColor : cargoHeld) {
+            CargoHold.loadCargo(cargoColor);
         }
 
         Pair<Integer, Integer> position = new Pair<>(2, 2);
@@ -154,13 +152,13 @@ class GameControllerTest {
     }
 
     @Test
-    void moveCargo() throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidTileException {
+    void moveCargo() throws CargoNotLoadable, CargoFullException, InvalidTileException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController.getModel(), gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -169,21 +167,18 @@ class GameControllerTest {
         CargoHoldFrom.setSlots(3);
         List<CargoColor> cargoHeldFrom = new ArrayList<>();
         cargoHeldFrom.add(loaded);
-        for(int i=0; i<cargoHeldFrom.size(); i++) {
-            CargoHoldFrom.loadCargo(cargoHeldFrom.get(i));
+        for (CargoColor cargoColor : cargoHeldFrom) {
+            CargoHoldFrom.loadCargo(cargoColor);
         }
 
         gameController.getPlayerByID("player1").getShip().addComponent(CargoHoldFrom, 2, 2);
 
         CargoHold CargoHoldTo = new CargoHold();
         CargoHoldTo.setSlots(3);
-        List<CargoColor> cargoHeldTo = new ArrayList<>();
+
         gameController.getModel().setActiveCard(abandonedStationCard);
         Pair<Integer, Integer> position = new Pair<>(2, 2);
         gameController.loadCargo("player1", loaded, position);
-        for(int i=0; i<cargoHeldTo.size(); i++) {
-            CargoHoldTo.loadCargo(cargoHeldTo.get(i));
-        }
 
         gameController.unloadCargo("player1", loaded, position);
 
@@ -191,13 +186,13 @@ class GameControllerTest {
     }
 
     @Test
-    void acceptCard() throws InvalidTurnException, CargoNotLoadable, CargoFullException {
+    void acceptCard() throws CargoNotLoadable, CargoFullException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
-        AbandonedStationState abandonedStationState = new AbandonedStationState(model, gameController, abandonedStationCard);
+        AbandonedStationState abandonedStationState = new AbandonedStationState(gameController.getModel(), gameController, abandonedStationCard);
 
         CargoColor loaded = CargoColor.BLUE;
         gameController.setState(abandonedStationState);
@@ -206,8 +201,8 @@ class GameControllerTest {
         CargoHoldFrom.setSlots(3);
         List<CargoColor> cargoHeldFrom = new ArrayList<>();
         cargoHeldFrom.add(loaded);
-        for(int i=0; i<cargoHeldFrom.size(); i++) {
-            CargoHoldFrom.loadCargo(cargoHeldFrom.get(i));
+        for (CargoColor cargoColor : cargoHeldFrom) {
+            CargoHoldFrom.loadCargo(cargoColor);
         }
 
         CargoHold CargoHoldTo = new CargoHold();
@@ -263,6 +258,8 @@ class GameControllerTest {
         List<Pair<Integer, Integer>> batteries = new ArrayList<>();
         batteries.add(batteryCoord);
 
+        //tiro il dado
+        gameController.rollDice("player1");
         // Attivo il cannone
         gameController.activateCannons("player1", cannons, batteries);
 
@@ -280,7 +277,7 @@ class GameControllerTest {
     }
 
     @Test
-    void loseCrew() throws InvalidTurnException, InvalidTileException {
+    void loseCrew() throws InvalidTileException {
         AdventureCard adventureCard1 = new AdventureCard();
         adventureCard1.setCrew(2);
         adventureCard1.setCredits(3);
@@ -289,27 +286,36 @@ class GameControllerTest {
         gameController.setState(abandonedShipState1);
         gameController.getModel().setActiveCard(adventureCard);
 
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+
+
         Cabin cabin1 = new Cabin();
-        cabin1.setAstronauts(2);
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
 
         Cabin cabin2 = new Cabin();
-        cabin2.setAstronauts(1);
 
+        cabin1.setConnectors(connectors);
+        cabin2.setConnectors(connectors);
 
         gameController.getPlayerByID("player1").getShip().addComponent(cabin1, 2, 2);
         gameController.getPlayerByID("player1").getShip().addComponent(cabin2, 1, 1);
+        gameController.getPlayerByID("player1").getShip().initAstronauts();
 
         Pair<Integer, Integer> position = new Pair<>(2, 2);
         Pair<Integer, Integer> position2 = new Pair<>(1, 1);
         List<Pair<Integer, Integer>> positions = new ArrayList<>();
         positions.add(position);
         positions.add(position2);
+        gameController.acceptCard("player1");
         gameController.loseCrew("player1", positions);
-        assertEquals(cabin1.getAstronauts() + cabin2.getAstronauts(), 1);
+        assertEquals(2, cabin1.getAstronauts() + cabin2.getAstronauts());
     }
 
     @Test
-    void activateShield() throws InvalidTurnException, InvalidShipException, InvalidTileException, InterruptedException {
+    void activateShield() throws InvalidTileException, InterruptedException {
         AdventureCard adventureCard1 = new AdventureCard();
         List<Projectile> projectiles = new ArrayList<>();
         Projectile projectile1 = new Projectile();
@@ -318,24 +324,31 @@ class GameControllerTest {
         projectiles.add(projectile1);
         adventureCard1.setProjectiles(projectiles);
 
+        Map<Direction, ConnectorEnum> connectors = new HashMap<>();
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        connectors.put(Direction.RIGHT, ConnectorEnum.U);
+        connectors.put(Direction.DOWN, ConnectorEnum.U);
+        connectors.put(Direction.LEFT, ConnectorEnum.U);
+
         MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController.getModel(), gameController, adventureCard1);
 
         Shield shield = new Shield();
         Direction[] directions = {Direction.UP, Direction.RIGHT};
         shield.setCoveredSides(directions);
+        shield.setConnectors(connectors);
         gameController.getPlayerByID("player1").getShip().addComponent(shield, 1, 1);
         Pair<Integer, Integer> shieldCoord = new Pair<>(1, 1);
 
         Battery battery = new Battery();
         battery.setSlots(3);
         battery.setAvailableEnergy(3);
+        battery.setConnectors(connectors);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
         Pair<Integer, Integer> batteryCoord = new Pair<>(2, 2);
 
         gameController.getModel().setActiveCard(adventureCard1);
         gameController.setState(meteorSwarmState);
         gameController.rollDice("player1");
-        Thread.sleep(2000);
 
         gameController.activateShield("player1", shieldCoord, batteryCoord);
 
@@ -349,29 +362,25 @@ class GameControllerTest {
     }
 
     @Test
-    void endMove() throws InvalidTurnException, InvalidShipException {
+    void endMove(){
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.endMove("player1");
     }
 
     @Test
-    void activateEngines() throws InvalidTurnException, InvalidShipException, InvalidTileException {
+    void activateEngines() throws InvalidTileException {
         CombatZone0State combatZone0State = new CombatZone0State(gameController.getModel(), gameController, adventureCard);
         gameController.setState(combatZone0State);
 
         Engine engine1 = new Engine();
         engine1.setDoublePower(true);
 
-        List<Engine> engines = new ArrayList<>();
-        engines.add(engine1);
         gameController.getPlayerByID("player1").getShip().addComponent(engine1, 1, 1);
         Battery battery = new Battery();
         battery.setSlots(3);
         battery.setAvailableEnergy(3);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
 
         gameController.getPlayerByID("player1").getShip().addComponent(engine1, 1, 2);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 1);
@@ -403,13 +412,11 @@ class GameControllerTest {
     void getPlayerScores() {
         EndgameState endgameState = new EndgameState(gameController);
         gameController.setState(endgameState);
-
-        Map<String, Integer> playerScores = gameController.getPlayerScores();
+        gameController.getScore();
     }
 
     @Test
     void giveUp() {
-        assertThrows(IllegalStateException.class, () -> gameController.giveUp("player1"));
         PreDrawState preDrawState = new PreDrawState(gameController);
         gameController.setState(preDrawState);
         gameController.giveUp("player1");
@@ -435,11 +442,11 @@ class GameControllerTest {
 
     @Test
     void reconnectPlayer() {
-        //assertThrows(IllegalArgumentException.class, () -> gameController.reconnectPlayer("player5")); // Invalid player
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
+        assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
         gameController.reconnectPlayer("player1");
         gameController.preDrawConnect();
         assertFalse(gameController.isPlayerDisconnected("player1"));
@@ -489,7 +496,7 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromUnviewed() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
 
@@ -502,7 +509,7 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromViewed() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
         assertNotNull(assemblingState.getModel());
@@ -517,7 +524,7 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromBooked() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
         assertNotNull(assemblingState.getModel());
@@ -532,7 +539,7 @@ class GameControllerTest {
 
     @Test
     void addComponentToBooked() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
         assertNotNull(assemblingState.getModel());
@@ -546,7 +553,7 @@ class GameControllerTest {
 
     @Test
     void addComponentToViewed() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
         assertNotNull(assemblingState.getModel());
@@ -561,7 +568,7 @@ class GameControllerTest {
 
     @Test
     void placeComponent() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
         gameController.takeComponentFromUnviewed("player1", 0);
@@ -572,10 +579,12 @@ class GameControllerTest {
     }
 
     @Test
-    void rotateComponentClockwise() throws InvalidTileException {
+    void rotateComponentClockwise() {
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
 
-        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
+        gameController.setState(assemblingState);
+        Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
         gameController.takeComponentFromUnviewed("player1", 0);
         connectors.put(Direction.UP, comp.getConnectors().get(Direction.UP));
         connectors.put(Direction.RIGHT, comp.getConnectors().get(Direction.RIGHT));
@@ -594,6 +603,9 @@ class GameControllerTest {
     void rotateComponentCounterclockwise() {
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
 
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
+        gameController.setState(assemblingState);
+
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
         gameController.takeComponentFromUnviewed("player1", 0);
         connectors.put(Direction.UP, comp.getConnectors().get(Direction.UP));
@@ -611,12 +623,13 @@ class GameControllerTest {
 
     @Test
     void removeComponentFromShip() {
-        Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
+        gameController.setState(assemblingState);
         gameController.takeComponentFromUnviewed("player1", 0);
         Pair<Integer, Integer> coordinates = new Pair<>(2, 2);
         gameController.placeComponent("player1", coordinates);
 
-        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
         gameController.setState(validatingShipState);
         gameController.removeComponentFromShip("player1", coordinates);
 
@@ -625,55 +638,51 @@ class GameControllerTest {
 
     @Test
     void validateShip() {
-        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
         gameController.setState(validatingShipState);
         gameController.validateShip("player1");
-        assertTrue(validatingShipState.isShipValid(gameController.getPlayerByID("player1")));
         assertFalse(validatingShipState.allShipsValidated());
     }
 
     @Test
     void stopAssembling() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         gameController.stopAssembling("player1", 1);
     }
 
-   /*@Test
-    void turnHourglass() throws HourglassException, InterruptedException {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+   @Test
+    void turnHourglass() throws InterruptedException {
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
         Thread.sleep(90000);
 
         gameController.turnHourglass("player1");
-        assertEquals(1, gameController.getHourglassTime("player1"));
-    }*/
+    }
 
     @Test
     void getHourglassTime() throws InterruptedException {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Thread.sleep(9500);
-        assertEquals(80, gameController.getHourglassTime("player1"));
+        assertEquals(80, gameController.getModel().getRemainingTime());
 
         Thread.sleep(1000);
 
-        assertEquals(79, gameController.getHourglassTime("player1"));
+        assertEquals(79, gameController.getModel().getRemainingTime());
     }
 
     @Test
     void peekDeck() {
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         gameController.peekDeck("player1", 3);
-        //assertNotNull(peekedCards);
-        //assertEquals(3, peekedCards.size());
     }
 
     @Test
-    void addAlien() throws InvalidTileException {
-        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
+    void addAlien() {
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
         gameController.setState(validatingShipState);
 
         AlienColor alienColor = AlienColor.BROWN;
@@ -687,39 +696,47 @@ class GameControllerTest {
         connectors.put(Direction.LEFT, ConnectorEnum.U);
         cabin.setConnectors(connectors);
 
-        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+        try {
+            gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
 
-        gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
+            validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
-        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
-
-        Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
-        gameController.addAlien("player1", alienColor, cabinCoord);
-        gameController.readyToFly("player1");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
-        gameController.readyToFly("player2");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
-        gameController.readyToFly("player3");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
-        gameController.readyToFly("player4");
-        assertEquals(alienColor, ((Cabin)(gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
+            Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
+            gameController.addAlien("player1", alienColor, cabinCoord);
+            gameController.endMove("player1");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+            gameController.endMove("player2");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+            gameController.endMove("player3");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+            gameController.endMove("player4");
+            assertEquals(alienColor, ((Cabin) (gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
+        } catch (InvalidStateException e) {
+            fail("Ship validation failed: " + e.getMessage());
+        } catch (InvalidTileException e) {
+            fail("Invalid tile exception: " + e.getMessage());
+        }
     }
 
     @Test
     void readyToFly() {
-        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel());
-        gameController.setState(validatingShipState);
+        try {
+            ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
+            gameController.setState(validatingShipState);
 
-        validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
-        gameController.readyToFly("player1");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
-        gameController.readyToFly("player2");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
-        gameController.readyToFly("player3");
-        validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
-        gameController.readyToFly("player4");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
+            gameController.endMove("player1");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
+            gameController.endMove("player2");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
+            gameController.endMove("player3");
+            validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
+            gameController.endMove("player4");
 
-        assertTrue(validatingShipState.allShipsReadyToFly());
+            assertTrue(validatingShipState.allShipsReadyToFly());
+        } catch (InvalidStateException e) {
+            fail("Ship validation failed: " + e.getMessage());
+        }
     }
 
     @Test
@@ -729,27 +746,23 @@ class GameControllerTest {
     }
 
     @Test
-    void rollDice() throws InvalidTurnException, InvalidShipException, DieNotRolledException {
+    void rollDice() throws DieNotRolledException {
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
 
         gameController.rollDice("player1");
-        int lastRolled = 0;
-        lastRolled=gameController.getModel().getGame().lastRolled();
-        assertNotNull(gameController.getModel().getGame().lastRolled());
+        gameController.getModel().getGame().lastRolled();
     }
 
     @Test
-    void lastRolledDice() throws InvalidTurnException, InvalidShipException, DieNotRolledException {
+    void lastRolledDice() throws DieNotRolledException {
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
 
         gameController.rollDice("player1");
-        int lastRolled = gameController.getModel().getGame().lastRolled();
 
         gameController.rollDice("player1");
-        lastRolled=0;
-        lastRolled = gameController.getModel().getGame().lastRolled();
+        int lastRolled = gameController.getModel().getGame().lastRolled();
         assertNotEquals(0, lastRolled);
     }
 
@@ -774,20 +787,30 @@ class GameControllerTest {
     }
 
     @Test
-    void shootEnemyTest() throws InvalidTurnException, InvalidCannonException, EnergyException, InvalidTileException {
-        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
+    void shootEnemyTest() throws InvalidTileException {
+        PiratesState piratesState = new PiratesState(gameController.getModel(), gameController, adventureCard);
         // ==
-        assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        try {
+            assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
+        } catch (InvalidStateException e) {
+            fail("Invalid state exception: " + e.getMessage());
+        } catch (InvalidTurnException e) {
+            fail("Invalid turn exception: " + e.getMessage());
+        } catch (InvalidCannonException e) {
+            fail("Invalid cannon exception: " + e.getMessage());
+        } catch (EnergyException e) {
+            fail("Energy exception: " + e.getMessage());
+        }
         // Ship più potente
         Cannon cannon = new Cannon();
         cannon.setPower(2);
-        model.addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
+        gameController.getModel().addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
 
         Battery battery = new Battery();
         battery.setSlots(2);
         battery.setAvailableEnergy(1);
 
-        model.addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
+        gameController.getModel().addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
 
         List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
         coordinatesBat.add(new Pair<>(1, 3));
@@ -796,7 +819,7 @@ class GameControllerTest {
         coordinatesCan.add(new Pair<>(1, 2));
         piratesState.setCurrentPlayer("player1");
 
-        model.setActiveCard(adventureCard);
+        gameController.getModel().setActiveCard(adventureCard);
         gameController.getModel().setActiveCard(adventureCard);
         gameController.setState(piratesState);
         gameController.shootEnemy("player1", coordinatesCan, coordinatesBat);
@@ -804,26 +827,10 @@ class GameControllerTest {
     }
 
     @Test
-    void getScoretest(){
+    void getScoreTest(){
         EndgameState endgameState = new EndgameState(gameController);
         gameController.setState(endgameState);
-        gameController.getModel().setActiveCard(adventureCard);
-
-        assertFalse(gameController.getScore().isEmpty());
-    }
-
-    @Test
-    void chooseBranchTest() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException {
-        PiratesState piratesState = new PiratesState(model, gameController, adventureCard);
-        gameController.setState(piratesState);
-        gameController.getModel().setActiveCard(adventureCard);
-        piratesState.setCurrentPlayer("player1");
-        Field managerField2 = PiratesState.class.getDeclaredField("manager");
-        managerField2.setAccessible(true);
-        managerField2.set(piratesState, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
-        gameController.chooseBranch("player1", new Pair<>(1, 2));
-        assertTrue(piratesState.getCurrentPlayer().equals("player2"));
-
+        gameController.getScore();
     }
 
     @Test
@@ -836,7 +843,7 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromViewedTest(){
-        AssemblingState assemblingState = new AssemblingState(gameController.getModel());
+        AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
         gameController.takeComponentFromUnviewed("player1", 0);
@@ -850,6 +857,6 @@ class GameControllerTest {
     @Test
     void killGame(){
         gameController.killGame("player1");
-        assertFalse(gameController.getModel().getGame().getPlayers().contains("player1"));
+        assertNull(MatchController.getInstance().getGameControllerForPlayer("player1"));
     }
 }

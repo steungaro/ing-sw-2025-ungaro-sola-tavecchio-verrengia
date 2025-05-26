@@ -404,20 +404,16 @@ public class GameController implements GameControllerInterface {
     @Override
     public void giveUp(String username) {
         if(!Objects.equals(state.toString(), "PreDrawState")){
-            throw new IllegalStateException("Can only give up when the turn has ended");
+            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Can only give up when the turn has ended"));
         }
-        try {
-            model.giveUp(getPlayerByID(username));
-            //notify players of the player that gave up
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new PlayerUpdateMessage(username,
-                        0,
-                        false,
-                        getPlayerByID(username).getColor(),
-                        (getPlayerByID(username).getPosition()%model.getGame().getBoard().getSpaces())));
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error giving up", e);
+        model.giveUp(getPlayerByID(username));
+        //notify players of the player that gave up
+        for (String user : getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(user, new PlayerUpdateMessage(username,
+                    0,
+                    false,
+                    getPlayerByID(username).getColor(),
+                    (getPlayerByID(username).getPosition()%model.getGame().getBoard().getSpaces())));
         }
     }
 
@@ -501,7 +497,6 @@ public class GameController implements GameControllerInterface {
             }
             NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
         }
-        pendingPlayers.forEach(connectedPlayers::addLast);
     }
 
     /**

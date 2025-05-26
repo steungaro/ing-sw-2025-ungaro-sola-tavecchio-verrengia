@@ -38,6 +38,7 @@ class MatchControllerTest {
     void getInstance() {
         // Verifica che getInstance senza parametri restituisca un'istanza non nulla
         assertNotNull(MatchController.getInstance());
+        matchController.getLobbies("player1");
     }
 
     @Test
@@ -106,6 +107,7 @@ class MatchControllerTest {
         // Verifichiamo che il giocatore non sia più nella lobby
         Lobby lobby = matchController.getLobby("leaveTestLobby");
         assertFalse(lobby.getUsers().contains("leaver"));
+        matchController.leaveLobby("owner");
     }
 
     @Test
