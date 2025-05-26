@@ -44,8 +44,7 @@ public class InLobbyController {
 
     @FXML
     public void initialize() {
-        // Gli handler verranno collegati tramite gli attributi onAction nel file FXML
-        // Inizializzazione della lobby verrà fatta attraverso initLobbyData
+        initLobbyData(clientController.getCurrentLobby(), clientController.getUsername());
     }
 
     public void initLobbyData(ViewLobby lobby, String username) {
