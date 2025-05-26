@@ -36,10 +36,6 @@ public class GUIView extends ClientGameModel {
     }
 
     public void showScene(String fileName) {
-        showScene(fileName, null);
-    }
-
-    public void showScene(String fileName, Object data) {
         try {
             String path = "/fxml/" + fileName + ".fxml";
             URL resourceUrl = getClass().getResource(path);
@@ -52,23 +48,14 @@ public class GUIView extends ClientGameModel {
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
 
-            if (data != null) {
-                Object controller = loader.getController();
-                if (fileName.equals("inLobby") && controller instanceof InLobbyController) {
-                    ViewLobby lobby = getCurrentLobby();
-                    ((InLobbyController) controller).initLobbyData(lobby, getUsername());
-                }
-            }
-
             Scene scene = new Scene(root, 600, 400);
             primaryStage.setScene(scene);
-            primaryStage.setTitle("Space Venture");
+            primaryStage.setTitle("Galaxy Trucker");
             primaryStage.centerOnScreen();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     public void setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
@@ -242,7 +229,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void inLobbyMenu() {
-        showScene("inLobby", true);
+        showScene("inLobby");
     }
 
     @Override
