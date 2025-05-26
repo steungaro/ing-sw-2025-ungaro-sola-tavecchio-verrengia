@@ -308,7 +308,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
     public abstract void cardAcceptanceMenu(String message);
-    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
+    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing);
     public abstract void engineMenu(String message);
     public abstract void inLobbyMenu();
     public abstract void mainMenuState();

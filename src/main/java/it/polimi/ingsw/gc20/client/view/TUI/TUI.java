@@ -256,11 +256,11 @@ public class TUI extends ClientGameModel {
         display(menu);
     }
 
-    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain){
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing){
         //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
-        MenuState menu = new CargoMenu(message, cargoToLose, cargoMap);
+        MenuState menu = new CargoMenu(message, cargoToLose, cargoMap, losing);
         display(menu);
     }
 
@@ -305,7 +305,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void cargoMenu(int cargoNum){
-        MenuState menu = new CargoMenu(null, cargoNum, new HashMap<>());
+        MenuState menu = new CargoMenu(null, cargoNum, new HashMap<>(), true);
         display(menu);
     }
 
