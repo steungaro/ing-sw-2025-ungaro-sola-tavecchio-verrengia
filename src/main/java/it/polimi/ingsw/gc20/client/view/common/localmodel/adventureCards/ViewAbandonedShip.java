@@ -11,7 +11,7 @@ public class ViewAbandonedShip extends ViewAdventureCard {
         super();
     }
 
-    protected ViewAbandonedShip(AdventureCard adventureCard) {
+    public ViewAbandonedShip(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCrew = adventureCard.getCrew();
         this.credits = adventureCard.getCredits();

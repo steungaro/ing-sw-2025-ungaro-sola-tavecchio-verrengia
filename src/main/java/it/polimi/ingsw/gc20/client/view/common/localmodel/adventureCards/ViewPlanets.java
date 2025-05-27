@@ -10,15 +10,12 @@ public class ViewPlanets extends ViewAdventureCard {
     List<int[]> planets; // red, yellow, green, blue
     int lostDays;
 
-    // In ViewSlavers.java
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    public ViewPlanets(AdventureCard adventureCard) {
         super.initialize(adventureCard);
-        List<Planet> planetList = adventureCard.getPlanets();
-        for(Planet planet : planetList){
+        this.planets = adventureCard.getPlanets().stream().map(planet -> {
             int[] planetReward = new int[4];
-            for(int i=0; i<planet.getReward().size(); i++){
-                switch (planet.getReward().get(i)){
+            for (int i = 0; i < planet.getReward().size(); i++) {
+                switch (planet.getReward().get(i)) {
                     case RED:
                         planetReward[0]++;
                         break;
@@ -33,8 +30,8 @@ public class ViewPlanets extends ViewAdventureCard {
                         break;
                 }
             }
-            planets.add(planetReward);
-        }
+            return planetReward;
+        }).toList();
         this.lostDays = adventureCard.getLostDays();
     }
 

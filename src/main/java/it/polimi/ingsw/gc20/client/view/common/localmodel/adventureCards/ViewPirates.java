@@ -11,7 +11,7 @@ public class ViewPirates extends ViewAdventureCard {
     int credits;
     int lostDays;
 
-    protected ViewPirates(AdventureCard adventureCard) {
+    public ViewPirates(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.projectiles = adventureCard.getProjectiles();

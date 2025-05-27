@@ -10,7 +10,7 @@ public class ViewCombatZone0 extends ViewAdventureCard {
     int lostCrew;
     List<Projectile> projectiles;
 
-    protected ViewCombatZone0(AdventureCard adventureCard) {
+    public ViewCombatZone0(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCrew = adventureCard.getCrew();
         this.lostDays = adventureCard.getLostDays();

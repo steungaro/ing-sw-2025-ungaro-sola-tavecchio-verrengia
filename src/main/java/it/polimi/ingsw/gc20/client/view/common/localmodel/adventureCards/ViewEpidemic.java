@@ -5,7 +5,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 public class ViewEpidemic extends ViewAdventureCard {
 
 
-    protected ViewEpidemic(AdventureCard adventureCard) {
+    public ViewEpidemic(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }
 

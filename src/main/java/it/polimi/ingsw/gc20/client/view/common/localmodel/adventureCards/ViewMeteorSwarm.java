@@ -8,7 +8,7 @@ import java.util.List;
 public class ViewMeteorSwarm extends ViewAdventureCard {
     List<Projectile> projectiles;
 
-    protected ViewMeteorSwarm(AdventureCard adventureCard) {
+    public ViewMeteorSwarm(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.projectiles = adventureCard.getProjectiles();
     }

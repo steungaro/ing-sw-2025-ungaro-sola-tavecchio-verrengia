@@ -48,7 +48,8 @@ public abstract class ViewAdventureCard {
 
             return viewCard;
         } catch (Exception e) {
-            throw new RuntimeException("Can't create card for type: " + type, e);
+            e.printStackTrace();
+            throw new RuntimeException("Error creating view card for " + type);
         }
     }
 

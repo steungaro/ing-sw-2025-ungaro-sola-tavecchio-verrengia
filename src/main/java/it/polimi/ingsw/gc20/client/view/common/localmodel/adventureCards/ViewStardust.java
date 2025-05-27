@@ -4,8 +4,11 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 public class ViewStardust extends ViewAdventureCard {
 
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    public ViewStardust() {
+        super();
+    }
+
+    public ViewStardust(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }
 

@@ -18,7 +18,7 @@ public class ViewAbandonedStation extends ViewAdventureCard {
         super();
     }
     
-    protected ViewAbandonedStation(AdventureCard adventureCard) {
+    public ViewAbandonedStation(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.crew = adventureCard.getCrew();
         List<CargoColor> reward = adventureCard.getReward();
