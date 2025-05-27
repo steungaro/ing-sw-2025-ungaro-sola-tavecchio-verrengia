@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
 
 public class StartingCabin extends Cabin {
 
-    public StartingCabin() {}
+    public StartingCabin() {
+        this.ID = 1000;
+    }
 
     /** Function that try to set an alien in the cabin.
      * @param color the color of the alien
