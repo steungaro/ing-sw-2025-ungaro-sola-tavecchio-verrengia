@@ -13,6 +13,6 @@ public record StandbyMessage(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().automaticAction(situation);
+        ClientGameModel.getInstance().idleMenu(situation);
     }
 }

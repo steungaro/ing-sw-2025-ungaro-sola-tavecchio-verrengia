@@ -13,6 +13,6 @@ public record ErrorMessage(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().display(toString());
+        ClientGameModel.getInstance().displayErrorMessage(errorMessage);
     }
 }

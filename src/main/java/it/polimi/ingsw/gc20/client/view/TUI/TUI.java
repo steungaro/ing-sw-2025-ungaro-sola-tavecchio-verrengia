@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
     private MenuState currentState;
-
     private static final Scanner scanner = new Scanner(System.in);
 
     public TUI() throws RemoteException{
@@ -319,6 +318,17 @@ public class TUI extends ClientGameModel {
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){
         ClientGameModel.getInstance().setCurrentMenuState(new EndGameMenu(leaderBoard));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
+    }
+
+    public void idleMenu(String message) {
+        ClientGameModel.getInstance().setCurrentMenuState(new IdleMenu(message));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
+    }
+
+    public void displayErrorMessage(String errorMessage) {
+        System.out.println("\033[31mError: " + errorMessage + "\033[0m");
+        wait(2);
         ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 

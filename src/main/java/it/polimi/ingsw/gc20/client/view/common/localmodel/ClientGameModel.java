@@ -87,6 +87,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             }
         }
     }
+
+    public abstract void displayErrorMessage(String message);
+
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = lobbyList;
         LOGGER.fine("Lobby list updated in model.");
@@ -355,4 +358,5 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
+    public abstract void idleMenu(String message);
 }
