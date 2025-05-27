@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
+import it.polimi.ingsw.gc20.client.view.TUI.BuildingMenu;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
@@ -36,5 +37,6 @@ public record PileUpdateMessage(
         ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
         viewBoard.unviewedPile = unviewedSize;
         viewBoard.viewedPile = viewed;
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 }

@@ -13,12 +13,11 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
@@ -41,7 +40,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
-
+    private MenuState currentMenuState;
+    public boolean busy;
+    private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize default state if necessary
@@ -59,6 +60,35 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.currentCard = currentCard;
     }
 
+    public MenuState getCurrentMenuState() {
+        return currentMenuState;
+    }
+    public void setBusy() {
+        busy = true;
+    }
+    public void setFree(){
+        busy = false;
+        if (!menuStateQueue.isEmpty()) {
+            currentMenuState = menuStateQueue.poll();
+            if (currentMenuState != null) {
+                display(currentMenuState);
+            }
+        } else {
+            currentMenuState = null;
+        }
+    }
+    public void setCurrentMenuState(MenuState currentMenuState) {
+        if (busy){
+            menuStateQueue.add(currentMenuState);
+        } else {
+            if (menuStateQueue.isEmpty()) {
+                this.currentMenuState = currentMenuState;
+                display(currentMenuState);
+            } else {
+                menuStateQueue.add(currentMenuState);
+            }
+        }
+    }
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = lobbyList;
         LOGGER.fine("Lobby list updated in model.");
