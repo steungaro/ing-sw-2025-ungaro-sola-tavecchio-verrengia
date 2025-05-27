@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 public class MainMenuController {
@@ -78,16 +79,14 @@ public class MainMenuController {
     }
 
     private void onRefreshLobbies() {
-        loadLobbies();
+         loadLobbies();
     }
 
     private void loadLobbies() {
-        // Implementazione per caricare le lobby dal server
-        if (ClientGameModel.getInstance().getClient() != null) {
-            List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
-            lobbiesListView.getItems().clear();
-            if(lobbies != null && !lobbies.isEmpty())
-                lobbiesListView.getItems().addAll(lobbies);
+        try {
+            ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
+        } catch (RemoteException e){
+            System.out.println("Errore di connessione al server: " + e.getMessage());
         }
     }
 
