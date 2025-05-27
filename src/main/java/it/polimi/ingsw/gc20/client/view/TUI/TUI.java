@@ -310,11 +310,13 @@ public class TUI extends ClientGameModel {
     }
 
     public void loseCrewMenu(int crewNum){
-        // TODO: implement this method
+        MenuState menu = new LoseCrewMenu(crewNum);
+        display(menu);
     }
 
     public void removeBatteryMenu(int batteryNum){
-        // TODO: implement this method
+        MenuState menu = new LoseEnergyMenu(batteryNum);
+        display(menu);
     }
 
     public void placeComponentMenu(){
@@ -323,7 +325,8 @@ public class TUI extends ClientGameModel {
     }
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){
-        // TODO: implement this method
+        MenuState menu = new EndGameMenu(leaderBoard);
+        display(menu);
     }
 
     @Override
