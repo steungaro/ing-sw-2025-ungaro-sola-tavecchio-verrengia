@@ -26,6 +26,12 @@ public class LoseCrewMenu implements MenuState {
     }
 
     @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
+    }
+
+    @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         if (choice.equals("1")) {

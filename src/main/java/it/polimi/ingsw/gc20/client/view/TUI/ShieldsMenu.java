@@ -15,13 +15,18 @@ public class ShieldsMenu implements MenuState {
     }
 
     public void displayMenu(){
-        TUI.clearConsole();
         System.out.println("\u001B[1mShields Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate a shield");
         System.out.println("2. Do not activate a shield");
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     public void handleInput(String choice) throws RemoteException {

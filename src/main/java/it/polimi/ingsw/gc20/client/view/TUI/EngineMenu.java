@@ -19,13 +19,18 @@ public class EngineMenu implements MenuState {
     }
 
     public void displayMenu(){
-        TUI.clearConsole();
         System.out.println("\u001B[1mEngines Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate engines");
         System.out.println("2. Do not activate engines");
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     public void handleInput(String choice) throws RemoteException {

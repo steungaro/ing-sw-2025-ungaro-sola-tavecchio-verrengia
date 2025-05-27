@@ -16,7 +16,6 @@ public class EndGameMenu implements MenuState{
     }
     @Override
     public void displayMenu() {
-        TUI.clearConsole();
         System.out.println("\u001B[1mEnd Game Menu\u001B[22m");
         System.out.println("The game has ended. Thank you for playing!");
         System.out.println("Scoreboard:");
@@ -28,6 +27,12 @@ public class EndGameMenu implements MenuState{
         System.out.println("You will be disconnected from the game in a few seconds.");
         System.out.println("Press any key to exit now.");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     @Override

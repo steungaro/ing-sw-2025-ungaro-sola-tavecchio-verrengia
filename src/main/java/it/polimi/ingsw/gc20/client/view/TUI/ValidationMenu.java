@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class ValidationMenu implements MenuState{
@@ -15,7 +15,6 @@ public class ValidationMenu implements MenuState{
     }
 
     public void displayMenu(){
-        TUI.clearConsole();
         System.out.println("\u001B[1mValidation Menu\u001B[22m");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
@@ -27,17 +26,24 @@ public class ValidationMenu implements MenuState{
         }
     }
 
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
+    }
+
     /**
      * Handles user input for the current menu
-     * @return true if the menu should continue, false if it should exit
      */
-    public boolean handleInput() throws IOException {
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
         if (ClientGameModel.getInstance().getShip(username).isValid()){
             // If the ship is already valid, wait for other players
-            return true;
+            System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
+            ClientGameModel.getInstance().setFree();
+            return;
         }
-        // Handle user input for the validation menu
+        // Handle user input from the validation menu
         switch (choice) {
             case "1":
                 // Validate ship
@@ -52,7 +58,7 @@ public class ValidationMenu implements MenuState{
                     String componentName = scanner.nextLine().trim();
                     if (componentName.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false; // Exit the menu
+                        return;
                     }
                     try {
                         x = Integer.parseInt(componentName.split(" ")[0]) - 5;
@@ -74,9 +80,8 @@ public class ValidationMenu implements MenuState{
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
-                return false;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**

@@ -11,6 +11,8 @@ public interface MenuState {
      */
     void displayMenu();
 
+    void displayMenu(String errorMessage);
+
     /**
      * Handles user input for the current menu
      */

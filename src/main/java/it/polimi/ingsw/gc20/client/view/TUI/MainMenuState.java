@@ -16,7 +16,6 @@ public class MainMenuState implements MenuState{
 
     @Override
     public void displayMenu() {
-        TUI.clearConsole();
         System.out.println("Welcome to the game! These are the active lobbies:");
         System.out.println("--------------------------------------------------");
         ClientGameModel.getInstance().getLobbyList().forEach(lobby -> System.out.println(lobby.toString()));
@@ -28,6 +27,12 @@ public class MainMenuState implements MenuState{
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
 

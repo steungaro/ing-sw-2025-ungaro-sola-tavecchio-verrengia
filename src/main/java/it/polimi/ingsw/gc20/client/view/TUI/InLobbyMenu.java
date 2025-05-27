@@ -11,7 +11,6 @@ public class InLobbyMenu implements MenuState {
     }
 
     public void displayMenu() {
-        TUI.clearConsole();
         System.out.println("\u001B[1mLobby menu\u001B[22m");
         System.out.println("--------------------------------------------------");
         System.out.println("Current lobby: " + ClientGameModel.getInstance().getCurrentLobby());
@@ -23,6 +22,12 @@ public class InLobbyMenu implements MenuState {
             System.out.println("1. Leave lobby");
         System.out.print(" > ");
         }
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     public void handleInput(String choice) throws RemoteException {

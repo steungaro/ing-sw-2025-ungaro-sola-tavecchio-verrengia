@@ -17,7 +17,6 @@ public class PopulateShipMenu implements MenuState{
      * Displays the current menu to the player
      */
     public void displayMenu(){
-        TUI.clearConsole();
         System.out.println("\u001B[1mPopulate Ship Menu\u001B[22m");
         System.out.println("1. End population phase, all empty cabins will be filled with astronauts.");
         if(!ClientGameModel.getInstance().getShip(username).isLearner) {
@@ -25,6 +24,12 @@ public class PopulateShipMenu implements MenuState{
         }
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     /**

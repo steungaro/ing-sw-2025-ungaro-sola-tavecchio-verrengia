@@ -25,7 +25,6 @@ public class CargoMenu implements MenuState{
 
     @Override
     public void displayMenu() {
-        TUI.clearConsole();
         System.out.println("\u001B[1mCargo Menu\u001B[0m");
         System.out.println(message);
         if (losing) {
@@ -44,6 +43,12 @@ public class CargoMenu implements MenuState{
         }
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
 

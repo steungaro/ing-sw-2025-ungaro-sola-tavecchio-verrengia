@@ -18,7 +18,6 @@ public class BuildingMenu implements MenuState{
     }
 
     public void displayMenu(){
-        TUI.clearConsole();
         if(adventureCards!=null){
             ClientGameModel.getInstance().printCardsInLine(adventureCards);
         }
@@ -54,6 +53,12 @@ public class BuildingMenu implements MenuState{
         }
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     /**

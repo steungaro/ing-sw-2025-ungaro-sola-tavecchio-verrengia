@@ -14,13 +14,18 @@ public class CardAcceptanceMenu implements MenuState{
      * Displays the current menu to the player
      */
     public void displayMenu(){
-        TUI.clearConsole();
         System.out.println("\u001B[1mCard Acceptance Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Accept the card");
         System.out.println("2. Reject the card");
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
+    }
+
+    @Override
+    public void displayMenu(String errorMessage) {
+        System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
+        displayMenu();
     }
 
     /**
