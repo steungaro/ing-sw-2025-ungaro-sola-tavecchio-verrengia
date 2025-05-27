@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
+import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
@@ -25,7 +26,7 @@ import it.polimi.ingsw.gc20.server.model.cards.FireType;
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
-    private final ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ViewShip playerShip;
     private ViewLobby currentLobby;
     private GamePhase currentPhase;
@@ -71,17 +72,26 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         while (!menuStateQueue.isEmpty()) {
             currentMenuState = menuStateQueue.poll();
             if (currentMenuState != null) {
+                TUI.clearConsole();
                 currentMenuState.displayMenu();
             }
         }
     }
+    /**
+     * Sets the current menu state and displays it if the model is not busy.
+     * If the model is busy, the new state is added to a queue to be processed later.
+     *
+     * @param currentMenuState The new menu state to set.
+     * @apiNote This method is used to change the current menu state in the game model. GUI NEED TO REIMPLEMENT THIS METHOD
+     */
     public void setCurrentMenuState(MenuState currentMenuState) {
         if (busy){
             menuStateQueue.add(currentMenuState);
         } else {
             if (menuStateQueue.isEmpty()) {
                 this.currentMenuState = currentMenuState;
-                display(currentMenuState);
+                TUI.clearConsole();
+                this.currentMenuState.displayMenu();
             } else {
                 menuStateQueue.add(currentMenuState);
             }
@@ -322,11 +332,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public GamePhase getCurrentPhase() { return currentPhase; }
     public List<ViewPlayer> getPlayers() { return players; }
     public String getErrorMessage() { return errorMessage; }
-
-
-    public abstract void display(String message);
-
-    public abstract void display(MenuState menuState);
 
 
     public Client getClient() {
