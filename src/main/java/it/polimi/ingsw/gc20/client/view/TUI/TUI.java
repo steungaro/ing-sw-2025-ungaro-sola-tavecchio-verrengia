@@ -200,16 +200,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void display(MenuState menu) {
-        currentState = menu;
-        boolean input = false;
-        while (!input) {
-            try {
-                currentState.displayMenu();
-                input = currentState.handleInput();
-            } catch (IOException e){
-                LOGGER.warning("Error while handling input: " + e.getMessage());
-            }
-        }
+        menu.displayMenu();
     }
 
     //Display the menu after we get an error, it does not change the state, simply returns to the last menu
@@ -227,56 +218,56 @@ public class TUI extends ClientGameModel {
     }
 
     public void branchMenu(){
-        currentState = new BranchMenu();
-        display(currentState);
+        ClientGameModel.getInstance().setCurrentMenuState(new BranchMenu());
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void buildingMenu(List<ViewAdventureCard> adventureCards){
-        currentState= new BuildingMenu(adventureCards);
-        display(currentState);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(adventureCards));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void inLobbyMenu(){
-        MenuState menu = new InLobbyMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new InLobbyMenu());
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void cannonsMenu(String message){
-        MenuState menu = new CannonsMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CannonsMenu(message));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void cardAcceptanceMenu(String message){
-        MenuState menu = new CardAcceptanceMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CardAcceptanceMenu(message));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void engineMenu(String message){
-        MenuState menu = new EngineMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new EngineMenu(message));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing){
         //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
-        MenuState menu = new CargoMenu(message, cargoToLose, cargoMap, losing);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(message, cargoToLose, cargoMap, losing));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void planetMenu(List<Planet> planets){
-        MenuState menu = new PlanetMenu(planets);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new PlanetMenu(planets));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void populateShipMenu(){
-        MenuState menu = new PopulateShipMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new PopulateShipMenu());
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void validationMenu(){
-        MenuState menu = new ValidationMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new ValidationMenu());
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void automaticAction(String message){
@@ -284,49 +275,51 @@ public class TUI extends ClientGameModel {
     }
 
     public void mainMenuState(){
-        MenuState menu = new MainMenuState();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new MainMenuState());
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void takeComponentMenu(){
-        MenuState menu = new BuildingMenu(null);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void shieldsMenu(FireType fireType, int direction, int line){
         String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
         String Message = fireType + " from " + directions[direction]  +  " at line " + line;
-        MenuState menu = new ShieldsMenu(Message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(Message));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void rollDiceMenu(FireType fireType, int direction){
-        //TODO: implement this method
+        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
+        String Message = fireType + " from " + directions[direction];
+        ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(Message));
     }
 
     public void cargoMenu(int cargoNum){
-        MenuState menu = new CargoMenu(null, cargoNum, new HashMap<>(), true);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(null, cargoNum, new HashMap<>(), true));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void loseCrewMenu(int crewNum){
-        MenuState menu = new LoseCrewMenu(crewNum);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new LoseCrewMenu(crewNum));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void removeBatteryMenu(int batteryNum){
-        MenuState menu = new LoseEnergyMenu(batteryNum);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new LoseEnergyMenu(batteryNum));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void placeComponentMenu(){
-        MenuState menu = new BuildingMenu(null);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){
-        MenuState menu = new EndGameMenu(leaderBoard);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new EndGameMenu(leaderBoard));
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     @Override

@@ -68,13 +68,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
     public void setFree(){
         busy = false;
-        if (!menuStateQueue.isEmpty()) {
+        while (!menuStateQueue.isEmpty()) {
             currentMenuState = menuStateQueue.poll();
             if (currentMenuState != null) {
-                display(currentMenuState);
+                currentMenuState.displayMenu();
             }
-        } else {
-            currentMenuState = null;
         }
     }
     public void setCurrentMenuState(MenuState currentMenuState) {
