@@ -15,7 +15,7 @@ public class ViewSmugglers extends ViewAdventureCard {
     int lostDays;
     int size;
 
-    protected ViewSmugglers(AdventureCard adventureCard) {
+    public ViewSmugglers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.lostCargo = adventureCard.getLostCargo();

@@ -4,9 +4,11 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 public class ViewOpenSpace extends ViewAdventureCard {
 
-    // In ViewSlavers.java
-    @Override
-    protected void initialize(AdventureCard adventureCard) {
+    public ViewOpenSpace() {
+        super();
+    }
+
+    public ViewOpenSpace(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }
 

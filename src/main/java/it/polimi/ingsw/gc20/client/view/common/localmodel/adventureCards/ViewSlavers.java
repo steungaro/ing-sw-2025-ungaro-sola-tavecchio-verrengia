@@ -8,7 +8,7 @@ public class ViewSlavers extends ViewAdventureCard {
     public int credits;
     public int lostDays;
 
-    protected ViewSlavers(AdventureCard adventureCard) {
+    public ViewSlavers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
         this.lostCrew = adventureCard.getCrew();
