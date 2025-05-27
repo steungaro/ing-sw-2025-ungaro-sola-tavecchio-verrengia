@@ -26,6 +26,10 @@ public class BranchMenu implements MenuState {
             System.out.println("Type the coordinates of the branch you want to keep (row col):");
             System.out.print(" > ");
             String branchInput = scanner.nextLine().trim();
+            if (branchInput.equals("q")) {
+                ClientGameModel.getInstance().shutdown();
+                return false;
+            }
             try {
                 row = Integer.parseInt(branchInput.split(" ")[0]) - 5;
                 col = Integer.parseInt(branchInput.split(" ")[1]) - 4;

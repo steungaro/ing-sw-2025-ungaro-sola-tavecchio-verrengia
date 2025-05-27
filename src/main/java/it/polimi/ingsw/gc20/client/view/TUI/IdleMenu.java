@@ -1,16 +1,20 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+
 import java.io.IOException;
 import java.util.Scanner;
 
-public class PausedMenu implements MenuState {
+public class IdleMenu implements MenuState {
     private final Scanner scanner;
+    private final String message;
 
     /**
-     * Constructor for the PausedMenu
+     * Constructor for the IdleMenu
      */
-    public PausedMenu() {
+    public IdleMenu(String message) {
         this.scanner = new Scanner(System.in);
+        this.message = message;
     }
 
     /**
@@ -19,7 +23,7 @@ public class PausedMenu implements MenuState {
     @Override
     public void displayMenu() {
         TUI.clearConsole();
-        System.out.println("\u001B[1mEveryone but you disconnected, the game is paused.\u001B[22m");
+        System.out.println("\u001B[1m" + message + "\u001B[22m");
         System.out.println("v. Viewing game options");
     }
 
@@ -35,8 +39,12 @@ public class PausedMenu implements MenuState {
         // Continue in the same menu
         if (input.equalsIgnoreCase("v")) {
             TUI.viewOptionsMenu();
+        } else if (input.equalsIgnoreCase("q")) {
+            // If the user wants to quit, shutdown the client
+            ClientGameModel.getInstance().shutdown();
+            return false; // Exit the menu
         } else {
-            System.out.println("Invalid input. Please try again.");
+            System.out.println("\u001B[31mInvalid input. Please try again.\u001B[0m");
         }
         return true; // Continue in the same menu
     }

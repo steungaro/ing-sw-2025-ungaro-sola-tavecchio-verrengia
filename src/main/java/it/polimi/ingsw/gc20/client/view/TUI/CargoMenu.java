@@ -52,98 +52,115 @@ public class CargoMenu implements MenuState{
         // Handle user input from the cargo menu
         switch (choice) {
             case "1":
-                System.out.println("Type the coordinates of the cargo you want to lose (row col):");
-                System.out.print(" > ");
-                String cargoInput = scanner.nextLine().trim();
                 int x;
                 int y;
-                try {
-                    x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
-                    y = Integer.parseInt(cargoInput.split(" ")[1]) - 4;
-                } catch (NumberFormatException e) {
-                    System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                    return false;
-                }
+                do {
+                    System.out.println("Type the coordinates of the cargo you want to lose (row col):");
+                    System.out.print(" > ");
+                    String cargoInput = scanner.nextLine().trim();
+                    try {
+                        x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
+                        y = Integer.parseInt(cargoInput.split(" ")[1]) - 4;
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                        x = -1;
+                        y = -1;
+                    }
+                } while (x < 0 || x > 4 || y < 0 || y > 6);
                 Pair<Integer, Integer> coordinates = new Pair<>(x, y);
 
-                System.out.println("Type the color of the cargo you want to lose (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
-                System.out.print(" > ");
-                String cargoColorInput = scanner.nextLine().trim();
                 CargoColor cargoColor;
-                try {
-                    cargoColor = CargoColor.valueOf(cargoColorInput.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
-                    return false;
-                }
+                do {
+                    System.out.println("Type the color of the cargo you want to lose (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                    System.out.print(" > ");
+                    String cargoColorInput = scanner.nextLine().trim();
+                    try {
+                        cargoColor = CargoColor.valueOf(cargoColorInput.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
+                        cargoColor = null;
+                    }
+                } while (cargoColor == null);
                 ClientGameModel.getInstance().getClient().unloadCargo(username, cargoColor, coordinates);
                 break;
             case "2":
-                System.out.println("Type the coordinates of the cargo you want to move from (row col):");
-                System.out.print(" > ");
-                String moveInput = scanner.nextLine().trim();
                 int moveX;
                 int moveY;
-                try {
-                    moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
-                    moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
-                } catch (NumberFormatException e) {
-                    System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                    return false;
-                }
+                do {
+                    System.out.println("Type the coordinates of the cargo you want to move from (row col):");
+                    System.out.print(" > ");
+                    String moveInput = scanner.nextLine().trim();
+                    try {
+                        moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
+                        moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                        moveX = -1;
+                        moveY = -1;
+                    }
+                } while (moveX < 0 || moveX > 4 || moveY < 0 || moveY > 6);
                 Pair<Integer, Integer> moveCoordinates = new Pair<>(moveX, moveY);
-                System.out.println("Type the coordinates of the cargo you want to move to (row col):");
-                System.out.print(" > ");
-                String moveToInput = scanner.nextLine().trim();
                 int moveToX;
                 int moveToY;
-                try {
-                    moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
-                    moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
-                } catch (NumberFormatException e) {
-                    System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                    return false;
-                }
+                do {
+                    System.out.println("Type the coordinates of the cargo you want to move to (row col):");
+                    System.out.print(" > ");
+                    String moveToInput = scanner.nextLine().trim();
+                    try {
+                        moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
+                        moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
+                    } catch (NumberFormatException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                        moveToX = -1;
+                        moveToY = -1;
+                    }
+                } while (moveToX < 0 || moveToX > 4 || moveToY < 0 || moveToY > 6);
                 Pair<Integer, Integer> moveToCoordinates = new Pair<>(moveToX, moveToY);
-                System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
-                System.out.print(" > ");
-                String moveCargoColorInput = scanner.nextLine().trim();
                 CargoColor moveCargoColor;
-                try {
-                    moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
-                    return false;
-                }
+                do {
+                    System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                    System.out.print(" > ");
+                    String moveCargoColorInput = scanner.nextLine().trim();
+                    try {
+                        moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
+                        moveCargoColor = null;
+                    }
+                } while (moveCargoColor == null);
                 ClientGameModel.getInstance().getClient().moveCargo(username, moveCargoColor, moveCoordinates, moveToCoordinates);
                 break;
             case "3":
                 if (losing) {
                     ClientGameModel.getInstance().getClient().endMove(username);
                 } else {
-                    System.out.println("Type the coordinates of the cargo hold you want to load to (row col):");
-                    System.out.print(" > ");
-                    String loadInput = scanner.nextLine().trim();
                     int loadX;
                     int loadY;
-                    try {
-                        loadX = Integer.parseInt(loadInput.split(" ")[0]) - 5;
-                        loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
-                    } catch (NumberFormatException e) {
-                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                        return false;
-                    }
+                    do {
+                        System.out.println("Type the coordinates of the cargo hold you want to load to (row col):");
+                        System.out.print(" > ");
+                        String loadInput = scanner.nextLine().trim();
+                        try {
+                            loadX = Integer.parseInt(loadInput.split(" ")[0]) - 5;
+                            loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
+                        } catch (NumberFormatException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                            return false;
+                        }
+                    } while (loadX < 0 || loadX > 4 || loadY < 0 || loadY > 6);
                     Pair<Integer, Integer> loadCoordinates = new Pair<>(loadX, loadY);
-                    System.out.println("Type the color of the cargo you want to load (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
-                    System.out.print(" > ");
-                    String loadCargoColorInput = scanner.nextLine().trim();
                     CargoColor loadCargoColor;
-                    try {
-                        loadCargoColor = CargoColor.valueOf(loadCargoColorInput.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
-                        return false;
-                    }
+                    do {
+                        System.out.println("Type the color of the cargo you want to load (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                        System.out.print(" > ");
+                        String loadCargoColorInput = scanner.nextLine().trim();
+                        try {
+                            loadCargoColor = CargoColor.valueOf(loadCargoColorInput.toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
+                            loadCargoColor = null;
+                        }
+                    } while (loadCargoColor == null);
                     ClientGameModel.getInstance().getClient().loadCargo(username, loadCargoColor, loadCoordinates);
                 }
                 break;

@@ -36,10 +36,21 @@ public class PlanetMenu implements MenuState{
                 for (int i = 0; i < planets.size(); i++) {
                     System.out.println(" " + (i + 1) + ". " + planets.get(i));
                 }
-                System.out.println("Type the index of the planet you want to land on:");
-                System.out.print(" > ");
-                String planetInput = scanner.nextLine().trim();
-                int planetIndex = Integer.parseInt(planetInput) - 1;
+                int planetIndex;
+                do {
+                    System.out.println("Type the index of the planet you want to land on:");
+                    System.out.print(" > ");
+                    String planetInput = scanner.nextLine().trim();
+                    if (planetInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return false;
+                    }
+                    try {
+                        planetIndex = Integer.parseInt(planetInput) - 1;
+                    } catch (NumberFormatException e) {
+                        throw new RuntimeException(e);
+                    }
+                } while (planetIndex < 0 || planetIndex >= planets.size());
                 ClientGameModel.getInstance().getClient().landOnPlanet(username, planetIndex);
                 break;
             case "2":
