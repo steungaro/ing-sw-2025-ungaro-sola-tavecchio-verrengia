@@ -29,10 +29,26 @@ public class LoseEnergyMenu implements MenuState {
         System.out.print(" > ");
         String input = scanner.nextLine().trim();
         if (input.equals("1")) {
-            System.out.println("Type the coordinates of the battery you want to lose energy from (x y):");
-            System.out.print(" > ");
-            String batteryInput = scanner.nextLine().trim();
-            Pair<Integer, Integer> batteryCoordinates = new Pair<>(Integer.parseInt(batteryInput.split(" ")[0]) - 5, Integer.parseInt(batteryInput.split(" ")[1]) - 4);
+            int x;
+            int y;
+            do {
+                System.out.println("Type the coordinates of the battery you want to lose energy from (row col):");
+                System.out.print(" > ");
+                String batteryInput = scanner.nextLine().trim();
+                if (batteryInput.equals("q")) {
+                    ClientGameModel.getInstance().shutdown();
+                    return false;
+                }
+                try {
+                    x = Integer.parseInt(batteryInput.split(" ")[0]) - 5; // Adjusting for 0-indexed array
+                    y = Integer.parseInt(batteryInput.split(" ")[1]) - 4; // Adjusting for 0-indexed array
+                } catch (NumberFormatException e) {
+                    System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                    x = -1;
+                    y = -1;
+                }
+            } while (x < 1 || x > 4 || y < 0 || y > 6);
+            Pair<Integer, Integer> batteryCoordinates = new Pair<>(x, y);
             ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
             return true;
         } else if (input.equals("v")) {

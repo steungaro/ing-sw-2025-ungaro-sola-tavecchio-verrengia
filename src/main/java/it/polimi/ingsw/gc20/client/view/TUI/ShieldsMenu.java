@@ -29,18 +29,44 @@ public class ShieldsMenu implements MenuState {
         // Handle user input for the engine menu
         switch (choice) {
             case "1":
-                System.out.println("Type the coordinates of the shield you want to activate (x y):");
-                System.out.print(" > ");
-                String input = scanner.nextLine().trim();
-                String[] inputCoord = input.split(" ");
-                int xs = Integer.parseInt(inputCoord[0]) - 5;
-                int ys = Integer.parseInt(inputCoord[1]) - 4;
-                System.out.println("Type the coordinates of the battery you want to activate (x y):");
-                System.out.print(" > ");
-                String batteryInput = scanner.nextLine().trim();
-                String[] batteryCoord = batteryInput.split(" ");
-                int xb = Integer.parseInt(batteryCoord[0]) - 5;
-                int yb = Integer.parseInt(batteryCoord[1]) - 4;
+                int xs, ys;
+                do {
+                    System.out.println("Type the coordinates of the shield you want to activate (row col):");
+                    System.out.print(" > ");
+                    String input = scanner.nextLine().trim();
+                    if (input.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return false;
+                    }
+                    String[] inputCoord = input.split(" ");
+                    try {
+                        xs = Integer.parseInt(inputCoord[0]) - 5;
+                        ys = Integer.parseInt(inputCoord[1]) - 4;
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                        xs = -1;
+                        ys = -1;
+                    }
+                } while (xs < 0 || ys < 0 || xs > 4 || ys > 6);
+                int xb, yb;
+                do {
+                    System.out.println("Type the coordinates of the battery you want to activate (row col):");
+                    System.out.print(" > ");
+                    String batteryInput = scanner.nextLine().trim();
+                    if (batteryInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return false;
+                    }
+                    String[] batteryCoord = batteryInput.split(" ");
+                    try {
+                        xb = Integer.parseInt(batteryCoord[0]) - 5;
+                        yb = Integer.parseInt(batteryCoord[1]) - 4;
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                        xb = -1;
+                        yb = -1;
+                    }
+                } while (xb < 0 || yb < 0 || xb > 4 || yb > 6);
                 ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), new Pair<Integer, Integer>(xs, ys), new Pair<Integer, Integer>(xb, yb));
                 break;
             case "2":

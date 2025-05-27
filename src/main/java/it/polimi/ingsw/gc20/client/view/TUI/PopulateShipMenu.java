@@ -19,7 +19,7 @@ public class PopulateShipMenu implements MenuState{
     public void displayMenu(){
         TUI.clearConsole();
         System.out.println("\u001B[1mPopulate Ship Menu\u001B[22m");
-        System.out.println("1. End population phase, all other cabins will be filled with astronauts");
+        System.out.println("1. End population phase, all empty cabins will be filled with astronauts.");
         if(!ClientGameModel.getInstance().getShip(username).isLearner) {
             System.out.println("2. Add alien to a Cabin");
         }
@@ -40,17 +40,43 @@ public class PopulateShipMenu implements MenuState{
                 break;
             case "2":
                 if (!ClientGameModel.getInstance().getShip(username).isLearner) {
-                    // Add alien to a cabin
-                    System.out.println("Type the coordinates of the cabin you want to add the alien to (x y):");
-                    System.out.print(" > ");
-                    String componentName = scanner.nextLine().trim();
-                    int x = Integer.parseInt(componentName.split(" ")[0]) - 5;
-                    int y = Integer.parseInt(componentName.split(" ")[1]) - 4;
+                    int x;
+                    int y;
+                    do {
+                        // Add alien to a cabin
+                        System.out.println("Type the coordinates of the cabin you want to add the alien to (row col):");
+                        System.out.print(" > ");
+                        String componentName = scanner.nextLine().trim();
+                        if (componentName.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return false;
+                        }
+                        try {
+                            x = Integer.parseInt(componentName.split(" ")[0]) - 5;
+                            y = Integer.parseInt(componentName.split(" ")[1]) - 4;
+                        } catch (NumberFormatException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                            x = -1;
+                            y = -1;
+                        }
+                    } while (x < 0 || x > 4 || y < 0 || y > 6);
                     Pair<Integer, Integer> coordinates = new Pair<>(x, y);
-                    System.out.println("Type the color of the alien you want to add (BROWN or PURPLE):");
-                    System.out.print(" > ");
-                    String alienColor = scanner.nextLine().trim();
-                    AlienColor color = AlienColor.valueOf(alienColor.toUpperCase());
+                    AlienColor color;
+                    do {
+                        System.out.println("Type the color of the alien you want to add (BROWN or PURPLE):");
+                        System.out.print(" > ");
+                        String alienColor = scanner.nextLine().trim();
+                        if (alienColor.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return false;
+                        }
+                        try {
+                            color = AlienColor.valueOf(alienColor.toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid alien color (BROWN or PURPLE).\u001B[0m");
+                            color = null;
+                        }
+                    } while (color == null);
                     ClientGameModel.getInstance().getClient().addAlien(username, color, coordinates);
                 }
                 break;

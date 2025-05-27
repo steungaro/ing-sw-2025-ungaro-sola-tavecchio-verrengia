@@ -45,11 +45,24 @@ public class ValidationMenu implements MenuState{
                 break;
             case "2":
                 // Remove a component from the ship
-                System.out.println("Type the coordinates of the component you want to remove (x y):");
-                System.out.print(" > ");
-                String componentName = scanner.nextLine().trim();
-                int x = Integer.parseInt(componentName.split(" ")[0]) - 5;
-                int y = Integer.parseInt(componentName.split(" ")[1]) - 4;
+                int x, y;
+                do {
+                    System.out.println("Type the coordinates of the component you want to remove (row col):");
+                    System.out.print(" > ");
+                    String componentName = scanner.nextLine().trim();
+                    if (componentName.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return false; // Exit the menu
+                    }
+                    try {
+                        x = Integer.parseInt(componentName.split(" ")[0]) - 5;
+                        y = Integer.parseInt(componentName.split(" ")[1]) - 4;
+                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                        System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
+                        x = -1;
+                        y = -1;
+                    }
+                } while (x < 0 || x > 4 || y < 0 || y > 6);
                 Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                 ClientGameModel.getInstance().getClient().removeComponentFromShip(ClientGameModel.getInstance().getUsername(), coordinates);
                 break;

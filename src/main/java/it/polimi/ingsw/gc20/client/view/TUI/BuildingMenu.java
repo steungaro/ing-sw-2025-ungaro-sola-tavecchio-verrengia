@@ -173,6 +173,10 @@ public class BuildingMenu implements MenuState{
                         System.out.print(" > ");
                         // Read the coordinates of the component to add
                         String coordinates = scanner.nextLine().trim();
+                        if (coordinates.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return false;
+                        }
                         String[] parts = coordinates.split(" ");
                         try {
                             row = Integer.parseInt(parts[0]) - 5;
@@ -184,30 +188,11 @@ public class BuildingMenu implements MenuState{
                     Pair<Integer, Integer> coordinatesPair = new Pair<>(row, col);
                     ClientGameModel.getInstance().getClient().placeComponent(username, coordinatesPair);
                     break;
-                case "3", "4":
-                    int numRotations;
-                    do {
-                        System.out.println("Type the number of rotations:");
-                        System.out.print(" > ");
-                        // Read the number of rotations
-                        try {
-                            numRotations = Integer.parseInt(scanner.nextLine().trim());
-                        } catch (NumberFormatException e) {
-                            System.out.println("\u001B[31mInvalid input. Please enter a valid number of rotations.\u001B[0m");
-                            numRotations = 0;
-                        }
-                    } while (numRotations < 0);
-                    // Rotate the component in hand
-                    // TODO check if this approach is correct
-                    if (choice.equals("3")) {
-                        for(int i = 0; i < numRotations; i++){
-                            ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
-                        }
-                    } else {
-                        for(int i = 0; i < numRotations; i++){
-                            ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
-                        }
-                    }
+                case "3":
+                    ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
+                    break;
+                case "4":
+                    ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
                     break;
                 case "6":
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
