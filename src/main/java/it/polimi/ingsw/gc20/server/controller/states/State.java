@@ -72,10 +72,6 @@ public abstract class State{
         exception();
         return null;
     }
-    public int getHourglassTime(Player player) throws InvalidStateException{
-        exception();
-        return 0;
-    }
     public void turnHourglass(Player player) throws HourglassException, InvalidStateException {
         exception();
     }

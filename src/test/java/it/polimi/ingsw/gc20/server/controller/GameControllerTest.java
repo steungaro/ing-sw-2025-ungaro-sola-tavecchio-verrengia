@@ -641,7 +641,6 @@ class GameControllerTest {
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
         gameController.setState(validatingShipState);
         gameController.validateShip("player1");
-        assertFalse(validatingShipState.allShipsValidated());
     }
 
     @Test

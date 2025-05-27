@@ -697,7 +697,12 @@ public abstract class Ship {
      */
     public static UpdateShipMessage messageFromShip(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[5][7];
-        List<ViewComponent> waste = ship.getWaste().stream().map(Component::createViewComponent).toList();
+        List<ViewComponent> waste = ship.getWaste() == null ? new ArrayList<>() :
+                ship.getWaste().stream()
+                        .filter(Objects::nonNull)
+                        .map(Component::createViewComponent)
+                        .toList();
+
         for (int i = 0; i < ship.getRows(); i++) {
             for (int j = 0; j < ship.getCols(); j++) {
                 Component component = ship.getComponentAt(i, j);

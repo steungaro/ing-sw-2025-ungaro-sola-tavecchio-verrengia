@@ -130,7 +130,7 @@ public abstract class Component {
         if(this.connectors.get(d) == ConnectorEnum.U && c.connectors.get(opposite) != ConnectorEnum.ZERO){
             return true;
         }
-        return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(opposite) != ConnectorEnum.ZERO;
+        return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(d) != ConnectorEnum.ZERO;
     }
 
     /**

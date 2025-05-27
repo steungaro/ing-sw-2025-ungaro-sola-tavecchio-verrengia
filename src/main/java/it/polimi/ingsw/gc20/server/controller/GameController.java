@@ -758,7 +758,6 @@ public class GameController implements GameControllerInterface {
     public void validateShip(String username) {
         try{
             state.isShipValid(getPlayerByID(username));
-            // TODO: notify players of ship validation in the state
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error validating ship: " + e.getMessage()));

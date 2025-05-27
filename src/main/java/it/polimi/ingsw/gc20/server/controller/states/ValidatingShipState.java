@@ -56,14 +56,31 @@ public class ValidatingShipState extends State {
             //if the ship is valid, he can add the aliens
             validShips.put(player, true);
             if (getModel().getLevel() == 0) {
-                NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 phaseMap.put(player, StatePhase.STANDBY_PHASE);
                 readyToFly.put(player, true);
+                if (allShipsReadyToFly()) {
+                    //if all the players are ready to fly, go to the next phase
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("All players are ready to fly, draw a card"));
+                    }
+                    initAllShips();
+                    for (Player p : getModel().getInGamePlayers()) {
+                        for (String username : getController().getInGameConnectedPlayers()) {
+                            NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
+                        }
+                    }
+                    getController().setState(new PreDrawState(getController()));
+                } else {
+                    //notify all the players that the ship is valid and waiting for other players
+                    NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+                }
+
+                return true;
             } else {
                 NetworkService.getInstance().sendToClient(player.getUsername(), new AlienPlacementePhaseMessage());
                 phaseMap.put(player, StatePhase.ADD_ALIEN_PHASE);
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -88,12 +105,6 @@ public class ValidatingShipState extends State {
     public boolean allShipsReadyToFly() {
         return validShips.values().stream().allMatch(Boolean::booleanValue) && readyToFly.values().stream().allMatch(Boolean::booleanValue);
     }
-
-    @Override
-    public boolean allShipsValidated() {
-        return validShips.values().stream().allMatch(Boolean::booleanValue);
-    }
-
     /**
      * this method is used to add an alien to the ship of the player
      * @param player the player that is adding the alien
@@ -143,6 +154,14 @@ public class ValidatingShipState extends State {
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, new StandbyMessage("All players are ready to fly, draw a card"));
             }
+            initAllShips();
+            for (Player p : getModel().getInGamePlayers()) {
+                for (String username : getController().getInGameConnectedPlayers()) {
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
+                }
+            }
+
+
             getController().setState(new PreDrawState(getController()));
         } else {
             //notify all the players that the ship is valid and waiting for other players
