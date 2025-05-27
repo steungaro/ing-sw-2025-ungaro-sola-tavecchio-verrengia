@@ -337,6 +337,23 @@ public class TUI extends ClientGameModel {
     public void loginSuccessful(String username) {
         clearConsole();
         System.out.println("\033[32mLogged in as: " + username + "\033[0m");
+        Thread inputThread = new Thread(() -> {
+            while (true) {
+                try {
+                    String input = scanner.nextLine().trim();
+                    if (input.equals("q")) {
+                        shutdown();
+                    } else {
+                        ClientGameModel.getInstance().getCurrentMenuState().handleInput(input);
+                    }
+                } catch (RemoteException e) {
+                    LOGGER.warning("Error handling input: " + e.getMessage());
+                }
+            }
+        });
+        inputThread.start();
+        // add a shutdown hook to ensure the application can be closed gracefully
+        Runtime.getRuntime().addShutdownHook(new Thread(inputThread::interrupt));
         wait(1);
     }
 
