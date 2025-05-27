@@ -3,14 +3,15 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class EngineMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
-    private List<Pair<Integer, Integer>> engines;
-    private List<Pair<Integer, Integer>> batteries;
+    private final List<Pair<Integer, Integer>> engines = new ArrayList<>();
+    private final List<Pair<Integer, Integer>> batteries = new ArrayList<>();
     private final String message;
 
     public EngineMenu(String message) {
@@ -27,9 +28,9 @@ public class EngineMenu implements MenuState {
         System.out.print(" > ");
     }
 
-    public boolean handleInput() throws IOException {
-        String choice = scanner.nextLine().trim();
-        // Handle user input for the engine menu
+    public void handleInput(String choice) throws RemoteException {
+        // Handle user input from the engine menu
+        ClientGameModel.getInstance().setBusy();
         switch (choice) {
             case "1":
                 boolean inputOk = true;
@@ -40,7 +41,7 @@ public class EngineMenu implements MenuState {
                     String engineInput = scanner.nextLine().trim();
                     if (engineInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
                     String[] engineCoordinates = engineInput.split(" ");
                     if (engineCoordinates.length % 2 != 0) {
@@ -64,7 +65,7 @@ public class EngineMenu implements MenuState {
                     String batteryInput = scanner.nextLine().trim();
                     if (batteryInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
                     String[] batteryCoordinates = batteryInput.split(" ");
                     if (batteryCoordinates.length % 2 != 0) {
@@ -91,12 +92,12 @@ public class EngineMenu implements MenuState {
                 break;
             case "v":
                 TUI.viewOptionsMenu();
-                return false;
+                break;
             default:
-                System.out.println("Invalid choice. Please try again.");
-                return false;
+                System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
+                break;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**

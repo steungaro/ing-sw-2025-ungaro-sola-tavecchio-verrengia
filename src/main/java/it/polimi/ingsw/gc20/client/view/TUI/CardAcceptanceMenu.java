@@ -2,11 +2,9 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
-import java.io.IOException;
-import java.util.Scanner;
+import java.rmi.RemoteException;
 
 public class CardAcceptanceMenu implements MenuState{
-    private final Scanner scanner = new Scanner(System.in);
     private final String message;
 
     public CardAcceptanceMenu(String message) {
@@ -22,17 +20,15 @@ public class CardAcceptanceMenu implements MenuState{
         System.out.println("1. Accept the card");
         System.out.println("2. Reject the card");
         System.out.println("v. Viewing game options");
+        System.out.print(" > ");
     }
 
     /**
      * Handles user input for the current menu
-     *
-     * @return true if the menu should continue, false if it should exit
      */
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
         // Handle user input for the card acceptance menu
+        ClientGameModel.getInstance().setBusy();
         switch (choice) {
             case "1":
                 ClientGameModel.getInstance().getClient().acceptCard(ClientGameModel.getInstance().getUsername());
@@ -45,12 +41,12 @@ public class CardAcceptanceMenu implements MenuState{
                 break;
             case "v":
                 TUI.viewOptionsMenu();
-                return false;
+                break;
             default:
                 System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
-                return false;
+                break;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**

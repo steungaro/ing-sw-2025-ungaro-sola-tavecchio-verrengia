@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -43,12 +43,12 @@ public class CargoMenu implements MenuState{
             System.out.println("4. End turn");
         }
         System.out.println("v. Viewing game options");
+        System.out.print(" > ");
     }
 
 
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
         // Handle user input from the cargo menu
         switch (choice) {
             case "1":
@@ -145,7 +145,8 @@ public class CargoMenu implements MenuState{
                             loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
                         } catch (NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                            return false;
+                            loadX = -1;
+                            loadY = -1;
                         }
                     } while (loadX < 0 || loadX > 4 || loadY < 0 || loadY > 6);
                     Pair<Integer, Integer> loadCoordinates = new Pair<>(loadX, loadY);
@@ -169,7 +170,7 @@ public class CargoMenu implements MenuState{
                 break;
             case "v":
                 TUI.viewOptionsMenu();
-                return false;
+                break;
             case "4":
                 if (!losing) {
                     ClientGameModel.getInstance().getClient().endMove(username);
@@ -177,9 +178,9 @@ public class CargoMenu implements MenuState{
                 }
             default:
                 System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
-                return false;
+                break;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     @Override

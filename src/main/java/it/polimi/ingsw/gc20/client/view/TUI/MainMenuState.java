@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -27,13 +27,13 @@ public class MainMenuState implements MenuState{
         System.out.println("1. Join a lobby");
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
+        System.out.print(" > ");
     }
 
 
     @Override
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
         switch(choice) {
             case "1":
                 String lobbyName;
@@ -99,10 +99,9 @@ public class MainMenuState implements MenuState{
                 ClientGameModel.getInstance().shutdown();
                 break;
             default:
-                System.out.println("Invalid choice. Please try again.");
-                return false;
+                System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     @Override

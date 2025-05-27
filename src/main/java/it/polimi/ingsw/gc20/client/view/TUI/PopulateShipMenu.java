@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class PopulateShipMenu implements MenuState{
@@ -24,15 +24,14 @@ public class PopulateShipMenu implements MenuState{
             System.out.println("2. Add alien to a Cabin");
         }
         System.out.println("v. Viewing game options");
+        System.out.print(" > ");
     }
 
     /**
      * Handles user input for the current menu
-     * @return true if the menu should continue, false if it should exit
      */
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
         switch (choice) {
             case "1":
                 // End population phase
@@ -49,7 +48,7 @@ public class PopulateShipMenu implements MenuState{
                         String componentName = scanner.nextLine().trim();
                         if (componentName.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
-                            return false;
+                            return;
                         }
                         try {
                             x = Integer.parseInt(componentName.split(" ")[0]) - 5;
@@ -68,7 +67,7 @@ public class PopulateShipMenu implements MenuState{
                         String alienColor = scanner.nextLine().trim();
                         if (alienColor.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
-                            return false;
+                            return;
                         }
                         try {
                             color = AlienColor.valueOf(alienColor.toUpperCase());
@@ -85,12 +84,12 @@ public class PopulateShipMenu implements MenuState{
                 break;
             case "v":
                 TUI.viewOptionsMenu();
-                return false;
+                break;
             default:
                 System.out.println("Invalid choice. Please try again.");
-                return false;
+                break;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**

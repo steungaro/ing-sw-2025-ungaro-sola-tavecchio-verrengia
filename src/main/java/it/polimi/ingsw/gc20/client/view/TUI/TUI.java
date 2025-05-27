@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import java.io.IOException;
+
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -206,13 +206,9 @@ public class TUI extends ClientGameModel {
     public void display(String message) {
         boolean input = false;
         while (!input) {
-            try {
-                System.out.println(message);
-                currentState.displayMenu();
-                input = currentState.handleInput();
-            } catch (IOException e){
-                LOGGER.warning("Error while handling input: " + e.getMessage());
-            }
+            System.out.println(message);
+            currentState.displayMenu();
+            input = currentState.handleInput();
         }
     }
 

@@ -27,14 +27,13 @@ public class EndGameMenu implements MenuState{
         System.out.println("--------------------------------------------------");
         System.out.println("You will be disconnected from the game in a few seconds.");
         System.out.println("Press any key to exit now.");
+        System.out.print(" > ");
     }
 
     @Override
-    public boolean handleInput() {
-        System.out.print(" > ");
+    public void handleInput(String choice) {
         scanner.nextLine(); // Wait for user input to exit
         ClientGameModel.getInstance().shutdown(); // Shutdown the client
-        return false; // Exit the menu
     }
 
     @Override

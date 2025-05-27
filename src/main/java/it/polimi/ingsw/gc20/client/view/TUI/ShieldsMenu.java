@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class ShieldsMenu implements MenuState {
@@ -24,9 +24,9 @@ public class ShieldsMenu implements MenuState {
         System.out.print(" > ");
     }
 
-    public boolean handleInput() throws IOException {
-        String choice = scanner.nextLine().trim();
-        // Handle user input for the engine menu
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
+        // Handle user input from the engine menu
         switch (choice) {
             case "1":
                 int xs, ys;
@@ -36,12 +36,12 @@ public class ShieldsMenu implements MenuState {
                     String input = scanner.nextLine().trim();
                     if (input.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
-                    String[] inputCoord = input.split(" ");
+                    String[] inputCoordinates = input.split(" ");
                     try {
-                        xs = Integer.parseInt(inputCoord[0]) - 5;
-                        ys = Integer.parseInt(inputCoord[1]) - 4;
+                        xs = Integer.parseInt(inputCoordinates[0]) - 5;
+                        ys = Integer.parseInt(inputCoordinates[1]) - 4;
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                         xs = -1;
@@ -55,19 +55,19 @@ public class ShieldsMenu implements MenuState {
                     String batteryInput = scanner.nextLine().trim();
                     if (batteryInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
-                    String[] batteryCoord = batteryInput.split(" ");
+                    String[] batteryCoordinates = batteryInput.split(" ");
                     try {
-                        xb = Integer.parseInt(batteryCoord[0]) - 5;
-                        yb = Integer.parseInt(batteryCoord[1]) - 4;
+                        xb = Integer.parseInt(batteryCoordinates[0]) - 5;
+                        yb = Integer.parseInt(batteryCoordinates[1]) - 4;
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                         xb = -1;
                         yb = -1;
                     }
                 } while (xb < 0 || yb < 0 || xb > 4 || yb > 6);
-                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), new Pair<Integer, Integer>(xs, ys), new Pair<Integer, Integer>(xb, yb));
+                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), new Pair<>(xs, ys), new Pair<>(xb, yb));
                 break;
             case "2":
                 ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), null, null);
@@ -79,10 +79,9 @@ public class ShieldsMenu implements MenuState {
                 TUI.viewOptionsMenu();
                 break;
             default:
-                System.out.println("Invalid choice. Please try again.");
-                return false;
+                System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     public String getStateName() {

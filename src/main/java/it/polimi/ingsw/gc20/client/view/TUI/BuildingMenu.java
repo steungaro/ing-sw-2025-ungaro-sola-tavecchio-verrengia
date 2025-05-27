@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -37,7 +37,6 @@ public class BuildingMenu implements MenuState{
                 System.out.println("5. Turn hourglass");
                 System.out.println("6. Peek a deck of cards");
             }
-            System.out.println("v. Viewing game options");
         } else {
             System.out.println("Component in hand:");
             System.out.println(ClientGameModel.getInstance().getComponentInHand());
@@ -52,18 +51,17 @@ public class BuildingMenu implements MenuState{
                 System.out.println("5. Add the component in your hand to booked components");
                 System.out.println("6. Turn hourglass");
             }
-            System.out.println("v. Viewing game options");
         }
+        System.out.println("v. Viewing game options");
+        System.out.print(" > ");
     }
 
     /**
      * Handles user input for the current menu
-     * @return true if the menu should continue, false if it should exit
      */
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String choice = scanner.nextLine().trim();
+    public void handleInput(String choice) throws RemoteException {
         adventureCards = null;
+        ClientGameModel.getInstance().setBusy();
         // Handle user input from the building menu
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
             switch (choice) {
@@ -152,10 +150,10 @@ public class BuildingMenu implements MenuState{
                     break;
                 case "v":
                     TUI.viewOptionsMenu();
-                    return false;
+                    break;
                 default:
                     System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
-                    return false;
+                    break;
             }
         }else{
             switch (choice){
@@ -175,7 +173,7 @@ public class BuildingMenu implements MenuState{
                         String coordinates = scanner.nextLine().trim();
                         if (coordinates.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
-                            return false;
+                            return;
                         }
                         String[] parts = coordinates.split(" ");
                         try {
@@ -202,13 +200,13 @@ public class BuildingMenu implements MenuState{
                     break;
                 case "v":
                     TUI.viewOptionsMenu();
-                    return false;
+                    break;
                 default:
                     System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
-                    return false;
+                    break;
             }
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**

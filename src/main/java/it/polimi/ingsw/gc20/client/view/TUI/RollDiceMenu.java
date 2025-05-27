@@ -2,13 +2,15 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
-public class IdleMenu implements MenuState {
+import java.rmi.RemoteException;
+
+public class RollDiceMenu implements MenuState {
     private final String message;
 
     /**
-     * Constructor for the IdleMenu
+     * Constructor for the RollDiceMenu
      */
-    public IdleMenu(String message) {
+    public RollDiceMenu(String message) {
         this.message = message;
     }
 
@@ -19,6 +21,7 @@ public class IdleMenu implements MenuState {
     public void displayMenu() {
         TUI.clearConsole();
         System.out.println("\u001B[1m" + message + "\u001B[22m");
+        System.out.println("1. Roll the dice");
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
     }
@@ -27,10 +30,14 @@ public class IdleMenu implements MenuState {
      * Handles user input for the current menu
      */
     @Override
-    public void handleInput(String choice) {
+    public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         // Continue in the same menu
-        if (choice.equalsIgnoreCase("v")) {
+        if (choice.equals("1")) {
+            // Roll the dice
+            ClientGameModel.getInstance().getClient().rollDice(ClientGameModel.getInstance().getUsername());
+        } else if (choice.equalsIgnoreCase("v")) {
+            // View options menu
             TUI.viewOptionsMenu();
         } else if (choice.equalsIgnoreCase("q")) {
             // If the user wants to quit, shutdown the client
@@ -48,6 +55,6 @@ public class IdleMenu implements MenuState {
      */
     @Override
     public String getStateName() {
-        return "Paused Menu";
+        return "Roll Dice Menu";
     }
 }

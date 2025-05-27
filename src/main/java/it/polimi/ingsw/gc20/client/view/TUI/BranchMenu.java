@@ -17,18 +17,21 @@ public class BranchMenu implements MenuState {
         TUI.clearConsole();
         System.out.println("\u001B[1mBranch Menu\u001B[22m");
         System.out.println("Your ship has split into two branches.");
+        System.out.println("Press any key to continue.");
+        System.out.print(" > ");
     }
 
-    public boolean handleInput() throws RemoteException {
-            int row;
-            int col;
+    public void handleInput(String choice) throws RemoteException {
+        int row;
+        int col;
+        ClientGameModel.getInstance().setBusy();
         do {
             System.out.println("Type the coordinates of the branch you want to keep (row col):");
             System.out.print(" > ");
             String branchInput = scanner.nextLine().trim();
             if (branchInput.equals("q")) {
                 ClientGameModel.getInstance().shutdown();
-                return false;
+                return;
             }
             try {
                 row = Integer.parseInt(branchInput.split(" ")[0]) - 5;
@@ -39,8 +42,8 @@ public class BranchMenu implements MenuState {
                 col = -1;
             }
         } while (row < 0 || row > 4 || col < 0 || col > 6);
-        ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(row, col) );
-        return true;
+        ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(row, col));
+        ClientGameModel.getInstance().setFree();
     }
 
     public String getStateName() {

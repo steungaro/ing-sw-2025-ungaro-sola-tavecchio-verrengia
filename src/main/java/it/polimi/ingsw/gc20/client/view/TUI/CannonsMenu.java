@@ -4,14 +4,15 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import org.javatuples.Pair;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class CannonsMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
-    private List<Pair<Integer, Integer>> cannons;
-    private List<Pair<Integer, Integer>> batteries;
+    private final List<Pair<Integer, Integer>> cannons = new ArrayList<>();
+    private final List<Pair<Integer, Integer>> batteries = new ArrayList<>();
     private final String message;
 
     public CannonsMenu(String message) {
@@ -25,13 +26,12 @@ public class CannonsMenu implements MenuState {
         System.out.println("1. Activate cannons");
         System.out.println("2. Do not activate cannons");
         System.out.println("v. Viewing game options");
+        System.out.print(" > ");
     }
 
-    public boolean handleInput() throws IOException {
-        System.out.print(" > ");
-        String input = scanner.nextLine().trim();
-        // Handle user input from the cannon menu
-        switch (input) {
+    public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().setBusy();
+        switch (choice) {
             case "1":
                 boolean inputOk = true;
                 do {
@@ -41,7 +41,7 @@ public class CannonsMenu implements MenuState {
                     String cannonInput = scanner.nextLine().trim();
                     if (cannonInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
                     String[] cannonCoordinates = cannonInput.split(" ");
                     if (cannonCoordinates.length % 2 != 0) {
@@ -70,7 +70,7 @@ public class CannonsMenu implements MenuState {
                     String batteryInput = scanner.nextLine().trim();
                     if (batteryInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
-                        return false;
+                        return;
                     }
                     String[] batteryCoordinates = batteryInput.split(" ");
                     if (batteryCoordinates.length % 2 != 0) {
@@ -102,12 +102,12 @@ public class CannonsMenu implements MenuState {
                 break;
             case "v":
                 TUI.viewOptionsMenu();
-                return false;
+                break;
             default:
                 System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
-                return false;
+                break;
         }
-        return true;
+        ClientGameModel.getInstance().setFree();
     }
 
     /**
