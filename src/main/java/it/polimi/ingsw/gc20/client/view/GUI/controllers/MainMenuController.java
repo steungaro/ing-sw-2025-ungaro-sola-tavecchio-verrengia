@@ -1,13 +1,24 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+
+import java.util.List;
 
 public class MainMenuController {
+
+    @FXML
+    private ListView<ViewLobby> lobbiesListView;
+
+    @FXML
+    private Button joinLobbyButton;
+
+    @FXML
+    private Button refreshButton;
 
     @FXML
     private Label welcomeLabel;
@@ -27,10 +38,68 @@ public class MainMenuController {
     @FXML
     public void initialize() {
         guiView = (GUIView) ClientGameModel.getInstance();
+        lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        lobbiesListView.setCellFactory(listView -> new ListCell<ViewLobby>() {
+            @Override
+            protected void updateItem(ViewLobby lobby, boolean empty) {
+                super.updateItem(lobby, empty);
+
+                if (empty || lobby == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    // Qui definisci come vuoi visualizzare l'oggetto ViewLobby
+                    setText(lobby.getOwner() + " (Proprietario: " + lobby.getOwner() + ") - " +
+                            "Giocatori: " + lobby.getPlayersList() + "/" + lobby.getMaxPlayers());
+                }
+            }
+        });
+
+
+        lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            joinLobbyButton.setDisable(newVal == null);
+        });
+
+        joinLobbyButton.setOnAction(event -> onJoinLobby());
+        refreshButton.setOnAction(event -> onRefreshLobbies());
+        loadLobbies();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
-        viewLobbiesButton.setOnAction( event -> handleViewLobbies());
         logoutButton.setOnAction(event -> handleLogout());
+    }
+
+    private void onJoinLobby() {
+        ViewLobby selectedLobby = lobbiesListView.getSelectionModel().getSelectedItem();
+        if (selectedLobby != null) {
+            // 1. Invia richiesta al server per entrare nella lobby
+            joinLobbyOnServer(selectedLobby);
+        }
+    }
+
+    private void onRefreshLobbies() {
+        loadLobbies();
+    }
+
+    private void loadLobbies() {
+        // Implementazione per caricare le lobby dal server
+        if (ClientGameModel.getInstance().getClient() != null) {
+            List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
+            lobbiesListView.getItems().clear();
+            if(lobbies != null && !lobbies.isEmpty())
+                lobbiesListView.getItems().addAll(lobbies);
+        }
+    }
+
+    private void joinLobbyOnServer(ViewLobby lobby) {
+        Client client = ClientGameModel.getInstance().getClient();
+        if (client != null) {
+            try {
+                client.joinLobby(lobby.getID(), ClientGameModel.getInstance().getUsername());
+            } catch (java.rmi.RemoteException e){
+                System.out.println("Errore di connessione al server: " + e.getMessage());
+            }
+        }
     }
 
     public void setUsername(String username) {
@@ -40,9 +109,6 @@ public class MainMenuController {
 
     private void handleCreateLobby() {
         guiView.showScene("createLobby");
-    }
-    private void handleViewLobbies() {
-        guiView.showScene("lobbyList");
     }
     private void handleLogout() {
 
