@@ -41,7 +41,7 @@ public class MainMenuState implements MenuState{
                     System.out.println("Type the name of the lobby you want to join:");
                     System.out.print(" > ");
                     lobbyName = scanner.nextLine().trim();
-                    if (lobbyName.isEmpty() || ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobbyName)) {
+                    if (lobbyName.isEmpty() || !ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobbyName)) {
                         System.out.println("Lobby not found. Please try again.");
                     } else {
                         break;
