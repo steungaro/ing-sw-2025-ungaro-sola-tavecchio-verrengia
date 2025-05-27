@@ -73,7 +73,7 @@ public class AbandonedShipState extends PlayingState {
         if (player.getShip().crew() < lostCrew) {
             throw new InvalidStateException("You don't have enough crew to accept the card");
         }
-        getModel().movePlayer(player, lostDays);
+        getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
         //notify the players connected to the game to update the player data
         for (String username: getController().getInGameConnectedPlayers()) {
