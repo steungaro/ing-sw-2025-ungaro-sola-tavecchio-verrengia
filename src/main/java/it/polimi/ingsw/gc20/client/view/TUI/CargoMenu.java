@@ -8,6 +8,12 @@ import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * Represents the Cargo Menu in the game where players can manage their cargo.
+ * The menu allows players to choose various actions based on their current
+ * game state, such as losing, gaining, moving, or loading cargo.
+ * Implements the {@link MenuState} interface to represent a specific menu state.
+ */
 public class CargoMenu implements MenuState{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();

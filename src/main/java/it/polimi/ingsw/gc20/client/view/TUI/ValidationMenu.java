@@ -6,6 +6,12 @@ import org.javatuples.Pair;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
+/**
+ * The ValidationMenu class represents the menu state where users can validate their game ship,
+ * remove a component from the ship, or navigate to other game options.
+ * It implements the {@link MenuState} interface and provides methods to display the menu,
+ * handle user input, and get the name of the current state.
+ */
 public class ValidationMenu implements MenuState{
     public final Scanner scanner = new Scanner(System.in);
     public String username = ClientGameModel.getInstance().getUsername();
@@ -14,6 +20,12 @@ public class ValidationMenu implements MenuState{
     public ValidationMenu(){
     }
 
+    /**
+     * Displays the validation menu for the user, providing feedback on the validation status
+     * of the user's ship and listing available actions based on the current state.
+     * If the ship is already valid, the user is informed and prompted to wait for other players.
+     */
+    @Override
     public void displayMenu(){
         System.out.println("\u001B[1mValidation Menu\u001B[22m");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
@@ -26,6 +38,14 @@ public class ValidationMenu implements MenuState{
         }
     }
 
+    /**
+     * Displays the validation menu for the user with an error message highlighted in red.
+     * This allows the user to view a specific error before being redirected to the
+     * standard validation menu for further actions.
+     *
+     * @param errorMessage the error message to display to the user
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
@@ -33,8 +53,14 @@ public class ValidationMenu implements MenuState{
     }
 
     /**
-     * Handles user input for the current menu
+     * Handles user input for the validation menu. This method processes the user's choice,
+     * allowing them to validate their ship, remove a component, view options, or quit the game.
+     * It also manages the state of the game model to ensure that actions are performed correctly.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
      */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         if (ClientGameModel.getInstance().getShip(username).isValid()){
@@ -88,6 +114,7 @@ public class ValidationMenu implements MenuState{
      * Get the name of the current state
      * @return State name
      */
+    @Override
     public String getStateName(){
         return "Validation Menu";
     }

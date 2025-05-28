@@ -9,6 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Represents the Cannons' Menu state in the game, which allows the user to interact with cannon-related options.
+ * The menu manages user input for activating or not activating cannons and batteries.
+ * This class implements the {@link MenuState} interface to define the behavior of the Cannons menu.
+ */
 public class CannonsMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
     private final List<Pair<Integer, Integer>> cannons = new ArrayList<>();
@@ -19,6 +24,15 @@ public class CannonsMenu implements MenuState {
         this.message = message;
     }
 
+    /**
+     * Displays the menu for the Cannons feature.
+     * The menu includes options to activate or not activate cannons
+     * and an option to view game settings.
+     * <p>
+     * This method uses console output to print the menu options and does not
+     * return any value. It includes a prompt for user input.
+     */
+    @Override
     public void displayMenu(){
         System.out.println("\u001B[1mCannons Menu\u001B[22m");
         System.out.println(message);
@@ -28,12 +42,29 @@ public class CannonsMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the Cannons menu.
+     * This method processes the user's choice, allowing them to activate cannons and batteries,
+     * or skip activation. It also handles input validation and provides feedback for invalid inputs.
+     *
+     * @param choice The user's choice as a string
+     * @throws RemoteException If there is an issue with remote method invocation
+     */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         switch (choice) {

@@ -7,15 +7,27 @@ import org.javatuples.Pair;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
+/**
+ * The PopulateShipMenu class implements the MenuState interface and represents
+ * the game menu used during the ship population phase. This menu allows players
+ * to finalize ship population, add aliens to specific cabins, or navigate to other
+ * game options.
+ * It implements the {@link MenuState} interface to define the behavior of the Populate Ship menu.
+ */
 public class PopulateShipMenu implements MenuState{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
 
     public PopulateShipMenu() {
     }
+
     /**
-     * Displays the current menu to the player
+     * Displays the menu options available in the Populate Ship phase of the game.
+     * The menu includes options for ending the population phase, adding an alien
+     * to a cabin (only if the ship is not a learner level one), and viewing game options.
+     * Prompts the user for their input.
      */
+    @Override
     public void displayMenu(){
         System.out.println("\u001B[1mPopulate Ship Menu\u001B[22m");
         System.out.println("1. End population phase, all empty cabins will be filled with astronauts.");
@@ -26,6 +38,13 @@ public class PopulateShipMenu implements MenuState{
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the menu with an error message. This method is called when there is an error
+     * in user input or processing. It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
@@ -33,8 +52,13 @@ public class PopulateShipMenu implements MenuState{
     }
 
     /**
-     * Handles user input for the current menu
+     * Handles user input for the Populate Ship menu. This method processes the user's choice,
+     * allowing them to end the population phase, add an alien to a cabin, view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
      */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         switch (choice) {
@@ -101,6 +125,7 @@ public class PopulateShipMenu implements MenuState{
      * Get the name of the current state
      * @return State name
      */
+    @Override
     public String getStateName(){
         return "Populate Ship Menu";
     }

@@ -8,6 +8,15 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The BuildingMenu class represents the menu state where players can
+ * assemble their ship by interacting with various game components.
+ * It provides functionality for displaying options, handling user inputs,
+ * and executing actions like adding components to the ship, rotating components,
+ * and interacting with various decks and piles in the game.
+ * <p>
+ * This class implements the {@link MenuState} interface, which defines the methods.
+ */
 public class BuildingMenu implements MenuState{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
@@ -17,6 +26,20 @@ public class BuildingMenu implements MenuState{
         this.adventureCards = adventureCards;
     }
 
+    /**
+     * Displays the current state of the building ship menu to the user.
+     * The display includes the available actions based on the player's current
+     * game state, including components in hand, uncovered components, covered components,
+     * and other menu options related to building the ship.
+     * <p>
+     * The menu dynamically adjusts its options depending on whether the player
+     * has a component in their hand or not and whether the player's ship is in learner mode.
+     * <p>
+     * Prints game-related details to the console, including the list of cards,
+     * components, ship status, and the options' menu for player selection. At the
+     * end of the menu display, an input prompt is provided.
+     */
+    @Override
     public void displayMenu(){
         if(adventureCards!=null){
             ClientGameModel.getInstance().printCardsInLine(adventureCards);
@@ -55,6 +78,14 @@ public class BuildingMenu implements MenuState{
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the current menu to the player with an error message.
+     * This method is used to inform the player about any errors or invalid inputs
+     * while still providing the menu options.
+     *
+     * @param errorMessage The error message to display to the player
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
@@ -62,8 +93,17 @@ public class BuildingMenu implements MenuState{
     }
 
     /**
-     * Handles user input for the current menu
+     * Handles user input for the building ship menu. This method processes the player's
+     * choice and executes the corresponding action, such as taking components, placing
+     * components, rotating components, or interacting with the game state.
+     * <p>
+     * The method also manages the transition between different states of the game based on
+     * user input and updates the game model accordingly.
+     *
+     * @param choice The player's input choice from the menu
+     * @throws RemoteException If a remote method invocation error occurs during communication with the game client
      */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         adventureCards = null;
         ClientGameModel.getInstance().setBusy();
@@ -218,6 +258,7 @@ public class BuildingMenu implements MenuState{
      * Get the name of the current state
      * @return State name
      */
+    @Override
     public String getStateName(){
         return "Building Ship Menu";
     }

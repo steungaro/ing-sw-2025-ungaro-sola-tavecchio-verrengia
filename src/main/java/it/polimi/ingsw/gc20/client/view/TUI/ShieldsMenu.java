@@ -6,6 +6,12 @@ import org.javatuples.Pair;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
+/**
+ * Represents the Shields Menu state in the game, allowing users to interact with
+ * options related to activating shields or other related actions.
+ * Implements the {@link MenuState} interface to provide behavior for menu rendering, input handling,
+ * and menu state retrieval.
+ */
 public class ShieldsMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
     private final String message;
@@ -14,6 +20,13 @@ public class ShieldsMenu implements MenuState {
         this.message = message;
     }
 
+    /**
+     * Displays the shields' menu to the user.
+     * The menu contains options for activating a shield, declining to activate a shield,
+     * and viewing game options. The method also displays a message that provides
+     * additional context or instructions to the user.
+     */
+    @Override
     public void displayMenu(){
         System.out.println("\u001B[1mShields Menu\u001B[22m");
         System.out.println(message);
@@ -23,12 +36,29 @@ public class ShieldsMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the shields' menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the Shields menu.
+     * This method processes the user's choice, allowing them to activate a shield,
+     * decline to activate a shield, view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
+     */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         // Handle user input from the engine menu
@@ -89,6 +119,13 @@ public class ShieldsMenu implements MenuState {
         ClientGameModel.getInstance().setFree();
     }
 
+    /**
+     * Returns the name of the current menu state.
+     * This method is used to identify the current menu state in the game.
+     *
+     * @return The name of the current menu state
+     */
+    @Override
     public String getStateName() {
         return "Shields Menu";
     }

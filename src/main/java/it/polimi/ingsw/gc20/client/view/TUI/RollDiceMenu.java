@@ -15,7 +15,10 @@ public class RollDiceMenu implements MenuState {
     }
 
     /**
-     * Displays the current menu to the player
+     * Displays the menu for rolling dice.
+     * The menu includes options to roll the dice and view game options.
+     * This method uses console output to print the menu options and does not return any value.
+     * It includes a prompt for user input.
      */
     @Override
     public void displayMenu() {
@@ -25,6 +28,14 @@ public class RollDiceMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
@@ -32,7 +43,12 @@ public class RollDiceMenu implements MenuState {
     }
 
     /**
-     * Handles user input for the current menu
+     * Handles user input for the Roll Dice menu.
+     * This method processes the user's choice, allowing them to roll the dice,
+     * view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
      */
     @Override
     public void handleInput(String choice) throws RemoteException {

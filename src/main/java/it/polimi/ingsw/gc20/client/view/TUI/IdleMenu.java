@@ -2,18 +2,23 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
+/**
+ * Represents the IdleMenu state in the game, which is a paused state
+ * allowing the player to view game options or exit the game.
+ * Implements the MenuState interface to define behavior for the
+ * specific menu state.
+ */
 public class IdleMenu implements MenuState {
     private final String message;
 
-    /**
-     * Constructor for the IdleMenu
-     */
     public IdleMenu(String message) {
         this.message = message;
     }
 
     /**
-     * Displays the current menu to the player
+     * Displays the IdleMenu to the user.
+     * This method prints the menu title and options available to the user.
+     * It includes options to view game options or quit the game.
      */
     @Override
     public void displayMenu() {
@@ -22,6 +27,14 @@ public class IdleMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the IdleMenu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
@@ -29,7 +42,11 @@ public class IdleMenu implements MenuState {
     }
 
     /**
-     * Handles user input for the current menu
+     * Handles user input for the IdleMenu.
+     * This method processes the user's choice, allowing them to view options or quit the game.
+     * It sets the game model to busy while processing input and then sets it back to free.
+     *
+     * @param choice The user's input choice
      */
     @Override
     public void handleInput(String choice) {

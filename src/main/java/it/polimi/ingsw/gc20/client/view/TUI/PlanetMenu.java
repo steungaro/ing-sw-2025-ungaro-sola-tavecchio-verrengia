@@ -9,6 +9,12 @@ import java.util.List;
 import java.util.Scanner;
 
 
+/**
+ * Represents the Planet Menu state in the game. This menu allows the player
+ * to interact with planets, such as choosing to land on a planet or proceeding
+ * without performing any planetary action.
+ * Implements the {@link MenuState} interface to define the behavior of the Planet menu.
+ */
 public class PlanetMenu implements MenuState{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
@@ -18,6 +24,14 @@ public class PlanetMenu implements MenuState{
         this.planets = planets;
     }
 
+    /**
+     * Displays the main menu for the planets' options in the console.
+     * <p>
+     * The menu allows the user to make selections, such as interacting with the planets
+     * or viewing additional game options. It prints the menu options to the console
+     * and prompts the user for input to choose an action.
+     */
+    @Override
     public void displayMenu() {
         System.out.println("\u001B[1mPlanets Menu\u001B[22m");
         System.out.println("1. Land on a planet");
@@ -26,12 +40,29 @@ public class PlanetMenu implements MenuState{
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the Planet menu.
+     * This method processes the user's choice, allowing them to land on a planet,
+     * skip landing, view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
+     */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         // Handle user input from the planet menu
         ClientGameModel.getInstance().setBusy();
@@ -73,6 +104,11 @@ public class PlanetMenu implements MenuState{
         ClientGameModel.getInstance().setFree();
     }
 
+    /**
+     * Get the name of the current state
+     * @return State name
+     */
+    @Override
     public String getStateName() {
         return "Planet Menu";
     }

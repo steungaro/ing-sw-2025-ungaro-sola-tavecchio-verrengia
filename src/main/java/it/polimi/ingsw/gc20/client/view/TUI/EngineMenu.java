@@ -8,6 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Represents the menu for controlling engine-related actions in the game.
+ * This class provides functionalities for displaying the menu, handling user inputs,
+ * and managing the state of engine and battery activations.
+ * It implements the {@link MenuState} interface to define the behavior of the Engine menu.
+ */
 public class EngineMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
     private final List<Pair<Integer, Integer>> engines = new ArrayList<>();
@@ -18,6 +24,13 @@ public class EngineMenu implements MenuState {
         this.message = message;
     }
 
+    /**
+     * Displays the menu for engine-related actions.
+     * The menu includes options to activate engines, not activate engines,
+     * and view game options.
+     * This method uses console output to print the menu options and does not return any value.
+     */
+    @Override
     public void displayMenu(){
         System.out.println("\u001B[1mEngines Menu\u001B[22m");
         System.out.println(message);
@@ -27,12 +40,29 @@ public class EngineMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the Engine menu.
+     * This method processes the user's choice, allowing them to activate engines,
+     * skip activation, view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
+     */
+    @Override
     public void handleInput(String choice) throws RemoteException {
         // Handle user input from the engine menu
         ClientGameModel.getInstance().setBusy();

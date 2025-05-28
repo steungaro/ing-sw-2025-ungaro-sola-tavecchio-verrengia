@@ -7,6 +7,12 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Represents the menu state where the player is required to lose crew members.
+ * This class is responsible for displaying the menu, handling user input,
+ * and managing the actions related to losing crew.
+ * It implements the {@link MenuState} interface to define the behavior of the Lose Crew menu.
+ */
 public class LoseCrewMenu implements MenuState {
     private final Scanner scanner;
     private final int crewToLose;
@@ -16,6 +22,10 @@ public class LoseCrewMenu implements MenuState {
         this.crewToLose = crewToLose;
     }
 
+    /**
+     * Displays the lose-crew menu to the user, indicating the number of crew members
+     * that need to be lost and presenting the available options for further actions.
+     */
     @Override
     public void displayMenu() {
         System.out.println("\u001B[1mLose Crew Menu\u001B[22m");
@@ -25,12 +35,28 @@ public class LoseCrewMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the lose-crew menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the lose-crew menu.
+     * This method processes the user's choice, allowing them to continue with losing crew members,
+     * view options, or quit the game.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
+     */
     @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
@@ -70,6 +96,11 @@ public class LoseCrewMenu implements MenuState {
         ClientGameModel.getInstance().setFree();
     }
 
+    /**
+     * Returns the name of the current state, which is used for identification.
+     *
+     * @return the name of the current state as a string
+     */
     @Override
     public String getStateName() {
         return "LoseEnergyMenu";

@@ -6,6 +6,12 @@ import org.javatuples.Pair;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
+/**
+ * Represents the menu state where the user is required to lose energy
+ * due to a shortage of cargo in the game. This menu provides options for
+ * handling energy loss and interacting with the relevant game elements.
+ * Implements the {@link MenuState} interface to define the behavior of the Lose-Energy menu.
+ */
 public class LoseEnergyMenu implements MenuState {
     private final Scanner scanner;
     private final int energyToLose;
@@ -16,6 +22,11 @@ public class LoseEnergyMenu implements MenuState {
         this.energyToLose = energyToLose;
     }
 
+    /**
+     * Displays the LoseEnergy menu to the user. This menu informs the user about
+     * the amount of energy they need to lose as a consequence of being short on cargo
+     * and provides options to either proceed with the energy loss or view additional game options.
+     */
     @Override
     public void displayMenu() {
         System.out.println("\u001B[1mLose Energy Menu\u001B[22m");
@@ -25,12 +36,29 @@ public class LoseEnergyMenu implements MenuState {
         System.out.print(" > ");
     }
 
+    /**
+     * Displays the LoseEnergy menu with an error message.
+     * This method is called when there is an error in user input or processing.
+     * It prints the error message in red and then displays the menu again.
+     *
+     * @param errorMessage The error message to display
+     * @see #displayMenu()
+     */
     @Override
     public void displayMenu(String errorMessage) {
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
+    /**
+     * Handles user input for the LoseEnergy menu.
+     * This method processes the user's choice, allowing them to continue with losing energy,
+     * view options, or quit the game. It prompts the user for the coordinates of the battery
+     * from which they want to lose energy.
+     *
+     * @param choice The user's input choice
+     * @throws RemoteException if a remote method invocation error occurs during communication with the game client
+     */
     @Override
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
@@ -64,6 +92,11 @@ public class LoseEnergyMenu implements MenuState {
         ClientGameModel.getInstance().setFree();
     }
 
+    /**
+     * Returns the name of the current state, which is used for identification.
+     *
+     * @return the name of the current state as a string
+     */
     @Override
     public String getStateName() {
         return "LoseEnergyMenu";
