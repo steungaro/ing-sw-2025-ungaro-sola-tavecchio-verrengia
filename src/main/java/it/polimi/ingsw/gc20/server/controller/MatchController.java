@@ -3,17 +3,13 @@ package it.polimi.ingsw.gc20.server.controller;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.ErrorMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyListMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.LobbyListRequest;
-import it.polimi.ingsw.gc20.server.controller.states.AssemblingState;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.server.model.gamesets.Game;
 import it.polimi.ingsw.gc20.server.model.lobby.Lobby;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
-import java.rmi.RemoteException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -134,9 +130,13 @@ public class MatchController implements MatchControllerInterface {
                     l.addPlayer(user);
                     playersInLobbies.put(user, l);
                     //notify the players in the lobby with a lobby message
-                    for (String u : l.getUsers()) {
-                        logger.log(Level.INFO, "User " + u + " joined lobby " + l.getName());
-                        NetworkService.getInstance().sendToClient(u, new LobbyMessage(l.getUsers(), l.getName(), l.getLevel(), l.getMaxPlayers()));
+                    if (l.getUsers().size()==l.getMaxPlayers()){
+                        startLobby(l.getOwnerUsername());
+                    } else {
+                        for (String u : l.getUsers()) {
+                            logger.log(Level.INFO, "User " + u + " joined lobby " + l.getName());
+                            NetworkService.getInstance().sendToClient(u, new LobbyMessage(new ArrayList<>(l.getUsers()), l.getName(), l.getLevel(), l.getMaxPlayers()));
+                        }
                     }
                 } catch (FullLobbyException e) {
                     //notify the player with a error message

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.model.cards;
 
+import java.io.Serializable;
 import java.util.*;
 
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -8,7 +9,7 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
 /**
  * @author GC20
  */
-public class Planet {
+public class Planet implements Serializable {
     private List<CargoColor> reward;
     private Boolean available;
     private Player player = null;
