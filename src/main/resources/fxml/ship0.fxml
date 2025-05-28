@@ -1,28 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
 
     <ImageView fx:id="boardImageView" fitWidth="800" preserveRatio="true">
         <Image url="@cardboard/cardboard-1.jpg" />
     </ImageView>
 
-    <BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <BorderPane prefHeight="200.0" prefWidth="200.0">
         <center>
-            <GridPane fx:id="shipGridPane" hgap="2" vgap="2" prefWidth="526" prefHeight="526" alignment="CENTER">
-                <!-- Definizione delle colonne -->
+
+            <GridPane fx:id="componentsGrid" BorderPane.alignment="CENTER">
                 <columnConstraints>
-                    <ColumnConstraints percentWidth="20" />
-                    <ColumnConstraints percentWidth="20" />
-                    <ColumnConstraints percentWidth="20" />
-                    <ColumnConstraints percentWidth="20" />
-                    <ColumnConstraints percentWidth="20" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
+                    <ColumnConstraints percentWidth="14.2857" />
                 </columnConstraints>
 
-                <!-- Definizione delle righe -->
                 <rowConstraints>
                     <RowConstraints percentHeight="20" />
                     <RowConstraints percentHeight="20" />
@@ -31,87 +37,49 @@
                     <RowConstraints percentHeight="20" />
                 </rowConstraints>
 
-                <!-- Cella 0,0 -->
-                <ImageView fx:id="imageCell_0_0" GridPane.rowIndex="0" GridPane.columnIndex="0" fitWidth="105" fitHeight="105" preserveRatio="true" />
+                <ImageView fx:id="imageCell_0_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageCell_0_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageCell_0_2" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageCell_0_3" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageCell_0_4" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="0" />
 
-                <!-- Cella 0,1 -->
-                <ImageView fx:id="imageCell_0_1" GridPane.rowIndex="0" GridPane.columnIndex="1" fitWidth="105" fitHeight="105" preserveRatio="true" />
+                <ImageView fx:id="imageCell_1_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                <ImageView fx:id="imageCell_1_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <ImageView fx:id="imageCell_1_2" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <ImageView fx:id="imageCell_1_3" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                <ImageView fx:id="imageCell_1_4" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="1" />
 
-                <!-- Cella 0,2 -->
-                <ImageView fx:id="imageCell_0_2" GridPane.rowIndex="0" GridPane.columnIndex="2" fitWidth="105" fitHeight="105" preserveRatio="true" />
+                <ImageView fx:id="imageCell_2_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <ImageView fx:id="imageCell_2_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <ImageView fx:id="imageCell_2_2" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                <ImageView fx:id="imageCell_2_3" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                <ImageView fx:id="imageCell_2_4" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="2" />
 
-                <!-- Cella 0,3 -->
-                <ImageView fx:id="imageCell_0_3" GridPane.rowIndex="0" GridPane.columnIndex="3" fitWidth="105" fitHeight="105" preserveRatio="true" />
+                <ImageView fx:id="imageCell_3_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                <ImageView fx:id="imageCell_3_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <ImageView fx:id="imageCell_3_2" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                <ImageView fx:id="imageCell_3_3" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                <ImageView fx:id="imageCell_3_4" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" />
 
-                <!-- Cella 0,4 -->
-                <ImageView fx:id="imageCell_0_4" GridPane.rowIndex="0" GridPane.columnIndex="4" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 1,0 -->
-                <ImageView fx:id="imageCell_1_0" GridPane.rowIndex="1" GridPane.columnIndex="0" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 1,1 -->
-                <ImageView fx:id="imageCell_1_1" GridPane.rowIndex="1" GridPane.columnIndex="1" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 1,2 -->
-                <ImageView fx:id="imageCell_1_2" GridPane.rowIndex="1" GridPane.columnIndex="2" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 1,3 -->
-                <ImageView fx:id="imageCell_1_3" GridPane.rowIndex="1" GridPane.columnIndex="3" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 1,4 -->
-                <ImageView fx:id="imageCell_1_4" GridPane.rowIndex="1" GridPane.columnIndex="4" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 2,0 -->
-                <ImageView fx:id="imageCell_2_0" GridPane.rowIndex="2" GridPane.columnIndex="0" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 2,1 -->
-                <ImageView fx:id="imageCell_2_1" GridPane.rowIndex="2" GridPane.columnIndex="1" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 2,2 -->
-                <ImageView fx:id="imageCell_2_2" GridPane.rowIndex="2" GridPane.columnIndex="2" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 2,3 -->
-                <ImageView fx:id="imageCell_2_3" GridPane.rowIndex="2" GridPane.columnIndex="3" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 2,4 -->
-                <ImageView fx:id="imageCell_2_4" GridPane.rowIndex="2" GridPane.columnIndex="4" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 3,0 -->
-                <ImageView fx:id="imageCell_3_0" GridPane.rowIndex="3" GridPane.columnIndex="0" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 3,1 -->
-                <ImageView fx:id="imageCell_3_1" GridPane.rowIndex="3" GridPane.columnIndex="1" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 3,2 -->
-                <ImageView fx:id="imageCell_3_2" GridPane.rowIndex="3" GridPane.columnIndex="2" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 3,3 -->
-                <ImageView fx:id="imageCell_3_3" GridPane.rowIndex="3" GridPane.columnIndex="3" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 3,4 -->
-                <ImageView fx:id="imageCell_3_4" GridPane.rowIndex="3" GridPane.columnIndex="4" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 4,0 -->
-                <ImageView fx:id="imageCell_4_0" GridPane.rowIndex="4" GridPane.columnIndex="0" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 4,1 -->
-                <ImageView fx:id="imageCell_4_1" GridPane.rowIndex="4" GridPane.columnIndex="1" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 4,2 -->
-                <ImageView fx:id="imageCell_4_2" GridPane.rowIndex="4" GridPane.columnIndex="2" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 4,3 -->
-                <ImageView fx:id="imageCell_4_3" GridPane.rowIndex="4" GridPane.columnIndex="3" fitWidth="105" fitHeight="105" preserveRatio="true" />
-
-                <!-- Cella 4,4 -->
-                <ImageView fx:id="imageCell_4_4" GridPane.rowIndex="4" GridPane.columnIndex="4" fitWidth="105" fitHeight="105" preserveRatio="true" />
+                <ImageView fx:id="imageCell_4_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <ImageView fx:id="imageCell_4_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <ImageView fx:id="imageCell_4_2" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                <ImageView fx:id="imageCell_4_3" preserveRatio="true" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                <ImageView fx:id="imageCell_4_4" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="4" />
             </GridPane>
         </center>
+        <top>
+            <Pane prefHeight="26.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
+        </top>
+        <left>
+            <Pane prefHeight="526.0" prefWidth="137.0" BorderPane.alignment="CENTER" />
+        </left>
+        <right>
+            <Pane prefHeight="526.0" prefWidth="136.0" BorderPane.alignment="CENTER" />
+        </right>
+        <bottom>
+            <Pane prefHeight="28.0" prefWidth="800.0" BorderPane.alignment="CENTER" />
+        </bottom>
     </BorderPane>
-
-    <HBox alignment="TOP_LEFT" spacing="10" StackPane.alignment="TOP_LEFT">
-        <Label fx:id="X_Label" text="X: 0.00" style="-fx-text-fill: white;" />
-        <Label fx:id="Y_Label" text="Y: 0.00" style="-fx-text-fill: white;" />
-    </HBox>
 
 </StackPane>
