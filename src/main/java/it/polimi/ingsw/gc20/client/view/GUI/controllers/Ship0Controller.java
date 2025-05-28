@@ -14,7 +14,7 @@ import java.util.Map;
 public class Ship0Controller {
 
     @FXML private ImageView boardImageView;
-    @FXML private GridPane shipGridPane; // Allineato con il nome nel FXML
+    @FXML private GridPane componentsGrid; // Allineato con il nome nel FXML
     @FXML private Pane gridWrapper;
     @FXML private Label X_Label;
     @FXML private Label Y_Label;
@@ -55,35 +55,47 @@ public class Ship0Controller {
 
     @FXML
     private void initialize() {
-        boardImageView.imageProperty().addListener((obs, oldImg, newImg) -> {
-            if (newImg != null) {
-                Platform.runLater(() -> {
-                    double boardWidth = boardImageView.getBoundsInParent().getWidth();
-                    double boardHeight = boardImageView.getBoundsInParent().getHeight();
+        if (boardImageView != null && boardImageView.getImage() != null) {
+            setupGridBounds();
+        } else if (boardImageView != null) {
+            boardImageView.imageProperty().addListener((obs, oldImg, newImg) -> {
+                if (newImg != null) {
+                    setupGridBounds();
+                }
+            });
+        }
+    }
 
-                    double gridX = boardWidth * 0.25;
-                    double gridY = boardHeight * 0.18;
-                    double gridWidth = boardWidth * 0.5;
-                    double gridHeight = boardHeight * 0.64;
+    private void setupGridBounds() {
+        Platform.runLater(() -> {
+            if (boardImageView == null || componentsGrid == null) return;
 
-                    shipGridPane.setLayoutX(gridX);
-                    shipGridPane.setLayoutY(gridY);
-                    shipGridPane.setPrefSize(gridWidth, gridHeight);
-                    shipGridPane.setMaxSize(gridWidth, gridHeight);
+            double boardWidth = boardImageView.getBoundsInParent().getWidth();
+            double boardHeight = boardImageView.getBoundsInParent().getHeight();
 
-                    updateCoordinateLabels(gridX, gridY);
-                });
-            }
+            double gridX = boardWidth * 0.25;
+            double gridY = boardHeight * 0.18;
+            double gridWidth = boardWidth * 0.5;
+            double gridHeight = boardHeight * 0.64;
+
+            componentsGrid.setLayoutX(gridX);
+            componentsGrid.setLayoutY(gridY);
+            componentsGrid.setPrefSize(gridWidth, gridHeight);
+            componentsGrid.setMaxSize(gridWidth, gridHeight);
+
+            updateCoordinateLabels(gridX, gridY);
         });
     }
 
-    /**
-     * Aggiunge un componente alla griglia in base al suo ID e coordinate
-     * @param componentId ID del componente da aggiungere
-     * @param row Riga della griglia (0-4)
-     * @param col Colonna della griglia (0-4)
-     * @return true se l'aggiunta è avvenuta con successo, false altrimenti
-     */
+    private void updateCoordinateLabels(double x, double y) {
+        if (X_Label != null) {
+            X_Label.setText(String.format("X: %.2f", x));
+        }
+        if (Y_Label != null) {
+            Y_Label.setText(String.format("Y: %.2f", y));
+        }
+    }
+
     public boolean addComponent(int componentId, int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             return false;
@@ -182,18 +194,6 @@ public class Ship0Controller {
             };
             default -> null;
         };
-    }
-
-    /**
-     * Aggiorna le etichette delle coordinate
-     */
-    private void updateCoordinateLabels(double x, double y) {
-        if (X_Label != null) {
-            X_Label.setText(String.format("X: %.2f", x));
-        }
-        if (Y_Label != null) {
-            Y_Label.setText(String.format("Y: %.2f", y));
-        }
     }
 
     /**
