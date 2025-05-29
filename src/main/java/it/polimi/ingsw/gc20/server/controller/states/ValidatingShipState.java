@@ -74,7 +74,6 @@ public class ValidatingShipState extends State {
                     //notify all the players that the ship is valid and waiting for other players
                     NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
-
                 return true;
             } else {
                 NetworkService.getInstance().sendToClient(player.getUsername(), new AlienPlacementePhaseMessage());
@@ -99,6 +98,7 @@ public class ValidatingShipState extends State {
         }
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
+        isShipValid(player);
     }
 
     @Override
