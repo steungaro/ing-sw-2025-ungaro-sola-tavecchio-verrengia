@@ -102,8 +102,7 @@ public class Board0Controller {
             playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
             usernameLabel.setText("Username: " + player.username);
             creditsLabel.setText("Credits: " + player.credits);
-            leaderLabel.setText("Leader: " + (player. ? "Yes" : "No"));
-            inGameLabel.setText("In Game: " + (player.isInGame() ? "Yes" : "No"));
+            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
         }
     }
 
