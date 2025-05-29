@@ -71,7 +71,7 @@ public class CargoMenu implements MenuState{
                     String cargoInput = scanner.nextLine().trim();
                     try {
                         x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
-                        y = Integer.parseInt(cargoInput.split(" ")[1]) - 4;
+                        y = Integer.parseInt(cargoInput.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
                     } catch (NumberFormatException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         x = -1;

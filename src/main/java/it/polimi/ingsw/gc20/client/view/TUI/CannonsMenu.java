@@ -116,7 +116,7 @@ public class CannonsMenu implements MenuState {
                     for (int i = 0; i < batteryCoordinates.length; i += 2) {
                         try {
                             int x = Integer.parseInt(batteryCoordinates[i]) - 5;
-                            int y = Integer.parseInt(batteryCoordinates[i + 1]) - 4;
+                            int y = Integer.parseInt(batteryCoordinates[i + 1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4);
                             Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                             batteries.add(coordinates);
                         } catch (NumberFormatException e) {

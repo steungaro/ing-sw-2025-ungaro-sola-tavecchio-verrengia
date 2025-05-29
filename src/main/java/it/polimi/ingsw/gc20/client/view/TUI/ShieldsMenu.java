@@ -76,7 +76,7 @@ public class ShieldsMenu implements MenuState {
                     String[] inputCoordinates = input.split(" ");
                     try {
                         xs = Integer.parseInt(inputCoordinates[0]) - 5;
-                        ys = Integer.parseInt(inputCoordinates[1]) - 4;
+                        ys = Integer.parseInt(inputCoordinates[1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4);
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                         xs = -1;

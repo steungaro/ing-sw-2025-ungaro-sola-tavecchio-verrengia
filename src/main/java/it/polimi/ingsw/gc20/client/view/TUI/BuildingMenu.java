@@ -223,7 +223,7 @@ public class BuildingMenu implements MenuState{
                         String[] parts = coordinates.split(" ");
                         try {
                             row = Integer.parseInt(parts[0]) - 5;
-                            col = Integer.parseInt(parts[1]) - 4;
+                            col = Integer.parseInt(parts[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
                         } catch (NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         }
