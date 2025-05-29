@@ -94,6 +94,7 @@ public class GameModel {
         player.setUsername(username);
         player.setGameStatus(true);
         player.setColor(PlayerColor.values()[index]);
+        player.setPosition(-1);
         if (level == 2){
             player.setShip(new NormalShip());
         }else{
