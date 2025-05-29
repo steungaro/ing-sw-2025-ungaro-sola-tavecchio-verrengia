@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -10,9 +13,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 public class Board0Controller {
+
+    @FXML private Label playerColorLabel;
+    @FXML private Label usernameLabel;
+    @FXML private Label creditsLabel;
+    @FXML private Label inGameLabel;
 
     @FXML private Circle circle0;
     @FXML private Circle circle1;
@@ -72,6 +82,28 @@ public class Board0Controller {
                     ((Pane) newParent).getChildren().add(label);
                 }
             });
+        }
+
+        ClientGameModel clientGameModel = ClientGameModel.getInstance();
+        if (clientGameModel != null) {
+            String currentUsername = clientGameModel.getUsername();
+            List<ViewPlayer> players = clientGameModel.getPlayers();
+            if (players != null && currentUsername != null) {
+                Optional<ViewPlayer> currentPlayerOpt = players.stream()
+                        .filter(p -> currentUsername.equals(p.username))
+                        .findFirst();
+                currentPlayerOpt.ifPresent(this::updateStatisticBoard);
+            }
+        }
+    }
+
+    public void updateStatisticBoard(ViewPlayer player) {
+        if (player != null) {
+            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
+            usernameLabel.setText("Username: " + player.username);
+            creditsLabel.setText("Credits: " + player.credits);
+            leaderLabel.setText("Leader: " + (player. ? "Yes" : "No"));
+            inGameLabel.setText("In Game: " + (player.isInGame() ? "Yes" : "No"));
         }
     }
 
