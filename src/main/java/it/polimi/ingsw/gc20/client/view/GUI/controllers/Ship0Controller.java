@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
+import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Ship0Controller {
@@ -21,7 +23,21 @@ public class Ship0Controller {
     @FXML private Label X_Label;
     @FXML private Label Y_Label;
 
-    // ImageView per ogni cella della griglia
+
+    // 3 Slot -> 60x90, 125x57, 125x124
+    // 2 Slot -> 90x57, 90x124
+    private final List<int[]> cargoCord3 = List.of(
+            new int[]{60, 90},
+            new int[]{125, 57},
+            new int[]{125, 124}
+    );
+
+    private final List<int[]> cargoCord2 = List.of(
+            new int[]{90, 57},
+            new int[]{90, 124}
+    );
+
+
     @FXML private ImageView imageCell_0_0;
     @FXML private ImageView imageCell_0_1;
     @FXML private ImageView imageCell_0_2;
@@ -122,6 +138,8 @@ public class Ship0Controller {
             setComponentProp(layeredPane, comp);
 
             parent.add(layeredPane, col, row);
+
+            // Rotate the IMG
             gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
@@ -140,12 +158,68 @@ public class Ship0Controller {
     }
 
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
-        // Implementazione specifica per ViewCabin, se necessario
-        return;
+        // Gestione degli alieni nella cabina
+        if (comp.alien) {
+            String alienImagePath;
+            if (comp.alienColor == AlienColor.PURPLE) {
+                alienImagePath = "/images/icons/purple_alien.png";
+            } else {
+                alienImagePath = "/images/icons/brown_alien.png";
+            }
+
+            try {
+                ImageView alienIcon = new ImageView(new Image(getClass().getResourceAsStream(alienImagePath)));
+                alienIcon.setFitHeight(30);
+                alienIcon.setFitWidth(30);
+                alienIcon.setPreserveRatio(true);
+
+                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
+                layeredPane.getChildren().add(alienIcon);
+            } catch (Exception e) {
+                System.err.println("Impossibile caricare l'immagine dell'alieno: " + e.getMessage());
+            }
+        } else if (comp.astronauts > 0) {
+            // Aggiungi il numero di astronauti
+            Label astronautsLabel = new Label(Integer.toString(comp.astronauts));
+
+            try {
+                ImageView astronautIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/astr.png")));
+                astronautIcon.setFitHeight(25);
+                astronautIcon.setFitWidth(25);
+                astronautIcon.setPreserveRatio(true);
+
+                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.TOP_LEFT);
+                StackPane.setAlignment(astronautIcon, javafx.geometry.Pos.BOTTOM_LEFT);
+
+                layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
+            } catch (Exception e) {
+                System.err.println("Impossibile caricare l'immagine dell'astronauta: " + e.getMessage());
+                layeredPane.getChildren().add(astronautsLabel);
+            }
+        }
+
+        if (comp.cabinColor != AlienColor.NONE) {
+            String colorStr;
+            switch (comp.cabinColor) {
+                case PURPLE -> colorStr = "purple";
+                case BROWN -> colorStr = "brown";
+                case BOTH -> colorStr = "both";
+                default -> colorStr = null;
+            }
+
+            if (colorStr != null) {
+                Label colorIndicator = new Label("");
+                colorIndicator.setStyle("-fx-background-color: " + colorStr + "; -fx-min-width: 10px; -fx-min-height: 10px; -fx-border-color: white;");
+                StackPane.setAlignment(colorIndicator, javafx.geometry.Pos.BOTTOM_RIGHT);
+                layeredPane.getChildren().add(colorIndicator);
+            }
+        }
     }
 
+    // 3 Slot -> 60x90, 125x57, 125x124
+    // 2 Slot -> 90x57, 90x124
+    // Cargo 30px x 30px
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        // Implementazione specifica per ViewCargoHold, se necessario
         return;
     }
 
