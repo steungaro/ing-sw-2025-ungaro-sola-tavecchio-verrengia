@@ -1,16 +1,13 @@
 package it.polimi.ingsw.gc20.server.model.gamesets;
 
-import java.util.*;
-
 /**
  * @author GC20
+ * Represents an hourglass that can be turned to measure time.
  */
 public class Hourglass {
     private int period;
     private int turned;
-    private int remainingTime;
-    private final Timer timer;
-    private TimerTask currentTask;
+    private long timestamp;
 
     /**
      * Default constructor
@@ -18,9 +15,6 @@ public class Hourglass {
     public Hourglass(int period) {
         this.period = period;
         this.turned = 0;
-        this.remainingTime = period;
-        this.timer = new Timer(true);  // To run the countdown in a separate thread
-        this.currentTask = null;
     }
 
     /** Getter function for the period of the hourglass
@@ -31,7 +25,7 @@ public class Hourglass {
         return period;
     }
 
-    /** Getter function for the number of times the hourglass hase been turned
+    /** Getter function for the number of times the hourglass has been turned
      *
      * @return number of times the hourglass has been turned
      */
@@ -44,65 +38,53 @@ public class Hourglass {
      */
     public void setPeriod(int period) {
         this.period = period;
-        this.remainingTime = period;
     }
 
-    /** function to turn the hourglass
+    /** Function to turn the hourglass
      *
      */
     public void turn() {
         this.turned++;
-        this.remainingTime = this.period;
+        this.timestamp = System.currentTimeMillis();
         this.initCountdown();
     }
 
-    /** function to get the remaining time of the hourglass
+    /** Function to get the remaining time of the hourglass
      *
      * @return remaining time of the hourglass
      */
     public int getRemainingTime() {
-        return remainingTime;
+        return period - (System.currentTimeMillis() - timestamp) > 0 ? (int) (period - (System.currentTimeMillis() - timestamp) / 1000) : 0;
     }
 
-    /** function to get the total elapsed time of the hourglass
+    /** Function to get the total elapsed time of the hourglass
      *
      * @return total elapsed time of the hourglass
      */
     public int getTotalElapsed() {
-        return period * (turned + 1) - remainingTime;
+        return period * (turned + 1) - getRemainingTime();
     }
 
-    /** function to start the countdown of the hourglass
+    /** Function to start the countdown of the hourglass
      *
      */
     public void initCountdown() {
-        // If there is a task running, cancel it
-        if (currentTask != null) {
-            currentTask.cancel();
-        }
-        this.remainingTime = this.period;
-        currentTask = new TimerTask() {
-            @Override
-            public void run() {
-                if (remainingTime == 0) {
-                    cancel();  // Stop the task
-                } else {
-                    remainingTime--;
-                }
-            }
-        };
-
-        // Schedule the task to run every second
-        timer.scheduleAtFixedRate(currentTask, 0, 1000);
+        timestamp = System.currentTimeMillis();
     }
 
-    /** function to stop the countdown of the hourglass
+    /** Getter function for the timestamp of the hourglass
+     *
+     * @return timestamp of the hourglass
+     */
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    /** Function to stop the countdown of the hourglass
      *
      */
+    @Deprecated
     public void stopCountdown() {
-        if (currentTask != null) {
-            currentTask.cancel();
-            currentTask = null;
-        }
+        // This method is deprecated and should not be used.
     }
 }

@@ -34,7 +34,7 @@ public class NormalBoard extends Board {
         this.hourglass = new Hourglass(90);
     }
 
-    /** function that merges the decks and shuffles them
+    /** Function that merges the decks and shuffles them
      */
     @Override
     public void mergeDecks() {
@@ -47,7 +47,7 @@ public class NormalBoard extends Board {
 
         //shuffling
         Collections.shuffle(deck);
-        //first card is always a level 2 card
+        //the first card is always a level 2 card
         for (int i=0; i<deck.size(); i++){
             if (deck.get(i).getLevel() == 2){
                 Collections.swap(deck, 0, i);
@@ -57,9 +57,9 @@ public class NormalBoard extends Board {
         this.setDeck(deck);
     }
 
-    /** function that peek the numDeck deck and returns it
+    /** Function that peeks the numDeck deck and returns it
      * @param numDeck the deck to peek
-     * @return List<AdventureCard>
+     * @return List<AdventureCard> the deck that is peeked
      * @throws InvalidIndexException if numDeck is not 1, 2 or 3
      */
     public List<AdventureCard> peekDeck(Integer numDeck) throws InvalidIndexException {
@@ -71,8 +71,9 @@ public class NormalBoard extends Board {
         };
     }
 
-    /** function that creates the decks
-     *
+    /** Function that creates the four decks of cards.
+     * The first three decks are visible, while the fourth is invisible
+     * Each deck contains 3 level 2 cards and 1 level 1 card.
      */
     public void createDeck() {
         List<AdventureCard> level1Cards = new ArrayList<>();
@@ -124,9 +125,9 @@ public class NormalBoard extends Board {
 
     }
 
-    /** getter function for one of the four decks
+    /** Getter function for one of the four decks
      * @param numDeck the deck to get
-     * @return List<AdventureCard>
+     * @return List<AdventureCard> the deck that is returned
      * @throws InvalidIndexException if numDeck is not 1, 2, 3 or 4
      */
     public List<AdventureCard> getDeck(Integer numDeck) throws InvalidIndexException {
@@ -140,7 +141,7 @@ public class NormalBoard extends Board {
     }
 
     /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
-     * @throws HourglassException if the hourglass is already turned 3 times or if the remaining time is not 0
+     * @throws HourglassException if the hourglass is already turned 3 times, or if the remaining time is not 0
      */
     public void turnHourglass() throws HourglassException {
         if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 2) {
@@ -166,7 +167,9 @@ public class NormalBoard extends Board {
 
     /**
      * Function that stops the hourglass
+     * @deprecated This function is deprecated and should not be used. Use {@link #initCountdown()} instead.
      */
+    @Deprecated
     public void stopHourglass() {
         this.hourglass.stopCountdown();
     }
@@ -178,7 +181,19 @@ public class NormalBoard extends Board {
         this.hourglass.initCountdown();
     }
 
+    /**
+     * Function that returns the number of times the hourglass has been turned
+     * @return int is the number of times the hourglass has been turned
+     */
     public int getTurnedHourglass() {
         return this.hourglass.getTurned();
+    }
+
+    /**
+     * Function that returns the timestamp of the hourglass
+     * @return long is the timestamp of the hourglass
+     */
+    public long getHourglassTimestamp() {
+        return this.hourglass.getTimestamp();
     }
 }

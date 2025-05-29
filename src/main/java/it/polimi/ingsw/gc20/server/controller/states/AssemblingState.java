@@ -21,14 +21,12 @@ public class AssemblingState extends State {
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
     private final Map<Player, StatePhase> playersPhase = new HashMap<>(); // map of players to their current phase
-    private long timestamp;
     /**
      * Default constructor
      */
     public AssemblingState(GameModel model, GameController controller) {
         super(model, controller);
         //init the state
-        timestamp = System.currentTimeMillis();
         getModel().initCountdown();
         for (Player player : getModel().getInGamePlayers()) {
             assembled.put(player, false);
@@ -42,7 +40,7 @@ public class AssemblingState extends State {
 
             NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
 
-            NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getRemainingTime(), getModel().getTurnedHourglass(), timestamp));
+            NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
 
             // notify each player of the phase they are in
             NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
@@ -320,11 +318,9 @@ public class AssemblingState extends State {
         if (getModel().getRemainingTime() != 0) {
             throw new HourglassException("Cannot turn hourglass if time is not 0");
         }
-        //turn the hourglass
-        timestamp = System.currentTimeMillis();
         getModel().turnHourglass();
         for (String user: getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(user, new HourglassMessage(getModel().getRemainingTime(), getModel().getTurnedHourglass(), timestamp));
+            NetworkService.getInstance().sendToClient(user, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         }
         //if the player has peeked a deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
@@ -357,8 +353,7 @@ public class AssemblingState extends State {
         //notify the player that they are in the TAKE_COMPONENT phase after updating the model
         NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
         NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
-        timestamp = System.currentTimeMillis();
-        NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getRemainingTime(), getModel().getTurnedHourglass(), timestamp));
+        NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         if (componentsInHand.get(getController().getPlayerByID(username))==null){
             NetworkService.getInstance().sendToClient(username, new TakeComponentMessage());
         }else {

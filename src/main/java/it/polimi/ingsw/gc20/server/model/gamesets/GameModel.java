@@ -664,6 +664,11 @@ public class GameModel {
         }
     }
 
+    public long getHourglassTimestamp() {
+        Board board = this.game.getBoard();
+        return ((NormalBoard) board).getHourglassTimestamp();
+    }
+
     /** function that return the amount of time the hourglass has been turned
      *
      * @return the amount of time the hourglass has been turned
