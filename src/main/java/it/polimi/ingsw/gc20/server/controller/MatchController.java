@@ -125,6 +125,7 @@ public class MatchController implements MatchControllerInterface {
      */
     public void joinLobby(String id, String user) {
         Lobby lobby = null;
+        Boolean start = false;
         for(Lobby l: lobbies) {
             if (l.getName().equals(id)) {
                 lobby = l;
@@ -147,12 +148,15 @@ public class MatchController implements MatchControllerInterface {
                     NetworkService.getInstance().sendToClient(u, new LobbyMessage(users, lobby.getName(), lobby.getLevel(), lobby.getMaxPlayers()));
                 }
             } else {
-                startLobby(lobby.getOwnerUsername());
+                start = true;
             }
         } catch (FullLobbyException e) {
             //notify the player with a error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby is full"));
             logger.log(Level.WARNING, "Lobby is full", e);
+        }
+        if (start) {
+            startLobby(lobby.getOwnerUsername());
         }
     }
 
