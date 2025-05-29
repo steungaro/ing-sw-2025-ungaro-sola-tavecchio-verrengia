@@ -82,6 +82,7 @@ public class Pile {
      */
     public void addUnviewed(List<Component> c) {
         //add all the components to the unviewed list
+        Collections.shuffle (c);
         this.unviewed.addAll(c);
     }
 
