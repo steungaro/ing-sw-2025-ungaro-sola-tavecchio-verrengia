@@ -1,13 +1,16 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 public class Board0Controller {
 
@@ -72,6 +75,42 @@ public class Board0Controller {
         }
     }
 
+    public void setPlayerPosition(int circleIndex, PlayerColor playerColor) {
+        if (circleIndex >= 0 && circleIndex < circles.size()) {
+            Circle circle = circles.get(circleIndex);
+            if (circle != null && playerColor != null) {
+                Color fxColor = null;
+                switch (playerColor) {
+                    case RED:
+                        fxColor = Color.RED;
+                        break;
+                    case BLUE:
+                        fxColor = Color.BLUE;
+                        break;
+                    case GREEN:
+                        fxColor = Color.GREEN;
+                        break;
+                    case YELLOW:
+                        fxColor = Color.YELLOW;
+                        break;}
+                if (fxColor != null) {
+                    circle.setFill(fxColor);
+                }
+            }
+        }
+    }
+
+    public void clearPosition(int circleIndex) {
+        if (circleIndex >= 0 && circleIndex < circles.size()) {
+            Circle circle = circles.get(circleIndex);
+            if (circle != null) {
+                circle.setFill(Color.TRANSPARENT);
+            }
+            if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
+                circleLabels.get(circleIndex).setText("");
+            }
+        }
+    }
 
     public void setNumberInCircle(int circleIndex, int number) {
         if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
