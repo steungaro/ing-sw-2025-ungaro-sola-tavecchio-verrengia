@@ -115,7 +115,7 @@ public class Ship2Controller {
             return false;
         }
 
-        String imagePath = "/images/components/component_" + componentId + ".png"; // Assumi questo path
+        String imagePath = "/images/components/" + componentId + ".png";
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
