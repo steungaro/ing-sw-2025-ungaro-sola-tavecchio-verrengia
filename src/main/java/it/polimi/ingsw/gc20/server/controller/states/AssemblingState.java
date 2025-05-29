@@ -353,7 +353,9 @@ public class AssemblingState extends State {
         //notify the player that they are in the TAKE_COMPONENT phase after updating the model
         NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
         NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
-        NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
+        if (getModel().getLevel() == 2) {
+            NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
+        }
         if (componentsInHand.get(getController().getPlayerByID(username))==null){
             NetworkService.getInstance().sendToClient(username, new TakeComponentMessage());
         }else {

@@ -20,6 +20,7 @@ public class CannonsMenu implements MenuState {
     private final List<Pair<Integer, Integer>> batteries = new ArrayList<>();
     private final String message;
 
+
     public CannonsMenu(String message) {
         this.message = message;
     }
