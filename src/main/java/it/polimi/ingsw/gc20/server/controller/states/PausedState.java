@@ -28,4 +28,8 @@ public class PausedState extends State {
         return "PausedState";
     }
 
+    public boolean isConcurrent(){
+        return previousState.isConcurrent();
+    }
+
 }

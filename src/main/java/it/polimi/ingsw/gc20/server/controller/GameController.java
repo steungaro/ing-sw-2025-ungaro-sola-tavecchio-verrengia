@@ -473,14 +473,13 @@ public class GameController implements GameControllerInterface {
                 for (String u : getInGameConnectedPlayers()) {
                     NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(u, getPlayerByID(u).getShip(), "reconnection"));
                 }
-                state.rejoin(username);
                 if (connectedPlayers.size() == 1) {
                     connectedPlayers.add(username);
                     state.resume();
                 } else {
                     connectedPlayers.add(username);
                 }
-
+                state.rejoin(username);
             } else {
                 pendingPlayers.add(username);
             }
