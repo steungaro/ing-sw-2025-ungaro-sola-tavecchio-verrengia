@@ -146,6 +146,8 @@ public class MatchController implements MatchControllerInterface {
                     logger.log(Level.INFO, "User " + u + " joined lobby " + lobby.getName());
                     NetworkService.getInstance().sendToClient(u, new LobbyMessage(users, lobby.getName(), lobby.getLevel(), lobby.getMaxPlayers()));
                 }
+            } else {
+                startLobby(lobby.getOwnerUsername());
             }
         } catch (FullLobbyException e) {
             //notify the player with a error message

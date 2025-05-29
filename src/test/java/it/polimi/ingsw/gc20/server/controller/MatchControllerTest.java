@@ -24,7 +24,7 @@ class MatchControllerTest {
         // Nessun giocatore dovrebbe essere in un gioco inizialmente
         matchController.createLobby("lobby10", "player1", 4, 2);
 
-        assertNull(matchController.getGameControllerForPlayer("player1"));
+        assertNotNull(matchController.getGameControllerForPlayer("player1"));
         assertNull(matchController.getGameControllerForPlayer("player4"));
     }
 
