@@ -29,6 +29,7 @@ public class NormalBoardTest {
             fail ("Exception should not be thrown");
         }
         assertThrows(InvalidIndexException.class, () -> board.peekDeck(5));
+        board.initCountdown();
         assertEquals (90, board.getRemainingTime());
     }
 
@@ -59,7 +60,7 @@ public class NormalBoardTest {
         board.hourglass.setPeriod(5);
         board.initCountdown();
         assertEquals(5, board.getRemainingTime());
-        Thread.sleep(2900);
+        Thread.sleep(3000);
         assertEquals(2, board.getRemainingTime());
         assertEquals(12, board.getTotalRemainingTime());
         Thread.sleep(2000);
@@ -69,7 +70,6 @@ public class NormalBoardTest {
             fail("Exception should not be thrown");
         }
         assertEquals(5, board.getRemainingTime());
-        board.stopHourglass();
     }
 
     @Test
@@ -77,19 +77,19 @@ public class NormalBoardTest {
         board.hourglass.setPeriod(5);
         board.initCountdown();
         assertThrows(HourglassException.class, () -> board.turnHourglass());
-        Thread.sleep(5100);
+        Thread.sleep(5000);
         try {
             board.turnHourglass();
         } catch (Exception e) {
             fail("Exception should not be thrown");
         }
-        Thread.sleep(5100);
+        Thread.sleep(5000);
         try {
             board.turnHourglass();
         } catch (HourglassException e) {
             fail("Exception should not be thrown");
         }
-        Thread.sleep(5100);
+        Thread.sleep(5000);
         assertEquals(0, board.getRemainingTime());
         assertEquals(2, board.getTurnedHourglass());
         assertThrows(HourglassException.class, () -> board.turnHourglass());

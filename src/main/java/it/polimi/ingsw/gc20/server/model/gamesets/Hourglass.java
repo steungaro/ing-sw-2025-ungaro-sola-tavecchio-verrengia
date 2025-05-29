@@ -45,7 +45,6 @@ public class Hourglass {
      */
     public void turn() {
         this.turned++;
-        this.timestamp = System.currentTimeMillis();
         this.initCountdown();
     }
 
@@ -54,7 +53,7 @@ public class Hourglass {
      * @return remaining time of the hourglass
      */
     public int getRemainingTime() {
-        return period - (System.currentTimeMillis() - timestamp) > 0 ? (int) (period - (System.currentTimeMillis() - timestamp) / 1000) : 0;
+        return period - ((System.currentTimeMillis() - timestamp)/1000) > 0 ? (int) (period - (System.currentTimeMillis() - timestamp) / 1000) : 0;
     }
 
     /** Function to get the total elapsed time of the hourglass
@@ -80,11 +79,4 @@ public class Hourglass {
         return timestamp;
     }
 
-    /** Function to stop the countdown of the hourglass
-     *
-     */
-    @Deprecated
-    public void stopCountdown() {
-        // This method is deprecated and should not be used.
-    }
 }

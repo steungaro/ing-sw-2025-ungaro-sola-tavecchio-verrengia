@@ -165,14 +165,6 @@ public class NormalBoard extends Board {
         return 3 * this.hourglass.getPeriod() - this.hourglass.getTotalElapsed();
     }
 
-    /**
-     * Function that stops the hourglass
-     * @deprecated This function is deprecated and should not be used. Use {@link #initCountdown()} instead.
-     */
-    @Deprecated
-    public void stopHourglass() {
-        this.hourglass.stopCountdown();
-    }
 
     /**
      * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.

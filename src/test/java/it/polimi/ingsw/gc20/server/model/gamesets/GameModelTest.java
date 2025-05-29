@@ -798,7 +798,7 @@ class GameModelTest {
         board.hourglass.setPeriod(5);
         gameModel.initCountdown();
         assertEquals(5, gameModel.getRemainingTime());
-        Thread.sleep(2900);
+        Thread.sleep(3000);
         assertEquals(2, gameModel.getRemainingTime());
         assertEquals(12, gameModel.getTotalRemainingTime());
         Thread.sleep(2000);
@@ -808,7 +808,6 @@ class GameModelTest {
             fail("Exception should not be thrown");
         }
         assertEquals(5, gameModel.getRemainingTime());
-        board.stopHourglass();
     }
 
     @Test
