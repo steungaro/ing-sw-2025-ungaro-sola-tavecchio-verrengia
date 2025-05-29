@@ -46,10 +46,8 @@ public class Ship0Controller {
     @FXML private ImageView imageCell_4_3;
     @FXML private ImageView imageCell_4_4;
 
-    // Mappa per memorizzare i componenti presenti sulla griglia
     private final Map<String, Integer> gridComponents = new HashMap<>();
 
-    // Numero di righe e colonne nella griglia
     private final int ROWS = 5;
     private final int COLS = 5;
 
@@ -108,8 +106,7 @@ public class Ship0Controller {
             return false;
         }
 
-        // Carica l'immagine appropriata in base all'ID del componente
-        String imagePath = "/images/components/component_" + componentId + ".png";
+        String imagePath = "/images/components/" + componentId + ".png";
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
@@ -121,12 +118,6 @@ public class Ship0Controller {
         }
     }
 
-    /**
-     * Rimuove un componente dalla posizione specificata
-     * @param row Riga della griglia (0-4)
-     * @param col Colonna della griglia (0-4)
-     * @return true se la rimozione è avvenuta con successo, false altrimenti
-     */
     public boolean removeComponent(int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             return false;
@@ -144,12 +135,6 @@ public class Ship0Controller {
         return true;
     }
 
-    /**
-     * Ottiene l'ImageView alla posizione specificata
-     * @param row Riga della griglia
-     * @param col Colonna della griglia
-     * @return L'ImageView corrispondente o null se non trovato
-     */
     private ImageView getImageViewAt(int row, int col) {
         return switch (row) {
             case 0 -> switch (col) {
@@ -196,9 +181,6 @@ public class Ship0Controller {
         };
     }
 
-    /**
-     * Pulisce tutta la griglia rimuovendo tutti i componenti
-     */
     public void clearAllComponents() {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
