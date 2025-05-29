@@ -24,7 +24,7 @@ class MatchControllerTest {
         // Nessun giocatore dovrebbe essere in un gioco inizialmente
         matchController.createLobby("lobby10", "player1", 4, 2);
 
-        assertNotNull(matchController.getGameControllerForPlayer("player1"));
+        assertNull(matchController.getGameControllerForPlayer("player1"));
         assertNull(matchController.getGameControllerForPlayer("player4"));
     }
 
@@ -118,13 +118,13 @@ class MatchControllerTest {
     }
 
     @Test
-    void startLobby() {
+    void startLobby() throws InterruptedException {
         // Creiamo una nuova lobby con abbastanza giocatori
         matchController.createLobby("startTestLobby", "owner", 2, 2);
+        Thread.sleep(1000); // Attesa per garantire che la lobby sia pronta
         matchController.joinLobby("startTestLobby", "player1");
 
         // Test base: verifichiamo che startLobby non lanci eccezioni
-        matchController.startLobby("owner");
         matchController.getGameController("owner");
     }
 

@@ -152,7 +152,6 @@ public class AdventureCard implements Serializable {
 
             // Instantiate the state using the constructor
             Object stateInstance = constructor.newInstance(model, controller, this);
-
             // Set the state in the controller
             controller.setState((State) stateInstance);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException |

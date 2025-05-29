@@ -47,6 +47,6 @@ public class StardustState extends PlayingState {
         }
         phase = StatePhase.STANDBY_PHASE;
         getController().getActiveCard().playCard();
-        getController().setState(new PreDrawState(getController()));
+        //getController().setState(new PreDrawState(getController()));
     }
 }

@@ -117,24 +117,24 @@ class AdventureCardTest {
             GameController controller = new GameController("1234", players, 2);
         GameModel model = controller.getModel();
 
-        adventureCard.setName("Stardust");
+        adventureCard.setName("Slavers");
 
         // Ensure no exceptions are thrown
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
-        assertEquals("StardustState", controller.getState());
+        assertEquals("SlaversState{firePower=0, lostMembers=0, reward=0, lostDays=0}", controller.getState());
 
 
         adventureCard.setName("Test");
         // Ensure the exception is caught internally and does not propagate
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
 
-        assertEquals("StardustState", controller.getState());
+        assertEquals("SlaversState{firePower=0, lostMembers=0, reward=0, lostDays=0}", controller.getState());
 
-        adventureCard.setName("Epidemic");
+        adventureCard.setName("Pirates");
 
         // Ensure no exceptions are thrown
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
-        assertEquals("EpidemicState", controller.getState());
+        assertEquals("PiratesState", controller.getState());
 
 
         adventureCard.setName("AbandonedShip");

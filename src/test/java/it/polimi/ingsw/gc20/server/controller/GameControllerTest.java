@@ -664,7 +664,7 @@ class GameControllerTest {
     void getHourglassTime() throws InterruptedException {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
-        Thread.sleep(9500);
+        Thread.sleep(10000);
         assertEquals(80, gameController.getModel().getRemainingTime());
 
         Thread.sleep(1000);

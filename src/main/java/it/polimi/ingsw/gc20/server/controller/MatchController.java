@@ -124,26 +124,33 @@ public class MatchController implements MatchControllerInterface {
      * @param user is the user that wants to join
      */
     public void joinLobby(String id, String user) {
-        for(Lobby l: lobbies){
-            if(l.getName().equals(id)){
-                try {
-                    l.addPlayer(user);
-                    playersInLobbies.put(user, l);
-                    //notify the players in the lobby with a lobby message
-                    if (l.getUsers().size()==l.getMaxPlayers()){
-                        startLobby(l.getOwnerUsername());
-                    } else {
-                        for (String u : l.getUsers()) {
-                            logger.log(Level.INFO, "User " + u + " joined lobby " + l.getName());
-                            NetworkService.getInstance().sendToClient(u, new LobbyMessage(new ArrayList<>(l.getUsers()), l.getName(), l.getLevel(), l.getMaxPlayers()));
-                        }
-                    }
-                } catch (FullLobbyException e) {
-                    //notify the player with a error message
-                    NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby is full"));
-                    logger.log(Level.WARNING, "Lobby is full", e);
+        Lobby lobby = null;
+        for(Lobby l: lobbies) {
+            if (l.getName().equals(id)) {
+                lobby = l;
+            }
+        }
+        if (lobby == null) {
+            //notify the player with a error message
+            NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby not found"));
+            logger.log(Level.WARNING, "Lobby not found: " + id);
+            return;
+        }
+        try {
+            lobby.addPlayer(user);
+            playersInLobbies.put(user, lobby);
+            //notify the players in the lobby with a lobby message
+            if (lobby.getUsers().size()!=lobby.getMaxPlayers()) {
+                List<String> users = new ArrayList<>(lobby.getUsers());
+                for (String u : users) {
+                    logger.log(Level.INFO, "User " + u + " joined lobby " + lobby.getName());
+                    NetworkService.getInstance().sendToClient(u, new LobbyMessage(users, lobby.getName(), lobby.getLevel(), lobby.getMaxPlayers()));
                 }
             }
+        } catch (FullLobbyException e) {
+            //notify the player with a error message
+            NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby is full"));
+            logger.log(Level.WARNING, "Lobby is full", e);
         }
     }
 
