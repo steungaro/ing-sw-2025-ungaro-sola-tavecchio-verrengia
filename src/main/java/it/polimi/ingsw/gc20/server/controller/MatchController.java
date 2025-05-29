@@ -125,7 +125,7 @@ public class MatchController implements MatchControllerInterface {
      */
     public void joinLobby(String id, String user) {
         Lobby lobby = null;
-        Boolean start = false;
+        boolean start = false;
         for(Lobby l: lobbies) {
             if (l.getName().equals(id)) {
                 lobby = l;
