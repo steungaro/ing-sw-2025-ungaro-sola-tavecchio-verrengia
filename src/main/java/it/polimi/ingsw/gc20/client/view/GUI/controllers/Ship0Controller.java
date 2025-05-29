@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -8,6 +8,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,7 +96,8 @@ public class Ship0Controller {
         }
     }
 
-    public boolean addComponent(int componentId, int row, int col) {
+    public boolean addComponent(ViewComponent comp, int row, int col) {
+        int componentId = comp.id;
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
             return false;
         }
@@ -106,10 +109,19 @@ public class Ship0Controller {
             return false;
         }
 
-        String imagePath = "/images/components/" + componentId + ".png";
+        GridPane parent = (GridPane) targetCell.getParent();
+        parent.getChildren().remove(targetCell);
+        StackPane layeredPane = new StackPane();
+
+        String imagePath = "/tiles/" + componentId + ".png";
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
+            layeredPane.getChildren().add(targetCell);
+
+            setComponentProp(layeredPane, comp);
+
+            parent.add(layeredPane, col, row);
             gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
@@ -117,6 +129,37 @@ public class Ship0Controller {
             return false;
         }
     }
+
+    public void setComponentProp(StackPane layeredPane, ViewComponent comp) {
+        return;
+    }
+
+    public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
+        // Implementazione specifica per ViewBattery, se necessario
+        return;
+    }
+
+    public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
+        // Implementazione specifica per ViewCabin, se necessario
+        return;
+    }
+
+    public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
+        // Implementazione specifica per ViewCargoHold, se necessario
+        return;
+    }
+
+    public void setComponentProp(StackPane layeredPane, ViewStartingCabin comp) {
+        // Implementazione specifica per ViewStartingCabin, se necessario
+        return;
+    }
+
+    public void setComponentProp(StackPane layeredPane, ViewSpecialCargoHold comp) {
+        // Implementazione specifica per ViewSpecialCargoHold, se necessario
+        return;
+    }
+
+
 
     public boolean removeComponent(int row, int col) {
         if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
