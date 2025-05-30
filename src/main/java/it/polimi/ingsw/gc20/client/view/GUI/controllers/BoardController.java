@@ -18,22 +18,9 @@ import java.util.Optional;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 public abstract class BoardController {
-    @FXML protected Label playerColorLabel;
-    @FXML protected Label usernameLabel;
-    @FXML protected Label creditsLabel;
-    @FXML protected Label inGameLabel;
 
     protected List<Circle> circles = new ArrayList<>();
     protected List<Label> circleLabels = new ArrayList<>();
-
-    public void updateStatisticBoard(ViewPlayer player) {
-        if (player != null) {
-            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            usernameLabel.setText("Username: " + player.username);
-            creditsLabel.setText("Credits: " + player.credits);
-            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
-        }
-    }
 
     public void setPlayerPosition(int circleIndex, PlayerColor playerColor) {
         if (circleIndex >= 0 && circleIndex < circles.size()) {
