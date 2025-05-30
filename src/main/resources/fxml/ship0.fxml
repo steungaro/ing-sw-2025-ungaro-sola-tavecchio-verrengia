@@ -8,12 +8,21 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
-
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller" style="-fx-background-color: #222233;">
 
     <ImageView fx:id="boardImageView" fitWidth="800" preserveRatio="true">
         <Image url="@cardboard/cardboard-1.jpg" />
     </ImageView>
+
+    <VBox layoutX="620.0" layoutY="20.0" spacing="10.0" prefWidth="160.0">
+        <Label text="Player" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label fx:id="playerColorLabel" text="Color: " style="-fx-text-fill: white;"/>
+        <Label fx:id="usernameLabel" text="Username: " style="-fx-text-fill: white;"/>
+        <Label fx:id="creditsLabel" text="Credits: " style="-fx-text-fill: white;"/>
+        <Label fx:id="inGameLabel" text="In Game: " style="-fx-text-fill: white;"/>
+    </VBox>
 
     <BorderPane prefHeight="200.0" prefWidth="200.0">
         <center>
