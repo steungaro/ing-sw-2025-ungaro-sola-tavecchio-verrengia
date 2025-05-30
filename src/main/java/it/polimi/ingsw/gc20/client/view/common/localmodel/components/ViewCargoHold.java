@@ -82,4 +82,8 @@ public class ViewCargoHold extends ViewComponent {
         }
         return cargo;
     }
+
+    public int getSize() {
+        return red + green + blue + yellow + free;
+    }
 }
