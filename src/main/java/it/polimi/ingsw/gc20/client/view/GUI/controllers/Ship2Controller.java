@@ -11,15 +11,8 @@ import javafx.scene.layout.Pane;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Ship2Controller {
+public class Ship2Controller extends ShipController{
 
-    @FXML private ImageView boardImageView;
-    @FXML private GridPane componentsGrid;
-    @FXML private Pane gridWrapper; // Non utilizzato nel codice fornito, ma mantenuto se serve altrove
-    @FXML private Label X_Label;
-    @FXML private Label Y_Label;
-
-    // ImageView per la griglia 5x7
     @FXML private ImageView imageCell_0_0;
     @FXML private ImageView imageCell_0_1;
     @FXML private ImageView imageCell_0_2;
@@ -56,100 +49,8 @@ public class Ship2Controller {
     @FXML private ImageView imageCell_4_5;
     @FXML private ImageView imageCell_4_6;
 
-    private final Map<String, Integer> gridComponents = new HashMap<>();
     private final int ROWS = 5;
     private final int COLS = 7;
-
-    @FXML
-    private void initialize() {
-        if (boardImageView != null && boardImageView.getImage() != null) {
-            setupGridBounds();
-        } else if (boardImageView != null) {
-            boardImageView.imageProperty().addListener((obs, oldImg, newImg) -> {
-                if (newImg != null) {
-                    setupGridBounds();
-                }
-            });
-        }
-    }
-
-    private void setupGridBounds() {
-        Platform.runLater(() -> {
-            if (boardImageView == null || componentsGrid == null) return;
-
-            double boardWidth = boardImageView.getBoundsInParent().getWidth();
-            double boardHeight = boardImageView.getBoundsInParent().getHeight();
-
-            double gridX = boardWidth * 0.25;
-            double gridY = boardHeight * 0.18;
-            double gridWidth = boardWidth * 0.5;
-            double gridHeight = boardHeight * 0.64;
-
-            componentsGrid.setLayoutX(gridX);
-            componentsGrid.setLayoutY(gridY);
-            componentsGrid.setPrefSize(gridWidth, gridHeight);
-            componentsGrid.setMaxSize(gridWidth, gridHeight);
-
-            updateCoordinateLabels(gridX, gridY);
-        });
-    }
-
-    private void updateCoordinateLabels(double x, double y) {
-        if (X_Label != null) {
-            X_Label.setText(String.format("X: %.2f", x));
-        }
-        if (Y_Label != null) {
-            Y_Label.setText(String.format("Y: %.2f", y));
-        }
-    }
-
-    public boolean addComponent(int componentId, int row, int col) {
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
-            System.err.println("Indice di riga o colonna fuori dai limiti: " + row + ", " + col);
-            return false;
-        }
-
-        ImageView targetCell = getImageViewAt(row, col);
-        if (targetCell == null) {
-            System.err.println("ImageView non trovata per la cella: " + row + ", " + col);
-            return false;
-        }
-
-        String imagePath = "/images/components/" + componentId + ".png";
-        try {
-            Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
-            targetCell.setImage(componentImage);
-            gridComponents.put(row + "_" + col, componentId);
-            return true;
-        } catch (Exception e) {
-            System.err.println("Impossibile caricare l'immagine del componente '" + imagePath + "': " + e.getMessage());
-            return false;
-        }
-    }
-
-    public boolean removeComponent(int row, int col) {
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
-            return false;
-        }
-
-        ImageView targetCell = getImageViewAt(row, col);
-        if (targetCell == null) {
-            return false;
-        }
-
-        targetCell.setImage(null);
-        gridComponents.remove(row + "_" + col);
-        return true;
-    }
-
-    public void clearAllComponents() {
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLS; c++) {
-                removeComponent(r, c);
-            }
-        }
-        gridComponents.clear();
-    }
 
     private ImageView getImageViewAt(int row, int col) {
         return switch (row) {
