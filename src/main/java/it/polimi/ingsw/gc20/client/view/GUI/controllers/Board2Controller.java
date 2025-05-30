@@ -17,12 +17,7 @@ import java.util.Optional;
 
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
-public class Board2Controller {
-
-    @FXML private Label playerColorLabel;
-    @FXML private Label usernameLabel;
-    @FXML private Label creditsLabel;
-    @FXML private Label inGameLabel;
+public class Board2Controller extends BoardController{
 
     @FXML private Circle circle0;
     @FXML private Circle circle1;
@@ -48,9 +43,6 @@ public class Board2Controller {
     @FXML private Circle circle21;
     @FXML private Circle circle22;
     @FXML private Circle circle23;
-
-    private List<Circle> circles = new ArrayList<>();
-    private List<Label> circleLabels = new ArrayList<>();
 
     @FXML
     private void initialize() {
@@ -109,55 +101,4 @@ public class Board2Controller {
         }
     }
 
-    public void updateStatisticBoard(ViewPlayer player) {
-        if (player != null) {
-            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            usernameLabel.setText("Username: " + player.username);
-            creditsLabel.setText("Credits: " + player.credits);
-            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
-        }
-    }
-
-    public void setPlayerPosition(int circleIndex, PlayerColor playerColor) {
-        if (circleIndex >= 0 && circleIndex < circles.size()) {
-            Circle circle = circles.get(circleIndex);
-            if (circle != null && playerColor != null) {
-                Color fxColor = null;
-                switch (playerColor) {
-                    case RED:
-                        fxColor = Color.RED;
-                        break;
-                    case BLUE:
-                        fxColor = Color.BLUE;
-                        break;
-                    case GREEN:
-                        fxColor = Color.GREEN;
-                        break;
-                    case YELLOW:
-                        fxColor = Color.YELLOW;
-                        break;}
-                if (fxColor != null) {
-                    circle.setFill(fxColor);
-                }
-            }
-        }
-    }
-
-    public void clearPosition(int circleIndex) {
-        if (circleIndex >= 0 && circleIndex < circles.size()) {
-            Circle circle = circles.get(circleIndex);
-            if (circle != null) {
-                circle.setFill(Color.TRANSPARENT);
-            }
-            if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
-                circleLabels.get(circleIndex).setText("");
-            }
-        }
-    }
-
-    public void setNumberInCircle(int circleIndex, int number) {
-        if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
-            circleLabels.get(circleIndex).setText(String.valueOf(number));
-        }
-    }
 }
