@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
@@ -14,11 +16,17 @@ import javafx.scene.layout.StackPane;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class ShipController {
 
     private final int ROWS = 0;
     private final int COLS = 0;
+
+    @FXML protected Label playerColorLabel;
+    @FXML protected Label usernameLabel;
+    @FXML protected Label creditsLabel;
+    @FXML protected Label inGameLabel;
 
     // 3 Slot -> 60x90, 125x57, 125x124
     // 2 Slot -> 90x57, 90x124
@@ -41,6 +49,15 @@ public abstract class ShipController {
 
     private final Map<String, Integer> gridComponents = new HashMap<>();
 
+    public void updateStatisticBoard(ViewPlayer player) {
+        if (player != null) {
+            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
+            usernameLabel.setText("Username: " + player.username);
+            creditsLabel.setText("Credits: " + player.credits);
+            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
+        }
+    }
+
     @FXML
     private void initialize() {
         if (boardImageView != null && boardImageView.getImage() != null) {
@@ -51,6 +68,18 @@ public abstract class ShipController {
                     setupGridBounds();
                 }
             });
+        }
+
+        ClientGameModel clientGameModel = ClientGameModel.getInstance();
+        if (clientGameModel != null) {
+            String currentUsername = clientGameModel.getUsername();
+            List<ViewPlayer> players = clientGameModel.getPlayers();
+            if (players != null && currentUsername != null) {
+                Optional<ViewPlayer> currentPlayerOpt = players.stream()
+                        .filter(p -> currentUsername.equals(p.username))
+                        .findFirst();
+                currentPlayerOpt.ifPresent(this::updateStatisticBoard);
+            }
         }
     }
 
@@ -128,6 +157,22 @@ public abstract class ShipController {
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         // Implementazione specifica per ViewBattery, se necessario
+        Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
+
+        try {
+            ImageView batteryIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/battery.png")));
+            batteryIcon.setFitHeight(25);
+            batteryIcon.setFitWidth(25);
+            batteryIcon.setPreserveRatio(true);
+
+            StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.TOP_LEFT);
+            StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.BOTTOM_LEFT);
+
+            layeredPane.getChildren().addAll(batteryLabel, batteryIcon);
+        } catch (Exception e) {
+            System.err.println("Impossibile caricare l'immagine della batterua: " + e.getMessage());
+            layeredPane.getChildren().add(batteryLabel);
+        }
         return;
     }
 
@@ -194,17 +239,81 @@ public abstract class ShipController {
     // 2 Slot -> 90x57, 90x124
     // Cargo 30px x 30px
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        return;
+        List<int[]> coordinates;
+        if (comp.getSize() == 2) {
+            coordinates = cargoCord2;
+        } else {
+            coordinates = cargoCord3;
+        }
+
+        int index = 0;
+
+        for (int i = 0; i < comp.red; i++) {
+            if (index < coordinates.size()) {
+                Pane cargoBox = createCargoBox("red");
+                cargoBox.setLayoutX(coordinates.get(index)[0]);
+                cargoBox.setLayoutY(coordinates.get(index)[1]);
+                layeredPane.getChildren().add(cargoBox);
+                index++;
+            }
+        }
+
+        for (int i = 0; i < comp.green; i++) {
+            if (index < coordinates.size()) {
+                Pane cargoBox = createCargoBox("green");
+                cargoBox.setLayoutX(coordinates.get(index)[0]);
+                cargoBox.setLayoutY(coordinates.get(index)[1]);
+                layeredPane.getChildren().add(cargoBox);
+                index++;
+            }
+        }
+
+        for (int i = 0; i < comp.blue; i++) {
+            if (index < coordinates.size()) {
+                Pane cargoBox = createCargoBox("blue");
+                cargoBox.setLayoutX(coordinates.get(index)[0]);
+                cargoBox.setLayoutY(coordinates.get(index)[1]);
+                layeredPane.getChildren().add(cargoBox);
+                index++;
+            }
+        }
+
+        for (int i = 0; i < comp.yellow; i++) {
+            if (index < coordinates.size()) {
+                Pane cargoBox = createCargoBox("yellow");
+                cargoBox.setLayoutX(coordinates.get(index)[0]);
+                cargoBox.setLayoutY(coordinates.get(index)[1]);
+                layeredPane.getChildren().add(cargoBox);
+                index++;
+            }
+        }
+
+        for (int i = 0; i < comp.free; i++) {
+            if (index < coordinates.size()) {
+                Pane cargoBox = createCargoBox("empty");
+                cargoBox.setLayoutX(coordinates.get(index)[0]);
+                cargoBox.setLayoutY(coordinates.get(index)[1]);
+                layeredPane.getChildren().add(cargoBox);
+                index++;
+            }
+        }
     }
 
-    public void setComponentProp(StackPane layeredPane, ViewStartingCabin comp) {
-        // Implementazione specifica per ViewStartingCabin, se necessario
-        return;
-    }
+    private Pane createCargoBox(String type) {
+        Pane box = new Pane();
+        box.setPrefSize(30, 30);
+        box.setMinSize(30, 30);
+        box.setMaxSize(30, 30);
 
-    public void setComponentProp(StackPane layeredPane, ViewSpecialCargoHold comp) {
-        // Implementazione specifica per ViewSpecialCargoHold, se necessario
-        return;
+        switch (type) {
+            case "red" -> box.setStyle("-fx-background-color: red; -fx-border-color: black; -fx-border-width: 1px;");
+            case "green" -> box.setStyle("-fx-background-color: green; -fx-border-color: black; -fx-border-width: 1px;");
+            case "blue" -> box.setStyle("-fx-background-color: blue; -fx-border-color: black; -fx-border-width: 1px;");
+            case "yellow" -> box.setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 1px;");
+            case "empty" -> box.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px; -fx-border-style: dashed;");
+        }
+
+        return box;
     }
 
     public boolean removeComponent(int row, int col) {
