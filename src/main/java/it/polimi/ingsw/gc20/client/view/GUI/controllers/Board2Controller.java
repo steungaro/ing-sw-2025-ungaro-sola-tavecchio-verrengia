@@ -87,18 +87,6 @@ public class Board2Controller extends BoardController{
                 }
             });
         }
-
-        ClientGameModel clientGameModel = ClientGameModel.getInstance();
-        if (clientGameModel != null) {
-            String currentUsername = clientGameModel.getUsername();
-            List<ViewPlayer> players = clientGameModel.getPlayers();
-            if (players != null && currentUsername != null) {
-                Optional<ViewPlayer> currentPlayerOpt = players.stream()
-                        .filter(p -> currentUsername.equals(p.username))
-                        .findFirst();
-                currentPlayerOpt.ifPresent(this::updateStatisticBoard);
-            }
-        }
     }
 
 }
