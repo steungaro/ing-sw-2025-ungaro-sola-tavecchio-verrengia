@@ -9,7 +9,7 @@ public class ViewBattery extends ViewComponent {
         String energyRow;
         String result;
 
-        energyRow = "     " +availableEnergy + "/" + (totalSlots +availableEnergy) + "     ";
+        energyRow = "     " +availableEnergy + "/" + (totalSlots) + "     ";
 
         result =
                 firstRow() + "\n" +
@@ -26,7 +26,7 @@ public class ViewBattery extends ViewComponent {
             case 1 -> leftCol(0) + "   Battery   " + rightCol(0);
             case 2 -> leftCol(1) + EMPTY_ROW + rightCol(1);
             case 3 ->
-                    leftCol(2) + "     " + availableEnergy + "/" + (totalSlots + availableEnergy) + "     " + rightCol(2);
+                    leftCol(2) + "     " + availableEnergy + "/" + (totalSlots) + "     " + rightCol(2);
             case 4 -> lastRow();
             default -> "";
         };
