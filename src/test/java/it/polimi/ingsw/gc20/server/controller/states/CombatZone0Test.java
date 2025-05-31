@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
-import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTileException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
+import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
@@ -12,22 +12,39 @@ import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ValidatingShipTest {
+public class CombatZone0Test {
     static GameController controller;
-    static ValidatingShipState state;
+    static CombatZone0State state;
+    static AdventureCard card;
 
     @BeforeAll
-    static void setUp() throws InvalidStateException, InvalidTileException {
+    static void setUp() throws InvalidStateException, EmptyCabinException {
+        //initialize the AdventureCard
+        card = new AdventureCard();
+        card.setCrew(1);
+        List<Projectile> projectiles = new ArrayList<>();
+        Projectile heavyFire = new Projectile();
+        heavyFire.setDirection(Direction.DOWN);
+        heavyFire.setFireType(FireType.HEAVY_FIRE);
+        projectiles.add(heavyFire);
+        Projectile lightFire = new Projectile();
+        lightFire.setDirection(Direction.DOWN);
+        lightFire.setFireType(FireType.LIGHT_FIRE);
+        projectiles.add(lightFire);
+        card.setProjectiles(projectiles);
+        card.setLostDays(1);
         controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
-        state = new ValidatingShipState(controller.getModel(), controller);
+        controller.getModel().setActiveCard(card);
         // build all the ships of the players one will be invalid
+        StartingCabin start = null;
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip
             NormalShip ship = new NormalShip();
@@ -56,6 +73,8 @@ public class ValidatingShipTest {
 
             CargoHold cargoHold = new CargoHold();
             cargoHold.setSlots(3);
+            CargoHold cargoHold2 = new CargoHold();
+            cargoHold2.setSlots(3);
 
             // Add components to ship at valid positions
             try {
@@ -66,6 +85,7 @@ public class ValidatingShipTest {
                 ship.addComponent(battery, 2, 2);
                 ship.addComponent(Cabin1, 2, 4);
                 ship.addComponent(cargoHold, 1, 2);
+                ship.addComponent(cargoHold2, 1, 4);
             } catch (Exception _) {
                 fail("Failed to add components to ship");
             }
@@ -77,6 +97,13 @@ public class ValidatingShipTest {
             connectorsCargoHold.put(Direction.UP, ConnectorEnum.ZERO);
             connectorsCargoHold.put(Direction.DOWN, ConnectorEnum.D);
             cargoHold.setConnectors(connectorsCargoHold);
+
+            Map<Direction, ConnectorEnum> connectorsCargoHold2 = new HashMap<>();
+            connectorsCargoHold2.put(Direction.RIGHT, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.LEFT, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.UP, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.DOWN, ConnectorEnum.U);
+            cargoHold2.setConnectors(connectorsCargoHold2);
 
             Map<Direction, ConnectorEnum> connectorsBattery = new HashMap<>();
             connectorsBattery.put(Direction.RIGHT, ConnectorEnum.S);
@@ -117,11 +144,7 @@ public class ValidatingShipTest {
             connectorsUpCannon.put(Direction.RIGHT, ConnectorEnum.S);
             connectorsUpCannon.put(Direction.LEFT, ConnectorEnum.S);
             connectorsUpCannon.put(Direction.UP, ConnectorEnum.ZERO);
-            if (player.getUsername().equals("player1")) {
-                connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.ZERO); // Invalid ship for player1
-            } else {
-                connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.U); // Valid ship for other players
-            }
+            connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.U); // Valid ship for other players
             upCannon.setConnectors(connectorsUpCannon);
 
             Map<Direction, ConnectorEnum> connectorsStartingCabin = new HashMap<>();
@@ -129,45 +152,56 @@ public class ValidatingShipTest {
             connectorsStartingCabin.put(Direction.LEFT, ConnectorEnum.U);
             connectorsStartingCabin.put(Direction.UP, ConnectorEnum.U);
             connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.U);
-            StartingCabin start = (StartingCabin) ship.getComponentAt(2, 3);
+            start = (StartingCabin) ship.getComponentAt(2, 3);
             start.setConnectors(connectorsStartingCabin);
-            if (player.getUsername().equals("player1")) {
-                LifeSupport lifeSupport = new LifeSupport();
-                lifeSupport.setColor(AlienColor.BOTH);
-                ship.addComponent(lifeSupport, 2, 5);
-
-                Map<Direction, ConnectorEnum> connectorsLifeSupport = new HashMap<>();
-                connectorsLifeSupport.put(Direction.RIGHT, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.LEFT, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.UP, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.DOWN, ConnectorEnum.S);
-                lifeSupport.setConnectors(connectorsLifeSupport);
-                Cabin1.setColor(AlienColor.BROWN); // Invalid ship for player1
-            }
+            ship.initAstronauts();
             player.setShip(ship);
+            if (player.getUsername().equals("player1")) {
+                controller.getPlayerByID("player1").getShip().unloadCrew(start);
+                controller.getPlayerByID("player1").setPosition(5);
+            }
+
         }
+        state = new CombatZone0State(controller.getModel(), controller, card);
     }
 
     @Test
-    void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException {
+    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException {
+        assertEquals(4, controller.getPlayerByID("player1").getPosition());
+        List<Pair<Integer, Integer>> engines = new ArrayList<>();
+        List<Pair<Integer, Integer>> battery = new ArrayList<>();
         for (Player player : controller.getModel().getInGamePlayers()) {
-            try {
-                // Validate the ship of the player
-                boolean isValid = state.isShipValid(player);
-                if (!isValid && !player.getUsername().equals("player1")) {
-                    fail("Ship should be valid for player: " + player.getUsername());
-                }
-                if (!player.getUsername().equals("player1")) {
-                    state.endMove(player);
-                }
-            } catch (InvalidStateException e) {
-                fail("InvalidStateException thrown when validating ship for player: " + player.getUsername());
+            if (player.getUsername().equals("player1")) {
+                state.activateEngines(player, engines, battery);
+                engines.add(new Pair<>(3, 4));
+                battery.add(new Pair<>(2, 2));
+            } else {
+                state.activateEngines(player, engines, battery);
             }
         }
-        state.removeComp(controller.getPlayerByID("player1"), new Pair<>(1, 3));
-        state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
-        state.endMove(controller.getPlayerByID("player1"));
-        assertTrue(state.isConcurrent());
+        assertEquals("player1", state.getCurrentPlayer());
+        List<Pair<Integer, Integer>> cabins = new ArrayList<>();
+        int crewSize = controller.getPlayerByID("player1").getShip().crew();
+        cabins.add(new Pair<>(2, 4));
+        state.loseCrew(controller.getPlayerByID("player1"), cabins);
+        assertEquals(crewSize - 1, controller.getPlayerByID("player1").getShip().crew());
+
+        assertEquals(4, controller.getPlayerByID("player1").getPosition());
+        List<Pair<Integer, Integer>> cannons = new ArrayList<>();
+        List<Pair<Integer, Integer>> battery2 = new ArrayList<>();
+        for (Player player : controller.getModel().getInGamePlayers()) {
+            if (player.getUsername().equals("player1")) {
+                state.activateCannons(player, cannons, battery2);
+                cannons.add(new Pair<>(3, 3));
+                battery2.add(new Pair<>(2, 2));
+            } else {
+                state.activateCannons(player, cannons, battery2);
+            }
+        }
+        assertEquals("player1", state.getCurrentPlayer());
+        int result = state.rollDice(controller.getPlayerByID("player1"));
+        state.rollDice(controller.getPlayerByID("player1"));
+        state.activateShield(controller.getPlayerByID("player1"), null, null);
         state.toString();
     }
 }

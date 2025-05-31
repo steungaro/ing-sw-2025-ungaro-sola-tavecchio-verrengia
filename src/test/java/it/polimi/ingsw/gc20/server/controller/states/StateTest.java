@@ -12,7 +12,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -717,11 +716,11 @@ class StateTest {
         assertEquals(-3, gameController.getPlayerByID("player1").getPosition());
 
         // CombactZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
 
-        Field currentPhaseField = CombatZone0State.class.getDeclaredField("currentPhase");
+        Field currentPhaseField = CombatZone0Test.class.getDeclaredField("currentPhase");
         currentPhaseField.setAccessible(true);
-        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone0State$phase");
+        Class<?> phaseEnum = Class.forName("it.polimi.ingsw.gc20.server.controller.states.CombatZone0Test$phase");
         Enum<?> currentPhase = (Enum<?>) currentPhaseField.get(combatZone0State);
         Enum<?> cannonPhase = Enum.valueOf((Class<Enum>) phaseEnum, "CREW");
         currentPhaseField.set(combatZone0State, cannonPhase);
@@ -956,14 +955,14 @@ class StateTest {
         assertTrue(gameController.getState().toString().contains("PreDrawState"));
 
         // CombactZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         gameController.setState(combatZone0State);
         gameController.getModel().setActiveCard(adventureCard);
         combatZone0State.setCurrentPlayer("player1");
 
         assertThrows(InvalidTurnException.class, () -> combatZone0State.activateShield(gameController.getPlayerByID("player2"), new Pair<>(2,2), new Pair<>(2,2)));
 
-        Field managerField2 = CombatZone0State.class.getDeclaredField("manager");
+        Field managerField2 = CombatZone0Test.class.getDeclaredField("manager");
         managerField2.setAccessible(true);
         List<Projectile> projectiles2 = new ArrayList<>();
         projectiles2.add(fire);
@@ -1079,7 +1078,7 @@ class StateTest {
     void activateCannons() throws InvalidTileException, InvalidTurnException, EmptyDeckException, InvalidCannonException, EnergyException, InvalidShipException, EmptyCabinException, DieNotRolledException, InvalidEngineException {
         // Classe da testare: CombactZone1, MeteorSwarm, CombactZone0
         // CombatZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         Pair<Integer, Integer> coordinate = new Pair<>(1, 2);
         List<Pair<Integer, Integer>> coordinates = new ArrayList<>();
         coordinates.add(coordinate);
@@ -1224,7 +1223,7 @@ class StateTest {
     @Test
     void automaticAction2(){
         // CombatZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         gameController.setState(combatZone0State);
         gameController.getModel().setActiveCard(adventureCard);
         combatZone0State.setCurrentPlayer("player1");
@@ -1238,7 +1237,7 @@ class StateTest {
     @Test
     void resume() {
         // Classi da testare: PausedState
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         gameController.setState(combatZone0State);
 
         PausedState pausedState = new PausedState(combatZone0State, gameController.getModel(), gameController);
@@ -1253,7 +1252,7 @@ class StateTest {
     void rollDice() throws InvalidTurnException, InvalidCannonException, EnergyException, NoSuchFieldException, IllegalAccessException, InvalidShipException, DieNotRolledException {
         // Classi da testare: CombactZone1, CombactZone0, MeteorSwarmState, PirateState, PlayingState
         // CombatZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         gameController.setState(combatZone0State);
         gameController.getModel().setActiveCard(adventureCard);
         combatZone0State.setCurrentPlayer("player1");
@@ -1264,7 +1263,7 @@ class StateTest {
         List<Projectile> projectiless = new ArrayList<>();
         projectiless.add(projectil);
 
-        Field managerField = CombatZone0State.class.getDeclaredField("manager");
+        Field managerField = CombatZone0Test.class.getDeclaredField("manager");
         managerField.setAccessible(true);
         managerField.set(combatZone0State, new FireManager(gameController.getModel(), projectiless, gameController.getPlayerByID("player1")));
 
@@ -1326,7 +1325,7 @@ class StateTest {
         AssemblingState assemblingState = new AssemblingState(model);
         assertTrue(assemblingState.toString().contains("AssemblingState"));
 
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         assertTrue(combatZone0State.toString().contains("CombatZone0State"));
 
         CombatZone1State combatZone1State = new CombatZone1State(model, gameController, adventureCard);
@@ -1383,7 +1382,7 @@ class StateTest {
         assertTrue(gameController.getState().toString().contains("PreDrawState") || gameController.getState().toString().contains("AbandonedStationState"));
 
         // CombatZone0State
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         gameController.setState(combatZone0State);
         gameController.getModel().setActiveCard(adventureCard);
         combatZone0State.setCurrentPlayer("player1");
@@ -1481,7 +1480,7 @@ class StateTest {
 
     @Test
     void chooseBranchTest() throws NoSuchFieldException, IllegalAccessException, InvalidTurnException {
-        CombatZone0State combatZone0State = new CombatZone0State(model, gameController, adventureCard);
+        CombatZone0Test combatZone0State = new CombatZone0Test(model, gameController, adventureCard);
         //Projectile projectile = new Projectile();
         //projectile.setFireType(FireType.LIGHT_FIRE);
         //projectile.setDirection(Direction.UP);
@@ -1489,7 +1488,7 @@ class StateTest {
         //projectiles.add(projectile);
 
         // CombatZone0State
-        Field managerField = CombatZone0State.class.getDeclaredField("manager");
+        Field managerField = CombatZone0Test.class.getDeclaredField("manager");
         managerField.setAccessible(true);
         managerField.set(combatZone0State, new FireManager(gameController.getModel(), new ArrayList<>(), gameController.getPlayerByID("player1")));
 
