@@ -249,7 +249,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void mainMenuState(){
-        ClientGameModel.getInstance().setCurrentMenuState(new MainMenuState());
+        ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
     public void takeComponentMenu(){
