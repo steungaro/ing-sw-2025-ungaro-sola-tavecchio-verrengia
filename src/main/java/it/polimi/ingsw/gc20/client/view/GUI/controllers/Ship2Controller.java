@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -51,6 +52,16 @@ public class Ship2Controller extends ShipController{
 
     private final int ROWS = 5;
     private final int COLS = 7;
+
+    private ViewComponent[] booked = new ViewComponent[2];
+
+    public void setBooked0(ViewComponent component) {
+        booked[0] = component;
+    }
+
+    public void setBooked1(ViewComponent component) {
+        booked[1] = component;
+    }
 
     private ImageView getImageViewAt(int row, int col) {
         return switch (row) {
