@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.BranchMenuController;
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController;
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController;
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.ShipController;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
@@ -201,43 +203,20 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void branchMenu(){
-        // TODO
+    public void branchMenu() {
+            Object playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+            String shipType = (playerShip != null && playerShip.getClass().getSimpleName().equals("ViewShip0")) ? "ship0" : "ship2";
+
+            FXMLLoader loader = showScene("branchMenu");
+            if (loader != null) {
+                BranchMenuController controller = loader.getController();
+                controller.initializeWithShip(shipType);
+            }
     }
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
-        InLobbyController controller = (InLobbyController) primaryStage.getScene().getRoot().getUserData();
-        Object playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-        String fileName;
-
-        if (playerShip != null && playerShip.getClass().getSimpleName().equals("ViewShip0")) {
-            fileName = "ship0";
-        } else {
-            fileName = "ship2";
-        }
-
-        try {
-            String path = "/fxml/" + fileName + ".fxml";
-            URL resourceUrl = getClass().getResource(path);
-
-            if (resourceUrl == null) {
-                System.err.println("ERRORE: File FXML non trovato: " + path);
-                return;
-            }
-
-            FXMLLoader loader = new FXMLLoader(resourceUrl);
-            Parent root = loader.load();
-            ((ShipController)loader.getController()).setShipState(ShipController.ShipState.Building);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Create the Uncovered Componet
-
-
-
-
-
+        showScene("buildingPhase");
     }
 
     @Override
