@@ -386,16 +386,6 @@ class GameModelTest {
     }
 
     @Test
-    void testGiveUp() {
-        gameModel.startGame(level, players, gameId);
-        Player player = gameModel.getGame().getPlayers().getFirst();
-        assertTrue(player.isInGame());
-
-        gameModel.giveUp(player);
-        assertFalse(player.isInGame());
-    }
-
-    @Test
     void testFirePower() {
         gameModel.startGame(level, players, gameId);
         Player player = gameModel.getGame().getPlayers().getFirst();
@@ -444,7 +434,7 @@ class GameModelTest {
         List<Player> inGamePlayers = gameModel.getInGamePlayers();
         assertEquals(2, inGamePlayers.size());
 
-        gameModel.giveUp(player1);
+        player1.setGameStatus(false);
         inGamePlayers = gameModel.getInGamePlayers();
         assertEquals(1, inGamePlayers.size());
         assertEquals(player2, inGamePlayers.getFirst());
