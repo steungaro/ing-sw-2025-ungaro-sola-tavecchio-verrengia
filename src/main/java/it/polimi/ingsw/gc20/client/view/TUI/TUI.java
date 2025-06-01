@@ -156,7 +156,7 @@ public class TUI extends ClientGameModel {
         System.out.println("2. View a player's ship");
         System.out.println("3. View uncovered components");
         System.out.println("4. View current card");
-        System.out.println("b. Back to the main menu");
+        System.out.println("b. Back to the menu");
         System.out.print(" > ");
 
         String input = scanner.nextLine().trim();
@@ -175,8 +175,12 @@ public class TUI extends ClientGameModel {
             case "4" -> ClientGameModel.getInstance().printCurrentCard();
             case "b" -> {
             }
-            default -> System.out.println("\033[31mInvalid option. Back to the main menu.\033[0m");
+            default -> {
+                ClientGameModel.getInstance().getCurrentMenuState().displayMenu("Invalid option. Back to the main menu.");
+                return;
+            }
         }
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     public void login() {
@@ -245,7 +249,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void mainMenuState(){
-        ClientGameModel.getInstance().setCurrentMenuState(new MainMenuState());
+        ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
     public void takeComponentMenu(){

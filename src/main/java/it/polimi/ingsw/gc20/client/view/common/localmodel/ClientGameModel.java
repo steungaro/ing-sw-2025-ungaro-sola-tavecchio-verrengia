@@ -4,7 +4,10 @@ import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAbandonedShip;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewOpenSpace;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewSmugglers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
@@ -187,21 +190,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-//    public void printDeck(int index) {
-//        if (board != null) {
-//            List<ViewAdventureCard> cards = board.decks.get(index);
-//            if (cards != null) {
-//                String out = printCardsInLine(cards);
-//                System.out.println(out);
-//                LOGGER.info("Deck " + index + ":\n");
-//            } else {
-//                LOGGER.warning("No card found at index " + index);
-//            }
-//        } else {
-//            LOGGER.warning("No deck found at index " + index);
-//        }
-//    }
-
     public void printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return;
@@ -217,7 +205,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
             List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 11; i++) {
                 for (int j = 0; j < rowCards.size(); j++) {
                     finalResult.append(rowCards.get(j).toLine(i));
                     finalResult.append("  ");
@@ -226,6 +214,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
                     }
                 }
             }
+            finalResult.append("\n");
         }
         System.out.println(finalResult);
     }
@@ -364,4 +353,13 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
     public abstract void idleMenu(String message);
+
+    public static void main(String[] args) throws RemoteException {
+        ClientGameModel.setInstance(new TUI());
+        ClientGameModel model = ClientGameModel.getInstance();
+        List<ViewAdventureCard> cards = List.of(new ViewAbandonedShip(),
+                new ViewOpenSpace(),
+                new ViewSmugglers());
+        model.printCardsInLine(cards);
+    }
 }

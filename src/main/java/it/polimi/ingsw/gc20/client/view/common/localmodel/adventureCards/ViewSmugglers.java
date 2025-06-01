@@ -52,7 +52,7 @@ public class ViewSmugglers extends ViewAdventureCard {
             case 1, 3, 6, 9 -> LATERAL + EMPTY_ROW + LATERAL;
             case 2 -> LATERAL + "\u001B[1m      Smugglers       \u001B[0m" + LATERAL;
             case 4 -> LATERAL + "     FirePower: \u001B[31m" + firePower + "\u001B[0m     " + LATERAL;
-            case 5 -> LATERAL + "     Lost cargo: \u001B[31m" + lostCargo + "\u001B[0m     " + LATERAL;
+            case 5 -> LATERAL + "     LostCargo: \u001B[31m" + lostCargo + "\u001B[0m     " + LATERAL;
             case 7 -> LATERAL + " ".repeat(7 - size/2) + "Reward: " + reward() +  " ".repeat(6-size/2 + (size % 2 == 0 ? 1 : 0)) + LATERAL;
             case 8 -> LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL;
             case 10 -> DOWN;

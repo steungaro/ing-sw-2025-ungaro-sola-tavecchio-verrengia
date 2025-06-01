@@ -7,11 +7,11 @@ import java.rmi.RemoteException;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class MainMenuState implements MenuState{
+public class MainMenu implements MenuState{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
 
-    public MainMenuState() {
+    public MainMenu() {
     }
 
     @Override
