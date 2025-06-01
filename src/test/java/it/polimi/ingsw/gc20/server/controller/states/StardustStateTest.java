@@ -1,33 +1,40 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GamePhase;
 import it.polimi.ingsw.gc20.server.controller.GameController;
-import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTileException;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.*;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
-import org.javatuples.Pair;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ValidatingShipTest {
-    static GameController controller;
-    static ValidatingShipState state;
+class StardustStateTest {
 
-    @BeforeAll
-    static void setUp() throws InvalidStateException, InvalidTileException {
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
-        state = new ValidatingShipState(controller.getModel(), controller);
-        // build all the ships of the players one will be invalid
+    @Test
+    void automaticAction() throws InvalidStateException {
+        Map<String, Integer> playerPositions = new HashMap<>();
+        //initialize the AdventureCard
+        AdventureCard card = new AdventureCard();
+        card.setName( "Stardust" );
+        GameController controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        for (int i = 0; i < 3; i++) {
+            controller.getModel().getGame().getPlayers().get(i).setPosition(i + 1);
+        }
+        controller.getModel().setActiveCard(card);
+        controller.getModel().getGame().getPlayers().forEach(player -> playerPositions.put(player.getUsername(), player.getPosition()));
+
+        // build all the ships of the players
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip
             NormalShip ship = new NormalShip();
@@ -56,6 +63,8 @@ public class ValidatingShipTest {
 
             CargoHold cargoHold = new CargoHold();
             cargoHold.setSlots(3);
+            CargoHold cargoHold2 = new CargoHold();
+            cargoHold2.setSlots(3);
 
             // Add components to ship at valid positions
             try {
@@ -66,6 +75,7 @@ public class ValidatingShipTest {
                 ship.addComponent(battery, 2, 2);
                 ship.addComponent(Cabin1, 2, 4);
                 ship.addComponent(cargoHold, 1, 2);
+                ship.addComponent(cargoHold2, 1, 4);
             } catch (Exception _) {
                 fail("Failed to add components to ship");
             }
@@ -77,6 +87,13 @@ public class ValidatingShipTest {
             connectorsCargoHold.put(Direction.UP, ConnectorEnum.ZERO);
             connectorsCargoHold.put(Direction.DOWN, ConnectorEnum.D);
             cargoHold.setConnectors(connectorsCargoHold);
+
+            Map<Direction, ConnectorEnum> connectorsCargoHold2 = new HashMap<>();
+            connectorsCargoHold2.put(Direction.RIGHT, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.LEFT, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.UP, ConnectorEnum.U);
+            connectorsCargoHold2.put(Direction.DOWN, ConnectorEnum.U);
+            cargoHold2.setConnectors(connectorsCargoHold2);
 
             Map<Direction, ConnectorEnum> connectorsBattery = new HashMap<>();
             connectorsBattery.put(Direction.RIGHT, ConnectorEnum.S);
@@ -117,11 +134,7 @@ public class ValidatingShipTest {
             connectorsUpCannon.put(Direction.RIGHT, ConnectorEnum.S);
             connectorsUpCannon.put(Direction.LEFT, ConnectorEnum.S);
             connectorsUpCannon.put(Direction.UP, ConnectorEnum.ZERO);
-            if (player.getUsername().equals("player1")) {
-                connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.ZERO); // Invalid ship for player1
-            } else {
-                connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.U); // Valid ship for other players
-            }
+            connectorsUpCannon.put(Direction.DOWN, ConnectorEnum.U);
             upCannon.setConnectors(connectorsUpCannon);
 
             Map<Direction, ConnectorEnum> connectorsStartingCabin = new HashMap<>();
@@ -131,43 +144,21 @@ public class ValidatingShipTest {
             connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.U);
             StartingCabin start = (StartingCabin) ship.getComponentAt(2, 3);
             start.setConnectors(connectorsStartingCabin);
-            if (player.getUsername().equals("player1")) {
-                LifeSupport lifeSupport = new LifeSupport();
-                lifeSupport.setColor(AlienColor.BOTH);
-                ship.addComponent(lifeSupport, 2, 5);
-
-                Map<Direction, ConnectorEnum> connectorsLifeSupport = new HashMap<>();
-                connectorsLifeSupport.put(Direction.RIGHT, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.LEFT, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.UP, ConnectorEnum.S);
-                connectorsLifeSupport.put(Direction.DOWN, ConnectorEnum.S);
-                lifeSupport.setConnectors(connectorsLifeSupport);
-                Cabin1.setColor(AlienColor.BROWN); // Invalid ship for player1
-            }
+            ship.initAstronauts();
             player.setShip(ship);
         }
-    }
 
-    @Test
-    void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException {
-        for (Player player : controller.getModel().getInGamePlayers()) {
-            try {
-                // Validate the ship of the player
-                boolean isValid = state.isShipValid(player);
-                if (!isValid && !player.getUsername().equals("player1")) {
-                    fail("Ship should be valid for player: " + player.getUsername());
-                }
-                if (!player.getUsername().equals("player1")) {
-                    state.endMove(player);
-                }
-            } catch (InvalidStateException e) {
-                fail("InvalidStateException thrown when validating ship for player: " + player.getUsername());
-            }
+        // Automatic action of Stardust is performed by the StardustState constructor
+        State state = new StardustState(controller.getModel(), controller, card);
+
+        // Verify that all players have been moved back by their exposed components
+        for (int i = 0; i < controller.getModel().getInGamePlayers().size(); i++) {
+            Player player = controller.getModel().getInGamePlayers().get(i);
+            int expectedPosition = playerPositions.get(player.getUsername()) - player.getShip().getAllExposed();
+            assertEquals(expectedPosition, player.getPosition(), "Player " + player.getUsername() + " position is incorrect after Stardust action.");
         }
-        state.removeComp(controller.getPlayerByID("player1"), new Pair<>(1, 3));
-        state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
-        state.endMove(controller.getPlayerByID("player1"));
-        assertTrue(state.isConcurrent());
-        state.toString();
+
+        // Verify that the game state has transitioned to DRAW_CARD_PHASE
+        assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase, "State phase should be DRAW_CARD_PHASE after Stardust action.");
     }
 }

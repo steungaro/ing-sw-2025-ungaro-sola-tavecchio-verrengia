@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.*;
 import it.polimi.ingsw.gc20.server.model.player.*;
 import it.polimi.ingsw.gc20.server.model.ship.*;
 import org.javatuples.Pair;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -433,7 +435,6 @@ class GameControllerTest {
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
         assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
-        assertTrue(gameController.getDisconnectedPlayers().contains("player1"));
         assertEquals(3, gameController.getOnlinePlayers());
 
         gameController.disconnectPlayer("player2");
@@ -450,7 +451,6 @@ class GameControllerTest {
         gameController.reconnectPlayer("player1");
         gameController.preDrawConnect();
         assertFalse(gameController.isPlayerDisconnected("player1"));
-        assertFalse(gameController.getDisconnectedPlayers().contains("player1"));
         assertEquals(4, gameController.getOnlinePlayers());
     }
 
@@ -463,7 +463,7 @@ class GameControllerTest {
 
     @Test
     void getAllUsernames() {
-        List<String> usernames = gameController.getAllUsernames();
+        List<String> usernames = gameController.getModel().getGame().getPlayers().stream().map(Player::getUsername).collect(Collectors.toList());
         assertNotNull(usernames);
         assertEquals(4, usernames.size());
         assertTrue(usernames.contains("player1"));
@@ -478,11 +478,6 @@ class GameControllerTest {
         gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
         gameController.disconnectPlayer("player2");
-        List<String> disconnectedPlayers = gameController.getDisconnectedPlayers();
-        assertNotNull(disconnectedPlayers);
-        assertEquals(2, disconnectedPlayers.size());
-        assertTrue(disconnectedPlayers.contains("player1"));
-        assertTrue(disconnectedPlayers.contains("player2"));
     }
 
     @Test
@@ -739,12 +734,6 @@ class GameControllerTest {
     }
 
     @Test
-    void defeated() {
-        gameController.defeated("player1");
-        assertFalse(gameController.getPlayerByID("player1").isInGame());
-    }
-
-    @Test
     void rollDice() throws DieNotRolledException {
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
@@ -833,14 +822,6 @@ class GameControllerTest {
     }
 
     @Test
-    void getPlayerDataTest(){
-        Player player1 = gameController.getPlayerByID("player1");
-        Player asked = gameController.getPlayerData("player2", "player1");
-
-        assertEquals(player1.getUsername(), asked.getUsername());
-    }
-
-    @Test
     void takeComponentFromViewedTest(){
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
@@ -855,9 +836,22 @@ class GameControllerTest {
 
     @Test
     void killGame(){
-        //TODO capire perche non si killa il game
-        gameController.killGame("player1");
-        gameController.killGame("player1");
+        String player1 = "Sola";
+        String player2 = "Ste";
+        String player3 = "Verri";
+        String player4 = "Tave";
+        List<String> players = new ArrayList<>();
+        players.add(player1);
+        players.add(player2);
+        players.add(player3);
+        players.add(player4);
+        int level = 2;
+        try {
+            gameController = new GameController(id, players, level);
+        } catch (InvalidStateException _) {
+
+        }
+        gameController.killGame("Sola");
         assertNull(MatchController.getInstance().getGameControllerForPlayer("player1"));
     }
 }

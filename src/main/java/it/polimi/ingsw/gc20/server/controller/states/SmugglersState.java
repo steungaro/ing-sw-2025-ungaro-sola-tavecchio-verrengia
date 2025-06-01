@@ -217,9 +217,9 @@ public class SmugglersState extends CargoState {
             if (getCurrentPlayer() == null) {
                 //draw a new card
                 for (String username: getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Draw a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
@@ -265,9 +265,9 @@ public class SmugglersState extends CargoState {
                 getModel().movePlayer(player, -lostDays);
             }
             for (String username: getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
@@ -278,9 +278,9 @@ public class SmugglersState extends CargoState {
             if (getCurrentPlayer() == null) {
                 //draw a new card
                 for (String username: getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
@@ -304,9 +304,9 @@ public class SmugglersState extends CargoState {
             if (getCurrentPlayer() == null) {
                 //draw new card
                 for (String username: getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {

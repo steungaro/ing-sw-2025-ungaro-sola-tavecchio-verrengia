@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LandOnPlanetPhase;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
@@ -183,9 +184,9 @@ public class PlanetsState extends CargoState {
                 }
             }
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("moving player and drawing a new card"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {

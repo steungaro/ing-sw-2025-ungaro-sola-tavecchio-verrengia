@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.EngineActivationPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
@@ -113,7 +114,10 @@ public class OpenSpaceState extends PlayingState {
                 NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition() % getModel().getGame().getBoard().getSpaces()));
             }
         }
-        phase = StatePhase.STANDBY_PHASE;
+        for (String username : getController().getInGameConnectedPlayers()) {
+            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
+        }
+        phase = StatePhase.DRAW_CARD_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

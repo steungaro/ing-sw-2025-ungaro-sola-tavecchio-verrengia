@@ -201,11 +201,11 @@ public class CombatZone0State extends PlayingState {
             case null:
                 //if the projectile is null, we can draw a new card
                 getModel().getActiveCard().playCard();
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 //to notify all connected players that the player finished shooting,
                 // we will wait for the next card to be drawn
                 for (String player1 : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                    NetworkService.getInstance().sendToClient(player1, new DrawCardPhaseMessage());
                 }
                 getController().setState(new PreDrawState(getController()));
                 break;
@@ -216,11 +216,11 @@ public class CombatZone0State extends PlayingState {
     private void finishManager() {
         if (manager.finished()){
             //if we finished shooting, we can draw a new card
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             //to notify all connected players that the player finished shooting,
             // we will wait for the next card to be drawn
             for (String player1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                NetworkService.getInstance().sendToClient(player1, new DrawCardPhaseMessage());
             }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
@@ -376,9 +376,9 @@ public class CombatZone0State extends PlayingState {
                     //notify all connected players that the player finished shooting;
                     // we will wait for the next card to be drawn
                     for (String player1 : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                        NetworkService.getInstance().sendToClient(player1, new DrawCardPhaseMessage());
                     }
-                    phase = StatePhase.STANDBY_PHASE;
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
                 } else {
@@ -450,11 +450,11 @@ public class CombatZone0State extends PlayingState {
         }
         else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
             //we end the card
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             //to notify all connected players that the player finished shooting,
             // we will wait for the next card to be drawn
             for (String player1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                NetworkService.getInstance().sendToClient(player1, new DrawCardPhaseMessage());
             }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
@@ -467,13 +467,13 @@ public class CombatZone0State extends PlayingState {
                 for (Player player1 : getController().getPlayers()) {
                     NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                 }
-                if (phase != StatePhase.STANDBY_PHASE){
+                if (phase != StatePhase.DRAW_CARD_PHASE){
                     //to notify all connected players that the player finished shooting,
                     // we will wait for the next card to be drawn
                     for (String player1 : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(player1, new StandbyMessage("waiting for the next card to be drawn"));
+                        NetworkService.getInstance().sendToClient(player1, new DrawCardPhaseMessage());
                     }
-                    phase = StatePhase.STANDBY_PHASE;
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     //if we are not in the standby phase, we can draw a new card
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));

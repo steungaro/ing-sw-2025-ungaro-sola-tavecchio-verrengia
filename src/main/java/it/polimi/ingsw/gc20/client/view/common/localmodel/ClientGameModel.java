@@ -353,7 +353,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
     public abstract void idleMenu(String message);
-
+    public abstract void keepPlayingMenu();
     public static void main(String[] args) throws RemoteException {
         ClientGameModel.setInstance(new TUI());
         ClientGameModel model = ClientGameModel.getInstance();

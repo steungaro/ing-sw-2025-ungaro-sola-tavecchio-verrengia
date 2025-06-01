@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
@@ -30,11 +31,21 @@ public class StardustState extends PlayingState {
     }
 
     /**
-     * this method is called when the stardust card is drawn and the automatic action is performed
+     * Executes the automatic action phase for the current state in the game.
+     * This method moves players backward based on the number of exposed connectors in their ship,
+     * updates player statuses, and advances the game to the draw card phase.
+     *
+     * The sequence of operations is as follows:
+     * - Iterates over the current in-game connected players in reverse order.
+     * - Moves each player backward by a value determined by the number of exposed connectors of the player's ship.
+     * - Sends updates to all players about the current state and position of each player.
+     * - Notifies all in-game connected players that the draw card phase is starting.
+     * - Changes the game phase to the draw card phase and plays the active card.
+     * - Updates the game state to the pre-draw state.
      */
     @Override
     public void automaticAction() {
-        getController().getInGameConnectedPlayers().stream()
+        getController().getInGameConnectedPlayers().reversed().stream()
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         //draw a new card
@@ -44,10 +55,10 @@ public class StardustState extends PlayingState {
             }
         }
         for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new StandbyMessage("draw a new card"));
+            NetworkService.getInstance().sendToClient(player, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
-        //getController().setState(new PreDrawState(getController()));
+        getController().setState(new PreDrawState(getController()));
     }
 }

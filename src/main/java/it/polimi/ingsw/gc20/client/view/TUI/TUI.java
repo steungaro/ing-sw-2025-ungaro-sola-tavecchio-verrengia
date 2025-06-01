@@ -297,6 +297,10 @@ public class TUI extends ClientGameModel {
         ClientGameModel.getInstance().getCurrentMenuState().displayMenu(errorMessage);
     }
 
+    public void keepPlayingMenu(){
+        ClientGameModel.getInstance().setCurrentMenuState(new KeepPlayingMenu());
+    }
+
     @Override
     public void loginSuccessful(String username) {
         clearConsole();

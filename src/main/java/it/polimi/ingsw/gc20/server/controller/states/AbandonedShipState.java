@@ -115,9 +115,9 @@ public class AbandonedShipState extends PlayingState {
         getController().getActiveCard().playCard();
         //notify all the players that the card has been played and the next card will be drawn
         for (String username: getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for the next card to be drawn"));
+            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getController().setState(new PreDrawState(getController()));
     }
 
