@@ -180,7 +180,7 @@ public class ValidatingShipState extends State {
         if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 0){
             NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
         } else if (readyToFly.get(getController().getPlayerByID(username))) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("ship is valid waiting for other players"));
+            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
         } else {
             NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
 
