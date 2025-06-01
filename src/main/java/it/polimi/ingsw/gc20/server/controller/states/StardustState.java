@@ -31,7 +31,17 @@ public class StardustState extends PlayingState {
     }
 
     /**
-     * this method is called when the stardust card is drawn and the automatic action is performed
+     * Executes the automatic action phase for the current state in the game.
+     * This method moves players backward based on the number of exposed connectors in their ship,
+     * updates player statuses, and advances the game to the draw card phase.
+     *
+     * The sequence of operations is as follows:
+     * - Iterates over the current in-game connected players in reverse order.
+     * - Moves each player backward by a value determined by the number of exposed connectors of the player's ship.
+     * - Sends updates to all players about the current state and position of each player.
+     * - Notifies all in-game connected players that the draw card phase is starting.
+     * - Changes the game phase to the draw card phase and plays the active card.
+     * - Updates the game state to the pre-draw state.
      */
     @Override
     public void automaticAction() {
