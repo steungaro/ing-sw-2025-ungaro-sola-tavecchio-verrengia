@@ -65,10 +65,8 @@ public class GUIView extends ClientGameModel {
         return null;
     }
 
-    public void setupConnection(String ipAddress, int port, boolean isRMI) {
+    public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
-
-        System.out.println("Connessione a " + ipAddress + ":" + port);
 
         try {
             Thread.sleep(1000);
@@ -85,13 +83,15 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client == null || !client.isConnected()) {
-            System.out.println("errore creazione client");
             client = null;
+            return false;
         }
 
         if (client != null) {
             showScene("login");
+            return true;
         }
+        return false;
     }
 
     @Override
