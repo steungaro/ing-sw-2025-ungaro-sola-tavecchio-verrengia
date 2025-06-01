@@ -38,12 +38,13 @@ public class AssemblingState extends State {
 
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
 
-            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
+
             if (model.getLevel() == 2) {
                 NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
             }
             // notify each player of the phase they are in
             NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
+            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
         }
         for (int i = 1; i < 4; i++) {
             deckPeeked.put(i, null);
