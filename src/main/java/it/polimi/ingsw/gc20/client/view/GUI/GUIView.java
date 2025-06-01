@@ -30,6 +30,11 @@ public class GUIView extends ClientGameModel {
         super();
     }
 
+    @Override
+    public void displayErrorMessage(String message) {
+        //TODO
+    }
+
     public void initGUI(Stage stage) {
         primaryStage = stage;
         showScene("welcome");
@@ -178,18 +183,13 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
+    public void idleMenu(String message) {
+
+    }
+
+    @Override
     public void notifyDisconnection() throws RemoteException {
         // TODO: Implementare la notifica di disconnessione
-    }
-
-    @Override
-    public void display(String message) {
-        // TODO
-    }
-
-    @Override
-    public void display(MenuState menuState) {
-        // TODO
     }
 
     @Override
@@ -218,7 +218,7 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain) {
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
 
     }
 
