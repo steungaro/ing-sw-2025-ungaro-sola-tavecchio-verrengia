@@ -18,7 +18,7 @@ import java.util.Map;
 public class ValidatingShipState extends State {
     private final Map<Player, Boolean> validShips = new HashMap<>();
     private final Map<Player, Boolean> readyToFly = new HashMap<>();
-    private final Map<Player, StatePhase> phaseMap = new HashMap<>();
+    private StatePhase phase;
     /**
      * Default constructor
      */
@@ -31,8 +31,7 @@ public class ValidatingShipState extends State {
             for (String username : getController().getInGameConnectedPlayers()) {
                 NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
             }
-            phaseMap.put (player, StatePhase.VALIDATE_SHIP_PHASE); //set all the phase to validate ship phase
-
+            phase = StatePhase.VALIDATE_SHIP_PHASE;
         }
     }
 
@@ -49,14 +48,13 @@ public class ValidatingShipState extends State {
      */
     @Override
     public boolean isShipValid(Player player) throws InvalidStateException{
-        if (phaseMap.get(player) != StatePhase.VALIDATE_SHIP_PHASE) {
+        if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot validate ship in this phase");
         }
         if (getModel().shipValidating(player)) {
             //if the ship is valid, he can add the aliens
             validShips.put(player, true);
             if (getModel().getLevel() == 0) {
-                phaseMap.put(player, StatePhase.STANDBY_PHASE);
                 readyToFly.put(player, true);
                 if (allShipsReadyToFly()) {
                     //if all the players are ready to fly, go to the next phase
@@ -77,8 +75,12 @@ public class ValidatingShipState extends State {
                 }
                 return true;
             } else {
-                NetworkService.getInstance().sendToClient(player.getUsername(), new AlienPlacementePhaseMessage());
-                phaseMap.put(player, StatePhase.ADD_ALIEN_PHASE);
+                if (allShipsValidated()) {
+                    phase = StatePhase.ADD_ALIEN_PHASE;
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
+                    }
+                }
                 return true;
             }
         }
@@ -94,7 +96,7 @@ public class ValidatingShipState extends State {
      */
     @Override
     public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException {
-        if (phaseMap.get(player)!=StatePhase.VALIDATE_SHIP_PHASE) {
+        if (phase!=StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot remove component from valid ship");
         }
         //remove the component from the ship
@@ -116,7 +118,7 @@ public class ValidatingShipState extends State {
      */
     @Override
     public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException {
-        if (phaseMap.get(player) != StatePhase.ADD_ALIEN_PHASE) {
+        if (phase != StatePhase.ADD_ALIEN_PHASE) {
             throw new InvalidStateException("Cannot add alien in this phase");
         }
         //add the alien to the ship
@@ -144,11 +146,10 @@ public class ValidatingShipState extends State {
      */
     @Override
     public void endMove (Player player) throws InvalidStateException {
-        if (phaseMap.get(player) != StatePhase.ADD_ALIEN_PHASE) {
+        if (phase != StatePhase.ADD_ALIEN_PHASE) {
             throw new InvalidStateException("Cannot end move in this phase");
         }
         readyToFly.put(player, true);
-        phaseMap.put(player, StatePhase.STANDBY_PHASE);
         //check if all the players are ready to fly
         if (allShipsReadyToFly()) {
             //if all the players are ready to fly, go to the next phase
