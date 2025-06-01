@@ -177,8 +177,8 @@ public class AbandonedStationState extends CargoState {
             //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
             //notify all the player of the player update
-            for (String username: getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(username, 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
+            for (Player p : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
             }
             //change the phase to standby phase
             phase = StatePhase.STANDBY_PHASE;

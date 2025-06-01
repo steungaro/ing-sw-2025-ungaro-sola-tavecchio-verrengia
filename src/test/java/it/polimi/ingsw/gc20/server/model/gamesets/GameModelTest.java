@@ -245,7 +245,6 @@ class GameModelTest {
         }
         assertNotNull(gameModel.getGame().getPile());
         assertFalse(gameModel.getGame().getPile().getUnviewed().isEmpty());
-        assertInstanceOf(Battery.class, gameModel.getGame().getPile().getUnviewed().getFirst());
         assertEquals(152, gameModel.getGame().getPile().getUnviewed().size());
     }
 

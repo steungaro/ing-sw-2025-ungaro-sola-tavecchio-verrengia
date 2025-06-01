@@ -103,8 +103,8 @@ public class GameController implements GameControllerInterface {
         try {
             AdventureCard card = model.drawCard();
             //notify players of the card drawn
-            for (String username : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new CardDrawnMessage(card));
+            for (Player player : getPlayers()){
+                NetworkService.getInstance().sendToClient(player.getUsername(), new CardDrawnMessage(card));
             }
             card.setState(this, model);
         } catch (EmptyDeckException e) {
@@ -168,8 +168,8 @@ public class GameController implements GameControllerInterface {
             Player player = getPlayerByID(username);
             state.loadCargo(player, loaded, ch);
             //notify players of the cargo loaded
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "loaded cargo"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "loaded cargo"));
             }
         } catch (Exception e){
             logger.log(Level.SEVERE, "Error loading cargo", e);
@@ -192,8 +192,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.unloadCargo(getPlayerByID(username), lost, ch);
             //notify players of the cargo unloaded
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "unloaded cargo"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "unloaded cargo"));
             }
         } catch (Exception e){
             //notify the player of the error
@@ -215,8 +215,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.moveCargo(getPlayerByID(username), cargo, from, to);
             //notify players of the cargo moved
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "moved cargo"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "moved cargo"));
             }
         } catch (Exception e){
             //notify the player of the error
@@ -254,8 +254,8 @@ public class GameController implements GameControllerInterface {
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
             state.activateCannons(getPlayerByID(username), cannons, batteries);
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(user, getPlayerByID(username).getShip(), "activated cannons"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "activated cannons"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating cannons", e);
@@ -273,8 +273,8 @@ public class GameController implements GameControllerInterface {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error getting score", e);
             //notify players of the error
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, new ErrorMessage("Error getting score: " + e.getMessage()));
+            for (Player player : getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), new ErrorMessage("Error getting score: " + e.getMessage()));
             }
         }
     }
@@ -289,8 +289,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.loseCrew(getPlayerByID(username), cabins);
             //notify players of the crew lost
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "lost crew"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "lost crew"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -310,8 +310,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
             //notify players of the battery used
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "activated shield"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "activated shield"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -353,8 +353,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.activateEngines(getPlayerByID(username), engines, batteries);
             //notify players of the engines activated
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "activated engines"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "activated engines"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error activating engines", e);
@@ -373,27 +373,13 @@ public class GameController implements GameControllerInterface {
         try{
             state.chooseBranch(getPlayerByID(username), coordinates);
             //notify players of the branch chosen
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "chose branch"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "chose branch"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error choosing branch", e);
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error choosing branch: " + e.getMessage()));
-        }
-    }
-
-
-    /**
-     * @param asker the username of the player asking for data
-     * @param asked the username of the player being asked for data
-     * @return player data, if the asker is the same as the asked, return the full data, otherwise return only public data
-     */
-    public Player getPlayerData(String asker, String asked) {
-        if (asker.equals(asked)) {
-            return getPlayerByID(asker);
-        } else {
-            return getPlayerByID(asked).getPublicData();
         }
     }
 
@@ -406,10 +392,10 @@ public class GameController implements GameControllerInterface {
         if(!Objects.equals(state.toString(), "PreDrawState")){
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Can only give up when the turn has ended"));
         }
-        model.giveUp(getPlayerByID(username));
+        getPlayerByID(username).setGameStatus(false);
         //notify players of the player that gave up
-        for (String user : getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(user, new PlayerUpdateMessage(username,
+        for (Player player : getPlayers()) {
+            NetworkService.getInstance().sendToClient(player.getUsername(), new PlayerUpdateMessage(username,
                     0,
                     false,
                     getPlayerByID(username).getColor(),
@@ -470,8 +456,8 @@ public class GameController implements GameControllerInterface {
             disconnectedPlayers.remove(username);
             if (state.isConcurrent()){
                 //init all the local model of the view
-                for (String u : getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(u, getPlayerByID(u).getShip(), "reconnection"));
+                for (Player p:  getPlayers()){
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "reconnection"));
                 }
                 if (connectedPlayers.size() == 1) {
                     connectedPlayers.add(username);
@@ -482,6 +468,11 @@ public class GameController implements GameControllerInterface {
                 state.rejoin(username);
             } else {
                 pendingPlayers.add(username);
+                for (Player p:  getPlayers()){
+                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "reconnection"));
+                }
+                NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("You have reconnected, please wait for the current card to be played."));
             }
 
             if(connectedPlayers.size() == 1){
@@ -493,14 +484,17 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    /**
+     * This method is called when a pending player is reconnected to the game in the pre-draw state.
+     */
     public void preDrawConnect(){
         for (String username : pendingPlayers){
             connectedPlayers.addLast(username);
             //needs to update the local model of the player with all the ship of the other players
-            for (String player : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player, getPlayerByID(player).getShip(), "init all ship"));
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
             }
-            NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+            NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
         }
     }
 
@@ -519,38 +513,6 @@ public class GameController implements GameControllerInterface {
                     .orElseThrow(() -> new IllegalArgumentException("Player not found"));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error getting player by ID", e);
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves all usernames of players in the game
-     *
-     * @return List of player usernames
-     */
-    public List<String> getAllUsernames() {
-        try{
-            List<String> usernames = new ArrayList<>();
-            for (Player p : model.getGame().getPlayers()) {
-                usernames.add(p.getUsername());
-            }
-            return usernames;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting all usernames", e);
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves the list of players who have disconnected from the game
-     *
-     * @return List of disconnected player usernames
-     */
-    public List<String> getDisconnectedPlayers() {
-        try{
-            return new ArrayList<>(disconnectedPlayers);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting disconnected players", e);
         }
         return null;
     }
@@ -575,8 +537,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.takeComponentFromUnviewed(getPlayerByID(username), index);
             // notify players of the pile update
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getViewed(),
                         "taken from unviewed"));
@@ -601,8 +563,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.takeComponentFromViewed(getPlayerByID(username), index);
             //notify players of the component taken
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getViewed(),
                         "taken from viewed"));
@@ -627,8 +589,8 @@ public class GameController implements GameControllerInterface {
             }
             state.takeComponentFromBooked(getPlayerByID(username), index);
             // notify players of a component taken and update the ship
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "took component from booked"));
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "took component from booked"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -649,8 +611,8 @@ public class GameController implements GameControllerInterface {
             }
             state.addComponentToBooked(getPlayerByID(username));
             // notify players of a component booked and update the ship
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "added component to booked"));
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "added component to booked"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -668,8 +630,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.addComponentToViewed(getPlayerByID(username));
             //notify the players of the component added and update the pile
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, PileUpdateMessage.fromComponent(username,
+            for (Player player: getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(username,
                         getModel().getGame().getPile().getUnviewed().size(),
                         getModel().getGame().getPile().getViewed(),
                         "added to viewed"));
@@ -706,7 +668,6 @@ public class GameController implements GameControllerInterface {
     public void rotateComponentClockwise(String username) {
         try{
             state.rotateComponentClockwise(getPlayerByID(username));
-            //TODO: notify players of component rotation in the state
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error rotating component clockwise: " + e.getMessage()));
@@ -722,7 +683,6 @@ public class GameController implements GameControllerInterface {
     public void rotateComponentCounterclockwise(String username) {
         try{
             state.rotateComponentCounterclockwise(getPlayerByID(username));
-            //TODO: notify players of component rotation in the state
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error rotating component counterclockwise: " + e.getMessage()));
@@ -742,8 +702,8 @@ public class GameController implements GameControllerInterface {
         try{
             state.removeComp(getPlayerByID(username), coordinates);
             //notify the players of the ship changes
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "removed component"));
+            for (Player player : getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "removed component"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -803,7 +763,6 @@ public class GameController implements GameControllerInterface {
                 throw new InvalidStateException("Hourglass is only available in level 2 games");
             }
             state.turnHourglass(getPlayerByID(username));
-
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error turning hourglass: " + e.getMessage()));
@@ -849,8 +808,8 @@ public class GameController implements GameControllerInterface {
             }
             state.addAlien(getPlayerByID(username), color, cabin);
             //notify players of the alien added, update ship
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "added alien"));
+            for (Player player : getPlayers()) {
+                NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "added alien"));
             }
         } catch (Exception e) {
             //notify the player of the error
@@ -859,11 +818,8 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    public void defeated(String username) {
-        model.giveUp(getPlayerByID(username));
-    }
-
     /**
+     * method to roll the dice for a player
      * @param username is the username of the player that wants to roll the dice
      */
     @Override
@@ -885,6 +841,11 @@ public class GameController implements GameControllerInterface {
     }
 
 
+    /**
+     * Returns the list of players that are currently playing in the game
+     *
+     * @return usernames of connected players
+     */
     public List<String> getInGameConnectedPlayers() {
         return model.getInGamePlayers().stream()
                 .map(Player::getUsername)
@@ -892,6 +853,10 @@ public class GameController implements GameControllerInterface {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * this method is called to kill a game if there are no players left
+     * @param username is the username of the player that caused the game to end
+     */
     @Override
     public void killGame(String username) {
         if (connectedPlayers.contains(username)) {
@@ -901,19 +866,35 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    /**
+     * This method is called when a player loses energy
+     * @param username is the username of the player that wants to lose energy
+     * @param coordinates are the coordinates of the component where the player wants to lose energy
+     */
     @Override
     public void loseEnergy(String username, Pair<Integer, Integer> coordinates) {
         try {
             state.loseEnergy(getPlayerByID(username), coordinates);
             //notify players of the energy lost
-            //TODO CONTROLLARE
-            for (String user : getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "lost energy"));
+            for (Player p:  getPlayers()){
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "lost energy"));
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error losing energy", e);
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error losing energy: " + e.getMessage()));
         }
+    }
+
+    /**
+     * Retrieves the list of players in the game that are currently connected or pending connection
+     *
+     * @return List of Player objects representing all players in the game
+     */
+    public List<Player> getPlayers() {
+        return model.getGame().getPlayers().stream()
+                .filter(player -> connectedPlayers.contains(player.getUsername()) ||
+                        pendingPlayers.contains(player.getUsername()))
+                .collect(Collectors.toList());
     }
 }

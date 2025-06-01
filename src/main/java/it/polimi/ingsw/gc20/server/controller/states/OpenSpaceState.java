@@ -103,13 +103,14 @@ public class OpenSpaceState extends PlayingState {
         declaredEngines.forEach((key, value) -> {
             getModel().movePlayer(key, value);
             if (value == 0) {
-                getController().defeated(key.getUsername());
+                getController().getPlayerByID(key.getUsername()).setGameStatus(false);
+                NetworkService.getInstance().sendToClient(key.getUsername(), new StandbyMessage("You have no engines left, you are out of the game"));
             }
         });
         //notify all players that all the player position has been updated
-        for (String player : getController().getInGameConnectedPlayers()) {
-            for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
+        for (Player player : getModel().getInGamePlayers()) {
+            for (Player username : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition() % getModel().getGame().getBoard().getSpaces()));
             }
         }
         phase = StatePhase.STANDBY_PHASE;

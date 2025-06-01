@@ -28,14 +28,15 @@ public class AssemblingState extends State {
         super(model, controller);
         //init the state
         getModel().initCountdown();
-        for (Player player : getModel().getInGamePlayers()) {
+        for (Player player : getController().getPlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
             playersPhase.put(player, StatePhase.TAKE_COMPONENT);
             //init all the local model of the view
-            for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
+            for (Player p : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
             }
+
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
 
             NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
@@ -196,8 +197,8 @@ public class AssemblingState extends State {
         // Set the player's phase to TAKE_COMPONENT
         playersPhase.put(player, StatePhase.TAKE_COMPONENT);
         //notify the players of the ship changes
-        for (String user : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(user, Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
+        for (Player p : getController().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
         }
         //notify the player that they go to the TAKE_COMPONENT phase
         NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
@@ -248,8 +249,8 @@ public class AssemblingState extends State {
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
         //notify the player that the position has been set
-        for (String username : getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
+        for (Player p : getController().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
         }
         //mark the player as assembled
         assembled.put(player, true);

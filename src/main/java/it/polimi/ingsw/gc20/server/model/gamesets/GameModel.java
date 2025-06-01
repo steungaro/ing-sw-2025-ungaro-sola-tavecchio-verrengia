@@ -451,6 +451,12 @@ public class GameModel {
      */
     public int EnginePower(Player p, int doubleEngines, List<Battery> energy) throws EnergyException, InvalidEngineException {
         int power;
+        if (energy == null && doubleEngines > 0) {
+            throw new EnergyException("Not enough energy");
+        }
+        if (energy == null){
+            return p.getShip().enginePower(0);
+        }
         for (Battery e : energy) {
             if (e.getAvailableEnergy() == 0) {
                 throw new EnergyException("Not enough energy");
@@ -715,13 +721,6 @@ public class GameModel {
             }
         }
         return inGamePlayers;
-    }
-
-    /** Function that set the player status to false if the choice to give up
-     * @param p player that chooses to give up
-     */
-    public void giveUp (Player p) {
-        p.setGameStatus(false);
     }
 
     /** Function that auto validate the ship if the player is disconnected

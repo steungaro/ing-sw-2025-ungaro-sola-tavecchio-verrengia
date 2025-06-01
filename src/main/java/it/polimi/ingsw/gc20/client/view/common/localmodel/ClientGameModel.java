@@ -2,8 +2,12 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
+import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAbandonedShip;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewOpenSpace;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewSmugglers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
@@ -13,12 +17,11 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
@@ -26,7 +29,7 @@ import it.polimi.ingsw.gc20.server.model.cards.FireType;
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
-    private final ExecutorService executor = Executors.newFixedThreadPool(2);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ViewShip playerShip;
     private ViewLobby currentLobby;
     private GamePhase currentPhase;
@@ -41,7 +44,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
     private List<ViewLobby> lobbyList;
-
+    private MenuState currentMenuState;
+    public boolean busy;
+    private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize default state if necessary
@@ -58,6 +63,45 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
     }
+
+    public MenuState getCurrentMenuState() {
+        return currentMenuState;
+    }
+    public void setBusy() {
+        busy = true;
+    }
+    public void setFree(){
+        busy = false;
+        while (!menuStateQueue.isEmpty()) {
+            currentMenuState = menuStateQueue.poll();
+            if (currentMenuState != null) {
+                TUI.clearConsole();
+                currentMenuState.displayMenu();
+            }
+        }
+    }
+    /**
+     * Sets the current menu state and displays it if the model is not busy.
+     * If the model is busy, the new state is added to a queue to be processed later.
+     *
+     * @param currentMenuState The new menu state to set.
+     * @apiNote This method is used to change the current menu state in the game model. GUI NEED TO REIMPLEMENT THIS METHOD
+     */
+    public void setCurrentMenuState(MenuState currentMenuState) {
+        if (busy){
+            menuStateQueue.add(currentMenuState);
+        } else {
+            if (menuStateQueue.isEmpty()) {
+                this.currentMenuState = currentMenuState;
+                TUI.clearConsole();
+                this.currentMenuState.displayMenu();
+            } else {
+                menuStateQueue.add(currentMenuState);
+            }
+        }
+    }
+
+    public abstract void displayErrorMessage(String message);
 
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = lobbyList;
@@ -146,21 +190,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-//    public void printDeck(int index) {
-//        if (board != null) {
-//            List<ViewAdventureCard> cards = board.decks.get(index);
-//            if (cards != null) {
-//                String out = printCardsInLine(cards);
-//                System.out.println(out);
-//                LOGGER.info("Deck " + index + ":\n");
-//            } else {
-//                LOGGER.warning("No card found at index " + index);
-//            }
-//        } else {
-//            LOGGER.warning("No deck found at index " + index);
-//        }
-//    }
-
     public void printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return;
@@ -176,7 +205,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int startIdx = cardRow * cardsPerRow;
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
             List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 11; i++) {
                 for (int j = 0; j < rowCards.size(); j++) {
                     finalResult.append(rowCards.get(j).toLine(i));
                     finalResult.append("  ");
@@ -185,6 +214,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
                     }
                 }
             }
+            finalResult.append("\n");
         }
         System.out.println(finalResult);
     }
@@ -299,11 +329,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public String getErrorMessage() { return errorMessage; }
 
 
-    public abstract void display(String message);
-
-    public abstract void display(MenuState menuState);
-
-
     public Client getClient() {
         return client;
     }
@@ -314,7 +339,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);
     public abstract void cardAcceptanceMenu(String message);
-    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain);
+    public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing);
     public abstract void engineMenu(String message);
     public abstract void inLobbyMenu();
     public abstract void mainMenuState();
@@ -333,4 +358,5 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
+    public abstract void idleMenu(String message);
 }

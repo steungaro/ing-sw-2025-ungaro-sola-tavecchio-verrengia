@@ -177,9 +177,9 @@ public class PlanetsState extends CargoState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
-            for (String p : getController().getInGameConnectedPlayers()) {
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(p, 0, getController().getPlayerByID(p).isInGame(), getController().getPlayerByID(p).getColor(), getController().getPlayerByID(p).getPosition() % getModel().getGame().getBoard().getSpaces()));
+            for (Player p : getModel().getInGamePlayers()) {
+                for (Player username : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
                 }
             }
             for (String username : getController().getInGameConnectedPlayers()) {

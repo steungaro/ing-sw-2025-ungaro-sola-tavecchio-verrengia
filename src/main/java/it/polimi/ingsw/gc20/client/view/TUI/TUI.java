@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import java.io.IOException;
+
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 
 public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
-    private MenuState currentState;
-
     private static final Scanner scanner = new Scanner(System.in);
 
     public TUI() throws RemoteException{
@@ -158,7 +156,7 @@ public class TUI extends ClientGameModel {
         System.out.println("2. View a player's ship");
         System.out.println("3. View uncovered components");
         System.out.println("4. View current card");
-        System.out.println("b. Back to the main menu");
+        System.out.println("b. Back to the menu");
         System.out.print(" > ");
 
         String input = scanner.nextLine().trim();
@@ -177,8 +175,12 @@ public class TUI extends ClientGameModel {
             case "4" -> ClientGameModel.getInstance().printCurrentCard();
             case "b" -> {
             }
-            default -> System.out.println("\033[31mInvalid option. Back to the main menu.\033[0m");
+            default -> {
+                ClientGameModel.getInstance().getCurrentMenuState().displayMenu("Invalid option. Back to the main menu.");
+                return;
+            }
         }
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu();
     }
 
     @Override
@@ -200,84 +202,47 @@ public class TUI extends ClientGameModel {
         }
     }
 
-    public void display(MenuState menu) {
-        currentState = menu;
-        boolean input = false;
-        while (!input) {
-            try {
-                currentState.displayMenu();
-                input = currentState.handleInput();
-            } catch (IOException e){
-                LOGGER.warning("Error while handling input: " + e.getMessage());
-            }
-        }
-    }
-
-    //Display the menu after we get an error, it does not change the state, simply returns to the last menu
-    public void display(String message) {
-        boolean input = false;
-        while (!input) {
-            try {
-                System.out.println(message);
-                currentState.displayMenu();
-                input = currentState.handleInput();
-            } catch (IOException e){
-                LOGGER.warning("Error while handling input: " + e.getMessage());
-            }
-        }
-    }
-
     public void branchMenu(){
-        currentState = new BranchMenu();
-        display(currentState);
+        ClientGameModel.getInstance().setCurrentMenuState(new BranchMenu());
     }
 
     public void buildingMenu(List<ViewAdventureCard> adventureCards){
-        currentState= new BuildingMenu(adventureCards);
-        display(currentState);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(adventureCards));
     }
 
     public void inLobbyMenu(){
-        MenuState menu = new InLobbyMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new InLobbyMenu());
     }
 
     public void cannonsMenu(String message){
-        MenuState menu = new CannonsMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CannonsMenu(message));
     }
 
     public void cardAcceptanceMenu(String message){
-        MenuState menu = new CardAcceptanceMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CardAcceptanceMenu(message));
     }
 
     public void engineMenu(String message){
-        MenuState menu = new EngineMenu(message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new EngineMenu(message));
     }
 
-    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain){
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing){
         //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
-        MenuState menu = new CargoMenu(message, cargoToLose, cargoMap);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(message, cargoToLose, cargoMap, losing));
     }
 
     public void planetMenu(List<Planet> planets){
-        MenuState menu = new PlanetMenu(planets);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new PlanetMenu(planets));
     }
 
     public void populateShipMenu(){
-        MenuState menu = new PopulateShipMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new PopulateShipMenu());
     }
 
     public void validationMenu(){
-        MenuState menu = new ValidationMenu();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new ValidationMenu());
     }
 
     public void automaticAction(String message){
@@ -285,52 +250,75 @@ public class TUI extends ClientGameModel {
     }
 
     public void mainMenuState(){
-        MenuState menu = new MainMenuState();
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
     public void takeComponentMenu(){
-        MenuState menu = new BuildingMenu(null);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
     public void shieldsMenu(FireType fireType, int direction, int line){
         String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
         String Message = fireType + " from " + directions[direction]  +  " at line " + line;
-        MenuState menu = new ShieldsMenu(Message);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(Message));
     }
 
     public void rollDiceMenu(FireType fireType, int direction){
-        //TODO: implement this method
+        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
+        String Message = fireType + " from " + directions[direction];
+        ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(Message));
     }
 
     public void cargoMenu(int cargoNum){
-        MenuState menu = new CargoMenu(null, cargoNum, new HashMap<>());
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(null, cargoNum, new HashMap<>(), true));
     }
 
     public void loseCrewMenu(int crewNum){
-        // TODO: implement this method
+        ClientGameModel.getInstance().setCurrentMenuState(new LoseCrewMenu(crewNum));
     }
 
     public void removeBatteryMenu(int batteryNum){
-        // TODO: implement this method
+        ClientGameModel.getInstance().setCurrentMenuState(new LoseEnergyMenu(batteryNum));
     }
 
     public void placeComponentMenu(){
-        MenuState menu = new BuildingMenu(null);
-        display(menu);
+        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){
-        // TODO: implement this method
+        ClientGameModel.getInstance().setCurrentMenuState(new EndGameMenu(leaderBoard));
+    }
+
+    public void idleMenu(String message) {
+        ClientGameModel.getInstance().setCurrentMenuState(new IdleMenu(message));
+    }
+
+    public void displayErrorMessage(String errorMessage) {
+        clearConsole();
+        ClientGameModel.getInstance().getCurrentMenuState().displayMenu(errorMessage);
     }
 
     @Override
     public void loginSuccessful(String username) {
         clearConsole();
         System.out.println("\033[32mLogged in as: " + username + "\033[0m");
+        Thread inputThread = new Thread(() -> {
+            while (true) {
+                try {
+                    String input = scanner.nextLine().trim();
+                    if (input.equals("q")) {
+                        shutdown();
+                    } else {
+                        ClientGameModel.getInstance().getCurrentMenuState().handleInput(input);
+                    }
+                } catch (RemoteException e) {
+                    LOGGER.warning("Error handling input: " + e.getMessage());
+                }
+            }
+        });
+        inputThread.start();
+        // add a shutdown hook to ensure the application can be closed gracefully
+        Runtime.getRuntime().addShutdownHook(new Thread(inputThread::interrupt));
         wait(1);
     }
 

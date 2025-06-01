@@ -123,8 +123,8 @@ public class    CombatZone1State extends CargoState {
             //get the player with the minimum declaredFirePower and make it lose flight days
             getModel().movePlayer(p, - lostDays);
             //notify all connected players of the player who lost flight days
-            for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces())));
+            for (Player username : getController().getPlayers()){
+                NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces())));
             }
             //set the current player to the first online player
             setCurrentPlayer(getController().getFirstOnlinePlayer());
@@ -315,8 +315,8 @@ public class    CombatZone1State extends CargoState {
             fireProjectile(player);
         } catch (InvalidShipException e) {
             //notify all the players of the ship update
-            for (String player1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+            for (Player player1 : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             }
             //notify all players that the current player has to choose the branch
             for (String username : getController().getInGameConnectedPlayers()){
@@ -337,8 +337,8 @@ public class    CombatZone1State extends CargoState {
             finishManager();
         } catch (InvalidShipException e) {
             //notify all the players of the ship update
-            for (String player1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+            for (Player player1 : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             }
             phase = StatePhase.VALIDATE_SHIP_PHASE;
             //notify all players that the current player has to choose the branch
@@ -396,10 +396,6 @@ public class    CombatZone1State extends CargoState {
         }
         //remove the cargo from the ship
         super.unloadCargo(player, unloaded, ch);
-        //notify all players about the ship update
-        for (String username : getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
-        }
         //check if the player has more cargo to lose
         Map<CargoColor, Integer> cargo = player.getShip().getCargo();
         boolean allZero = true;
@@ -477,10 +473,6 @@ public class    CombatZone1State extends CargoState {
         //remove the energy from the ship
         super.loseEnergy(player, battery);
         lostCargo--;
-        //notify all players about the ship update
-        for (String username : getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "removed energy"));
-        }
         if (player.getShip().getTotalEnergy() == 0) {
             lostCargo = 0;
         }
@@ -540,8 +532,8 @@ public class    CombatZone1State extends CargoState {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 //notify the ship update
-                for (String username : getController().getInGameConnectedPlayers()){
-                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
+                for (Player username : getController().getPlayers()){
+                    NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 }
                 if (phase != StatePhase.STANDBY_PHASE){
                     phase = StatePhase.STANDBY_PHASE;
