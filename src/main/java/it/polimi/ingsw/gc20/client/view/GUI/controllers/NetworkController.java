@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
-import it.polimi.ingsw.gc20.client.network.common.Client;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
@@ -30,51 +29,40 @@ public class NetworkController {
     @FXML
     private Label errorLabel;
 
-    private ToggleGroup connectionTypeGroup;
-
     private GUIView guiView;
-
-    private Client client;
 
     @FXML
     public void initialize() {
         guiView = (GUIView) ClientGameModel.getInstance();
 
-        connectionTypeGroup = new ToggleGroup();
+        ToggleGroup connectionTypeGroup = new ToggleGroup();
         socketRadioButton.setToggleGroup(connectionTypeGroup);
         rmiRadioButton.setToggleGroup(connectionTypeGroup);
 
         socketRadioButton.setSelected(true);
 
-        ipAddressField.setText("localhost");
-        portField.setText("502");
-
-        connectButton.setOnAction(event -> handleConnect());
+        connectButton.setOnAction(_ -> handleConnect());
     }
 
     private void handleConnect() {
+        errorLabel.setVisible(false);
         String ipAddress = ipAddressField.getText();
         int port;
 
         try {
             port = Integer.parseInt(portField.getText());
         } catch (NumberFormatException e) {
-            System.out.println("Port number must be an integer");
-            return;
+            port = 0;
         }
 
         boolean isRMI = rmiRadioButton.isSelected();
 
-        // Chiama il metodo nella GUIView per stabilire la connessione
-        guiView.setupConnection(ipAddress, port, isRMI);
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public void showError(String message) {
-        errorLabel.setText(message);
-        errorLabel.setVisible(true);
+        if (guiView.setupConnection(ipAddress, port, isRMI)) {
+            // Connection successful, proceed to the main menu
+            guiView.showScene("mainMenu");
+        } else {
+            // Show an error message
+            errorLabel.setVisible(true);
+        }
     }
 }
