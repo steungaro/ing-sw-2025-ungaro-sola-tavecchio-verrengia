@@ -24,8 +24,6 @@ public class RMIClient implements Client {
     private GameControllerInterface gameService;
     private MatchControllerInterface matchService;
 
-    private Registry registry;
-
     private boolean connected = false;
 
     private final Logger LOGGER = Logger.getLogger(RMIClient.class.getName());
@@ -48,7 +46,7 @@ public class RMIClient implements Client {
     public void start() {
         try {
             // Look up the registry
-            registry = LocateRegistry.getRegistry(serverAddress, port);
+            Registry registry = LocateRegistry.getRegistry(serverAddress, port);
 
             // Look up the remote services
             authService = (RMIAuthInterface) registry.lookup("AuthService");
