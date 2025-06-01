@@ -151,7 +151,7 @@ public class AssemblingState extends State {
         // Remove component from player's hand
         componentsInHand.put(player, null);
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
     }
 
     /**
@@ -171,7 +171,7 @@ public class AssemblingState extends State {
 
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
     }
     /**
      * This method is used to place a component on the ship.
@@ -194,7 +194,7 @@ public class AssemblingState extends State {
             NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
         }
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
     }
     /**
      * This method is used to rotate a component clockwise.

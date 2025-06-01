@@ -36,6 +36,9 @@ public abstract class ViewAdventureCard {
 
     public static ViewAdventureCard createFrom(AdventureCard adventureCard) {
         String type = adventureCard.getName();
+        if (type.equals("CombatZone")) {
+            type = "CombatZone" + adventureCard.combatType();
+        }
 
         try {
             String className = "it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.View" + type;
