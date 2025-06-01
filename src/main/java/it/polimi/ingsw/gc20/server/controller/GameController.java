@@ -306,6 +306,7 @@ public class GameController implements GameControllerInterface {
      * @param batteryComp are the coordinates of the energy component that the player wants to use to activate the shield
      * @apiNote Ship may need to be validated
      */
+    @Override
     public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) {
         try{
             state.activateShield(getPlayerByID(username), shieldComp, batteryComp);
@@ -332,6 +333,7 @@ public class GameController implements GameControllerInterface {
      * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
      * @param username is the username of the player that wants to terminate their turn
      */
+    @Override
     public void endMove(String username) {
         try{
             state.endMove(getPlayerByID(username));
@@ -425,8 +427,7 @@ public class GameController implements GameControllerInterface {
             if(connectedPlayers.size() == 1){
                 state = new PausedState(state, model, this);
             }else if(connectedPlayers.isEmpty()){
-                state = new EndgameState(this);
-                MatchController.getInstance().endGame(gameID);
+                killGame();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error disconnecting player", e);
@@ -459,6 +460,7 @@ public class GameController implements GameControllerInterface {
                 for (Player p:  getPlayers()){
                     NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "reconnection"));
                 }
+                NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "reconnection"));
                 if (connectedPlayers.size() == 1) {
                     connectedPlayers.add(username);
                     state.resume();
@@ -533,6 +535,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player taking the component
      * @param index Index of the component in the unviewed pile
      */
+    @Override
     public synchronized void takeComponentFromUnviewed(String username, int index) {
         try{
             state.takeComponentFromUnviewed(getPlayerByID(username), index);
@@ -559,6 +562,7 @@ public class GameController implements GameControllerInterface {
      * @throws NoSuchElementException if the component is not in the viewed pile
      * @throws IllegalArgumentException if the player already has a component in the hand
      */
+    @Override
     public synchronized void takeComponentFromViewed(String username, int index) {
         try{
             state.takeComponentFromViewed(getPlayerByID(username), index);
@@ -582,6 +586,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player taking the component
      * @param index Index of the component in the booked list
      */
+    @Override
     public void takeComponentFromBooked(String username, int index) {
         try{
             if (model.getLevel() != 2) {
@@ -604,6 +609,7 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player booking the component
      */
+    @Override
     public void addComponentToBooked(String username) {
         try{
             if (model.getLevel() != 2) {
@@ -626,6 +632,7 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player adding the component
      */
+    @Override
     public synchronized void addComponentToViewed(String username) {
         try{
             state.addComponentToViewed(getPlayerByID(username));
@@ -649,6 +656,7 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player placing the component
      * @param coordinates Coordinates where the component will be placed
      */
+    @Override
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
         try{
             state.placeComponent(getPlayerByID(username), coordinates);
@@ -665,6 +673,7 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player rotating the component
      */
+    @Override
     public void rotateComponentClockwise(String username) {
         try{
             state.rotateComponentClockwise(getPlayerByID(username));
@@ -680,6 +689,7 @@ public class GameController implements GameControllerInterface {
      *
      * @param username Username of the player rotating the component
      */
+    @Override
     public void rotateComponentCounterclockwise(String username) {
         try{
             state.rotateComponentCounterclockwise(getPlayerByID(username));
@@ -696,8 +706,8 @@ public class GameController implements GameControllerInterface {
      * @param username Username of the player removing the component
      * @param coordinates Coordinates of the component to be removed
      * @apiNote view must call this function until the ship is valid
-     * @see #validateShip(String username)
      */
+    @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
             state.removeComp(getPlayerByID(username), coordinates);
@@ -709,24 +719,6 @@ public class GameController implements GameControllerInterface {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error removing component from ship: " + e.getMessage()));
             logger.log(Level.SEVERE, "Error removing component from ship", e);
-        }
-    }
-
-    /**
-     * Validates the player's ship
-     *
-     * @param username Username of the player that wants to validate the ship
-     * @throws IllegalStateException if the game is not in a VALIDATING state
-     * @apiNote this function must be called in a loop from the view until the ship is valid
-     * @implNote this function will also draw a card if all players have valid ships (and will change the state)
-     */
-    public void validateShip(String username) {
-        try{
-            state.isShipValid(getPlayerByID(username));
-        } catch (Exception e) {
-            //notify the player of the error
-            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error validating ship: " + e.getMessage()));
-            logger.log(Level.SEVERE, "Error validating ship", e);
         }
     }
 
@@ -855,15 +847,9 @@ public class GameController implements GameControllerInterface {
 
     /**
      * this method is called to kill a game if there are no players left
-     * @param username is the username of the player that caused the game to end
      */
-    @Override
-    public void killGame(String username) {
-        if (connectedPlayers.contains(username)) {
-            MatchController.getInstance().endGame(this.getGameID());
-        } else {
-            logger.log(Level.SEVERE, "Player " + username + " is not connected to the game but tried to kill it");
-        }
+    public void killGame() {
+        MatchController.getInstance().endGame(this.getGameID());
     }
 
     /**

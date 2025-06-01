@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 
 import java.util.List;
-import java.util.Map;
 
 public abstract class State{
     private final GameModel model;
@@ -162,7 +161,7 @@ public abstract class State{
         exception();
         return 0;
     }
-    public void nextRound(Player player) throws InvalidStateException{
+    public void nextRound() throws InvalidStateException{
         exception();
     }
     public String getCurrentPlayer() throws InvalidStateException{
