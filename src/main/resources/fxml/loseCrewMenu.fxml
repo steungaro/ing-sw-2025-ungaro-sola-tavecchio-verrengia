@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.LoseCrewMenuController"
+      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
+      prefHeight="600.0" prefWidth="700.0">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Lose Crew Members" textFill="WHITE">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label fx:id="crewToLoseLabel" textFill="#ff6b6b" wrapText="true">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Label>
+
+    <Label fx:id="errorLabel" visible="false" textFill="RED" wrapText="true">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Your ship:" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+        <Pane fx:id="shipPane" prefHeight="250" prefWidth="500" />
+    </VBox>
+
+    <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Select cabins to lose crew from:" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+
+        <Label text="Enter cabin coordinates (row col) separated by spaces:" textFill="WHITE">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+
+        <TextField fx:id="cabinsField" promptText="e.g. 5 4 5 5" />
+
+        <Label text="Example: 5 4 6 5 for cabins at (5,4) and (6,5)" textFill="#80ffaa">
+            <font>
+                <Font size="12.0" />
+            </font>
+        </Label>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="continueButton" prefHeight="50" prefWidth="200" text="Continue" onAction="#handleContinue">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
+        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="200" text="View Options" onAction="#handleViewOptions">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+    </HBox>
+</VBox>

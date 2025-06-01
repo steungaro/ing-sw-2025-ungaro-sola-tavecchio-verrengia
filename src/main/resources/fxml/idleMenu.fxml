@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.IdleMenuController"
+      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
+      prefHeight="600.0" prefWidth="700.0">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Game Paused" textFill="WHITE">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label fx:id="messageLabel" wrapText="true" textFill="WHITE">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 30; -fx-background-radius: 10;">
+        <Label text="What would you like to do?" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+
+        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="250" text="View Game Options" onAction="#handleViewOptions">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
+        <Button fx:id="quitButton" prefHeight="50" prefWidth="250" text="Quit Game" onAction="#handleQuitGame">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #b34a4a;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+    </VBox>
+</VBox>
