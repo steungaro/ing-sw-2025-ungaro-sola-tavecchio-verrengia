@@ -26,7 +26,7 @@ public class ViewBoard  implements Serializable {
 
 
     public int hourglassRemainingTime() {
-        return System.currentTimeMillis() - timeStampOfLastHourglassRotation < 90 ? 90 - (int) (System.currentTimeMillis() - timeStampOfLastHourglassRotation) : 0;
+        return System.currentTimeMillis() - timeStampOfLastHourglassRotation < 90000 ? 90 - ((int) (System.currentTimeMillis() - timeStampOfLastHourglassRotation))/1000 : 0;
     }
 
     public ViewBoard(boolean isLearner, ViewPlayer[] players) {
