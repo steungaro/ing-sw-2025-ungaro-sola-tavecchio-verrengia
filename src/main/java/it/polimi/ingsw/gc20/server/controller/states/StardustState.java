@@ -35,7 +35,7 @@ public class StardustState extends PlayingState {
      */
     @Override
     public void automaticAction() {
-        getController().getInGameConnectedPlayers().stream()
+        getController().getInGameConnectedPlayers().reversed().stream()
                 .map(p ->getController().getPlayerByID(p))
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         //draw a new card
