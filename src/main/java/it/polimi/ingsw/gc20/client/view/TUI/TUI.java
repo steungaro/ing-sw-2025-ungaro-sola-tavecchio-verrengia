@@ -252,7 +252,7 @@ public class TUI extends ClientGameModel {
         ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
-    public void takeComponentMenu(){
+    public void AssemblingStateMenu(){
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
@@ -278,10 +278,6 @@ public class TUI extends ClientGameModel {
 
     public void removeBatteryMenu(int batteryNum){
         ClientGameModel.getInstance().setCurrentMenuState(new LoseEnergyMenu(batteryNum));
-    }
-
-    public void placeComponentMenu(){
-        ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
     public void leaderBoardMenu(Map<String, Integer> leaderBoard){

@@ -4,7 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
-public record PlaceComponentMessage(
+public record AssemblingMessage(
         ViewComponent component
 ) implements Message {
     @Override
@@ -15,6 +15,6 @@ public record PlaceComponentMessage(
     @Override
     public void handleMessage() {
         ClientGameModel.getInstance().setComponentInHand(component);
-        ClientGameModel.getInstance().placeComponentMenu();
+        ClientGameModel.getInstance().AssemblingStateMenu();
     }
 }

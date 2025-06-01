@@ -10,15 +10,15 @@ public enum StatePhase {
         LAND_ON_PLANET("Select the planet to land on"),
         ENGINES_PHASE("Select engines and batteries for this phase"),
         SELECT_SHIELD("Select the shield to use"),
-        TAKE_COMPONENT("can select the component you want to take, or a deck to view, or turn the hourglass"),
-        PLACE_COMPONENT("can place the component you took in the previous phase"),
         BATTERY_PHASE ("finished their cargo, Select batteries for this phase"),
         STANDBY_PHASE("wait for your turn"),
         ROLL_DICE_PHASE("roll the dice"),
         VALIDATE_SHIP_PHASE("validate your ship"),
         ADD_ALIEN_PHASE("add alien to the ship"),
-        DRAW_CARD_PHASE("draw a new card");
+        DRAW_CARD_PHASE("draw a new card"),
+        ASSEMBLING_PHASE("assembling the ship, select the components to assemble");
         private final String description;
+
 
         StatePhase(String description) {
             this.description = description;

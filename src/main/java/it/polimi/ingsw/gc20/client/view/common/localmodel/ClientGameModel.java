@@ -341,14 +341,13 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void populateShipMenu();
     public abstract void automaticAction(String message);
     public abstract void validationMenu();
-    public abstract void takeComponentMenu();
     public abstract void init();
     public abstract void shieldsMenu(FireType fireType, int direction, int line);
     public abstract void rollDiceMenu(FireType fireType, int direction);
     public abstract void cargoMenu(int cargoNum);
     public abstract void loseCrewMenu(int crewNum);
     public abstract void removeBatteryMenu(int batteryNum);
-    public abstract void placeComponentMenu();
+    public abstract void AssemblingStateMenu();
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);

@@ -20,7 +20,6 @@ public class AssemblingState extends State {
     private final Map<Player, Boolean> assembled = new HashMap<>();
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
-    private final Map<Player, StatePhase> playersPhase = new HashMap<>(); // map of players to their current phase
     /**
      * Default constructor
      */
@@ -31,7 +30,7 @@ public class AssemblingState extends State {
         for (Player player : getController().getPlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
-            playersPhase.put(player, StatePhase.TAKE_COMPONENT);
+            phase = StatePhase.ASSEMBLING_PHASE;
             //init all the local model of the view
             for (Player p : getController().getPlayers()) {
                 NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
@@ -44,7 +43,7 @@ public class AssemblingState extends State {
                 NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
             }
             // notify each player of the phase they are in
-            NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
+            NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
         }
         for (int i = 1; i < 4; i++) {
             deckPeeked.put(i, null);
@@ -70,8 +69,8 @@ public class AssemblingState extends State {
     @Override
     public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
-        if (playersPhase.get(player) != StatePhase.TAKE_COMPONENT) {
-            throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase");
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidStateException("Player is not in the correct phase");
         }
         // take the component from the unviewed pile
         Component component =Translator.getFromUnviewed(getModel(), index);
@@ -95,8 +94,8 @@ public class AssemblingState extends State {
     @Override
     public void takeComponentFromViewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException{
         //check if the player is in the TAKE_COMPONENT phase
-        if (playersPhase.get(player) != StatePhase.TAKE_COMPONENT) {
-            throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase");
+        if (componentsInHand.get(player) != null) {
+            throw new InvalidStateException("Player is not in the correct phase");
         }
         //take the component from the viewed pile
         Component component =Translator.getFromViewed(getModel(), index);
@@ -120,7 +119,7 @@ public class AssemblingState extends State {
     @Override
     public void takeComponentFromBooked(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
-        if (playersPhase.get(player) != StatePhase.TAKE_COMPONENT) {
+        if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase");
         }
         // take the component from the booked pile
@@ -143,17 +142,15 @@ public class AssemblingState extends State {
      */
     @Override
     public void addComponentToBooked(Player player) throws InvalidStateException, NoSpaceException {
-        if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         //put the component in the booked pile
         getModel().componentToBooked(componentsInHand.get(player), player);
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        // Set the player's phase to TAKE_COMPONENT
-        playersPhase.put(player, StatePhase.TAKE_COMPONENT);
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
 
     /**
@@ -165,7 +162,7 @@ public class AssemblingState extends State {
     @Override
     public void addComponentToViewed(Player player) throws InvalidStateException, DuplicateComponentException {
         // check if the player is in the PLACE_COMPONENT phase
-        if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         // add the component to the viewed pile
@@ -173,10 +170,7 @@ public class AssemblingState extends State {
 
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        // Set the player's phase to TAKE_COMPONENT
-        playersPhase.put(player, StatePhase.TAKE_COMPONENT);
-        //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
     /**
      * This method is used to place a component on the ship.
@@ -186,7 +180,7 @@ public class AssemblingState extends State {
     @Override
     public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException {
         //check if the player is in the PLACE_COMPONENT phase
-        if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
 
@@ -194,14 +188,12 @@ public class AssemblingState extends State {
         getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        // Set the player's phase to TAKE_COMPONENT
-        playersPhase.put(player, StatePhase.TAKE_COMPONENT);
         //notify the players of the ship changes
         for (Player p : getController().getPlayers()) {
             NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
         }
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new TakeComponentMessage());
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
     /**
      * This method is used to rotate a component clockwise.
@@ -211,13 +203,13 @@ public class AssemblingState extends State {
     @Override
     public void rotateComponentClockwise(Player player) throws InvalidStateException{
         //check if the player has a component in the hand
-        if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         //rotate the component clockwise
         getModel().RotateClockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(componentsInHand.get(player).createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
     /**
      * This method is used to rotate a component counterclockwise.
@@ -226,13 +218,13 @@ public class AssemblingState extends State {
      */
     @Override
     public void rotateComponentCounterclockwise(Player player) throws InvalidStateException {
-        if (playersPhase.get(player) != StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         //rotate the component counterclockwise
         getModel().RotateCounterclockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(componentsInHand.get(player).createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
 
     /** this method is used to stop assembling the ship
@@ -243,7 +235,7 @@ public class AssemblingState extends State {
     @Override
     public void stopAssembling(Player player, int position) throws InvalidIndexException, InvalidStateException {
         //check if the player is in the PLACE_COMPONENT phase
-        if (playersPhase.get(player) == StatePhase.PLACE_COMPONENT) {
+        if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("Place the component before stopping assembling");
         }
         //end the assembling phase for the player and set the player in the correct position
@@ -254,8 +246,6 @@ public class AssemblingState extends State {
         }
         //mark the player as assembled
         assembled.put(player, true);
-        //put the player in standby phase
-        playersPhase.put(player, StatePhase.STANDBY_PHASE);
         //notify the player that they are in standby phase
         NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
     }
@@ -279,7 +269,7 @@ public class AssemblingState extends State {
      */
     @Override
     public List<AdventureCard> peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
-        if (playersPhase.get(player) != StatePhase.TAKE_COMPONENT) {
+        if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("cannot peek deck in this phase");
         }
         //before doing anything, check if the index is correct
@@ -334,10 +324,8 @@ public class AssemblingState extends State {
     private void takeComponent (Player player, Component component){
         // Add component to player's hand
         componentsInHand.put(player, component);
-        // Set the player's phase to PLACE_COMPONENT
-        playersPhase.put(player, StatePhase.PLACE_COMPONENT);
         //notify the player that they go to the PLACE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new PlaceComponentMessage(component.createViewComponent()));
+        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(component.createViewComponent()));
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -358,9 +346,9 @@ public class AssemblingState extends State {
             NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         }
         if (componentsInHand.get(getController().getPlayerByID(username))==null){
-            NetworkService.getInstance().sendToClient(username, new TakeComponentMessage());
+            NetworkService.getInstance().sendToClient(username, new AssemblingMessage(null));
         }else {
-            NetworkService.getInstance().sendToClient(username, new PlaceComponentMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
+            NetworkService.getInstance().sendToClient(username, new AssemblingMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
         }
     }
 }
