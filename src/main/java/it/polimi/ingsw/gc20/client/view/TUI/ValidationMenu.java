@@ -27,6 +27,9 @@ public class ValidationMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
+        if(ClientGameModel.getInstance().getShip(username).isValid()){
+            ClientGameModel.getInstance().printShip(username);
+        }
         System.out.println("\u001B[1mValidation Menu\u001B[22m");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
