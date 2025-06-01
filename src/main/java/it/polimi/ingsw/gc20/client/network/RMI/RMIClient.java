@@ -24,8 +24,6 @@ public class RMIClient implements Client {
     private GameControllerInterface gameService;
     private MatchControllerInterface matchService;
 
-    private Registry registry;
-
     private boolean connected = false;
 
     private final Logger LOGGER = Logger.getLogger(RMIClient.class.getName());
@@ -48,7 +46,7 @@ public class RMIClient implements Client {
     public void start() {
         try {
             // Look up the registry
-            registry = LocateRegistry.getRegistry(serverAddress, port);
+            Registry registry = LocateRegistry.getRegistry(serverAddress, port);
 
             // Look up the remote services
             authService = (RMIAuthInterface) registry.lookup("AuthService");
@@ -106,14 +104,6 @@ public class RMIClient implements Client {
         return port;
     }
 
-    @Override
-    public void killGame(String username) {
-        try {
-            gameService.killGame(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during killing game: " + e.getMessage());
-        }
-    }
 
     @Override
     public void takeComponentFromUnviewed(String username, int index)  {
@@ -211,15 +201,6 @@ public class RMIClient implements Client {
             gameService.turnHourglass(username);
         } catch (RemoteException e) {
             LOGGER.warning("Error during turning hourglass: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void validateShip(String username)  {
-        try {
-            gameService.validateShip(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during validating ship: " + e.getMessage());
         }
     }
 

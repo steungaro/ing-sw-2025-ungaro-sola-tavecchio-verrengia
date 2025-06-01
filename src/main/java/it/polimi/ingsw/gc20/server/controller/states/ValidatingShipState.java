@@ -46,7 +46,6 @@ public class ValidatingShipState extends State {
      * @return true if the ship is valid, false otherwise
      * @throws InvalidStateException if the game is not in the validate ship phase
      */
-    @Override
     public boolean isShipValid(Player player) throws InvalidStateException{
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot validate ship in this phase");
@@ -85,6 +84,20 @@ public class ValidatingShipState extends State {
             }
         }
         return false;
+    }
+
+    /**
+     * this method is called to check if all the ships are valid
+     * @return true if all the ships are valid, false otherwise
+     * @throws InvalidStateException if the game is not in the validate ship phase
+     */
+    @Override
+    public boolean allShipsValidated() throws InvalidStateException {
+        if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
+            throw new InvalidStateException("Cannot check if all ships are validated in this phase");
+        }
+        //check if all the ships are valid
+        return validShips.values().stream().allMatch(Boolean::booleanValue);
     }
 
     /**

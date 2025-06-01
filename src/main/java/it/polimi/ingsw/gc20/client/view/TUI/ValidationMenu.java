@@ -32,8 +32,7 @@ public class ValidationMenu implements MenuState{
             System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
         } else {
             System.out.println("Ship is not valid");
-            System.out.println("1. Validate ship");
-            System.out.println("2. Remove a component from the ship with the arguments");
+            System.out.println("1. Remove a component from the ship");
             System.out.print(" > ");
         }
     }
@@ -72,10 +71,6 @@ public class ValidationMenu implements MenuState{
         // Handle user input from the validation menu
         switch (choice) {
             case "1":
-                // Validate ship
-                ClientGameModel.getInstance().getClient().validateShip(ClientGameModel.getInstance().getUsername());
-                break;
-            case "2":
                 // Remove a component from the ship
                 int x, y;
                 do {
