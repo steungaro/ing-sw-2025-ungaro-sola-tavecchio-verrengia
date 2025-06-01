@@ -162,15 +162,6 @@ public class SocketClient implements Client {
         }
     }
 
-    @Override
-    public void killGame(String username) {
-        try {
-            out.writeObject(new EndGameMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while killing game: " + e.getMessage());
-        }
-    }
 
     @Override
     public void takeComponentFromUnviewed(String username, int index) {
@@ -279,16 +270,6 @@ public class SocketClient implements Client {
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while turning hourglass: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void validateShip(String username) {
-        try {
-            out.writeObject(new ValidateShipMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while validating ship: " + e.getMessage());
         }
     }
 

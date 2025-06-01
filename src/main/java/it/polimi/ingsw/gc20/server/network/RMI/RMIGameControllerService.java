@@ -102,11 +102,6 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
         queueHandler.enqueue(new TurnHourglassMessage(username));
     }
 
-    @Override
-    public void validateShip(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: validateShip from " + username);
-        queueHandler.enqueue(new ValidateShipMessage(username));
-    }
 
     @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
@@ -199,11 +194,5 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException {
         LOGGER.fine("Received RMI call: activateCannons from " + username);
         queueHandler.enqueue(new ActivateDoubleCannonsMessage(username, cannons, batteries));
-    }
-
-    @Override
-    public void killGame(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: endGame from " + username);
-        queueHandler.enqueue(new EndGameMessage(username));
     }
 }

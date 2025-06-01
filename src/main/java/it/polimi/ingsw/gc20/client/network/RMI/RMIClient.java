@@ -106,14 +106,6 @@ public class RMIClient implements Client {
         return port;
     }
 
-    @Override
-    public void killGame(String username) {
-        try {
-            gameService.killGame(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during killing game: " + e.getMessage());
-        }
-    }
 
     @Override
     public void takeComponentFromUnviewed(String username, int index)  {
@@ -211,15 +203,6 @@ public class RMIClient implements Client {
             gameService.turnHourglass(username);
         } catch (RemoteException e) {
             LOGGER.warning("Error during turning hourglass: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void validateShip(String username)  {
-        try {
-            gameService.validateShip(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during validating ship: " + e.getMessage());
         }
     }
 
