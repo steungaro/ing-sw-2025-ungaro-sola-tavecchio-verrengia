@@ -23,6 +23,10 @@ public abstract class ShipController {
     private final int ROWS = 0;
     private final int COLS = 0;
 
+    public enum ShipState {
+        Building, Viewing
+    }
+
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
@@ -48,6 +52,7 @@ public abstract class ShipController {
     @FXML private Label Y_Label;
 
     private final Map<String, Integer> gridComponents = new HashMap<>();
+    private ShipState shipState = ShipState.Viewing;
 
     public void updateStatisticBoard(ViewPlayer player) {
         if (player != null) {
@@ -344,6 +349,10 @@ public abstract class ShipController {
 
     private ImageView getImageViewAt(int row, int col){
         return null;
+    }
+
+    public void setShipState(ShipState state) {
+        this.shipState = state;
     }
 
 }
