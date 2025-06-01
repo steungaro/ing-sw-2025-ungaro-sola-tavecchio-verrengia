@@ -144,9 +144,9 @@ public class PiratesState extends PlayingState {
             //if there is no next player, we draw a new card
             if (getCurrentPlayer() == null) {
                 for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
@@ -210,11 +210,11 @@ public class PiratesState extends PlayingState {
                         if (getCurrentPlayer() == null) {
                             //if there is no next player, we draw a new card
                             for (String username : getController().getInGameConnectedPlayers()) {
-                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                             }
                             getModel().getActiveCard().playCard();
                             getController().setState(new PreDrawState(getController()));
-                            phase = StatePhase.STANDBY_PHASE;
+                            phase = StatePhase.DRAW_CARD_PHASE;
                         } else {
                             //if there is a next player, we can go to the cannon phase
                             for (String username : getController().getInGameConnectedPlayers()) {
@@ -260,10 +260,13 @@ public class PiratesState extends PlayingState {
                 //we go to the next player
                 nextPlayer();
                 if (getCurrentPlayer() == null) {
+                    for (String username : getController().getInGameConnectedPlayers()) {
+                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
+                    }
                     //draw a new card
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
-                    phase = StatePhase.STANDBY_PHASE;
+                    phase = StatePhase.DRAW_CARD_PHASE;
                 } else {
                     //the next player needs to fight pirates
                     phase = StatePhase.CANNONS_PHASE;
@@ -373,9 +376,9 @@ public class PiratesState extends PlayingState {
         }
         //draw a new card
         for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
@@ -389,11 +392,11 @@ public class PiratesState extends PlayingState {
                 for (Player username : getController().getPlayers()) {
                     NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 }
-                if (phase != StatePhase.STANDBY_PHASE){
-                    phase = StatePhase.STANDBY_PHASE;
+                if (phase != StatePhase.DRAW_CARD_PHASE){
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     //if we are not in the standby phase, we can draw a new card
                     for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                     }
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
@@ -418,9 +421,9 @@ public class PiratesState extends PlayingState {
         if (getCurrentPlayer() == null) {
             //draw a new card
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("drawing a new card"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {

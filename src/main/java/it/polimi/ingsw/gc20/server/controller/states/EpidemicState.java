@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
@@ -49,10 +50,10 @@ public class EpidemicState extends PlayingState {
         }
 
         //effect ended, draw a new card
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         //notify all the players that the epidemic effect is over, and we wait for a new card
         for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new StandbyMessage("waiting for a new card"));
+            NetworkService.getInstance().sendToClient(player, new DrawCardPhaseMessage());
         }
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));

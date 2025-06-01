@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.AcceptPhaseMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.AddCargoMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -181,10 +178,10 @@ public class AbandonedStationState extends CargoState {
                 NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
             }
             //change the phase to standby phase
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             //notify all the players that the card has been played and the next card will be drawn
             for (String username: getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for the next card to be drawn"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
             //draw a new card
             getController().setState(new PreDrawState(getController()));

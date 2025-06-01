@@ -100,9 +100,9 @@ public class SlaversState extends PlayingState {
             if (getCurrentPlayer() == null) {
                 //draw new card
                 for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
@@ -162,9 +162,9 @@ public class SlaversState extends PlayingState {
         if (getCurrentPlayer() == null) {
             //draw new card
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
@@ -200,9 +200,9 @@ public class SlaversState extends PlayingState {
             NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
         }
         for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
@@ -220,9 +220,9 @@ public class SlaversState extends PlayingState {
             throw new InvalidStateException("Card not defeated");
         }
         for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
@@ -235,9 +235,9 @@ public class SlaversState extends PlayingState {
             if (getCurrentPlayer() == null) {
                 //draw new card
                 for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {

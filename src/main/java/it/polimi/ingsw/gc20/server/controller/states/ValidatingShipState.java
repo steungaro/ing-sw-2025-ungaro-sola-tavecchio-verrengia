@@ -61,7 +61,7 @@ public class ValidatingShipState extends State {
                 if (allShipsReadyToFly()) {
                     //if all the players are ready to fly, go to the next phase
                     for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("All players are ready to fly, draw a card"));
+                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                     }
                     initAllShips();
                     for (Player p : getModel().getInGamePlayers()) {
@@ -69,6 +69,7 @@ public class ValidatingShipState extends State {
                             NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
                         }
                     }
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     getController().setState(new PreDrawState(getController()));
                 } else {
                     //notify all the players that the ship is valid and waiting for other players
@@ -152,7 +153,7 @@ public class ValidatingShipState extends State {
         if (allShipsReadyToFly()) {
             //if all the players are ready to fly, go to the next phase
             for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("All players are ready to fly, draw a card"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
             initAllShips();
             for (Player p : getModel().getInGamePlayers()) {
@@ -161,7 +162,7 @@ public class ValidatingShipState extends State {
                 }
             }
 
-
+            phase = StatePhase.DRAW_CARD_PHASE;
             getController().setState(new PreDrawState(getController()));
         } else {
             //notify all the players that the ship is valid and waiting for other players

@@ -127,9 +127,10 @@ public class MeteorSwarmState extends PlayingState {
         if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
             //if we finished the projectile, we draw a new card
             for (String p : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
-                phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
+                NetworkService.getInstance().sendToClient(p, new DrawCardPhaseMessage());
+                phaseMap.put(getController().getPlayerByID(p), StatePhase.DRAW_CARD_PHASE);
             }
+            phase = StatePhase.DRAW_CARD_PHASE;
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
@@ -328,9 +329,10 @@ public class MeteorSwarmState extends PlayingState {
                 //we verify if we shot all the projectiles
                 if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
                     for (String p : getController().getInGameConnectedPlayers()) {
-                        phaseMap.put(getController().getPlayerByID(p), StatePhase.STANDBY_PHASE);
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for next card"));
+                        phaseMap.put(getController().getPlayerByID(p), StatePhase.DRAW_CARD_PHASE);
+                        NetworkService.getInstance().sendToClient(p, new DrawCardPhaseMessage());
                     }
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     //if we finished the projectiles, we draw a new card
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));

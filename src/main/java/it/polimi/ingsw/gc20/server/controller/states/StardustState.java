@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
@@ -44,10 +45,10 @@ public class StardustState extends PlayingState {
             }
         }
         for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new StandbyMessage("draw a new card"));
+            NetworkService.getInstance().sendToClient(player, new DrawCardPhaseMessage());
         }
-        phase = StatePhase.STANDBY_PHASE;
+        phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
-        //getController().setState(new PreDrawState(getController()));
+        getController().setState(new PreDrawState(getController()));
     }
 }

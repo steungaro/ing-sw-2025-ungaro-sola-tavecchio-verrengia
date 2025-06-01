@@ -278,9 +278,9 @@ public class    CombatZone1State extends CargoState {
                 getModel().getActiveCard().playCard();
                 //notify all players that the card has been plated, next will be drawn
                 for (String username : getController().getInGameConnectedPlayers()){
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                 }
-                phase = StatePhase.STANDBY_PHASE;
+                phase = StatePhase.DRAW_CARD_PHASE;
                 getController().setState(new PreDrawState(getController()));
                 break;
         }
@@ -357,10 +357,10 @@ public class    CombatZone1State extends CargoState {
     private void finishManager() {
         if (manager.finished()) {
             //if we finished shooting, set the phase to standby phase
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             //notify all players that the card has been plated, next will be drawn
             for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
@@ -519,10 +519,10 @@ public class    CombatZone1State extends CargoState {
         }
         else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
             //we end the card
-            phase = StatePhase.STANDBY_PHASE;
+            phase = StatePhase.DRAW_CARD_PHASE;
             //notify all players that the card has been plated, next will be drawn
             for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
             }
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
@@ -535,10 +535,10 @@ public class    CombatZone1State extends CargoState {
                 for (Player username : getController().getPlayers()){
                     NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 }
-                if (phase != StatePhase.STANDBY_PHASE){
-                    phase = StatePhase.STANDBY_PHASE;
+                if (phase != StatePhase.DRAW_CARD_PHASE){
+                    phase = StatePhase.DRAW_CARD_PHASE;
                     for (String username : getController().getInGameConnectedPlayers()){
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for next card to be drawn"));
+                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
                     }
                     //if we are not in the standby phase, we can draw a new card
                     getModel().getActiveCard().playCard();
