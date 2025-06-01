@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController;
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.ShipController;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
@@ -40,14 +41,14 @@ public class GUIView extends ClientGameModel {
         showScene("welcome");
     }
 
-    public void showScene(String fileName) {
+    public FXMLLoader showScene(String fileName) {
         try {
             String path = "/fxml/" + fileName + ".fxml";
             URL resourceUrl = getClass().getResource(path);
 
             if (resourceUrl == null) {
                 System.err.println("ERRORE: File FXML non trovato: " + path);
-                return;
+                return null;
             }
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
@@ -57,9 +58,11 @@ public class GUIView extends ClientGameModel {
             primaryStage.setScene(scene);
             primaryStage.setTitle("Galaxy Trucker");
             primaryStage.centerOnScreen();
+            return loader;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void setupConnection(String ipAddress, int port, boolean isRMI) {
@@ -204,6 +207,36 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
+        InLobbyController controller = (InLobbyController) primaryStage.getScene().getRoot().getUserData();
+        Object playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+        String fileName;
+
+        if (playerShip != null && playerShip.getClass().getSimpleName().equals("ViewShip0")) {
+            fileName = "ship0";
+        } else {
+            fileName = "ship2";
+        }
+
+        try {
+            String path = "/fxml/" + fileName + ".fxml";
+            URL resourceUrl = getClass().getResource(path);
+
+            if (resourceUrl == null) {
+                System.err.println("ERRORE: File FXML non trovato: " + path);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(resourceUrl);
+            Parent root = loader.load();
+            ((ShipController)loader.getController()).setShipState(ShipController.ShipState.Building);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Create the Uncovered Componet
+
+
+
+
 
     }
 
@@ -234,8 +267,6 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
-
-
         client.login(username);
         this.username = username;
     }
