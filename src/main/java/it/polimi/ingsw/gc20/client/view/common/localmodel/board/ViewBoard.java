@@ -226,7 +226,7 @@ public class ViewBoard  implements Serializable {
         StringBuilder sb = new StringBuilder();
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer viewPlayer : players) {
-            if (viewPlayer != null) {
+            if (viewPlayer != null && viewPlayer.position >= 0) {
                 positions.put(viewPlayer.position, viewPlayer);
             }
         }
