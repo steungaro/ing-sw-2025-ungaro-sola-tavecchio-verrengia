@@ -65,8 +65,8 @@ public class ValidatingShipState extends State {
                     }
                     initAllShips();
                     for (Player p : getModel().getInGamePlayers()) {
-                        for (String username : getController().getInGameConnectedPlayers()) {
-                            NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
+                        for (Player username : getController().getPlayers()) {
+                            NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
                         }
                     }
                     getController().setState(new PreDrawState(getController()));
@@ -156,8 +156,8 @@ public class ValidatingShipState extends State {
             }
             initAllShips();
             for (Player p : getModel().getInGamePlayers()) {
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
+                for (Player username : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
                 }
             }
 

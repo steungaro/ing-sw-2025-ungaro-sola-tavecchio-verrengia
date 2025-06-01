@@ -68,8 +68,8 @@ public class CombatZone0State extends PlayingState {
         //move the player
         getModel().movePlayer(p, -lostDays);
         //notify all players connected with an update player message
-        for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition()%getModel().getGame().getBoard().getSpaces())));
+        for (Player player : getController().getPlayers()){
+            NetworkService.getInstance().sendToClient(player.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition()%getModel().getGame().getBoard().getSpaces())));
         }
         //set the phase to engine phase
         this.phase = StatePhase.ENGINES_PHASE;
@@ -188,8 +188,8 @@ public class CombatZone0State extends PlayingState {
                     finishManager();
                 } catch (InvalidShipException e) {
                     //notify all the players of the ship update
-                    for (String player1 : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+                    for (Player player1 : getController().getPlayers()) {
+                        NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                     }
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
                     //notify the current player that he has to choose the branch
@@ -394,8 +394,8 @@ public class CombatZone0State extends PlayingState {
                 }
             } catch (InvalidShipException e) {
                 //notify all the players of the ship update
-                for (String player1 : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+                for (Player player1 : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                 }
                 //notify the current player that he has to choose the branch
                 NetworkService.getInstance().sendToClient(player.getUsername(), new ChooseBranchMessage());
@@ -405,8 +405,8 @@ public class CombatZone0State extends PlayingState {
             }
         } catch(InvalidShipException e) {
             //notify all the players of the ship update
-            for (String player1 : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+            for (Player player1 : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             }
             //notify the current player that he has to choose the branch
             NetworkService.getInstance().sendToClient(player.getUsername(), new ChooseBranchMessage());
@@ -464,8 +464,8 @@ public class CombatZone0State extends PlayingState {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 //notify all the players of the ship update
-                for (String player1 : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(player1, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
+                for (Player player1 : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                 }
                 if (phase != StatePhase.STANDBY_PHASE){
                     //to notify all connected players that the player finished shooting,

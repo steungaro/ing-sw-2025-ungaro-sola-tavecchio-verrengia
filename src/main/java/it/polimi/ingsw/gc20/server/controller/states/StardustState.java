@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 
@@ -38,8 +39,8 @@ public class StardustState extends PlayingState {
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         //draw a new card
         for (String player : getController().getInGameConnectedPlayers()) {
-            for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
+            for (Player username : getController().getPlayers()){
+                NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
             }
         }
         for (String player : getController().getInGameConnectedPlayers()) {

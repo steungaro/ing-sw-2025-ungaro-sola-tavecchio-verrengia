@@ -723,13 +723,6 @@ public class GameModel {
         return inGamePlayers;
     }
 
-    /** Function that set the player status to false if the choice to give up
-     * @param p player that chooses to give up
-     */
-    public void giveUp (Player p) {
-        p.setGameStatus(false);
-    }
-
     /** Function that auto validate the ship if the player is disconnected
      * @param p player that is disconnected
      */

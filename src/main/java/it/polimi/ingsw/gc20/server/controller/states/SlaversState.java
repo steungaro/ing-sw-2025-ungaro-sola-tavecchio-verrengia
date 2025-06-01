@@ -196,8 +196,8 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
-        for (String username : getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        for (Player username : getController().getPlayers()){
+            NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
         }
         for (String username : getController().getInGameConnectedPlayers()) {
             NetworkService.getInstance().sendToClient(username, new StandbyMessage("draw a new card"));

@@ -89,8 +89,8 @@ public class MeteorSwarmState extends PlayingState {
                     phaseMap.put(getController().getPlayerByID(getCurrentPlayer()), StatePhase.CANNONS_PHASE);
                 }
             } catch (InvalidShipException e) {
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+                for (Player p : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
                 }
                 phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
                 //phase is used to store the previous phase of the player
@@ -238,8 +238,8 @@ public class MeteorSwarmState extends PlayingState {
                 notifyDefensiveShield();
             }
         } catch (InvalidShipException e) {
-            for (String p : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
+            for (Player p : getController().getPlayers()) {
+                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
             }
             phaseMap.put(player, StatePhase.VALIDATE_SHIP_PHASE);
             //phase is used to store the previous phase of the player
@@ -353,8 +353,8 @@ public class MeteorSwarmState extends PlayingState {
             try {
                 //auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(p, Ship.messageFromShip(player.getUsername(), player.getShip(), "automatically chose a branch"));
+                for (Player p : getController().getPlayers()) {
+                    NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "automatically chose a branch"));
                 }
             } catch (InvalidTurnException | InvalidStateException e) {
                 //cannot happen

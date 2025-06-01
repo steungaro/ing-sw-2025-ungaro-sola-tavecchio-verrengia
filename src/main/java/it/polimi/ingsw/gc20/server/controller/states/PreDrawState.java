@@ -26,15 +26,15 @@ public class PreDrawState extends State{
                 if (getModel().getGame().getPlayers().getFirst().getPosition()-getModel().getGame().getPlayers().get(i).getPosition() >= getModel().getGame().getBoard().getSpaces()){
                     Player p = getModel().getGame().getPlayers().get(i);
                     p.setGameStatus(false);
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                    for (Player username : getController().getPlayers()) {
+                        NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
                     }
                 }
                 if (getModel().getGame().getPlayers().get(i).getShip().getAstronauts()==0){
                     Player p = getModel().getGame().getPlayers().get(i);
                     p.setGameStatus(false);
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                    for (Player username : getController().getPlayers()) {
+                        NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
                     }
                 }
             }

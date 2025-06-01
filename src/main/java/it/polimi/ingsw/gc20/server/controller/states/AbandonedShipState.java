@@ -76,8 +76,8 @@ public class AbandonedShipState extends PlayingState {
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
         //notify the players connected to the game to update the player data
-        for (String username: getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new PlayerUpdateMessage(player.getUsername(),
+        for (Player p : getController().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(),
                     credits,
                     true,
                     player.getColor(),
