@@ -13,10 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class ShipController {
 
@@ -78,9 +75,9 @@ public abstract class ShipController {
         ClientGameModel clientGameModel = ClientGameModel.getInstance();
         if (clientGameModel != null) {
             String currentUsername = clientGameModel.getUsername();
-            List<ViewPlayer> players = clientGameModel.getPlayers();
+            ViewPlayer[] players = clientGameModel.getPlayers();
             if (players != null && currentUsername != null) {
-                Optional<ViewPlayer> currentPlayerOpt = players.stream()
+                Optional<ViewPlayer> currentPlayerOpt = Arrays.stream(players)
                         .filter(p -> currentUsername.equals(p.username))
                         .findFirst();
                 currentPlayerOpt.ifPresent(this::updateStatisticBoard);

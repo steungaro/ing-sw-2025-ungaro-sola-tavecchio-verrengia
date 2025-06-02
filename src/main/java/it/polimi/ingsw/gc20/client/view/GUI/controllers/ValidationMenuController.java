@@ -73,11 +73,12 @@ public class ValidationMenuController {
     private void handleValidateShip() {
         try {
             ClientGameModel.getInstance().setBusy();
-            ClientGameModel.getInstance().getClient().validateShip(username);
+            // TODO
             ClientGameModel.getInstance().setFree();
 
             updateValidationStatus();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
+            // TODO
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
         }

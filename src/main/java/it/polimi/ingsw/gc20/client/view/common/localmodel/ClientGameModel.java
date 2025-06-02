@@ -294,7 +294,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             listener.onPhaseChanged(this.currentPhase);
         }
     }
-    
+
     public void setErrorMessage(String message) {
         this.errorMessage = message;
         LOGGER.warning("Error message set in model: " + message);
