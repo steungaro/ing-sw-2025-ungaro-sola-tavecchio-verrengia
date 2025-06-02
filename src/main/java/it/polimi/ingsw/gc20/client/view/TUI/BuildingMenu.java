@@ -61,9 +61,10 @@ public class BuildingMenu implements MenuState{
             }
         } else {
             System.out.println("Component in hand:");
-            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Ship:");
             ClientGameModel.getInstance().printShip(username);
+            System.out.println("Component in hand: ");
+            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Building Ship Menu");
             System.out.println("1. Put the component in your hand back to the uncovered components");
             System.out.println("2. Add the component in your hand to your ship");
