@@ -27,6 +27,9 @@ public class ValidationMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
+        if(ClientGameModel.getInstance().getShip(username).isValid()){
+            ClientGameModel.getInstance().printShip(username);
+        }
         System.out.println("\u001B[1mValidation Menu\u001B[22m");
         if(ClientGameModel.getInstance().getShip(username).isValid()){
             System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
@@ -72,7 +75,7 @@ public class ValidationMenu implements MenuState{
         switch (choice) {
             case "1":
                 // Remove a component from the ship
-                int x, y;
+                int row, col;
                 do {
                     System.out.println("Type the coordinates of the component you want to remove (row col):");
                     System.out.print(" > ");
@@ -82,15 +85,15 @@ public class ValidationMenu implements MenuState{
                         return;
                     }
                     try {
-                        x = Integer.parseInt(componentName.split(" ")[0]) - 5;
-                        y = Integer.parseInt(componentName.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
+                        row = Integer.parseInt(componentName.split(" ")[0]) - 5;
+                        col = Integer.parseInt(componentName.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
-                        x = -1;
-                        y = -1;
+                        row = -1;
+                        col = -1;
                     }
-                } while (x < 0 || x > 4 || y < 0 || y > 6);
-                Pair<Integer, Integer> coordinates = new Pair<>(x, y);
+                } while (row < 0 || row > 4 || col < 0 || col > 6);
+                Pair<Integer, Integer> coordinates = new Pair<>(row, col);
                 ClientGameModel.getInstance().getClient().removeComponentFromShip(ClientGameModel.getInstance().getUsername(), coordinates);
                 break;
             case "q":

@@ -36,7 +36,7 @@ public class ViewMeteorSwarm extends ViewAdventureCard {
     public String toLine(int i) {
         return switch (i) {
             case 0 -> UP;
-            case 1, 3, 4, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+            case 1, 3, 4, 7, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
             case 2 -> LATERAL + "\u001B[1m     Meteor Swarm     \u001B[0m" + LATERAL;
             case 5 -> LATERAL + "       Meteors:       " + LATERAL;
             case 6 -> LATERAL + "\u001B[33m" + " ".repeat(10 - meteorFires().length()/2) + meteorFires() + " ".repeat(10 - meteorFires().length()/2 + (meteorFires().length() % 2 == 0 ? 0 : 1)) + "\u001B[0m" + LATERAL;
