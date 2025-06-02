@@ -82,7 +82,7 @@ public class PopulateShipMenu implements MenuState{
                         try {
                             x = Integer.parseInt(componentName.split(" ")[0]) - 5;
                             y = Integer.parseInt(componentName.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                             x = -1;
                             y = -1;
