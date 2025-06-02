@@ -342,7 +342,7 @@ public class AssemblingState extends State {
     public void rejoin(String username){
         //notify the player that they are in the TAKE_COMPONENT phase after updating the model
         NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
-        NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
+
         if (getModel().getLevel() == 2) {
             NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         }
@@ -351,5 +351,6 @@ public class AssemblingState extends State {
         }else {
             NetworkService.getInstance().sendToClient(username, new AssemblingMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
         }
+        NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
     }
 }
