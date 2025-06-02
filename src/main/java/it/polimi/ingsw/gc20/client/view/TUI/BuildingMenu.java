@@ -61,9 +61,10 @@ public class BuildingMenu implements MenuState{
             }
         } else {
             System.out.println("Component in hand:");
-            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Ship:");
             ClientGameModel.getInstance().printShip(username);
+            System.out.println("Component in hand: ");
+            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Building Ship Menu");
             System.out.println("1. Put the component in your hand back to the uncovered components");
             System.out.println("2. Add the component in your hand to your ship");
@@ -145,7 +146,7 @@ public class BuildingMenu implements MenuState{
                 case "3":
                     int index3;
                     do {
-                        System.out.println("Type the index of the board where you want to start the game: (0 to 4)");
+                        System.out.println("Type the index of the board where you want to start the game: (1 to 4)");
                         System.out.print(" > ");
                         // Read the index of the board to take
                         try {
@@ -160,7 +161,7 @@ public class BuildingMenu implements MenuState{
                 case "4":
                     int index2;
                     do {
-                        System.out.println("Type the index of the booked component you want to take: (0 to 1");
+                        System.out.println("Type the index of the booked component you want to take: (0 to 1)");
                         System.out.print(" > ");
                         // Read the index of the component to take
                         try {
@@ -178,7 +179,7 @@ public class BuildingMenu implements MenuState{
                 case "6":
                     int index4;
                     do {
-                        System.out.println("Type the index of the deck you want to peek: (0 to 2)");
+                        System.out.println("Type the index of the deck you want to peek: (1 to 3)");
                         System.out.print(" > ");
                         // Read the index of the deck to peek
                         try {
@@ -187,7 +188,7 @@ public class BuildingMenu implements MenuState{
                             index4 = -1;
                             System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                         }
-                    } while (index4 < 0 || index4 > 2);
+                    } while (index4 < 1 || index4 > 3);
                     ClientGameModel.getInstance().getClient().peekDeck(username, index4);
                     break;
                 case "q":
@@ -224,7 +225,7 @@ public class BuildingMenu implements MenuState{
                         try {
                             row = Integer.parseInt(parts[0]) - 5;
                             col = Integer.parseInt(parts[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         }
                     } while (row < 0 || row > 4 || col < 0 || col > 6);
@@ -232,10 +233,10 @@ public class BuildingMenu implements MenuState{
                     ClientGameModel.getInstance().getClient().placeComponent(username, coordinatesPair);
                     break;
                 case "3":
-                    ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
+                    ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
                     break;
                 case "4":
-                    ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
+                    ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
                     break;
                 case "6":
                     ClientGameModel.getInstance().getClient().turnHourglass(username);
