@@ -56,7 +56,9 @@ public abstract class Ship {
     public void addComponent(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            c.updateParameter(this, 1);
+            if (!this.isNormal() || !c.isLifeSupport()){
+                c.updateParameter(this, 1);
+            }
             c.setTile(table[row][col]);
         } else {
             throw new InvalidTileException("Position not valid");
@@ -503,7 +505,9 @@ public abstract class Ship {
         if (position == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
-        c.updateParameter(this, -1);
+        if (!this.isNormal() || !c.isLifeSupport()) {
+            c.updateParameter(this, -1);
+        }
         try {
             table[position[0]][position[1]].removeComponent();
             waste.add(c);
