@@ -46,11 +46,11 @@ public class ViewAbandonedStation extends ViewAdventureCard {
         reward();
         return switch (i) {
             case 0 -> UP;
-            case 1, 3, 7, 8, 9 ->LATERAL + EMPTY_ROW + LATERAL;
+            case 1, 3, 4, 8, 9 ->LATERAL + EMPTY_ROW + LATERAL;
             case 2 ->LATERAL + "\u001B[1m  Abandoned Station   \u001B[22m" + LATERAL;
-            case 4 ->LATERAL + "    Crew needed: " + crew + "    " + LATERAL;
-            case 5 ->LATERAL + " ".repeat((14-size)/2) + "Reward: " + reward() +  " ".repeat((14-size)/2) + (size % 2 == 0 ? "" : " ") + LATERAL;
-            case 6 ->LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL;
+            case 5 ->LATERAL + "    Crew needed: " + crew + "    " + LATERAL;
+            case 6 ->LATERAL + " ".repeat((14-size)/2) + "Reward: " + reward() +  " ".repeat((14-size)/2) + (size % 2 == 0 ? "" : " ") + LATERAL;
+            case 7 ->LATERAL + "     Lost days: \u001B[31m" + lostDays + "\u001B[0m     " + LATERAL;
             case 10 ->DOWN;
             default -> "";
         };

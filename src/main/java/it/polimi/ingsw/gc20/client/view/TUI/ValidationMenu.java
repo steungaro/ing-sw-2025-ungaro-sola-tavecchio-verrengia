@@ -68,6 +68,7 @@ public class ValidationMenu implements MenuState{
         if (ClientGameModel.getInstance().getShip(username).isValid()){
             // If the ship is already valid, wait for other players
             System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
+            System.out.print(" > ");
             ClientGameModel.getInstance().setFree();
             return;
         }
