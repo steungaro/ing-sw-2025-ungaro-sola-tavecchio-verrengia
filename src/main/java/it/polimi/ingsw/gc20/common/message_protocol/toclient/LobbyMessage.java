@@ -22,7 +22,6 @@ public record LobbyMessage(
 
     @Override
     public void handleMessage() {
-        System.out.println("lobby data:" + this);
         ViewLobby viewLobby = new ViewLobby(lobbyName, maxPlayers, level, players);
         ClientGameModel.getInstance().updateLobby(viewLobby);
         ClientGameModel.getInstance().inLobbyMenu();

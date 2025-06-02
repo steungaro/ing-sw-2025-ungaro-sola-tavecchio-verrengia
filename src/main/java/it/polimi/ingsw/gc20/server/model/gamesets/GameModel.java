@@ -269,7 +269,23 @@ public class GameModel {
      */
     public void stopAssembling(Player p, int position) throws InvalidIndexException {
         game.getBoard().removePlayer(p);
-        if (game.isOccupied(position)) {
+        int realPosition = -1;
+        if (level==2){
+            switch (position){
+                case 1 -> realPosition = 6;
+                case 2 -> realPosition = 3;
+                case 3 -> realPosition = 1;
+                case 4 -> realPosition = 0;
+            }
+        }else{
+            switch (position){
+                case 1 -> realPosition = 4;
+                case 2 -> realPosition = 2;
+                case 3 -> realPosition = 1;
+                case 4 -> realPosition = 0;
+            }
+        }
+        if (game.isOccupied(realPosition)) {
             throw new InvalidIndexException("Position already occupied");
         } else {
             for (Player player : game.getPlayers()) {
@@ -277,21 +293,7 @@ public class GameModel {
                     if (position == 1) {
                         player.setLeader();
                     }
-                    if (level==2){
-                        switch (position){
-                            case 1 -> player.setPosition(6);
-                            case 2 -> player.setPosition(3);
-                            case 3 -> player.setPosition(1);
-                            case 4 -> player.setPosition(0);
-                        }
-                    }else{
-                        switch (position){
-                            case 1 -> player.setPosition(4);
-                            case 2 -> player.setPosition(2);
-                            case 3 -> player.setPosition(1);
-                            case 4 -> player.setPosition(0);
-                        }
-                    }
+                    player.setPosition(realPosition);
                 }
             }
         }

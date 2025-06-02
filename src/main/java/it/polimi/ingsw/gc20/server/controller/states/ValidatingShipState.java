@@ -25,7 +25,7 @@ public class ValidatingShipState extends State {
     public ValidatingShipState(GameModel model, GameController controller) {
         super(model, controller);
         for (Player player : model.getInGamePlayers()) {
-            validShips.put(player, false);
+            validShips.put(player, player.getShip().isValid());
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
             NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
             for (String username : getController().getInGameConnectedPlayers()) {
