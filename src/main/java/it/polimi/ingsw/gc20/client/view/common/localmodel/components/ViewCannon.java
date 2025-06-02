@@ -16,7 +16,7 @@ public class ViewCannon extends ViewComponent {
                 firstRow() + "\n" +
                 leftCol(0) + (power == 1 ? "Single" : "Double") + " Cannon" + rightCol(0) + "\n" +
                 leftCol(1) + EMPTY_ROW + rightCol(1) + "\n" +
-                leftCol(2) + "      " + direction + "      " + rightCol(2) + "\n" +
+                leftCol(2) + "      \u001B[35m" + direction + "\u001B[0m      " + rightCol(2) + "\n" +
                 lastRow();
     }
 

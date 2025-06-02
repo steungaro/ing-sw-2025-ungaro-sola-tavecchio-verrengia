@@ -27,7 +27,7 @@ public class ValidationMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
-        if(ClientGameModel.getInstance().getShip(username).isValid()){
+        if(!ClientGameModel.getInstance().getShip(username).isValid()){
             ClientGameModel.getInstance().printShip(username);
         }
         System.out.println("\u001B[1mValidation Menu\u001B[22m");
@@ -36,8 +36,8 @@ public class ValidationMenu implements MenuState{
         } else {
             System.out.println("Ship is not valid");
             System.out.println("1. Remove a component from the ship");
-            System.out.print(" > ");
         }
+        System.out.print(" > ");
     }
 
     /**
