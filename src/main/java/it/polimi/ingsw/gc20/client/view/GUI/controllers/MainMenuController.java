@@ -63,7 +63,7 @@ public class MainMenuController {
 
         joinLobbyButton.setOnAction(event -> onJoinLobby());
         refreshButton.setOnAction(event -> onRefreshLobbies());
-        loadLobbies();
+        //loadLobbies();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
         logoutButton.setOnAction(event -> handleLogout());
