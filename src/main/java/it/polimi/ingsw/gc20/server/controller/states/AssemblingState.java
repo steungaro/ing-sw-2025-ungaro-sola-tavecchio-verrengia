@@ -20,6 +20,7 @@ public class AssemblingState extends State {
     private final Map<Player, Boolean> assembled = new HashMap<>();
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
+    boolean fromBooked = false;
     /**
      * Default constructor
      */
@@ -133,6 +134,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
+        fromBooked = true;
     }
 
     /**
@@ -165,6 +167,9 @@ public class AssemblingState extends State {
         // check if the player is in the PLACE_COMPONENT phase
         if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+        }
+        if (fromBooked){
+            throw new InvalidStateException("Cannot add component to viewed pile after taking it from booked pile");
         }
         // add the component to the viewed pile
         getModel().componentToViewed(componentsInHand.get(player));

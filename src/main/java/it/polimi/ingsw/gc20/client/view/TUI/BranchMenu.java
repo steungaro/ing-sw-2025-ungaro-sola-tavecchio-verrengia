@@ -70,7 +70,7 @@ public class BranchMenu implements MenuState {
             try {
                 row = Integer.parseInt(branchInput.split(" ")[0]) - 5;
                 col = Integer.parseInt(branchInput.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
-            } catch (NumberFormatException e) {
+            } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                 System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                 row = -1;
                 col = -1;

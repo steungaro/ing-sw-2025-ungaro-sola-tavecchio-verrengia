@@ -87,7 +87,7 @@ public class EngineMenu implements MenuState {
                         try {
                             Pair<Integer, Integer> coordinates = new Pair<>(Integer.parseInt(engineCoordinates[i]) - 5, Integer.parseInt(engineCoordinates[i + 1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4));
                             engines.add(coordinates);
-                        } catch (NumberFormatException e) {
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid integers for coordinates.\u001B[0m");
                             inputOk = false;
                         }
@@ -111,7 +111,7 @@ public class EngineMenu implements MenuState {
                         try {
                             Pair<Integer, Integer> coordinates = new Pair<>(Integer.parseInt(batteryCoordinates[i]) - 5, Integer.parseInt(batteryCoordinates[i + 1]) - 4);
                             batteries.add(coordinates);
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid integers for coordinates.\u001B[0m");
                             inputOk = false;
                         }
