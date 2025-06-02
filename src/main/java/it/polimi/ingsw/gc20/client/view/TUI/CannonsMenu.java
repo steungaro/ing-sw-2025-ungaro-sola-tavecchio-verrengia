@@ -91,7 +91,7 @@ public class CannonsMenu implements MenuState {
                             int y = Integer.parseInt(cannonCoordinates[i + 1]) - 4;
                             Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                             cannons.add(coordinates);
-                        } catch (NumberFormatException e) {
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid integer coordinates.\u001B[0m");
                             inputOk = false;
                         } catch (IndexOutOfBoundsException e) {
@@ -120,7 +120,7 @@ public class CannonsMenu implements MenuState {
                             int y = Integer.parseInt(batteryCoordinates[i + 1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4);
                             Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                             batteries.add(coordinates);
-                        } catch (NumberFormatException e) {
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid integer coordinates.\u001B[0m");
                             inputOk = false;
                         } catch (IndexOutOfBoundsException e) {

@@ -76,7 +76,7 @@ public class LoseEnergyMenu implements MenuState {
                 try {
                     x = Integer.parseInt(batteryInput.split(" ")[0]) - 5; // Adjusting for 0-indexed array
                     y = Integer.parseInt(batteryInput.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4); // Adjusting for 0-indexed array
-                } catch (NumberFormatException e) {
+                } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                     System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                     x = -1;
                     y = -1;

@@ -72,7 +72,7 @@ public class CargoMenu implements MenuState{
                     try {
                         x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
                         y = Integer.parseInt(cargoInput.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
-                    } catch (NumberFormatException e) {
+                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         x = -1;
                         y = -1;
@@ -104,7 +104,7 @@ public class CargoMenu implements MenuState{
                     try {
                         moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
                         moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
-                    } catch (NumberFormatException e) {
+                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         moveX = -1;
                         moveY = -1;
@@ -120,7 +120,7 @@ public class CargoMenu implements MenuState{
                     try {
                         moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
                         moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
-                    } catch (NumberFormatException e) {
+                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         moveToX = -1;
                         moveToY = -1;
@@ -154,7 +154,7 @@ public class CargoMenu implements MenuState{
                         try {
                             loadX = Integer.parseInt(loadInput.split(" ")[0]) - 5;
                             loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
-                        } catch (NumberFormatException e) {
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                             loadX = -1;
                             loadY = -1;
