@@ -78,7 +78,7 @@ public abstract class State{
         exception();
         return false;
     }
-    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException {
+    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException, InvalidTileException {
         exception();
     }
     public boolean allShipsValidated() throws InvalidStateException{
