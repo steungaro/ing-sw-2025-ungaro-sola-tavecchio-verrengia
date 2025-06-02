@@ -121,7 +121,8 @@ public class ViewShip {
                 for (int k = 0; k < components[i].length; k++) {
                     if (components[i][k] == null) {
                         if ((i == 0 && (k == 0 || k == 1 || k == 3 || k == 5 || k == 6)) ||
-                                (i == 4 && k == 3)) {
+                                (i == 4 && k == 3) ||
+                                (i == 1 && (k == 0 || k == 6))) {
                             sb.append(" ".repeat(15));
                         } else {
                             sb.append(ViewComponent.coveredLine(j));
@@ -132,7 +133,7 @@ public class ViewShip {
                     }
                     sb.append(" ");
                 }
-                sb.append(j == 2 ? i + 4 : " ").append(" │\n");
+                sb.append(j == 2 ? i + 5 : " ").append(" │\n");
             }
         }
         return sb.toString();
@@ -161,7 +162,7 @@ public class ViewShip {
                     }
                     sb.append(" ");
                 }
-                sb.append(j == 2 ? i + 4 : " ").append(" │\n");
+                sb.append(j == 2 ? i + 5 : " ").append(" │\n");
             }
         }
         return sb.toString();

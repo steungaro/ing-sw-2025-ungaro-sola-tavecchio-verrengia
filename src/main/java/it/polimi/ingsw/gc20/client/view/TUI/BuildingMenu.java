@@ -61,9 +61,10 @@ public class BuildingMenu implements MenuState{
             }
         } else {
             System.out.println("Component in hand:");
-            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Ship:");
             ClientGameModel.getInstance().printShip(username);
+            System.out.println("Component in hand: ");
+            System.out.println(ClientGameModel.getInstance().getComponentInHand());
             System.out.println("Building Ship Menu");
             System.out.println("1. Put the component in your hand back to the uncovered components");
             System.out.println("2. Add the component in your hand to your ship");
@@ -145,7 +146,7 @@ public class BuildingMenu implements MenuState{
                 case "3":
                     int index3;
                     do {
-                        System.out.println("Type the index of the board where you want to start the game: (0 to 4)");
+                        System.out.println("Type the index of the board where you want to start the game: (1 to 4)");
                         System.out.print(" > ");
                         // Read the index of the board to take
                         try {

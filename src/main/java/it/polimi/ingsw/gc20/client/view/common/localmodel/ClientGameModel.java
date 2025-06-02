@@ -32,7 +32,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private ViewShip playerShip;
     private ViewLobby currentLobby;
     private GamePhase currentPhase;
-    private List<ViewPlayer> players;
     private String errorMessage;
     public boolean loggedIn;
     protected String username;
@@ -49,7 +48,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize default state if necessary
-        this.players = new ArrayList<>();
         this.loggedIn = false;
         this.username = null;
         this.client = null;
@@ -144,10 +142,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setShip (String username, ViewShip ship) {
         ships.put(username, ship);
-    }
-
-    public void setPlayers(List<ViewPlayer> players) {
-        this.players = players;
     }
 
     public void ping() {
@@ -313,7 +307,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public ViewShip getPlayerShip() { return playerShip; }
     public ViewLobby getCurrentLobby() { return currentLobby; }
     public GamePhase getCurrentPhase() { return currentPhase; }
-    public List<ViewPlayer> getPlayers() { return players; }
+    public ViewPlayer[] getPlayers() {
+        return board.players;
+    }
     public String getErrorMessage() { return errorMessage; }
 
 

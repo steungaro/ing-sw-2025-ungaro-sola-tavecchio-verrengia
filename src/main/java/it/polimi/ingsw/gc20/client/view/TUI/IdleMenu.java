@@ -2,6 +2,8 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
+import java.rmi.RemoteException;
+
 /**
  * Represents the IdleMenu state in the game, which is a paused state
  * allowing the player to view game options or exit the game.
@@ -23,6 +25,9 @@ public class IdleMenu implements MenuState {
     @Override
     public void displayMenu() {
         System.out.println("\u001B[1m" + message + "\u001B[22m");
+        if (ClientGameModel.getInstance().getBoard().assemblingState) {
+            System.out.println("1. Turn hourglass");
+        }
         System.out.println("v. Viewing game options");
         System.out.print(" > ");
     }
@@ -49,8 +54,13 @@ public class IdleMenu implements MenuState {
      * @param choice The user's input choice
      */
     @Override
-    public void handleInput(String choice) {
+    public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
+        if (ClientGameModel.getInstance().getBoard().assemblingState) {
+            if (choice.equalsIgnoreCase("1")) {
+                ClientGameModel.getInstance().getClient().turnHourglass(ClientGameModel.getInstance().getUsername());
+            }
+        }
         // Continue in the same menu
         if (choice.equalsIgnoreCase("v")) {
             TUI.viewOptionsMenu();
