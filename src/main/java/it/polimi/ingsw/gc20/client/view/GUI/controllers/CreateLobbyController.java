@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -7,6 +8,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 public class CreateLobbyController {
 
@@ -68,20 +71,20 @@ public class CreateLobbyController {
 
                 String createdLobbyName = lobbyName;
                 long startTime = System.currentTimeMillis();
-                boolean success = false;
+                boolean success = true;
 
                 try {
-                    // Attendi fino a 10 secondi per la creazione della lobby
                     while (System.currentTimeMillis() - startTime < 10000) {
-                        var lobbyList = ClientGameModel.getInstance().getLobbyList();
+                        List <ViewLobby> lobbyList = null; // ClientGameModel.getInstance().getLobbyList();
 
-                        // Controlla che lobbyList non sia null prima di usarlo
-                        if (lobbyList != null && lobbyList.stream()
+                        /*if (lobbyList != null && lobbyList.stream()
                                 .anyMatch(lobby -> lobby.getID().equals(createdLobbyName))) {
                             success = true;
                             break;
                         }
-                        Thread.sleep(100); // Polling interval
+                        Thread.sleep(100);*/
+
+
                     }
 
                     boolean finalSuccess = success;
@@ -95,7 +98,7 @@ public class CreateLobbyController {
                         errorLabel.setVisible(true);
                         createButton.setDisable(false);
                     });
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     javafx.application.Platform.runLater(() -> {
                         errorLabel.setText("Operazione interrotta");
                         errorLabel.setVisible(true);

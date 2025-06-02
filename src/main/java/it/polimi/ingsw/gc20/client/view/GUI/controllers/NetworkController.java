@@ -58,10 +58,8 @@ public class NetworkController {
         boolean isRMI = rmiRadioButton.isSelected();
 
         if (guiView.setupConnection(ipAddress, port, isRMI)) {
-            // Connection successful, proceed to the main menu
-            guiView.showScene("mainMenu");
+            guiView.showScene("login");
         } else {
-            // Show an error message
             errorLabel.setVisible(true);
         }
     }
