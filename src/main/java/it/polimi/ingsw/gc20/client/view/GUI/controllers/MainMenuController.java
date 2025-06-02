@@ -50,7 +50,6 @@ public class MainMenuController {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    // Qui definisci come vuoi visualizzare l'oggetto ViewLobby
                     setText(lobby.getOwner() + " (Proprietario: " + lobby.getOwner() + ") - " +
                             "Giocatori: " + lobby.getPlayersList() + "/" + lobby.getMaxPlayers());
                 }
@@ -73,7 +72,6 @@ public class MainMenuController {
     private void onJoinLobby() {
         ViewLobby selectedLobby = lobbiesListView.getSelectionModel().getSelectedItem();
         if (selectedLobby != null) {
-            // 1. Invia richiesta al server per entrare nella lobby
             joinLobbyOnServer(selectedLobby);
         }
     }
