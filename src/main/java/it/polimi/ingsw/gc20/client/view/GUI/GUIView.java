@@ -133,11 +133,6 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void takeComponentMenu() {
-
-    }
-
-    @Override
     public void init() {
 
     }
@@ -168,7 +163,7 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void placeComponentMenu() {
+    public void AssemblingStateMenu() {
 
     }
 
@@ -189,6 +184,11 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void idleMenu(String message) {
+
+    }
+
+    @Override
+    public void keepPlayingMenu() {
 
     }
 

@@ -4,16 +4,15 @@ import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAbandonedShip;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewOpenSpace;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewSmugglers;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.cards.Projectile;
+import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -200,13 +199,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int endIdx = Math.min(startIdx + cardsPerRow, cards.size());
             List<ViewAdventureCard> rowCards = cards.subList(startIdx, endIdx);
             for (int i = 0; i < 11; i++) {
-                for (int j = 0; j < rowCards.size(); j++) {
-                    finalResult.append(rowCards.get(j).toLine(i));
+                for (ViewAdventureCard rowCard : rowCards) {
+                    finalResult.append(rowCard.toLine(i));
                     finalResult.append("  ");
-                    if (j == rowCards.size() - 1) {
-                        finalResult.append("\n");
-                    }
                 }
+                finalResult.append("\n");
             }
             finalResult.append("\n");
         }
@@ -250,13 +247,10 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             int startIdx = componentRow * componentsPerRow;
             int endIdx = Math.min(startIdx + componentsPerRow, components.size());
             List<ViewComponent> rowComponents = components.subList(startIdx, endIdx);
-            for (int j = 0; j < 5; j++) {
-                for (int i = 0; i <rowComponents.size(); i++) {
-                    finalResult.append(rowComponents.get(i).toLine(j));
+            for (int i = 0; i < 5; i++) {
+                for (ViewComponent rowComponent : rowComponents) {
+                    finalResult.append(rowComponent.toLine(i));
                     finalResult.append("  ");
-                    if (j == rowComponents.size() - 1) {
-                        finalResult.append("\n");
-                    }
                 }
                 finalResult.append("\n");
             }
@@ -300,7 +294,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             listener.onPhaseChanged(this.currentPhase);
         }
     }
-    
+
     public void setErrorMessage(String message) {
         this.errorMessage = message;
         LOGGER.warning("Error message set in model: " + message);
@@ -342,16 +336,16 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void populateShipMenu();
     public abstract void automaticAction(String message);
     public abstract void validationMenu();
-    public abstract void takeComponentMenu();
     public abstract void init();
     public abstract void shieldsMenu(FireType fireType, int direction, int line);
     public abstract void rollDiceMenu(FireType fireType, int direction);
     public abstract void cargoMenu(int cargoNum);
     public abstract void loseCrewMenu(int crewNum);
     public abstract void removeBatteryMenu(int batteryNum);
-    public abstract void placeComponentMenu();
+    public abstract void AssemblingStateMenu();
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
     public abstract void loginSuccessful(String username);
     public abstract void loginFailed(String username);
     public abstract void idleMenu(String message);
+    public abstract void keepPlayingMenu();
 }
