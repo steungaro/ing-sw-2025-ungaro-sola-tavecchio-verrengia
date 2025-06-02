@@ -67,7 +67,7 @@ public class BuildingPhaseController implements Initializable {
             ViewShip playerShip = ClientGameModel.getInstance().getShip(username);
 
             String shipFileName;
-            if (playerShip != null && playerShip.getClass().getSimpleName().equals("ViewShip0")) {
+            if (playerShip != null && playerShip.isLearner) {
                 shipFileName = "ship0";
             } else {
                 shipFileName = "ship2";
