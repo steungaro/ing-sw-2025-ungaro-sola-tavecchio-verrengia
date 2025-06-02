@@ -224,7 +224,7 @@ public class BuildingMenu implements MenuState{
                         try {
                             row = Integer.parseInt(parts[0]) - 5;
                             col = Integer.parseInt(parts[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
                         }
                     } while (row < 0 || row > 4 || col < 0 || col > 6);
