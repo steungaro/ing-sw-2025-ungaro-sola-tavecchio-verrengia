@@ -16,18 +16,10 @@ public class ViewPlanets extends ViewAdventureCard {
             int[] planetReward = new int[4];
             for (int i = 0; i < planet.getReward().size(); i++) {
                 switch (planet.getReward().get(i)) {
-                    case RED:
-                        planetReward[0]++;
-                        break;
-                    case YELLOW:
-                        planetReward[1]++;
-                        break;
-                    case GREEN:
-                        planetReward[2]++;
-                        break;
-                    case BLUE:
-                        planetReward[3]++;
-                        break;
+                    case RED -> planetReward[0]++;
+                    case YELLOW -> planetReward[1]++;
+                    case GREEN -> planetReward[2]++;
+                    case BLUE -> planetReward[3]++;
                 }
             }
             return planetReward;
