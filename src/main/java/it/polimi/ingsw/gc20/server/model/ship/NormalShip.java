@@ -243,7 +243,10 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-            if (row>getRows() || row<0 || col>getCols() || col<0 || table[row][col].getComponent() == null) {
+            if (row>getRows() || row<0 || col>getCols() || col<0) {
+                continue;
+            }
+            if ( table[row][col].getComponent() == null) {
                 continue;
             }
             if (entry.getValue() == ConnectorEnum.ZERO || !(table[row][col].getComponent().isCabin())) {
@@ -287,7 +290,10 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-            if (table[row][col].getComponent() == null) {
+            if (row>getRows() || row<0 || col>getCols() || col<0) {
+                continue;
+            }
+            if ( table[row][col].getComponent() == null) {
                 continue;
             }
 
