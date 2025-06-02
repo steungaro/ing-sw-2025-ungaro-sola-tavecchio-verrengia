@@ -59,7 +59,9 @@ public class GUIView extends ClientGameModel {
             Scene scene = new Scene(root, 600, 400);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Galaxy Trucker");
+            // Set the id
             primaryStage.centerOnScreen();
+            root.setId(fileName);
             return loader;
         } catch (IOException e) {
             e.printStackTrace();
@@ -109,6 +111,13 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void mainMenuState(){
+        // Se primarScene è già mainMenu, non fare nulla
+        if (primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null &&
+                primaryStage.getScene().getRoot().getId() != null &&
+                primaryStage.getScene().getRoot().getId().equals("mainMenu")) {
+            return;
+        }
+
         showScene("mainMenu");
     }
 
@@ -164,7 +173,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void AssemblingStateMenu() {
-
+        showScene("buildingPhase");
     }
 
     @Override

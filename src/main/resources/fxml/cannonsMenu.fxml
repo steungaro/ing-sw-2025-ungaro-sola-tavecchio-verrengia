@@ -34,7 +34,7 @@
     </Label>
 
     <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label text="La tua nave:" textFill="WHITE">
+        <Label text="Your ship:" textFill="WHITE">
             <font>
                 <Font size="16.0" />
             </font>
@@ -43,7 +43,7 @@
     </VBox>
 
     <VBox spacing="10" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label text="Seleziona i cannoni da attivare:" textFill="WHITE">
+        <Label text="Select cannons to activate:" textFill="WHITE">
             <font>
                 <Font size="16.0" />
             </font>
@@ -51,7 +51,7 @@
         <GridPane fx:id="cannonsGrid" alignment="CENTER" hgap="10" vgap="10">
         </GridPane>
 
-        <Label text="Seleziona le batterie da attivare:" textFill="WHITE">
+        <Label text="Select batteries to activate:" textFill="WHITE">
             <font>
                 <Font size="16.0" />
             </font>
@@ -61,7 +61,7 @@
     </VBox>
 
     <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="activateButton" prefHeight="50" prefWidth="200" text="Attiva cannoni" onAction="#handleActivateCannons">
+        <Button fx:id="activateButton" prefHeight="50" prefWidth="200" text="Activate cannons" onAction="#handleActivateCannons">
             <font>
                 <Font size="18.0" />
             </font>
@@ -70,7 +70,7 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button fx:id="skipButton" prefHeight="50" prefWidth="200" text="Non attivare cannoni" onAction="#handleSkipActivation">
+        <Button fx:id="skipButton" prefHeight="50" prefWidth="200" text="Skip cannon activation" onAction="#handleSkipActivation">
             <font>
                 <Font size="18.0" />
             </font>

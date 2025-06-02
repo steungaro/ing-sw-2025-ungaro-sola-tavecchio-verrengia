@@ -81,6 +81,11 @@ public class MainMenuController {
     }
 
     private void loadLobbies() {
+        try {
+            ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
+        } catch (RemoteException e) {
+            System.out.println("Errore di connessione al server: " + e.getMessage());
+        }
         List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
         lobbiesListView.getItems().clear();
         lobbiesListView.getItems().addAll(lobbies);
