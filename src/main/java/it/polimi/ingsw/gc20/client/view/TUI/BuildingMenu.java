@@ -145,7 +145,7 @@ public class BuildingMenu implements MenuState{
                 case "3":
                     int index3;
                     do {
-                        System.out.println("Type the index of the board where you want to start the game: (0 to 4)");
+                        System.out.println("Type the index of the board where you want to start the game: (1 to 4)");
                         System.out.print(" > ");
                         // Read the index of the board to take
                         try {

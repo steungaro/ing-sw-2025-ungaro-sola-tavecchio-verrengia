@@ -132,7 +132,7 @@ public class ViewShip {
                     }
                     sb.append(" ");
                 }
-                sb.append(j == 2 ? i + 4 : " ").append(" │\n");
+                sb.append(j == 2 ? i + 5 : " ").append(" │\n");
             }
         }
         return sb.toString();
@@ -161,7 +161,7 @@ public class ViewShip {
                     }
                     sb.append(" ");
                 }
-                sb.append(j == 2 ? i + 4 : " ").append(" │\n");
+                sb.append(j == 2 ? i + 5 : " ").append(" │\n");
             }
         }
         return sb.toString();
