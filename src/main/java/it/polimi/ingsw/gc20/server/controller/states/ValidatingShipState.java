@@ -131,7 +131,7 @@ public class ValidatingShipState extends State {
      * @throws InvalidStateException if the game is not in the add alien phase
      */
     @Override
-    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException {
+    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException, ComponentNotFoundException {
         if (phase != StatePhase.ADD_ALIEN_PHASE) {
             throw new InvalidStateException("Cannot add alien in this phase");
         }

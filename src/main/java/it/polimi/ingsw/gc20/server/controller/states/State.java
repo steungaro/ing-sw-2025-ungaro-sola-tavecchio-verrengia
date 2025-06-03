@@ -60,7 +60,7 @@ public abstract class State{
     public void addComponentToViewed(Player player) throws InvalidStateException, DuplicateComponentException {
         exception();
     }
-    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException{
+    public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException, ComponentNotFoundException{
         exception();
     }
     public void rotateComponentClockwise(Player player) throws InvalidStateException{
@@ -83,29 +83,29 @@ public abstract class State{
         exception();
         return false;
     }
-    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException, InvalidTileException {
+    public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException, ComponentNotFoundException {
         exception();
     }
     public boolean allShipsValidated() throws InvalidStateException{
         exception();
         return false;
     }
-    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException {
+    public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException, ComponentNotFoundException {
         exception();
     }
     public void initAllShips() throws InvalidStateException {
         exception();
     }
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         exception();
     }
-    public void unloadCargo(Player player, CargoColor lost, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void unloadCargo(Player player, CargoColor lost, Pair<Integer, Integer> ch) throws ComponentNotFoundException, InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         exception();
     }
-    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException, ComponentNotFoundException {
         exception();
     }
-    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException {
         exception();
     }
     public void landOnPlanet(Player player, int planetIndex) throws InvalidStateException, InvalidTurnException {
@@ -114,23 +114,23 @@ public abstract class State{
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         exception();
     }
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidStateException, InvalidTurnException, EmptyCabinException {
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidStateException, InvalidTurnException, EmptyCabinException, ComponentNotFoundException {
         exception();
     }
     public void endMove(Player player) throws InvalidStateException, InvalidTurnException, InvalidShipException {
         exception();
     }
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidEngineException, EnergyException, DieNotRolledException, ComponentNotFoundException {
         exception();
     }
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, InvalidShipException, EnergyException, DieNotRolledException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, InvalidShipException, EnergyException, DieNotRolledException, ComponentNotFoundException {
         exception();
     }
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException {
+    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         exception();
         return 0;
     }
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, DieNotRolledException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, DieNotRolledException, ComponentNotFoundException {
         exception();
     }
     public boolean allAssembled() throws InvalidStateException {
@@ -153,7 +153,7 @@ public abstract class State{
     public void getScore() throws InvalidStateException {
         exception();
     }
-    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
+    public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException, ComponentNotFoundException {
         exception();
     }
     public void setCurrentPlayer(String currentPlayer) throws InvalidStateException {

@@ -92,7 +92,7 @@ public class AbandonedStationState extends CargoState {
      * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, CargoException, InvalidTurnException, CargoNotLoadable, CargoFullException{
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, CargoException, InvalidTurnException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("cannot load cargo in this state");
@@ -119,7 +119,7 @@ public class AbandonedStationState extends CargoState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException{
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException, ComponentNotFoundException{
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't unload cargo in this state");
@@ -145,7 +145,7 @@ public class AbandonedStationState extends CargoState {
      *
      */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, InvalidCargoException, CargoNotLoadable, CargoFullException {
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't move cargo in this state");

@@ -93,7 +93,7 @@ public class    CombatZone1State extends CargoState {
      * @param batteries the batteries selected by the player
      */
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, ComponentNotFoundException {
         // check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -174,7 +174,7 @@ public class    CombatZone1State extends CargoState {
      * @param batteries the batteries selected by the player
      */
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -313,7 +313,7 @@ public class    CombatZone1State extends CargoState {
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException{
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -398,7 +398,7 @@ public class    CombatZone1State extends CargoState {
      * @param ch the cargo hold from which the cargo is unloaded
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, InvalidStateException, InvalidCargoException  {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, InvalidStateException, InvalidCargoException, ComponentNotFoundException  {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -474,7 +474,7 @@ public class    CombatZone1State extends CargoState {
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException{
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException{
         //check if the player it's the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -570,7 +570,8 @@ public class    CombatZone1State extends CargoState {
                         //we auto-activate the engines,
                         // and the player will be removed from the array in the activateEngines method
                         activateEngines(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException |
+                             ComponentNotFoundException e) {
                         //ignore
                     }
                 } else if (phase == StatePhase.CANNONS_PHASE) {
@@ -578,7 +579,8 @@ public class    CombatZone1State extends CargoState {
                         //we auto-activate the cannons,
                         // and the player will be removed from the array in the activateCannons method
                         activateCannons(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException e) {
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
+                             ComponentNotFoundException e) {
                         //ignore
                     }
                 }

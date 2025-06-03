@@ -1,12 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
-
-import java.util.List;
 
 public enum StatePhase {
         CANNONS_PHASE {
@@ -36,7 +31,7 @@ public enum StatePhase {
         },
         REMOVE_CARGO {
             @Override
-            public Message createMessage(State state) {;
+            public Message createMessage(State state) {
                 return new RemoveCargoMessage(state.cargoToRemove());
             }
         },

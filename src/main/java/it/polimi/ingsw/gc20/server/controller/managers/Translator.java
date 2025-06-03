@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
+import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
@@ -10,14 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Translator {
-    public static <T extends Component> T getComponentAt(Player player, Pair<Integer, Integer> coordinates, Class<T> classType) {
+    public static <T extends Component> T getComponentAt(Player player, Pair<Integer, Integer> coordinates, Class<T> classType) throws ComponentNotFoundException{
         if(coordinates == null){
             return null;
         }
-        return classType.cast(player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1()));
+        try {
+            return classType.cast(player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1()));
+        } catch (Exception e){
+            throw new ComponentNotFoundException("IncorrectComponentSelected");
+        }
     }
 
-    public static <T extends Component> List<T> getComponentAt(Player player, List<Pair<Integer, Integer>> coordinates, Class<T> classType) {
+    public static <T extends Component> List<T> getComponentAt(Player player, List<Pair<Integer, Integer>> coordinates, Class<T> classType) throws ComponentNotFoundException {
         if(coordinates == null || coordinates.isEmpty()){
             return null;
         }

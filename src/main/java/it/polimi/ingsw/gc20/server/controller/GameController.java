@@ -474,6 +474,7 @@ public class GameController implements GameControllerInterface {
                     NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "reconnection"));
                 }
                 NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+                NetworkService.getInstance().sendToClient(username, new CardDrawnMessage(getActiveCard()));
                 NetworkService.getInstance().sendToClient(username, new StandbyMessage("You have reconnected, please wait for the current card to be played."));
             }
 

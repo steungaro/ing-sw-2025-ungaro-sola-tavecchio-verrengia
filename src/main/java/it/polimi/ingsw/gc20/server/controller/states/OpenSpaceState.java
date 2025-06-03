@@ -6,10 +6,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
-import it.polimi.ingsw.gc20.server.exceptions.EnergyException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidEngineException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -55,7 +52,7 @@ public class OpenSpaceState extends PlayingState {
      * @throws EnergyException if the player has not enough energy to activate the engines
      */
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException {
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
         if (!getCurrentPlayer().equals(player.getUsername())) {
             throw new InvalidTurnException("It's not your turn");
@@ -130,7 +127,8 @@ public class OpenSpaceState extends PlayingState {
     public void currentQuit(Player player) {
         try {
             activateEngines(player, new ArrayList<>(), new ArrayList<>());
-        } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
+        } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException |
+                 ComponentNotFoundException e) {
             //ignore
         }
     }

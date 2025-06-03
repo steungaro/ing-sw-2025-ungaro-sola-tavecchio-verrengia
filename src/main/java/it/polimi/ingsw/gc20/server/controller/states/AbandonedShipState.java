@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
+import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
@@ -97,7 +98,7 @@ public class AbandonedShipState extends PlayingState {
      * @throws InvalidTurnException if it's not the player's turn
      */
     @Override
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, InvalidStateException, EmptyCabinException{
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, InvalidStateException, EmptyCabinException, ComponentNotFoundException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");

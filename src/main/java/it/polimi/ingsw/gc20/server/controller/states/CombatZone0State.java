@@ -95,7 +95,7 @@ public class CombatZone0State extends PlayingState {
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException{
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException, ComponentNotFoundException{
         //check if the player is in the right phase
         if(phase != StatePhase.CANNONS_PHASE) {
             throw new InvalidStateException("You cannot activate cannons now");
@@ -265,7 +265,7 @@ public class CombatZone0State extends PlayingState {
      * @throws InvalidStateException if the player is not in the correct phase
      */
     @Override
-    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException, InvalidStateException {
+    public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException, InvalidStateException, ComponentNotFoundException {
         //check if we are in the right phase
         if (phase != StatePhase.LOSE_CREW_PHASE) {
             throw new InvalidStateException("You cannot remove crew now");
@@ -313,7 +313,7 @@ public class CombatZone0State extends PlayingState {
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidEngineException{
+    public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidEngineException, ComponentNotFoundException{
         //check if the player is in the right phase
         if(phase != StatePhase.ENGINES_PHASE) {
             throw new InvalidStateException("You cannot activate engines now");
@@ -376,7 +376,7 @@ public class CombatZone0State extends PlayingState {
      * @throws InvalidStateException if the player is not in the correct phase
      */
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidTurnException, InvalidStateException, EnergyException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -506,7 +506,8 @@ public class CombatZone0State extends PlayingState {
                         //we auto-activate the engines,
                         // and the player will be removed from the array in the activateEngines method
                         activateEngines(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException |
+                             ComponentNotFoundException e) {
                         //ignore
                     }
                 } else if (phase == StatePhase.CANNONS_PHASE) {
@@ -514,7 +515,8 @@ public class CombatZone0State extends PlayingState {
                         //we auto-activate the cannons,
                         // and the player will be removed from the array in the activateCannons method
                         activateCannons(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException e) {
+                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
+                             ComponentNotFoundException e) {
                         //ignore
                     }
                 }

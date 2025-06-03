@@ -102,7 +102,7 @@ public class PlanetsState extends CargoState {
      * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws ComponentNotFoundException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
         //check if the player is on the planet
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidTurnException("You can't load cargo unless you are on the planet");
@@ -129,7 +129,7 @@ public class PlanetsState extends CargoState {
      * @throws InvalidCargoException if the cargo is incorrect
      */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, InvalidCargoException, InvalidStateException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws ComponentNotFoundException, InvalidTurnException, InvalidCargoException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidStateException("You can't unload cargo unless you are on the planet");
         }
@@ -151,7 +151,7 @@ public class PlanetsState extends CargoState {
      * @throws CargoFullException if the cargo hold is full
      */
     @Override
-    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
             throw new InvalidTurnException("You can't move cargo unless you are on the planet");
         }

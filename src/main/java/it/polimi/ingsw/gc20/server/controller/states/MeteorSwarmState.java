@@ -61,7 +61,7 @@ public class MeteorSwarmState extends PlayingState {
      * @throws EnergyException if the player does not have enough energy to activate the cannons
      */
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -192,7 +192,7 @@ public class MeteorSwarmState extends PlayingState {
      * @throws EnergyException if the player does not have enough energy to activate the shield
      */
     @Override
-    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidTurnException, InvalidStateException, EnergyException {
+    public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -340,16 +340,16 @@ public class MeteorSwarmState extends PlayingState {
 
     @Override
     public String createsShieldMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side at line" + result + ", select the shield to use";
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the shield to use";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side, roll the dice to see where it hits";
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side, roll the dice to see where it hits";
     }
 
     @Override
     public String createsCannonsMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side at line" + result + ", select the cannons to use";
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the cannons to use";
     }
 }
