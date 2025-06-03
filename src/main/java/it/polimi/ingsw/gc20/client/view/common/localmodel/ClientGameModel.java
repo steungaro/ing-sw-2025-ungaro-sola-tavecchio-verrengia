@@ -37,7 +37,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     protected String username;
     protected Client client;
     private ViewBoard board;
-    private Map<String, ViewShip> ships;
+    protected Map<String, ViewShip> ships;
     protected ViewAdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
