@@ -1,21 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
-import it.polimi.ingsw.gc20.server.model.components.AlienColor;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Ship0Controller extends ShipController{
+
+    private final int ROWS = 5;
+    private final int COLS = 5;
 
     @FXML private ImageView imageCell_0_0;
     @FXML private ImageView imageCell_0_1;
@@ -43,11 +35,11 @@ public class Ship0Controller extends ShipController{
     @FXML private ImageView imageCell_4_3;
     @FXML private ImageView imageCell_4_4;
 
-    private final int ROWS = 5;
-    private final int COLS = 5;
+    @FXML private ImageView imageBooked_0;
+    @FXML private ImageView imageBooked_1;
 
 
-    private ImageView getImageViewAt(int row, int col) {
+    protected ImageView getImageViewAt(int row, int col) {
         return switch (row) {
             case 0 -> switch (col) {
                 case 0 -> imageCell_0_0;
@@ -91,5 +83,13 @@ public class Ship0Controller extends ShipController{
             };
             default -> null;
         };
+    }
+
+    protected int getRows() {
+        return ROWS;
+    }
+
+    protected int getCols() {
+        return COLS;
     }
 }

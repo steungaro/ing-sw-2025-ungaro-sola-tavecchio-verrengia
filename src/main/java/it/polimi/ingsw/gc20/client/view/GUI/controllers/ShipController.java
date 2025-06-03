@@ -18,8 +18,8 @@ import java.util.*;
 
 public abstract class ShipController {
 
-    private final int ROWS = 0;
-    private final int COLS = 0;
+    protected int ROWS = 0;
+    protected int COLS = 0;
 
     private ViewShip ship;
 
@@ -126,9 +126,7 @@ public abstract class ShipController {
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
-        int ROWS = 0;
-        int COLS = 0;
-        if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
+        if (row < 0 || row >= getRows() || col < 0 || col >= getCols()) {
             return false;
         }
 
@@ -143,15 +141,28 @@ public abstract class ShipController {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
-        String imagePath = "/tiles/" + componentId + ".png";
+        String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
+
+            // Imposta ImageView per adattarsi completamente alla cella
+            targetCell.setFitWidth(parent.getWidth() / getCols());
+            targetCell.setFitHeight(parent.getHeight() / getRows());
+            targetCell.setPreserveRatio(false);
+
+            // Imposta proprietà per far sì che l'immagine si adatti quando la cella cambia dimensione
+            targetCell.fitWidthProperty().bind(parent.widthProperty().divide(getCols()));
+            targetCell.fitHeightProperty().bind(parent.heightProperty().divide(getRows()));
+
             layeredPane.getChildren().add(targetCell);
 
             setComponentProp(layeredPane, comp);
 
-            parent.add(layeredPane, col, row);
+            // Imposta il StackPane per occupare tutto lo spazio disponibile
+            layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+
+            parent.add(layeredPane, col-1, row);
 
             // TODO Rotate the IMG
             gridComponents.put(cellId, componentId);
@@ -353,13 +364,13 @@ public abstract class ShipController {
         gridComponents.clear();
     }
 
-    private void buildShipComponents(ViewShip ship) {
+    public void buildShipComponents(ViewShip ship) {
         if (ship == null || componentsGrid == null) return;
 
         clearAllComponents();
 
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
                 ViewComponent comp = ship.getComponent(row, col);
                 if (comp != null) {
                     addComponent(comp, row, col);
@@ -368,7 +379,10 @@ public abstract class ShipController {
         }
     }
 
-    private ImageView getImageViewAt(int row, int col){
+    protected abstract int getRows();
+    protected abstract int getCols();
+
+    protected ImageView getImageViewAt(int row, int col){
         return null;
     }
 

@@ -122,8 +122,8 @@
                 <rowConstraints>
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
-                <ImageView fx:id="imageBooked_0_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                <ImageView fx:id="imageBooked_0_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageBooked_0" preserveRatio="true" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                <ImageView fx:id="imageBooked_1" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="0" />
             </GridPane>
         </center>
     </BorderPane>
