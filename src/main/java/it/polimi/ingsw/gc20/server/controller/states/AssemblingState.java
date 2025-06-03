@@ -155,6 +155,7 @@ public class AssemblingState extends State {
         // Remove component from player's hand
         componentsInHand.put(player, null);
         //notify the player that they go to the TAKE_COMPONENT phase
+        NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "added to booked"));
         NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
     }
 
