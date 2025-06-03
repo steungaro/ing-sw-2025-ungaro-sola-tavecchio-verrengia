@@ -115,4 +115,9 @@ public class Engine extends Component {
         initializeViewComponent(viewEngine);
         return viewEngine;
     }
+
+    @Override
+    public boolean isEngine() {
+        return true;
+    }
 }
