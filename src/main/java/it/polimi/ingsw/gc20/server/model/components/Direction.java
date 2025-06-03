@@ -26,4 +26,13 @@ public enum Direction {
             default -> -1;
         };
     }
+
+    public String getDirection() {
+        return switch (this) {
+            case UP -> "Up";
+            case RIGHT -> "Right";
+            case DOWN -> "Down";
+            case LEFT -> "Left";
+        };
+    }
 }

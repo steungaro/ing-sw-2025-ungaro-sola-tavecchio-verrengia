@@ -36,8 +36,10 @@ public class SlaversState extends PlayingState {
         this.lostDays = card.getLostDays();
         for (String username : getController().getInGameConnectedPlayers()) {
             if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+                //send the player the cannon fire
+                NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
             } else {
+                //send the player a standby message
                 NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
             }
         }
@@ -108,8 +110,10 @@ public class SlaversState extends PlayingState {
             } else {
                 for (String username : getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
+                        //send the player a standby message
                         NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
@@ -171,8 +175,10 @@ public class SlaversState extends PlayingState {
             //the next player has to fight
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    //send the player the cannon fire
+                    NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                 } else {
+                    //send the player a standby message
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                 }
             }
@@ -244,8 +250,10 @@ public class SlaversState extends PlayingState {
                 //the next player has to fight
                 for (String username : getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
+                        //send the player a standby message
                         NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
@@ -259,4 +267,15 @@ public class SlaversState extends PlayingState {
             }
         }
     }
+
+    @Override
+    public String createsCannonsMessage(){
+        return "You are fighting slavers, enemy firepower is " + firePower + ", select the cannons and batteries to use";
+    }
+
+    @Override
+    public int getCrew(){
+        return lostMembers;
+    }
+
 }

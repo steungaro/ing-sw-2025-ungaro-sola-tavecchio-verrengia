@@ -3,16 +3,18 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
-public record EnemyCannonMessage(
-        int power
+public record CannonPhaseMessage(
+        String message
 ) implements Message {
     @Override
     public String toString() {
-        return "Fighting an enemy with power="  + power;
+        return "CannonPhaseMessage{" +
+                "message='" + message + '\'' +
+                '}';
     }
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().cannonsMenu(toString());
+        ClientGameModel.getInstance().cannonsMenu(message);
     }
 }

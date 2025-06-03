@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 
@@ -256,16 +255,12 @@ public class TUI extends ClientGameModel {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
-    public void shieldsMenu(FireType fireType, int direction, int line){
-        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
-        String Message = fireType + " from " + directions[direction]  +  " at line " + line;
-        ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(Message));
+    public void shieldsMenu(String message){
+        ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(message));
     }
 
-    public void rollDiceMenu(FireType fireType, int direction){
-        String[] directions = {"UP", "RIGHT", "DOWN", "LEFT"};
-        String Message = fireType + " from " + directions[direction];
-        ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(Message));
+    public void rollDiceMenu(String message){
+        ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(message));
     }
 
     public void cargoMenu(int cargoNum){

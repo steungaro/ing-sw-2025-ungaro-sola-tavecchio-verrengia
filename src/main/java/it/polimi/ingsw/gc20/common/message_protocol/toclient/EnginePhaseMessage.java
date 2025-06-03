@@ -3,15 +3,18 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
-public record StartGameMessage() implements Message {
+public record EnginePhaseMessage(
+        String message
+) implements Message {
     @Override
     public String toString() {
-        return "Game Started";
+        return "EnginePhaseMessage{" +
+                "message='" + message + '\'' +
+                '}';
     }
 
     @Override
     public void handleMessage() {
-        // TODO
+        ClientGameModel.getInstance().engineMenu(message);
     }
-
 }

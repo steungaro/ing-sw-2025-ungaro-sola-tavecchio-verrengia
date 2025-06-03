@@ -38,6 +38,7 @@ public class PiratesState extends PlayingState {
     private final int credits;
     private final int lostDays;
     private FireManager manager;
+    private int result;
     /**
      * Default constructor
      */
@@ -50,7 +51,7 @@ public class PiratesState extends PlayingState {
         for (String username : getController().getInGameConnectedPlayers()) {
             if (username.equals(getCurrentPlayer())) {
                 //send the player the cannon fire
-                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+                NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
             } else {
                 //send the player a standby message
                 NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
@@ -152,8 +153,10 @@ public class PiratesState extends PlayingState {
             } else {
                 for (String username : getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
+                        //send the player a standby message
                         NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
@@ -165,9 +168,9 @@ public class PiratesState extends PlayingState {
             manager = new FireManager(getModel(), cannonFire, player);
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
                 } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
                 }
             }
             return -1;
@@ -193,12 +196,11 @@ public class PiratesState extends PlayingState {
             throw new InvalidStateException("not in the right phase");
         }
         //roll the dice
-        int result = getModel().getGame().rollDice();
+        result = getModel().getGame().rollDice();
         //check the type of the first projectile
         switch (manager.getFirstProjectile()) {
             case HEAVY_FIRE:
                 //player cannot do anything to stop the fire
-                NetworkService.getInstance().sendToClient(player.getUsername(), new AutomaticActionMessage("cannot stop the  heavy fire"));
                 phase = StatePhase.AUTOMATIC_ACTION;
                 try {
                     //fire the projectile
@@ -219,8 +221,10 @@ public class PiratesState extends PlayingState {
                             //if there is a next player, we can go to the cannon phase
                             for (String username : getController().getInGameConnectedPlayers()) {
                                 if (username.equals(getCurrentPlayer())) {
-                                    NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                                    //send the player the cannon fire
+                                    NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                                 } else {
+                                    //send the player a standby message
                                     NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                                 }
                             }
@@ -230,9 +234,9 @@ public class PiratesState extends PlayingState {
                         //if we didn't finish shooting, we can go to the roll dice phase
                         for (String username : getController().getInGameConnectedPlayers()) {
                             if (username.equals(getCurrentPlayer())) {
-                                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
                             } else {
-                                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to roll the dice"));
+                                NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
                             }
                         }
                         phase = StatePhase.ROLL_DICE_PHASE;
@@ -250,9 +254,9 @@ public class PiratesState extends PlayingState {
                 phase = StatePhase.SELECT_SHIELD;
                 for (String username : getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new ShieldPhaseMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue(), result));
+                        NetworkService.getInstance().sendToClient(username, new ShieldPhaseMessage(createsRollDiceMessage()));
                     } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to choose a shield"));
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is selecting the shield"));
                     }
                 }
                 break;
@@ -338,9 +342,9 @@ public class PiratesState extends PlayingState {
         } else {
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(manager.getFirstProjectile(), manager.getFirstDirection().getValue()));
+                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
                 } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to roll the dice"));
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
                 }
             }
             //if we didn't finish shooting, we can go to the roll dice phase
@@ -429,8 +433,10 @@ public class PiratesState extends PlayingState {
         } else {
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                    //send the player the cannon fire
+                    NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                 } else {
+                    //send the player a standby message
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                 }
             }
@@ -452,5 +458,21 @@ public class PiratesState extends PlayingState {
             }
         }
         phase = StatePhase.VALIDATE_SHIP_PHASE;
+    }
+
+
+    @Override
+    public String createsCannonsMessage(){
+        return "You are fighting pirates, enemy firepower is " + firePower + ", select the cannons and batteries to use";
+    }
+
+    @Override
+    public String createsShieldMessage() {
+        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shield to use";
+    }
+
+    @Override
+    public String createsRollDiceMessage() {
+        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it hits";
     }
 }

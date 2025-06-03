@@ -37,9 +37,9 @@ public class MeteorSwarmState extends PlayingState {
         for (String username : getController().getInGameConnectedPlayers()) {
             fireManagerMap.put(getController().getPlayerByID(username), new FireManager(model, meteors, getController().getPlayerByID(username)));
             if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(username)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(username)).getFirstDirection().getValue()));
+                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
             } else {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
             }
         }
     }
@@ -113,9 +113,9 @@ public class MeteorSwarmState extends PlayingState {
     private void NotifyDefensiveCannon() {
         for (String p : getController().getInGameConnectedPlayers()) {
             if (p.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
+                NetworkService.getInstance().sendToClient(p, new CannonPhaseMessage(createsCannonsMessage()));
             } else {
-                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
+                NetworkService.getInstance().sendToClient(p, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
             }
         }
     }
@@ -139,11 +139,11 @@ public class MeteorSwarmState extends PlayingState {
 
     private void NotifyRollDice() {
         phase = StatePhase.ROLL_DICE_PHASE;
-        for (String p : getController().getInGameConnectedPlayers()) {
-            if (p.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(p, new RollDiceMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue()));
+        for (String username : getController().getInGameConnectedPlayers()) {
+            if (username.equals(getCurrentPlayer())) {
+                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
             } else {
-                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice"));
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
             }
         }
     }
@@ -171,25 +171,11 @@ public class MeteorSwarmState extends PlayingState {
         //check the type of the first projectile
         switch (fireManagerMap.get(player).getFirstProjectile()) {
             case LIGHT_METEOR:
-                //set the phase of the current player to the select shield phase, and other players to standby
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
-                    }
-                }
+                notifyDefensiveShield();
                 phase = StatePhase.SELECT_SHIELD;
                 break;
             case HEAVY_METEOR:
-                //set the phase of the current player to the cannon phase, and other players to standby
-                for (String p : getController().getInGameConnectedPlayers()) {
-                    if (p.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(p, new DefensiveCannonMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-                    } else {
-                        NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select cannon"));
-                    }
-                }
+                NotifyDefensiveCannon();
                 phase = StatePhase.CANNONS_PHASE;
                 break;
         }
@@ -251,13 +237,13 @@ public class MeteorSwarmState extends PlayingState {
     }
 
     private void notifyDefensiveShield() {
-        for (String p : getController().getInGameConnectedPlayers()) {
-            if (p.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(p, new ShieldPhaseMessage(fireManagerMap.get(getController().getPlayerByID(p)).getFirstProjectile(), fireManagerMap.get(getController().getPlayerByID(p)).getFirstDirection().getValue(), result));
-            } else {
-                NetworkService.getInstance().sendToClient(p, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select shield"));
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (username.equals(getCurrentPlayer())) {
+                    NetworkService.getInstance().sendToClient(username, new ShieldPhaseMessage(createsShieldMessage()));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is selecting the shield"));
+                }
             }
-        }
     }
 
     /**
@@ -350,5 +336,20 @@ public class MeteorSwarmState extends PlayingState {
                 //cannot happen
             }
         }
+    }
+
+    @Override
+    public String createsShieldMessage() {
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side at line" + result + ", select the shield to use";
+    }
+
+    @Override
+    public String createsRollDiceMessage() {
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side, roll the dice to see where it hits";
+    }
+
+    @Override
+    public String createsCannonsMessage() {
+        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + "side at line" + result + ", select the cannons to use";
     }
 }

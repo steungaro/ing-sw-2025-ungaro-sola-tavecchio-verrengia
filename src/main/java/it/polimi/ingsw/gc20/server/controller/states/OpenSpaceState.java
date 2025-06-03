@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.EngineActivationPhaseMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.EnginePhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
@@ -31,7 +31,7 @@ public class OpenSpaceState extends PlayingState {
         super(model, controller);
         for (String username : getController().getInGameConnectedPlayers()) {
             if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new EngineActivationPhaseMessage());
+                NetworkService.getInstance().sendToClient(username, new EnginePhaseMessage(createsEnginesMessage()));
             } else {
                 NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to select engines"));
             }
@@ -82,7 +82,7 @@ public class OpenSpaceState extends PlayingState {
         } else {
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new EngineActivationPhaseMessage());
+                    NetworkService.getInstance().sendToClient(username, new EnginePhaseMessage(createsEnginesMessage()));
                 } else {
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to select engines"));
                 }
@@ -133,5 +133,9 @@ public class OpenSpaceState extends PlayingState {
         } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException e) {
             //ignore
         }
+    }
+    @Override
+    public String createsEnginesMessage() {
+        return "You are in the open space, select the engines and batteries to use";
     }
 }

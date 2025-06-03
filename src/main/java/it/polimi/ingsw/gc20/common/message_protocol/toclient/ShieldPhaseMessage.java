@@ -7,9 +7,7 @@ import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 
 public record ShieldPhaseMessage(
-        FireType fireType,
-        int direction, // 0 = up, 1 = right, 2 = down, 3 = left
-        int line
+        String message
 ) implements Message {
     @Override
     public String toString() {
@@ -18,6 +16,6 @@ public record ShieldPhaseMessage(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().shieldsMenu(fireType, direction, line);
+        ClientGameModel.getInstance().shieldsMenu(message);
     }
 }
