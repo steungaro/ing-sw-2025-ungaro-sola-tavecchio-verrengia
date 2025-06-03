@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.Planet;
 
 import java.util.List;
 
+@SuppressWarnings("unused") // The client uses this class to view planets in an adventure card
 public class ViewPlanets extends ViewAdventureCard {
 
     List<int[]> planets; // red, yellow, green, blue
@@ -105,15 +105,7 @@ public class ViewPlanets extends ViewAdventureCard {
     }
 
     private int rewardSize(int redCargo, int yellowCargo, int greenCargo, int blueCargo){
-        int result = 0;
-        if(redCargo > 0)
-            result++;
-        if(yellowCargo > 0)
-            result++;
-        if(greenCargo > 0)
-            result++;
-        if(blueCargo > 0)
-            result++;
+        int result = redCargo + yellowCargo + greenCargo + blueCargo;
 
         return (result-1)*2 + 1;
     }

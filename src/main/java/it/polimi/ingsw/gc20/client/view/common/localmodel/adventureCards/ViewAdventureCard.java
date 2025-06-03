@@ -55,7 +55,7 @@ public abstract class ViewAdventureCard {
             return viewCard;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error creating view card for " + type);
+            return null; // or handle the error as needed
         }
     }
 
@@ -89,11 +89,11 @@ public abstract class ViewAdventureCard {
     protected static final String LATERAL = "│";
 
     protected String spaces(int n){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(int i = 0; i < n; i++){
-            result += " ";
+            result.append(" ");
         }
-        return result;
+        return result.toString();
     }
 
     public static void main(String[] args) throws RemoteException {
@@ -184,10 +184,10 @@ public abstract class ViewAdventureCard {
         ViewPlanets planets = new ViewPlanets();
         planets.type = "Planets";
         List<int[]> planetsList = new ArrayList<>();
-        int[] planet1 = {1, 0, 0, 0};
-        int[] planet2 = {0, 1, 0, 0};
-        int[] planet3 = {0, 0, 1, 0};
-        int[] planet4 = {0, 0, 0, 1};
+        int[] planet1 = {1, 1, 0, 0};
+        int[] planet2 = {0, 1, 2, 0};
+        int[] planet3 = {2, 0, 1, 3};
+        int[] planet4 = {5, 0, 0, 1};
         planetsList.add(planet1);
         planetsList.add(planet2);
         planetsList.add(planet3);
