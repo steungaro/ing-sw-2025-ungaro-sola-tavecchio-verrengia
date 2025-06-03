@@ -202,4 +202,13 @@ public class AbandonedStationState extends CargoState {
             //cannot happen
         }
     }
+
+    /**
+     * This method is used to get the cargo reward
+     * @return the cargo reward
+     */
+    @Override
+    public List<CargoColor> cargoReward() {
+        return reward;
+    }
 }

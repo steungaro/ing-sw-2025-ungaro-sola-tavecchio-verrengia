@@ -147,4 +147,13 @@ public class AbandonedShipState extends PlayingState {
             //cannot happen
         }
     }
+
+    /**
+     * this method is called to get the crew that the player needs to lose
+     * @return the number of crew that the player needs to lose
+     */
+    @Override
+    public int getCrew(){
+        return lostCrew;
+    }
 }

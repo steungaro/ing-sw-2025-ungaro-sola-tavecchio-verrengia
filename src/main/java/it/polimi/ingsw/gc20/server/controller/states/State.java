@@ -4,6 +4,7 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -30,6 +31,10 @@ public abstract class State{
     public State(GameModel model) {
         this.model = model;
         this.controller = null;
+    }
+
+    public StatePhase getPhase() {
+        return phase;
     }
     public GameModel getModel() {
         return model;
@@ -180,5 +185,41 @@ public abstract class State{
 
     public void rejoin(String username) throws InvalidStateException {
         exception();
+    }
+
+    public String createsCannonsMessage(){
+        return null;
+    }
+
+    public String createsEnginesMessage(){
+        return null;
+    }
+
+    public String createsShieldMessage(){
+        return null;
+    }
+
+    public String createsRollDiceMessage(){
+        return null;
+    }
+
+    public int getCrew(){
+        return 0;
+    }
+
+    public String getAutomaticActionMessage() {
+        return "automatic action is taking place";
+    }
+
+    public int cargoToRemove(){
+        return 0;
+    }
+
+    public List<CargoColor> cargoReward() {
+        return null;
+    }
+
+    public List<Planet> getPlanets() {
+        return null;
     }
 }

@@ -1,9 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.LandOnPlanetPhase;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -24,6 +21,7 @@ public class PlanetsState extends CargoState {
     private String landedPlayer;
     private int landedPlanetIndex;
     private final List<Player> playersToMove;
+    private List<CargoColor> reward;
     /**
      * Default constructor
      */
@@ -78,10 +76,11 @@ public class PlanetsState extends CargoState {
             landedPlanetIndex = planetIndex;
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
+            reward = planets.get(landedPlanetIndex).getReward();
             //send the message to the player
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new LandOnPlanetPhase(planets));
+                    NetworkService.getInstance().sendToClient(username, new AddCargoMessage(reward));
                 } else {
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to load cargo"));
                 }
@@ -208,5 +207,15 @@ public class PlanetsState extends CargoState {
         } catch (InvalidTurnException _) {
             // This exception should never be thrown here, as the player is the current player
         }
+    }
+
+    @Override
+    public List<Planet> getPlanets() {
+        return planets;
+    }
+
+    @Override
+    public List<CargoColor> cargoReward() {
+        return reward;
     }
 }

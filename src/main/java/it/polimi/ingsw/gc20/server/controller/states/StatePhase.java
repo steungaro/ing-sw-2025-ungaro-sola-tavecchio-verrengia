@@ -1,35 +1,121 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+
+import java.util.List;
+
 public enum StatePhase {
-        CANNONS_PHASE("Select cannons and batteries for this phase"),
-        ACCEPT_PHASE("Accept or discard the card"),
-        LOSE_CREW_PHASE("Select the crew to lose"),
-        AUTOMATIC_ACTION("Automatic action will be performed, no action needed"),
-        REMOVE_CARGO("select the cargo to remove, if there are not enough cargoes, you will be prompted to remove batteries"),
-        ADD_CARGO("add cargo to the ship, you can reorganize your cargo"),
-        LAND_ON_PLANET("Select the planet to land on"),
-        ENGINES_PHASE("Select engines and batteries for this phase"),
-        SELECT_SHIELD("Select the shield to use"),
-        BATTERY_PHASE ("finished their cargo, Select batteries for this phase"),
-        STANDBY_PHASE("wait for your turn"),
-        ROLL_DICE_PHASE("roll the dice"),
-        VALIDATE_SHIP_PHASE("validate your ship"),
-        ADD_ALIEN_PHASE("add alien to the ship"),
-        DRAW_CARD_PHASE("draw a new card"),
-        ASSEMBLING_PHASE("assembling the ship, select the components to assemble");
-        private final String description;
+        CANNONS_PHASE {
+            @Override
+            public Message createMessage(State state) {
+                return new CannonPhaseMessage(state.createsCannonsMessage());
+            }
+        },
+        ACCEPT_PHASE {
+            @Override
+            public Message createMessage(State state) {
+                return new AcceptPhaseMessage ("do you want to accept the card?");
+            }
+        },
+        LOSE_CREW_PHASE {
+            @Override
+            public Message createMessage(State state) {
+                return new LoseCrewMessage(state.getCrew());
+            }
+        },
+        AUTOMATIC_ACTION
+        {
+            @Override
+            public Message createMessage(State state) {
+                return new AutomaticActionMessage(state.getAutomaticActionMessage());
+            }
+        },
+        REMOVE_CARGO {
+            @Override
+            public Message createMessage(State state) {;
+                return new RemoveCargoMessage(state.cargoToRemove());
+            }
+        },
+        ADD_CARGO {
+            @Override
+            public Message createMessage(State state) {
+                return new AddCargoMessage(state.cargoReward());
+            }
+        },
+        LAND_ON_PLANET{
+            @Override
+            public Message createMessage(State state) {
+                return new LandOnPlanetPhase(state.getPlanets());
+            }
+        },
+        ENGINES_PHASE
+        {
+            @Override
+            public Message createMessage(State state) {
+                return new EnginePhaseMessage(state.createsEnginesMessage());
+            }
+        },
+        SELECT_SHIELD
+        {
+            @Override
+            public Message createMessage(State state) {
+                return new ShieldPhaseMessage(state.createsShieldMessage());
+            }
+        },
+        BATTERY_PHASE {
+            @Override
+            public Message createMessage(State state) {
+                return new RemoveBatteryMessage(state.cargoToRemove());
+            }
+        },
+        STANDBY_PHASE{
+            @Override
+            public Message createMessage(State state) {
+                return new StandbyMessage("waiting for the other players");
+            }
+        },
+        ROLL_DICE_PHASE{
+            @Override
+            public Message createMessage(State state) {
+                return new RollDiceMessage(state.createsRollDiceMessage());
+            }
+        },
+        VALIDATE_SHIP_PHASE{
+            @Override
+            public Message createMessage(State state) {
+                return new ChooseBranchMessage();
+            }
+        },
+        ADD_ALIEN_PHASE{ //not usable is in a concurrent state I would need to send 4 messages or have a player
+            @Override
+            public Message createMessage(State state) {
+                return new AlienPlacementePhaseMessage();
+            }
+        },
+        DRAW_CARD_PHASE {
+            @Override
+            public Message createMessage(State state) {
+                return new DrawCardPhaseMessage();
+            }
+        },
+        ASSEMBLING_PHASE { //not usable is in a concurrent state I would need to send 4 messages or have a player
+            @Override
+            public Message createMessage(State state) {
+                return new AssemblingMessage(null);
+            }
+        };
 
-
-        StatePhase(String description) {
-            this.description = description;
-        }
 
         /**
-         * Restituisce una descrizione di ciò che il giocatore deve fare durante questa fase
-         * @return stringa di istruzioni per questa fase
+         * Function that creates the corresponding message for the phase
+         *
+         * @param state that the game is in
+         * @return the message
          */
-        public String getDescription() {
-            return description;
-        }
-    }
+        public abstract Message createMessage(State state);
+}
 

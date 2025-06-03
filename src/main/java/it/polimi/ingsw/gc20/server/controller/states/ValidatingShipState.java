@@ -72,7 +72,6 @@ public class ValidatingShipState extends State {
                     //notify all the players that the ship is valid and waiting for other players
                     NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
-                return true;
             } else {
                 if (allShipsValidated()) {
                     phase = StatePhase.ADD_ALIEN_PHASE;
@@ -80,8 +79,8 @@ public class ValidatingShipState extends State {
                         NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
                     }
                 }
-                return true;
             }
+            return true;
         }
         return false;
     }
@@ -200,6 +199,26 @@ public class ValidatingShipState extends State {
         } else {
             NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
 
+        }
+    }
+
+    public void resume(){
+        if (phase == StatePhase.VALIDATE_SHIP_PHASE) {
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (validShips.get(getController().getPlayerByID(username))){
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
+                }
+            }
+        } else if (phase == StatePhase.ADD_ALIEN_PHASE) {
+            for (String username : getController().getInGameConnectedPlayers()) {
+                if (readyToFly.get(getController().getPlayerByID(username))){
+                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is ready to fly, wait for other players to terminate their turn."));
+                } else {
+                    NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
+                }
+            }
         }
     }
 }

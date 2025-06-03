@@ -45,7 +45,11 @@ public class SmugglersState extends CargoState {
         accepted = false;
         for (String username: getController().getInGameConnectedPlayers()) {
             if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(firePower));
+                //send the player the cannon fire
+                NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
+            } else {
+                //send the player a standby message
+                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
             }
         }
         phase = StatePhase.CANNONS_PHASE;
@@ -225,9 +229,11 @@ public class SmugglersState extends CargoState {
             } else {
                 for (String username: getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer()+ "is fighting the smugglers"));
+                        //send the player a standby message
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
             }
@@ -286,9 +292,11 @@ public class SmugglersState extends CargoState {
             } else {
                 for (String username: getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + " is fighting the smugglers"));
+                        //send the player a standby message
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
                 phase = StatePhase.CANNONS_PHASE;
@@ -312,9 +320,11 @@ public class SmugglersState extends CargoState {
             } else {
                 for (String username: getController().getInGameConnectedPlayers()) {
                     if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new EnemyCannonMessage(this.firePower));
+                        //send the player the cannon fire
+                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
                     } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + " is fighting the smugglers"));
+                        //send the player a standby message
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
                     }
                 }
             }
@@ -325,5 +335,19 @@ public class SmugglersState extends CargoState {
                 //ignore
             }
         }
+    }
+    @Override
+    public String createsCannonsMessage(){
+        return "You are fighting smugglers, enemy firepower is " + firePower + ", select the cannons and batteries to use";
+    }
+
+    @Override
+    public List<CargoColor> cargoReward() {
+        return reward;
+    }
+
+    @Override
+    public int cargoToRemove() {
+        return currentLostCargo;
     }
 }

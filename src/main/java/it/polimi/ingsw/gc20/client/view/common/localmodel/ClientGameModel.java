@@ -332,8 +332,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void automaticAction(String message);
     public abstract void validationMenu();
     public abstract void init();
-    public abstract void shieldsMenu(FireType fireType, int direction, int line);
-    public abstract void rollDiceMenu(FireType fireType, int direction);
+    public abstract void shieldsMenu(String message);
+    public abstract void rollDiceMenu(String message);
     public abstract void cargoMenu(int cargoNum);
     public abstract void loseCrewMenu(int crewNum);
     public abstract void removeBatteryMenu(int batteryNum);

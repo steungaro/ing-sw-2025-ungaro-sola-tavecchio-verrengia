@@ -2,8 +2,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.AutomaticActionMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -20,7 +18,7 @@ public class EpidemicState extends PlayingState {
         super(model, controller);
         //notify the players that the epidemic is starting, and an automatic action is going to be performed
         for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage("An epidemic is Starting!, you will lose 1 crew member for each populated adjacent cabins"));
+            NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage(getAutomaticActionMessage()));
         }
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
@@ -57,5 +55,10 @@ public class EpidemicState extends PlayingState {
         }
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
+    }
+
+    @Override
+    public String getAutomaticActionMessage() {
+        return "An epidemic is starting, you will lose 1 crew member for each populated adjacent cabin";
     }
 }
