@@ -105,6 +105,7 @@ public class ValidationMenu implements MenuState{
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
+                System.out.print(" > ");
         }
         ClientGameModel.getInstance().setFree();
     }

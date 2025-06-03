@@ -117,6 +117,7 @@ public class PopulateShipMenu implements MenuState{
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
+                System.out.print(" > ");
                 break;
         }
         ClientGameModel.getInstance().setFree();

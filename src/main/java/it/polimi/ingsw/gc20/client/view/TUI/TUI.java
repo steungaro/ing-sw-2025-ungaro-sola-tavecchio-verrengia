@@ -153,8 +153,7 @@ public class TUI extends ClientGameModel {
         System.out.println("\u001B[1mViewing options:\u001B[0m");
         System.out.println("1. View game board");
         System.out.println("2. View a player's ship");
-        System.out.println("3. View uncovered components");
-        System.out.println("4. View current card");
+        System.out.println("3. View current card");
         System.out.println("b. Back to the menu");
         System.out.print(" > ");
 
@@ -170,8 +169,7 @@ public class TUI extends ClientGameModel {
                     System.out.println("\033[31mPlayer not found.\033[0m");
                 }
             }
-            case "3" -> ClientGameModel.getInstance().printViewedPile();
-            case "4" -> ClientGameModel.getInstance().printCurrentCard();
+            case "3" -> ClientGameModel.getInstance().printCurrentCard();
             case "b" -> {
             }
             default -> {

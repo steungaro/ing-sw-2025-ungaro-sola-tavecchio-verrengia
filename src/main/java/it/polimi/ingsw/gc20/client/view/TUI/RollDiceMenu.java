@@ -66,6 +66,7 @@ public class RollDiceMenu implements MenuState {
             ClientGameModel.getInstance().shutdown();
         } else {
             System.out.println("\u001B[31mInvalid input. Please try again.\u001B[0m");
+            System.out.print(" > ");
         }
         ClientGameModel.getInstance().setFree();
     }

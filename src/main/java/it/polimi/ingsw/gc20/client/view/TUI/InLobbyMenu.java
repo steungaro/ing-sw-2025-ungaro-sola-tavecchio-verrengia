@@ -81,6 +81,7 @@ public class InLobbyMenu implements MenuState {
                 break;
             default:
                 System.out.println("\u001B[31mInvalid input. Please try again.\u001B[0m");
+                System.out.print(" > ");
         }
         ClientGameModel.getInstance().setFree();
     }

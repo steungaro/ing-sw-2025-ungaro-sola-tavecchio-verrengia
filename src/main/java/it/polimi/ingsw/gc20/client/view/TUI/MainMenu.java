@@ -105,6 +105,7 @@ public class MainMenu implements MenuState{
                 break;
             default:
                 System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
+                System.out.print(" > ");
         }
         ClientGameModel.getInstance().setFree();
     }

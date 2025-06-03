@@ -25,7 +25,7 @@ public class IdleMenu implements MenuState {
     @Override
     public void displayMenu() {
         System.out.println("\u001B[1m" + message + "\u001B[22m");
-        if (ClientGameModel.getInstance().getBoard().assemblingState) {
+        if (ClientGameModel.getInstance().getBoard().assemblingState && !ClientGameModel.getInstance().getBoard().isLearner) {
             System.out.println("1. Turn hourglass");
         }
         System.out.println("v. Viewing game options");

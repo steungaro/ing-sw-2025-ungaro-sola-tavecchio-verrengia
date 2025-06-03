@@ -90,6 +90,7 @@ public class LoseEnergyMenu implements MenuState {
             TUI.viewOptionsMenu();
         } else {
             System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
+            System.out.print(" > ");
         }
         ClientGameModel.getInstance().setFree();
     }

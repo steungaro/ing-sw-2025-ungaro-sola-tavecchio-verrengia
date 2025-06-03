@@ -72,6 +72,7 @@ public class CardAcceptanceMenu implements MenuState{
                 break;
             default:
                 System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
+                System.out.print(" > ");
                 break;
         }
         ClientGameModel.getInstance().setFree();
