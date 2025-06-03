@@ -132,8 +132,7 @@
     {
       "name": "Planets",
       "planets": [
-        {
-          "planet1": {
+           {
             "reward": [
               "RED",
               "GREEN",
@@ -143,7 +142,7 @@
             ],
             "available": "true"
           },
-          "planet2": {
+           {
             "reward": [
               "RED",
               "YELLOW",
@@ -151,7 +150,7 @@
             ],
             "available": "true"
           },
-          "planet3": {
+           {
             "reward": [
               "RED",
               "BLUE",
@@ -160,14 +159,14 @@
             ],
             "available": "true"
           },
-          "planet4": {
+           {
             "reward": [
               "RED",
               "GREEN"
             ],
             "available": "true"
           }
-        }],
+        ],
         "IDCard": "12",
         "Level": "1"
       }
@@ -175,15 +174,14 @@
     {
       "name": "Planets",
         "planets": [
-          {
-            "planet1": {
+             {
               "reward": [
                 "RED",
                 "RED"
               ],
               "available": "true"
             },
-            "planet2": {
+             {
               "reward": [
                 "RED",
                 "BLUE",
@@ -191,20 +189,19 @@
               ],
               "available": "true"
             },
-            "planet3": {
+             {
               "reward": [
                 "YELLOW"
               ],
               "available": "true"
-            }
-          }],
+            }],
             "IDCard": "13",
             "Level": "0"
         },
     {
       "name": "Planets",
-      "planets": [{
-        "planet1": {
+      "planets": [
+         {
           "reward": [
             "YELLOW",
             "GREEN",
@@ -213,33 +210,32 @@
           ],
           "available": "true"
         },
-        "planet2": {
+         {
           "reward": [
             "YELLOW",
             "YELLOW"
           ]
         }
-      }],
+      ],
       "IDCard": "14",
       "Level": "1"
     },
     {
       "name": "Planets",
       "planets": [{
-        "planet1": {
           "reward": [
             "GREEN",
             "GREEN"
           ],
           "available": "true"
         },
-        "planet2": {
+         {
           "reward": [
             "YELLOW"
           ],
           "available": "true"
         },
-        "planet3": {
+         {
           "reward": [
             "BLUE",
             "BLUE",
@@ -247,7 +243,7 @@
           ],
           "available": "true"
         }
-      }],
+      ],
       "IDCard": "15",
       "Level": "1"
     },
@@ -456,8 +452,7 @@
     {
       "name": "Planets",
       "planets": [
-        {
-          "planet1": {
+           {
             "reward": [
               "RED",
               "GREEN",
@@ -467,7 +462,7 @@
             ],
             "available": "true"
           },
-          "planet2": {
+           {
             "reward": [
               "RED",
               "YELLOW",
@@ -475,7 +470,7 @@
             ],
             "available": "true"
           },
-          "planet3": {
+           {
             "reward": [
               "RED",
               "BLUE",
@@ -484,29 +479,28 @@
             ],
             "available": "true"
           },
-          "planet4": {
+           {
             "reward": [
               "RED",
               "GREEN"
             ],
             "available": "true"
           }
-        }],
+        ],
         "IDCard": "32",
         "Level": "2"
     },
     {
       "name": "Planets",
       "planets": [
-        {
-          "planet1": {
+           {
             "reward": [
               "RED",
               "RED"
             ],
             "available": "true"
           },
-          "planet2": {
+           {
             "reward": [
               "RED",
               "BLUE",
@@ -514,20 +508,20 @@
             ],
             "available": "true"
           },
-          "planet3": {
+           {
             "reward": [
               "YELLOW"
             ],
             "available": "true"
           }
-        }],
+        ],
         "IDCard": "33",
         "Level": "2"
     },
     {
       "name": "Planets",
-      "planets": [{
-        "planet1": {
+      "planets": [
+         {
           "reward": [
             "RED",
             "RED",
@@ -536,7 +530,7 @@
           ],
           "available": "true"
         },
-        "planet2": {
+         {
           "reward": [
             "RED",
             "RED",
@@ -545,7 +539,7 @@
           ],
           "available": "true"
         },
-        "planet3": {
+         {
           "reward": [
             "RED",
             "BLUE",
@@ -555,21 +549,21 @@
           ],
           "available": "true"
         }
-      }],
+      ],
       "IDCard": "34",
       "Level": "2"
     },
     {
       "name": "Planets",
-      "planets": [{
-        "planet1": {
+      "planets": [
+         {
           "reward": [
             "RED",
             "RED"
           ],
           "available": "true"
         },
-        "planet2": {
+         {
           "reward": [
             "GREEN",
             "GREEN",
@@ -578,21 +572,21 @@
           ],
           "available": "true"
         }
-      }],
+      ],
       "IDCard": "35",
       "Level": "2"
     },
     {
       "name": "Planets",
-        "planets": [{
-            "planet1": {
+        "planets": [
+             {
             "reward": [
                 "RED",
                 "YELLOW"
             ],
             "available": "true"
             },
-            "planet2": {
+             {
             "reward": [
                 "YELLOW",
                 "GREEN",
@@ -600,27 +594,27 @@
             ],
             "available": "true"
             },
-            "planet3": {
+             {
               "reward": [
                 "GREEN",
                 "GREEN"
             ],
             "available": "true"
             },
-            "planet4": {
+             {
               "reward": [
                 "YELLOW"
             ],
             "available": "true"
             }
-        }],
+        ],
         "IDCard": "36",
         "Level": "2"
     },
     {
       "name": "Planets",
-        "planets": [{
-            "planet1": {
+        "planets": [
+             {
             "reward": [
               "GREEN",
               "GREEN",
@@ -628,14 +622,14 @@
             ],
             "available": "true"
             },
-            "planet2": {
+             {
             "reward": [
                 "YELLOW",
                 "YELLOW"
             ],
             "available": "true"
             },
-            "planet3": {
+             {
             "reward": [
                 "BLUE",
                 "BLUE",
@@ -643,7 +637,7 @@
             ],
             "available": "true"
             }
-        }],
+        ],
         "IDCard": "37",
         "Level": "2"
     },
