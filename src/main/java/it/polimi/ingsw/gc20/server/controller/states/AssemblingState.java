@@ -84,6 +84,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
+        fromBooked = false;
     }
 
     /**
@@ -109,6 +110,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
+        fromBooked = false;
 
     }
     /**
