@@ -27,6 +27,8 @@ public abstract class ShipController {
         Building, Viewing
     }
 
+    @FXML private ImageView imageBooked_0_0;
+    @FXML private ImageView imageBooked_0_1;
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
@@ -67,13 +69,6 @@ public abstract class ShipController {
     private void initialize() {
         ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
 
-        // Registrati come observer per i cambiamenti nella nave
-        if (ship != null) {
-            ship.addObserver(updatedShip -> {
-                Platform.runLater(() -> buildShipComponents(updatedShip));
-            });
-        }
-
         if (boardImageView != null && boardImageView.getImage() != null) {
             setupGridBounds();
         } else if (boardImageView != null) {
@@ -98,7 +93,6 @@ public abstract class ShipController {
 
         buildShipComponents(ship);
     }
-
 
     private void setupGridBounds() {
         Platform.runLater(() -> {
