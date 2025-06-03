@@ -416,10 +416,6 @@ public abstract class Ship {
                 Direction dir = entry.getKey();
                 ConnectorEnum connector = entry.getValue();
 
-                // Skip if there's no connector in this direction
-                if (connector == null || connector == ConnectorEnum.ZERO) {
-                    continue;
-                }
 
                 // Calculate adjacent cell coordinates
                 int adjRow = i, adjCol = j;
@@ -438,6 +434,24 @@ public abstract class Ship {
                     default:
                         adjCol++;
                         break;
+                }
+
+                // Skip if there's no connector in this direction
+                if (connector == null || connector == ConnectorEnum.ZERO) {
+                    if(component.isCannon() && ((Cannon) component).getOrientation() == dir) {
+                        //if it's a cannon we need to check if it has a component in the direction of the cannon
+                        if(getComponentAt(adjRow, adjCol) != null) {
+                            return false;
+                        }
+
+                    } else if (component.isEngine() && ((Engine) component).getOrientation() == dir) {
+                        //if it's an engine we need to check if it has a component in the direction of the engine
+                        if(getComponentAt(adjRow, adjCol) != null) {
+                            return false;
+                        }
+                    } else {
+                        continue; // No connector, skip to next direction
+                    }
                 }
 
                 // Check if the adjacent cell is within bounds and has a component
@@ -728,7 +742,6 @@ public abstract class Ship {
                 }
             }
         }
-        ViewComponent hand = null;
 
         return new UpdateShipMessage(username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
     }

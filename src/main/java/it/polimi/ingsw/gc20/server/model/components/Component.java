@@ -201,4 +201,6 @@ public abstract class Component {
         viewComponent.leftConnectors = connectors.get(Direction.LEFT).getValue();
         viewComponent.rightConnectors = connectors.get(Direction.RIGHT).getValue();
     }
+
+    public boolean isEngine() { return false;}
 }
