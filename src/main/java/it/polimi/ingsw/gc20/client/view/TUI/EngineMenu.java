@@ -19,6 +19,7 @@ public class EngineMenu implements MenuState {
     private final List<Pair<Integer, Integer>> engines = new ArrayList<>();
     private final List<Pair<Integer, Integer>> batteries = new ArrayList<>();
     private final String message;
+    private final String username = ClientGameModel.getInstance().getUsername();
 
     public EngineMenu(String message) {
         this.message = message;
@@ -32,6 +33,7 @@ public class EngineMenu implements MenuState {
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mEngines Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate engines");
@@ -69,6 +71,7 @@ public class EngineMenu implements MenuState {
         switch (choice) {
             case "1":
                 boolean inputOk = true;
+                ClientGameModel.getInstance().printShip(username);
                 do {
                     System.out.println("Type the coordinates of the engines you want to activate separated by spaces (for example, row1 col1 row2 col2):");
                     System.out.print(" > ");
@@ -117,10 +120,10 @@ public class EngineMenu implements MenuState {
                         }
                     }
                 } while (!inputOk);
-                ClientGameModel.getInstance().getClient().activateEngines(ClientGameModel.getInstance().getUsername(), engines, batteries);
+                ClientGameModel.getInstance().getClient().activateEngines(username, engines, batteries);
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateEngines(ClientGameModel.getInstance().getUsername(), null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();

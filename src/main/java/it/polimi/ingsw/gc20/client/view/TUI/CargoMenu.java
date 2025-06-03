@@ -31,6 +31,7 @@ public class CargoMenu implements MenuState{
 
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mCargo Menu\u001B[0m");
         System.out.println(message);
         if (losing) {
@@ -65,6 +66,7 @@ public class CargoMenu implements MenuState{
             case "1":
                 int x;
                 int y;
+                ClientGameModel.getInstance().printShip(username);
                 do {
                     System.out.println("Type the coordinates of the cargo you want to lose (row col):");
                     System.out.print(" > ");
@@ -97,6 +99,7 @@ public class CargoMenu implements MenuState{
             case "2":
                 int moveX;
                 int moveY;
+                ClientGameModel.getInstance().printShip(username);
                 do {
                     System.out.println("Type the coordinates of the cargo you want to move from (row col):");
                     System.out.print(" > ");
@@ -147,6 +150,7 @@ public class CargoMenu implements MenuState{
                 } else {
                     int loadX;
                     int loadY;
+                    ClientGameModel.getInstance().printShip(username);
                     do {
                         System.out.println("Type the coordinates of the cargo hold you want to load to (row col):");
                         System.out.print(" > ");

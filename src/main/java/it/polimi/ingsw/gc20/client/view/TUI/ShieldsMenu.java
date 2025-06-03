@@ -15,6 +15,7 @@ import java.util.Scanner;
 public class ShieldsMenu implements MenuState {
     private final Scanner scanner = new Scanner(System.in);
     private final String message;
+    private final String username = ClientGameModel.getInstance().getUsername();
 
     public ShieldsMenu(String message) {
         this.message = message;
@@ -28,6 +29,7 @@ public class ShieldsMenu implements MenuState {
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mShields Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate a shield");
@@ -65,6 +67,7 @@ public class ShieldsMenu implements MenuState {
         switch (choice) {
             case "1":
                 int xs, ys;
+                ClientGameModel.getInstance().printShip(username);
                 do {
                     System.out.println("Type the coordinates of the shield you want to activate (row col):");
                     System.out.print(" > ");
@@ -76,7 +79,7 @@ public class ShieldsMenu implements MenuState {
                     String[] inputCoordinates = input.split(" ");
                     try {
                         xs = Integer.parseInt(inputCoordinates[0]) - 5;
-                        ys = Integer.parseInt(inputCoordinates[1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4);
+                        ys = Integer.parseInt(inputCoordinates[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
                     } catch (NumberFormatException | IndexOutOfBoundsException e) {
                         System.out.println("\u001B[31mInvalid input. Please enter two integers separated by a space.\u001B[0m");
                         xs = -1;
@@ -102,10 +105,10 @@ public class ShieldsMenu implements MenuState {
                         yb = -1;
                     }
                 } while (xb < 0 || yb < 0 || xb > 4 || yb > 6);
-                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), new Pair<>(xs, ys), new Pair<>(xb, yb));
+                ClientGameModel.getInstance().getClient().activateShield(username, new Pair<>(xs, ys), new Pair<>(xb, yb));
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateShield(ClientGameModel.getInstance().getUsername(), null, null);
+                ClientGameModel.getInstance().getClient().activateShield(username, null, null);
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();

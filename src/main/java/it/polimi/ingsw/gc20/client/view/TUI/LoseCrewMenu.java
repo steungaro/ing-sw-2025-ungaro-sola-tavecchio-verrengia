@@ -16,6 +16,7 @@ import java.util.Scanner;
 public class LoseCrewMenu implements MenuState {
     private final Scanner scanner;
     private final int crewToLose;
+    private final String username = ClientGameModel.getInstance().getUsername();
 
     public LoseCrewMenu(int crewToLose) {
         this.scanner = new Scanner(System.in);
@@ -28,6 +29,7 @@ public class LoseCrewMenu implements MenuState {
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().printShip(username);
         System.out.println("\u001B[1mLose Crew Menu\u001B[22m");
         System.out.println("You have to lose \u001B[31m" + crewToLose + "\u001B[0m crew members!");
         System.out.println("1. Continue");
@@ -61,6 +63,7 @@ public class LoseCrewMenu implements MenuState {
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         if (choice.equals("1")) {
+            ClientGameModel.getInstance().printShip(username);
             boolean inputOk = true;
             List<Pair<Integer, Integer>> cabins = new java.util.ArrayList<>();
             do {
@@ -87,7 +90,7 @@ public class LoseCrewMenu implements MenuState {
                     }
                 }
             } while (!inputOk);
-            ClientGameModel.getInstance().getClient().loseCrew(ClientGameModel.getInstance().getUsername(), cabins);
+            ClientGameModel.getInstance().getClient().loseCrew(username, cabins);
         } else if (choice.equals("v")) {
             TUI.viewOptionsMenu();
         } else {

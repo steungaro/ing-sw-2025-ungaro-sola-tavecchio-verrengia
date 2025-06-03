@@ -29,6 +29,7 @@ public class LoseEnergyMenu implements MenuState {
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().printShip(username);
         System.out.println("\u001B[1mLose Energy Menu\u001B[22m");
         System.out.println("You have to lose \u001B[31m" + energyToLose + "\u001B[0m energy because you are short on cargo!");
         System.out.println("1. Continue");
@@ -65,6 +66,7 @@ public class LoseEnergyMenu implements MenuState {
         if (choice.equals("1")) {
             int x;
             int y;
+            ClientGameModel.getInstance().printShip(username);
             do {
                 System.out.println("Type the coordinates of the battery you want to lose energy from (row col):");
                 System.out.print(" > ");

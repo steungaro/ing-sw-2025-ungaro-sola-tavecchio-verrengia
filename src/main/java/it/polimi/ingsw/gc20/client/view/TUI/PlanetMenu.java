@@ -33,6 +33,7 @@ public class PlanetMenu implements MenuState{
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mPlanets Menu\u001B[22m");
         System.out.println("1. Land on a planet");
         System.out.println("2. Don't land on a planet");

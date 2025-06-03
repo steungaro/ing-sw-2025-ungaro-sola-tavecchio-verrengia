@@ -64,12 +64,13 @@ public class PopulateShipMenu implements MenuState{
         switch (choice) {
             case "1":
                 // End population phase
-                ClientGameModel.getInstance().getClient().endMove(ClientGameModel.getInstance().getUsername());
+                ClientGameModel.getInstance().getClient().endMove(username);
                 break;
             case "2":
                 if (!ClientGameModel.getInstance().getShip(username).isLearner) {
                     int x;
                     int y;
+                    ClientGameModel.getInstance().printShip(username);
                     do {
                         // Add alien to a cabin
                         System.out.println("Type the coordinates of the cabin you want to add the alien to (row col):");

@@ -28,7 +28,7 @@ public class BranchMenu implements MenuState {
     public void displayMenu() {
         System.out.println("\u001B[1mBranch Menu\u001B[22m");
         System.out.println("Your ship has split into two branches.");
-        System.out.println("Press any key to continue.");
+        System.out.println("Press [enter] to continue.");
         System.out.print(" > ");
     }
 
@@ -59,6 +59,7 @@ public class BranchMenu implements MenuState {
         int row;
         int col;
         ClientGameModel.getInstance().setBusy();
+        ClientGameModel.getInstance().printShip(username);
         do {
             System.out.println("Type the coordinates of the branch you want to keep (row col):");
             System.out.print(" > ");

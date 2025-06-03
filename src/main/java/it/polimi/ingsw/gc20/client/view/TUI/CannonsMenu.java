@@ -19,6 +19,7 @@ public class CannonsMenu implements MenuState {
     private final List<Pair<Integer, Integer>> cannons = new ArrayList<>();
     private final List<Pair<Integer, Integer>> batteries = new ArrayList<>();
     private final String message;
+    private final String username = ClientGameModel.getInstance().getUsername();
 
 
     public CannonsMenu(String message) {
@@ -35,6 +36,7 @@ public class CannonsMenu implements MenuState {
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mCannons Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Activate cannons");
@@ -71,6 +73,7 @@ public class CannonsMenu implements MenuState {
         switch (choice) {
             case "1":
                 boolean inputOk = true;
+                ClientGameModel.getInstance().printShip(username);
                 do {
                     System.out.println("Type the coordinates of the cannons you want to activate separated by blank spaces (for example, row1 col1 row2 col2):");
                     System.out.print(" > ");
@@ -117,7 +120,7 @@ public class CannonsMenu implements MenuState {
                     for (int i = 0; i < batteryCoordinates.length; i += 2) {
                         try {
                             int x = Integer.parseInt(batteryCoordinates[i]) - 5;
-                            int y = Integer.parseInt(batteryCoordinates[i + 1]) - (ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner ? 5 : 4);
+                            int y = Integer.parseInt(batteryCoordinates[i + 1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
                             Pair<Integer, Integer> coordinates = new Pair<>(x, y);
                             batteries.add(coordinates);
                         } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
@@ -129,10 +132,10 @@ public class CannonsMenu implements MenuState {
                         }
                     }
                 } while (!inputOk);
-                ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), cannons, batteries);
+                ClientGameModel.getInstance().getClient().activateCannons(username, cannons, batteries);
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateCannons(ClientGameModel.getInstance().getUsername(), null, null);
+                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();

@@ -22,6 +22,7 @@ public class CardAcceptanceMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mCard Acceptance Menu\u001B[22m");
         System.out.println(message);
         System.out.println("1. Accept the card");
