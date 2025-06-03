@@ -2,9 +2,16 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+@SuppressWarnings( "unused")
 public class ViewEpidemic extends ViewAdventureCard {
 
 
+    /**
+     * Constructs a {@code ViewEpidemic} instance and initializes it with the specified {@code AdventureCard}.
+     * This method sets up the representation of the epidemic adventure card for the view.
+     *
+     * @param adventureCard the {@code AdventureCard} instance used to initialize the view representation
+     */
     public ViewEpidemic(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }

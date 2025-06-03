@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
+@SuppressWarnings( "unused")
 public class ViewSmugglers extends ViewAdventureCard {
     int firePower;
     int lostCargo;
@@ -15,6 +16,13 @@ public class ViewSmugglers extends ViewAdventureCard {
     int lostDays;
     int size;
 
+    /**
+     * Constructs a ViewSmugglers object by initializing its fields based on the data
+     * from the specified {@code AdventureCard}.
+     *
+     * @param adventureCard the {@code AdventureCard} object whose attributes
+     *                      are used to initialize the fields of this ViewSmugglers instance
+     */
     public ViewSmugglers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
@@ -77,6 +85,14 @@ public class ViewSmugglers extends ViewAdventureCard {
                         DOWN;
     }
 
+    /**
+     * Generates and returns a string representation of cargo based on specified amounts
+     * of red, yellow, green, and blue cargo. Each cargo type is represented by a colored
+     * symbol (R, Y, G, B) with appropriate spacing. The colors are added using ANSI escape codes.
+     *
+     * @return A string representation of cargo with symbols for red, yellow, green,
+     *         and blue cargo, formatted with ANSI colors and appropriate spacing.
+     */
     private String reward(){
         StringBuilder result = new StringBuilder();
         size = 0;

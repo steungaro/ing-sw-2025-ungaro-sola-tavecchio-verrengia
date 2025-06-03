@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
+@SuppressWarnings("unused") // The client uses this class to view abandoned stations in an adventure card
 public class ViewAbandonedStation extends ViewAdventureCard {
     int crew;
     int redCargo = 0;
@@ -18,6 +19,14 @@ public class ViewAbandonedStation extends ViewAdventureCard {
         super();
     }
     
+    /**
+     * Constructs a new instance of {@code ViewAbandonedStation} based on the specified {@code AdventureCard}.
+     * This constructor initializes the view by processing the provided adventure card's data, including crew members,
+     * cargo rewards, and lost days.
+     *
+     * @param adventureCard the adventure card containing data used to initialize this instance, including
+     *        the crew size, lost days, and cargo rewards categorized by their respective {@code CargoColor}
+     */
     public ViewAbandonedStation(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.crew = adventureCard.getCrew();
@@ -73,6 +82,13 @@ public class ViewAbandonedStation extends ViewAdventureCard {
                 DOWN;
     }
 
+    /**
+     * Constructs a string representation of the cargo rewards, color-coded for red, yellow, green, and blue cargos.
+     * Each color-coded cargo element is appended based on its occurrence in the order of colors: red, yellow, green, and blue.
+     * The method also manages the spacing of the cargo elements to ensure proper formatting.
+     *
+     * @return a string containing the formatted and color-coded representation of the cargo rewards
+     */
     private String reward(){
         StringBuilder result = new StringBuilder();
         size = 0;

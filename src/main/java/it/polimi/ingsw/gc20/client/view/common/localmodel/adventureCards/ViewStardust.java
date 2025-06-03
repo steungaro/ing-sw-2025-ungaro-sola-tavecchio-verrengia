@@ -2,12 +2,20 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+@SuppressWarnings( "unused")
 public class ViewStardust extends ViewAdventureCard {
 
     public ViewStardust() {
         super();
     }
 
+    /**
+     * Constructs a new {@code ViewStardust} instance and initializes it with
+     * the provided {@code AdventureCard}.
+     *
+     * @param adventureCard the {@code AdventureCard} used to initialize this
+     *                      view representation
+     */
     public ViewStardust(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }

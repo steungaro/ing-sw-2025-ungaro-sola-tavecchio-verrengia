@@ -5,11 +5,19 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
+@SuppressWarnings( "unused")
 public class ViewCombatZone0 extends ViewAdventureCard {
     int lostDays;
     int lostCrew;
     List<Projectile> projectiles;
 
+    /**
+     * Constructs a new ViewCombatZone0 object by initializing it with the given AdventureCard.
+     * This constructor sets the lostCrew, lostDays, and projectiles fields based on the properties
+     * of the provided AdventureCard.
+     *
+     * @param adventureCard the AdventureCard instance containing the data used to initialize this object
+     */
     public ViewCombatZone0(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCrew = adventureCard.getCrew();
@@ -52,6 +60,14 @@ public class ViewCombatZone0 extends ViewAdventureCard {
         };
     }
 
+    /**
+     * Constructs a string representation of the cannon fires based on the projectiles' fire types
+     * and directions. Each projectile is represented in the string by its fire type ('H' for heavy fire,
+     * 'L' for light fire), followed by the direction ('↑' for up, '↓' for down, '←' for left, '→' for right).
+     * A space separates consecutive projectiles.
+     *
+     * @return the string representation of cannon fires including fire types and directions
+     */
     private String cannonFires(){
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < projectiles.size(); i++) {

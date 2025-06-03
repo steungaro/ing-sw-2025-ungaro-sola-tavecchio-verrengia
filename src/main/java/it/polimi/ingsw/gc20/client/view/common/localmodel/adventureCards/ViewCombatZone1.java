@@ -5,11 +5,19 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
+@SuppressWarnings( "unused")
 public class ViewCombatZone1 extends ViewAdventureCard {
     int lostDays;
     int lostCargo;
     List<Projectile> projectiles;
 
+    /**
+     * Constructs a new instance of {@code ViewCombatZone1} using the provided {@code AdventureCard}.
+     * The method initializes the view representation of the adventure card by setting its type,
+     * along with specific attributes such as lost cargo, projectiles, and lost days.
+     *
+     * @param adventureCard the {@code AdventureCard} object used to initialize the view and extract its attributes
+     */
     public ViewCombatZone1(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCargo = adventureCard.getLostCargo();

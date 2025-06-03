@@ -5,9 +5,17 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
+@SuppressWarnings( "unused")
 public class ViewMeteorSwarm extends ViewAdventureCard {
     List<Projectile> projectiles;
 
+    /**
+     * Constructs a {@code ViewMeteorSwarm} and initializes it with the specified {@code AdventureCard}.
+     * This constructor sets up the view representation for the Meteor Swarm adventure card
+     * by initializing its internal state based on the provided card and associating the relevant projectiles.
+     *
+     * @param adventureCard the {@code AdventureCard} used to initialize the view representation and retrieve projectiles
+     */
     public ViewMeteorSwarm(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.projectiles = adventureCard.getProjectiles();
@@ -45,6 +53,13 @@ public class ViewMeteorSwarm extends ViewAdventureCard {
         };
     }
 
+    /**
+     * Builds a string representation of the meteoric projectiles, indicating their
+     * fire type (e.g., heavy or light) and direction (e.g., up, down, left, or right).
+     * The projectiles are separated by spaces, and the first entry is not preceded by a space.
+     *
+     * @return a string representation of the meteoric projectiles with fire types and directions.
+     */
     private String meteorFires(){
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < projectiles.size(); i++) {

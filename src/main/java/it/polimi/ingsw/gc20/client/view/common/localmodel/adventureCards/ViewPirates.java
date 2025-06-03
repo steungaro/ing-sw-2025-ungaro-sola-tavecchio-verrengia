@@ -5,12 +5,19 @@ import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
 import java.util.List;
 
+@SuppressWarnings( "unused")
 public class ViewPirates extends ViewAdventureCard {
     int firePower;
     List<Projectile> projectiles;
     int credits;
     int lostDays;
 
+    /**
+     * Constructs a ViewPirates instance by initializing its fields
+     * using the provided AdventureCard object.
+     *
+     * @param adventureCard the AdventureCard object used to initialize the ViewPirates instance
+     */
     public ViewPirates(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
@@ -54,37 +61,48 @@ public class ViewPirates extends ViewAdventureCard {
         };
     }
 
+    /**
+     * Constructs a string representation of the cannons firing projectiles.
+     * Each projectile is represented by a combination of its fire type and direction.
+     * Fire types are represented by "H" for heavy fire and "L" for light fire.
+     * Directions are represented by specific arrow symbols:
+     * "↑" for UP, "↓" for DOWN, "←" for LEFT, and "→" for RIGHT.
+     * The representation adds a space between subsequent projectiles.
+     *
+     * @return A string representing the sequence of projectiles fired, with their fire types
+     *         and directions in order.
+     */
     private String cannonFires(){
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for(int i = 0; i < projectiles.size(); i++) {
             if (i == 0) {
                 switch(projectiles.get(i).getFireType()) {
-                    case HEAVY_FIRE -> result += "H";
-                    case LIGHT_FIRE -> result += "L";
+                    case HEAVY_FIRE -> result.append("H");
+                    case LIGHT_FIRE -> result.append("L");
                 }
 
                 switch(projectiles.get(i).getDirection()) {
-                    case UP -> result += "↑";
-                    case DOWN -> result += "↓";
-                    case LEFT -> result += "←";
-                    case RIGHT -> result += "→";
+                    case UP -> result.append("↑");
+                    case DOWN -> result.append("↓");
+                    case LEFT -> result.append("←");
+                    case RIGHT -> result.append("→");
                 }
             }
             else{
                 switch(projectiles.get(i).getFireType()) {
-                    case HEAVY_FIRE -> result += " H";
-                    case LIGHT_FIRE -> result += " L";
+                    case HEAVY_FIRE -> result.append(" H");
+                    case LIGHT_FIRE -> result.append(" L");
                 }
 
                 switch(projectiles.get(i).getDirection()) {
-                    case UP -> result += "↑";
-                    case DOWN -> result += "↓";
-                    case LEFT -> result += "←";
-                    case RIGHT -> result += "→";
+                    case UP -> result.append("↑");
+                    case DOWN -> result.append("↓");
+                    case LEFT -> result.append("←");
+                    case RIGHT -> result.append("→");
                 }
             }
         }
-        return result;
+        return result.toString();
     }
 
     // ↑→↓←

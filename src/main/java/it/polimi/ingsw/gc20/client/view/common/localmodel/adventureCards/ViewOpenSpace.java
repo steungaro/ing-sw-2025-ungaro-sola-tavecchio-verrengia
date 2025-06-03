@@ -2,12 +2,18 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+@SuppressWarnings( "unused")
 public class ViewOpenSpace extends ViewAdventureCard {
 
     public ViewOpenSpace() {
         super();
     }
 
+    /**
+     * Constructs a new {@code ViewOpenSpace} and initializes it using the provided {@code AdventureCard}.
+     *
+     * @param adventureCard the {@code AdventureCard} object used to initialize this view
+     */
     public ViewOpenSpace(AdventureCard adventureCard) {
         super.initialize(adventureCard);
     }

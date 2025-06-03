@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+@SuppressWarnings("unused")
 public class ViewAbandonedShip extends ViewAdventureCard {
     int lostCrew;
     int credits;
@@ -11,6 +12,15 @@ public class ViewAbandonedShip extends ViewAdventureCard {
         super();
     }
 
+    /**
+     * Constructs a new {@code ViewAbandonedShip} object by initializing it
+     * with the provided {@code AdventureCard} details.
+     * The constructor extracts and assigns the lost crew, credits,
+     * and lost days information from the specified {@code AdventureCard}.
+     *
+     * @param adventureCard the {@code AdventureCard} object from which
+     *                      the details are retrieved to initialize this view
+     */
     public ViewAbandonedShip(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.lostCrew = adventureCard.getCrew();

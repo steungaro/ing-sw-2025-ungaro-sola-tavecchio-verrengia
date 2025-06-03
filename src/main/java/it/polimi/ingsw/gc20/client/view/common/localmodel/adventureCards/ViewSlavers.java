@@ -2,12 +2,21 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
+@SuppressWarnings( "unused")
 public class ViewSlavers extends ViewAdventureCard {
     public int firePower;
     public int lostCrew;
     public int credits;
     public int lostDays;
 
+    /**
+     * Constructs a ViewSlavers instance that represents the provided {@code AdventureCard}.
+     * Initializes the view representation based on the attributes of the provided {@code AdventureCard}.
+     *
+     * @param adventureCard the {@code AdventureCard} whose attributes are used to initialize
+     *                      this ViewSlavers instance, including firePower, lostCrew, credits,
+     *                      and lostDays. This parameter cannot be null.
+     */
     public ViewSlavers(AdventureCard adventureCard) {
         super.initialize(adventureCard);
         this.firePower = adventureCard.getFirePower();
