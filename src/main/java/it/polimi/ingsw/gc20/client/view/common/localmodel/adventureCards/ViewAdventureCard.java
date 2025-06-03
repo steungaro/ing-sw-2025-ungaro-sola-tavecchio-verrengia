@@ -2,9 +2,12 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import it.polimi.ingsw.gc20.client.view.TUI.TUI;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import it.polimi.ingsw.gc20.server.model.components.Direction;
@@ -93,7 +96,7 @@ public abstract class ViewAdventureCard {
         return result;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RemoteException {
         ViewSlavers slavers = new ViewSlavers();
         slavers.type = "Slavers";
         slavers.firePower = 6;
@@ -157,10 +160,23 @@ public abstract class ViewAdventureCard {
         Projectile projectile4 = new Projectile();
         projectile4.setFireType(FireType.LIGHT_METEOR);
         projectile4.setDirection(Direction.RIGHT);
+        Projectile projectile5 = new Projectile();
+        projectile5.setFireType(FireType.LIGHT_METEOR);
+        projectile5.setDirection(Direction.RIGHT);
+        Projectile projectile6 = new Projectile();
+        projectile6.setFireType(FireType.LIGHT_METEOR);
+        projectile6.setDirection(Direction.RIGHT);
 
         projectiles2.add(projectile3);
         projectiles2.add(projectile4);
+        projectiles2.add(projectile5);
         meteorSwarm.projectiles = projectiles2;
+
+
+        System.out.println(meteorSwarm);
+        System.out.print("\n");
+
+        projectiles2.add(projectile6);
 
         System.out.println(meteorSwarm);
         System.out.print("\n");
@@ -185,15 +201,15 @@ public abstract class ViewAdventureCard {
         ViewCombatZone0 combatZone0 = new ViewCombatZone0();
         combatZone0.type = "CombatZone0";
         List<Projectile> projectiles3 = new ArrayList<>();
-        Projectile projectile5 = new Projectile();
-        projectile5.setFireType(FireType.HEAVY_FIRE);
-        projectile5.setDirection(Direction.UP);
-        Projectile projectile6 = new Projectile();
-        projectile6.setFireType(FireType.LIGHT_FIRE);
-        projectile6.setDirection(Direction.RIGHT);
+        Projectile projectile7 = new Projectile();
+        projectile7.setFireType(FireType.HEAVY_FIRE);
+        projectile7.setDirection(Direction.UP);
+        Projectile projectile8 = new Projectile();
+        projectile8.setFireType(FireType.LIGHT_FIRE);
+        projectile8.setDirection(Direction.RIGHT);
 
-        projectiles3.add(projectile5);
-        projectiles3.add(projectile6);
+        projectiles3.add(projectile7);
+        projectiles3.add(projectile8);
         combatZone0.projectiles = projectiles3;
 
         combatZone0.lostDays = 2;
@@ -226,15 +242,15 @@ public abstract class ViewAdventureCard {
         ViewCombatZone1 combatZone1 = new ViewCombatZone1();
         combatZone1.type = "CombatZone1";
         List<Projectile> projectiles4 = new ArrayList<>();
-        Projectile projectile7 = new Projectile();
-        projectile7.setFireType(FireType.HEAVY_FIRE);
-        projectile7.setDirection(Direction.UP);
-        Projectile projectile8 = new Projectile();
-        projectile8.setFireType(FireType.LIGHT_FIRE);
-        projectile8.setDirection(Direction.RIGHT);
+        Projectile projectile9 = new Projectile();
+        projectile9.setFireType(FireType.HEAVY_FIRE);
+        projectile9.setDirection(Direction.UP);
+        Projectile projectile10 = new Projectile();
+        projectile10.setFireType(FireType.LIGHT_FIRE);
+        projectile10.setDirection(Direction.RIGHT);
 
-        projectiles4.add(projectile7);
-        projectiles4.add(projectile8);
+        projectiles4.add(projectile9);
+        projectiles4.add(projectile10);
 
         combatZone1.projectiles = projectiles4;
         combatZone1.lostDays = 2;
@@ -242,6 +258,21 @@ public abstract class ViewAdventureCard {
 
         System.out.println(combatZone1);
         System.out.print("\n");
+
+        ClientGameModel.setInstance(new TUI());
+        ClientGameModel.getInstance().printCardsInLine(List.of(
+                slavers,
+                smugglers,
+                pirates,
+                stardust,
+                openSpace,
+                meteorSwarm,
+                planets,
+                combatZone0,
+                abandonedShip,
+                abandonedStation,
+                combatZone1
+        ));
     }
 
 }
