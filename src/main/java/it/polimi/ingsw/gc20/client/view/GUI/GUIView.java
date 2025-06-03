@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
@@ -49,7 +50,7 @@ public class GUIView extends ClientGameModel {
             URL resourceUrl = getClass().getResource(path);
 
             if (resourceUrl == null) {
-                System.err.println("ERRORE: File FXML non trovato: " + path);
+                System.err.println("ERROR: FXML file not found: " + path);
                 return null;
             }
 
@@ -119,6 +120,12 @@ public class GUIView extends ClientGameModel {
         }
 
         showScene("mainMenu");
+    }
+
+    @Override
+    public void setShip (String username, ViewShip ship) {
+        ships.put(username, ship);
+        reDrawShipMenu();
     }
 
     @Override

@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -19,6 +20,8 @@ public abstract class ShipController {
 
     private final int ROWS = 0;
     private final int COLS = 0;
+
+    private ViewShip ship;
 
     public enum ShipState {
         Building, Viewing
@@ -62,6 +65,15 @@ public abstract class ShipController {
 
     @FXML
     private void initialize() {
+        ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+
+        // Registrati come observer per i cambiamenti nella nave
+        if (ship != null) {
+            ship.addObserver(updatedShip -> {
+                Platform.runLater(() -> buildShipComponents(updatedShip));
+            });
+        }
+
         if (boardImageView != null && boardImageView.getImage() != null) {
             setupGridBounds();
         } else if (boardImageView != null) {
@@ -83,7 +95,10 @@ public abstract class ShipController {
                 currentPlayerOpt.ifPresent(this::updateStatisticBoard);
             }
         }
+
+        buildShipComponents(ship);
     }
+
 
     private void setupGridBounds() {
         Platform.runLater(() -> {
@@ -342,6 +357,21 @@ public abstract class ShipController {
             }
         }
         gridComponents.clear();
+    }
+
+    private void buildShipComponents(ViewShip ship) {
+        if (ship == null || componentsGrid == null) return;
+
+        clearAllComponents();
+
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                ViewComponent comp = ship.getComponent(row, col);
+                if (comp != null) {
+                    addComponent(comp, row, col);
+                }
+            }
+        }
     }
 
     private ImageView getImageViewAt(int row, int col){

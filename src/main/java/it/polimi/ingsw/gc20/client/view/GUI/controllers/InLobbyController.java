@@ -8,10 +8,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
-
-import java.util.List;
+import javafx.application.Platform;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class InLobbyController {
+
+    private ScheduledExecutorService scheduler;
 
     @FXML
     private Label lobbyTitleLabel;
@@ -45,6 +49,7 @@ public class InLobbyController {
     @FXML
     public void initialize() {
         initLobbyData(clientController.getCurrentLobby(), clientController.getUsername());
+        startPeriodicUpdates();
     }
 
     public void initLobbyData(ViewLobby lobby, String username) {
@@ -53,7 +58,7 @@ public class InLobbyController {
             lobbyTitleLabel.setText("Lobby: " + lobby.getID());
             currentUsername = username;
 
-            playerCountLabel.setText(String.format("%d/%d giocatori",
+            playerCountLabel.setText(String.format("%d/%d players",
                     lobby.getPlayersList().size(),
                     lobby.getMaxPlayers()));
 
@@ -64,7 +69,38 @@ public class InLobbyController {
 
             updateStartButtonState();
         } else {
-            lobbyTitleLabel.setText("Errore: Dati della lobby non disponibili");
+            lobbyTitleLabel.setText("Error: Lobby data not available");
+        }
+    }
+
+    private void startPeriodicUpdates() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
+
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            Platform.runLater(() -> {
+                if (currentLobby != null) {
+                    ViewLobby updatedLobby = clientController.getCurrentLobby();
+                    if (updatedLobby != null) {
+                        updatePlayerList(updatedLobby, currentUsername);
+
+                        // Aggiorna anche il contatore dei giocatori
+                        playerCountLabel.setText(String.format("%d/%d players",
+                                updatedLobby.getPlayersList().size(),
+                                updatedLobby.getMaxPlayers()));
+
+                        updateStartButtonState();
+                    }
+                }
+            });
+        }, 0, 3, TimeUnit.SECONDS);
+    }
+
+    private void stopPeriodicUpdates() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
         }
     }
 
@@ -73,10 +109,10 @@ public class InLobbyController {
         for (String player : lobby.getPlayersList()) {
             String displayName = player;
             if (player.equals(lobby.getOwner())) {
-                displayName += " (Proprietario)";
+                displayName += " (Owner)";
             }
             if (player.equals(username)) {
-                displayName += " (Tu)";
+                displayName += " (You)";
             }
             playersListView.getItems().add(displayName);
         }
@@ -88,10 +124,10 @@ public class InLobbyController {
 
         if (!canStart) {
             startGameButton.setStyle("-fx-background-color: #555555; -fx-text-fill: #aaaaaa;");
-            startGameButton.setText("IN ATTESA DI ALTRI GIOCATORI");
+            startGameButton.setText("WAITING FOR OTHER PLAYERS");
         } else {
             startGameButton.setStyle("-fx-background-color: #4a7eb3; -fx-text-fill: white;");
-            startGameButton.setText("AVVIA PARTITA");
+            startGameButton.setText("START GAME");
         }
     }
 
@@ -110,6 +146,7 @@ public class InLobbyController {
     @FXML
     public void onLeaveLobby() {
         try {
+            stopPeriodicUpdates();
             ClientGameModel.getInstance().getClient().leaveLobby(currentUsername);
             ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
@@ -122,6 +159,7 @@ public class InLobbyController {
         if (!isOwner) return;
 
         try {
+            stopPeriodicUpdates();
             ClientGameModel.getInstance().getClient().killLobby(currentUsername);
             ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
