@@ -123,12 +123,6 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void setShip (String username, ViewShip ship) {
-        ships.put(username, ship);
-        reDrawShipMenu();
-    }
-
-    @Override
     public void planetMenu(List<Planet> planets) {
 
     }
