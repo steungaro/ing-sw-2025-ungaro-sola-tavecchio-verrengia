@@ -50,20 +50,13 @@ public class Ship2Controller extends ShipController{
     @FXML private ImageView imageCell_4_5;
     @FXML private ImageView imageCell_4_6;
 
+    @FXML private ImageView imageBooked_0;
+    @FXML private ImageView imageBooked_1;
+
     private final int ROWS = 5;
     private final int COLS = 7;
 
-    private ViewComponent[] booked = new ViewComponent[2];
-
-    public void setBooked0(ViewComponent component) {
-        booked[0] = component;
-    }
-
-    public void setBooked1(ViewComponent component) {
-        booked[1] = component;
-    }
-
-    private ImageView getImageViewAt(int row, int col) {
+    protected ImageView getImageViewAt(int row, int col) {
         return switch (row) {
             case 0 -> switch (col) {
                 case 0 -> imageCell_0_0; case 1 -> imageCell_0_1; case 2 -> imageCell_0_2;
@@ -92,5 +85,13 @@ public class Ship2Controller extends ShipController{
             };
             default -> null;
         };
+    }
+
+    protected int getRows() {
+        return ROWS;
+    }
+
+    protected int getCols() {
+        return COLS;
     }
 }

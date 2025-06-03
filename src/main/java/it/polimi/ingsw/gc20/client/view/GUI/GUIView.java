@@ -123,6 +123,21 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
+    public void setShip (String username, ViewShip ship) {
+        ships.put(username, ship);
+        if (primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null &&
+                primaryStage.getScene().getRoot().getId() != null &&
+                (primaryStage.getScene().getRoot().getId().equals("ship0") || primaryStage.getScene().getRoot().getId().equals("ship2"))) {
+            // Get the controller of the current ship view
+            ShipController shipController = primaryStage.getScene().getRoot().getUserData() instanceof ShipController ?
+                    (ShipController) primaryStage.getScene().getRoot().getUserData() : null;
+            if (shipController != null) {
+                shipController.buildShipComponents(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()));
+            }
+        }
+    }
+
+    @Override
     public void planetMenu(List<Planet> planets) {
 
     }
