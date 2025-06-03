@@ -364,9 +364,12 @@ public class AssemblingState extends State {
     /**
      * this method is called to resume the game after has been paused
      */
-    public void resume(){
+    public void resume(String username){
         //check the assembled status of the players
         for (Player player : getController().getPlayers()) {
+            if (player.getUsername().equals(username)) {
+                rejoin(username);
+            }
             if (assembled.get(player)) {
                 NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
             } else {

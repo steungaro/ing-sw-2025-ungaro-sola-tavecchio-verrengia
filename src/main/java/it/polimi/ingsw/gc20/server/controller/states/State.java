@@ -144,7 +144,7 @@ public abstract class State{
     public void automaticAction() throws InvalidStateException {
         exception();
     }
-    public void resume() throws InvalidStateException {
+    public void resume(String username) throws InvalidStateException {
         exception();
     }
     public void killGame() throws InvalidStateException {

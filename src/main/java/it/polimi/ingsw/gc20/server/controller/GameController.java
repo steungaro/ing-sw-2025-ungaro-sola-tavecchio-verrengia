@@ -463,11 +463,10 @@ public class GameController implements GameControllerInterface {
                 NetworkService.getInstance().sendToClient(username, Ship.messageFromShip(username, getPlayerByID(username).getShip(), "reconnection"));
                 if (connectedPlayers.size() == 1) {
                     connectedPlayers.add(username);
-                    state.resume();
+                    state.resume(username);
                 } else {
                     connectedPlayers.add(username);
                 }
-                state.rejoin(username);
             } else {
                 pendingPlayers.add(username);
                 for (Player p:  getPlayers()){
@@ -480,7 +479,7 @@ public class GameController implements GameControllerInterface {
 
             if(connectedPlayers.size() == 1){
                 connectedPlayers.add(username);
-                state.resume();
+                state.resume(username);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error reconnecting player", e);

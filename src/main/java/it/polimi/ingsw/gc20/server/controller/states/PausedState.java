@@ -20,11 +20,11 @@ public class PausedState extends State {
         }
     }
 
-    public void resume() {
+    public void resume(String reconnected) {
         getController().setState(previousState);
         if (previousState.isConcurrent()){
             try {
-                previousState.resume();
+                previousState.resume(reconnected);
             } catch (InvalidStateException e) {
                 //ignore cannot happen
             }
