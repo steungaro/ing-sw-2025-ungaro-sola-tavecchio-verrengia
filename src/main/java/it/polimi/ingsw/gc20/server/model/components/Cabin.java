@@ -181,6 +181,10 @@ public class Cabin extends Component {
                         case RIGHT: col++; break;
                     }
 
+                    if (row < 0 || row >= table.length || col < 0 || col >= table[0].length) {
+                        continue; // Skip out-of-bounds indices
+                    }
+
                     Component comp = table[row][col].getComponent();
 
                     if (comp == null) {
