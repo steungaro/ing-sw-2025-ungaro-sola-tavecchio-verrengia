@@ -466,6 +466,7 @@ public class GameController implements GameControllerInterface {
                     state.resume(username);
                 } else {
                     connectedPlayers.add(username);
+                    state.resume(username);
                 }
             } else {
                 pendingPlayers.add(username);
