@@ -36,6 +36,8 @@ public record PileUpdateMessage(
         ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
         viewBoard.unviewedPile = unviewedSize;
         viewBoard.viewedPile = viewed;
-        ClientGameModel.getInstance().setCurrentMenuState(ClientGameModel.getInstance().getCurrentMenuState());
+         if (ClientGameModel.getInstance().getCurrentMenuState() != null) {
+             ClientGameModel.getInstance().setCurrentMenuState(ClientGameModel.getInstance().getCurrentMenuState());
+         }
     }
 }
