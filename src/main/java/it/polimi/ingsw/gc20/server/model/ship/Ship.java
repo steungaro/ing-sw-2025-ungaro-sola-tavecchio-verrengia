@@ -56,7 +56,7 @@ public abstract class Ship {
     public void addComponent(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            if (!this.isNormal() || !c.isLifeSupport()){
+            if (this.isNormal() || !c.isLifeSupport()){
                 c.updateParameter(this, 1);
             }
             c.setTile(table[row][col]);
