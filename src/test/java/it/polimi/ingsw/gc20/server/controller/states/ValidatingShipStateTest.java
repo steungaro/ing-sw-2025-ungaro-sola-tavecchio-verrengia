@@ -149,7 +149,7 @@ public class ValidatingShipStateTest {
     }
 
     @Test
-    void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException {
+    void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException, InvalidTileException {
         for (Player player : controller.getModel().getInGamePlayers()) {
             try {
                 // Validate the ship of the player

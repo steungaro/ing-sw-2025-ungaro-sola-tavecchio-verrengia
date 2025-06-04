@@ -166,7 +166,7 @@ public class CombatZone0Test {
     }
 
     @Test
-    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException {
+    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, ComponentNotFoundException {
         assertEquals(4, controller.getPlayerByID("player1").getPosition());
         List<Pair<Integer, Integer>> engines = new ArrayList<>();
         List<Pair<Integer, Integer>> battery = new ArrayList<>();

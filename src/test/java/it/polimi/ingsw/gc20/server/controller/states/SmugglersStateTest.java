@@ -166,7 +166,7 @@ class SmugglersStateTest {
     }
 
     @Test
-    void testSmugglersState() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, InvalidShipException, DieNotRolledException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException {
+    void testSmugglersState() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, InvalidShipException, DieNotRolledException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         assertEquals("SmugglersState", state.toString());
         assertEquals("player1", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);

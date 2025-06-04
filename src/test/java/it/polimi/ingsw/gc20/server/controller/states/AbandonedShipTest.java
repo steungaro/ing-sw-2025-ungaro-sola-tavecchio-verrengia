@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.exceptions.ComponentNotFoundException;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
@@ -159,7 +160,7 @@ public class AbandonedShipTest {
             state.loseCrew(controller.getPlayerByID("player2"), cabins);
             state.endMove(controller.getPlayerByID("player2"));
 
-        } catch (InvalidTurnException | InvalidStateException | EmptyCabinException e) {
+        } catch (InvalidTurnException | InvalidStateException | EmptyCabinException | ComponentNotFoundException e) {
             fail(e);
         }
         state.toString();

@@ -54,7 +54,7 @@ public class AssemblingStateTest {
         for (Player player : controller.getModel().getInGamePlayers()) {
             assert assembled.get(player) == false;
             assert componentsInHand.get(player) == null;
-            assert playersPhase.get(player) == StatePhase.TAKE_COMPONENT;
+            assert playersPhase.get(player) == StatePhase.ASSEMBLING_PHASE;
         }
 
         assertNull(deckPeeked.get(1));
