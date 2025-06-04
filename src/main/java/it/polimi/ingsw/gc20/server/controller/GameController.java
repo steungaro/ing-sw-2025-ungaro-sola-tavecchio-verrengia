@@ -139,23 +139,6 @@ public class GameController implements GameControllerInterface {
     }
 
     /**
-     * Shoots an enemy (pirates, slavers, smugglers)
-     * @param username is the username of the player that wants to shoot the enemy
-     * @param cannons is the list of coordinates of the cannons that the player wants to use to shoot?
-     * @param batteries is the list of coordinates of the batteries that the player wants to use to shoot?
-     */
-    @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
-        try{
-            state.shootEnemy(getPlayerByID(username), cannons, batteries);
-        } catch (Exception e) {
-            //notify the player of the error
-            NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error shooting enemy: " + e.getMessage()));
-            logger.log(Level.SEVERE, "Error shooting enemy", e);
-        }
-    }
-
-    /**
      * Loads cargo onto the player's ship
      * @param username is the username of the player that wants to load the cargo
      * @param loaded the cargo that the player wants to load

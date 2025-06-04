@@ -100,14 +100,13 @@ public class PiratesState extends PlayingState {
      * @param player the player that is shooting the enemy
      * @param cannons the cannons that the player is using
      * @param batteries the batteries that the player is using
-     * @return 1 if the player has defeated the enemy, 0 if the player has to pass the turn, -1 if the player has lost
      * @throws InvalidStateException if the player is not in the right phase
      * @throws InvalidTurnException if the player is not the current player
      * @throws InvalidCannonException if the player is using an invalid cannon
      * @throws EnergyException if the player doesn't have enough energy to shoot
      */
     @Override
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -138,7 +137,6 @@ public class PiratesState extends PlayingState {
             }
             getController().getActiveCard().playCard();
             phase = StatePhase.ACCEPT_PHASE;
-            return 1;
         } else if (firePower == this.firePower) {
             //if the player has drawn with the pirates, he has to pass the turn
             nextPlayer();
@@ -161,7 +159,6 @@ public class PiratesState extends PlayingState {
                     }
                 }
             }
-            return 0;
         } else {
             //if the player has lost against the pirates, he has to roll the dice and get shot
             phase = StatePhase.ROLL_DICE_PHASE;
@@ -173,7 +170,6 @@ public class PiratesState extends PlayingState {
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
                 }
             }
-            return -1;
         }
     }
 

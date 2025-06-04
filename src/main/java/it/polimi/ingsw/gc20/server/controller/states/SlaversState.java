@@ -61,14 +61,13 @@ public class SlaversState extends PlayingState {
      * @param player the player that is shooting
      * @param cannons the cannons selected by the player
      * @param batteries the batteries selected by the player
-     * @return 1 if the player defeated the card, 0 if the player didn't defeat the card and -1 if the player lost
      * @throws InvalidStateException if the game is not in the cannon phase
      * @throws InvalidTurnException if it's not the player's turn
      * @throws InvalidCannonException if the cannon is not valid
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -95,7 +94,6 @@ public class SlaversState extends PlayingState {
                 }
             }
             phase = StatePhase.ACCEPT_PHASE;
-            return 1;
         } else if (firePower == this.firePower) {
             //draw, go to the next player
             nextPlayer();
@@ -118,7 +116,6 @@ public class SlaversState extends PlayingState {
                     }
                 }
             }
-            return 0;
         } else {
             //lost, the player has to lose crew
             for (String username : getController().getInGameConnectedPlayers()) {
@@ -129,7 +126,6 @@ public class SlaversState extends PlayingState {
                 }
             }
             phase = StatePhase.LOSE_CREW_PHASE;
-            return -1;
         }
     }
 
