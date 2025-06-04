@@ -73,8 +73,7 @@ public class ValidatingShipState extends State {
                     phase = StatePhase.DRAW_CARD_PHASE;
                     getController().setState(new PreDrawState(getController()));
                 } else {
-                    //notify all the players that the ship is valid and waiting for other players (validate-menu on client side checks if ships are valid and displays properly)
-                    NetworkService.getInstance().sendToClient(player.getUsername(), new ValidateShipPhase());
+                    NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
             } else {
                 if (allShipsValidated()) {
@@ -84,10 +83,13 @@ public class ValidatingShipState extends State {
                     }
                 } else {
                     //notify all the players that the ship is valid and waiting for other players (validate-menu on client side checks if ships are valid and displays properly)
-                    NetworkService.getInstance().sendToClient(player.getUsername(), new ValidateShipPhase());
+                    NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
             }
             return true;
+        } else {
+            //if the ship is not valid, he cannot add the alien
+            NetworkService.getInstance().sendToClient(player.getUsername(), new ValidateShipPhase());
         }
         return false;
     }
