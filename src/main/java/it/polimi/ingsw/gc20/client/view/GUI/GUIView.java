@@ -42,6 +42,11 @@ public class GUIView extends ClientGameModel {
     public void initGUI(Stage stage) {
         primaryStage = stage;
         showScene("welcome");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Shutting down GUIView...");
+            ClientGameModel.getInstance().shutdown();
+        }));
+        stage.setOnCloseRequest(_ -> ClientGameModel.getInstance().shutdown());
     }
 
     public FXMLLoader showScene(String fileName) {
@@ -57,7 +62,7 @@ public class GUIView extends ClientGameModel {
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
 
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(root, 700, 500);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Galaxy Trucker");
             // Set the id

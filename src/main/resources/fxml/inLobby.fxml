@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController">
+<VBox alignment="CENTER" prefHeight="451.0" prefWidth="600.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
@@ -20,42 +20,44 @@
         </font>
     </Label>
 
-    <Label fx:id="waitingMessageLabel" text="Waiting for the owner to start the game" textFill="#aaaaaa">
+    <Label fx:id="waitingMessageLabel" prefHeight="17.0" prefWidth="246.0" text="Waiting for the owner to start the game" textFill="#aaaaaa">
         <font>
             <Font size="14.0" />
         </font>
     </Label>
 
-    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 15;">
-        <Label text="Players" textFill="WHITE">
-            <font>
-                <Font name="System Bold" size="16.0" />
-            </font>
-        </Label>
+    <VBox alignment="CENTER" prefHeight="297.0" prefWidth="560.0" spacing="10" style="-fx-background-color: #333344; -fx-padding: 15; -fx-background-radius: 10;">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+         <children>
+              <Label text="Players" textFill="WHITE">
+                  <font>
+                      <Font name="System Bold" size="16.0" />
+                  </font>
+              </Label>
+      
+              <Label fx:id="playerCountLabel" text="(1/4)" textFill="#cccccc">
+                  <font>
+                      <Font size="14.0" />
+                  </font>
+              </Label>
+         </children>
+      </HBox>
 
-        <Label fx:id="playerCountLabel" text="1/4 players" textFill="#cccccc">
-            <font>
-                <Font size="14.0" />
-            </font>
-        </Label>
-
-        <ListView fx:id="playersListView" prefHeight="180" prefWidth="450" VBox.vgrow="ALWAYS">
+        <ListView fx:id="playersListView" minHeight="100.0" VBox.vgrow="ALWAYS">
             <style>
                 -fx-background-color: #4a5363;
-                -fx-control-inner-background: #333344;
-                -fx-text-fill: white;
-            </style>
+                -fx-control-inner-background: #333344;-fx-text-fill: white; -fx-background-radius: 10;</style>
         </ListView>
     </VBox>
 
     <VBox fx:id="ownerControlsBox" alignment="CENTER" spacing="10" visible="false">
-        <Label text="CONTROLLI PROPRIETARIO" textFill="#88ccff">
+        <Label text="Owner's settings" textFill="#88ccff">
             <font>
                 <Font size="14.0" />
             </font>
         </Label>
 
-        <Button fx:id="startGameButton" onAction="#onStartGame" prefHeight="50" prefWidth="300" text="AVVIA PARTITA">
+        <Button fx:id="startGameButton" onAction="#onStartGame" prefHeight="50" prefWidth="300">
             <font>
                 <Font size="18.0" />
             </font>
@@ -65,7 +67,7 @@
             </style>
         </Button>
 
-        <Button fx:id="killLobbyButton" onAction="#onKillLobby" prefHeight="40" prefWidth="200" text="ELIMINA LOBBY">
+        <Button fx:id="killLobbyButton" onAction="#onKillLobby" prefHeight="40" prefWidth="200" text="Kill Lobby">
             <font>
                 <Font size="14.0" />
             </font>
@@ -83,8 +85,7 @@
             </font>
             <style>
                 -fx-background-color: #663333;
-                -fx-text-fill: white;
-            </style>
+                -fx-text-fill: white;-fx-background-radius: 5;</style>
         </Button>
     </HBox>
 </VBox>

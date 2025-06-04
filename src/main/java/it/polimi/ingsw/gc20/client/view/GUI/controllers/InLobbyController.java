@@ -58,7 +58,7 @@ public class InLobbyController {
             lobbyTitleLabel.setText("Lobby: " + lobby.getID());
             currentUsername = username;
 
-            playerCountLabel.setText(String.format("%d/%d players",
+            playerCountLabel.setText(String.format("%d/%d",
                     lobby.getPlayersList().size(),
                     lobby.getMaxPlayers()));
 
@@ -66,6 +66,11 @@ public class InLobbyController {
 
             isOwner = username.equals(lobby.getOwner());
             ownerControlsBox.setVisible(isOwner);
+            leaveLobbyButton.setVisible(!isOwner);
+            ownerControlsBox.setManaged(isOwner);
+            leaveLobbyButton.setManaged(!isOwner);
+            ownerControlsBox.setDisable(!isOwner);
+            killLobbyButton.setDisable(!isOwner);
 
             updateStartButtonState();
         } else {
@@ -87,7 +92,7 @@ public class InLobbyController {
                         updatePlayerList(updatedLobby, currentUsername);
 
                         // Aggiorna anche il contatore dei giocatori
-                        playerCountLabel.setText(String.format("%d/%d players",
+                        playerCountLabel.setText(String.format("%d/%d",
                                 updatedLobby.getPlayersList().size(),
                                 updatedLobby.getMaxPlayers()));
 
@@ -124,10 +129,10 @@ public class InLobbyController {
 
         if (!canStart) {
             startGameButton.setStyle("-fx-background-color: #555555; -fx-text-fill: #aaaaaa;");
-            startGameButton.setText("WAITING FOR OTHER PLAYERS");
+            startGameButton.setText("Wait for other players...");
         } else {
             startGameButton.setStyle("-fx-background-color: #4a7eb3; -fx-text-fill: white;");
-            startGameButton.setText("START GAME");
+            startGameButton.setText("Start Game");
         }
     }
 

@@ -47,6 +47,7 @@
                 <style>
                     -fx-background-color: #4a5363;
                     -fx-text-fill: white;
+                    -fx-prompt-text-fill: #aaaaaa;
                 </style>
             </ComboBox>
         </HBox>
@@ -61,6 +62,7 @@
                 <style>
                     -fx-background-color: #4a5363;
                     -fx-text-fill: white;
+                    -fx-prompt-text-fill: #aaaaaa;
                 </style>
             </ComboBox>
         </HBox>
