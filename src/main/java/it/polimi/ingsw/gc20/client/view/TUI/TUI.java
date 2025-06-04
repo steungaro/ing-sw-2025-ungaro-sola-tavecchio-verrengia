@@ -24,6 +24,7 @@ public class TUI extends ClientGameModel {
 
     @Override
     public void notifyDisconnection() throws RemoteException {
+        client.stop();
         System.out.println("\033[31mDisconnected from server.\033[0m");
     }
 

@@ -78,8 +78,8 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
         }
         // Case 3: if the username is already in use and connected
         else {
-            // Notify the client that the username is already taken
-            NetworkService.getInstance().sendToClient(username, new LoginFailedMessage(username));
+            // Notify the client that the username is already taken through a direct message (not going through the network service)
+            view.updateView(new LoginFailedMessage(username));
             LOGGER.warning("Username already taken");
             return false;
         }

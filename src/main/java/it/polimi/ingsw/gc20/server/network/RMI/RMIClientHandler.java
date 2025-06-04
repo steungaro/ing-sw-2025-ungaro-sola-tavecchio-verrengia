@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
@@ -45,6 +46,9 @@ public class RMIClientHandler implements ClientHandler {
         try {
             //call the updateView method of the view interface
             view.updateView(message);
+        } catch (ConnectException c) {
+            LOGGER.info("Connection refused for user: " + username + ". The client might have disconnected on its own.");
+            disconnect();
         } catch (RemoteException e) {
             LOGGER.warning("Error while sending the message: " + e.getMessage());
             disconnect();
@@ -58,16 +62,20 @@ public class RMIClientHandler implements ClientHandler {
         if (connected) {
             if (view != null) {
                 try {
-                    view.notifyDisconnection();
-                    connected = false;
                     GameController gameController = MatchController.getInstance().getGameControllerForPlayer(username);
                     if (gameController != null) {
                         gameController.disconnectPlayer(username);
-                    } else {
+                    } else if (MatchController.getInstance().getPlayersInLobbies().contains(username)) {
                         MatchController.getInstance().leaveLobby(username);
                     }
+                    connected = false;
+                    view.notifyDisconnection();
+                } catch (ConnectException c) {
+                    LOGGER.info("Connection refused for user: " + username + ". The client might have disconnected on its own.");
+                    connected = false;
                 } catch (RemoteException e) {
                     LOGGER.warning("Error while disconnecting the client: " + e.getMessage());
+                    connected = false;
                 }
             }
         } else return;
