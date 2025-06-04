@@ -17,12 +17,18 @@ public class MainMenu implements MenuState{
     @Override
     public void displayMenu() {
         System.out.println("Welcome to the game! These are the active lobbies:");
-        System.out.println      ("──────────────────────────────────────────────────");
-        ClientGameModel.getInstance().getLobbyList().forEach(lobby -> System.out.println(lobby.toString()));
+        System.out.println("Your username: " + username);
+        int lobbyMaxLength = ClientGameModel.getInstance().getLobbyList().stream()
+                .map(ViewLobby::toString)
+                .mapToInt(String::length)
+                .max()
+                .orElse(50);
+        System.out.println      ("╭" + "─".repeat(lobbyMaxLength + 2) + "╮");
+        ClientGameModel.getInstance().getLobbyList().forEach(lobby -> {System.out.println("│ " + lobby.toString() + " │");});
         if (ClientGameModel.getInstance().getLobbyList().isEmpty()) {
-            System.out.println  ("              (No lobbies available)              ");
+            System.out.println  ("│               (No lobbies available)               │");
         }
-        System.out.println      ("──────────────────────────────────────────────────");
+        System.out.println      ("╰" + "─".repeat(lobbyMaxLength + 2) + "╯");
         System.out.println("1. Join a lobby");
         System.out.println("2. Create a new lobby");
         System.out.println("3. Refresh lobby list");
@@ -43,9 +49,19 @@ public class MainMenu implements MenuState{
             case "1":
                 String lobbyName;
                 do {
-                    System.out.println("Type the name of the lobby you want to join:");
+                    System.out.println("Type the name of the lobby you want to join or [b] to go back:");
                     System.out.print(" > ");
                     lobbyName = scanner.nextLine().trim();
+                    if (lobbyName.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (lobbyName.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     if (lobbyName.isEmpty() || !ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobbyName)) {
                         System.out.println("Lobby not found. Please try again.");
                     } else {
@@ -58,9 +74,19 @@ public class MainMenu implements MenuState{
             case "2":
                 String lobby;
                 do {
-                    System.out.println("Type the name of the lobby you want to create:");
+                    System.out.println("Type the name of the lobby you want to create or [b] to go back:");
                     System.out.print(" > ");
                     lobby = scanner.nextLine().trim();
+                    if (lobby.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (lobby.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     if (lobby.isEmpty() || ClientGameModel.getInstance().getLobbyList().stream().map(ViewLobby::getID).toList().contains(lobby)) {
                         System.out.println("Lobby name already in use. Please try again.");
                     } else {
@@ -74,6 +100,16 @@ public class MainMenu implements MenuState{
                     System.out.println("Type the number of players that can play [2-4]:");
                     System.out.print(" > ");
                     String input = scanner.nextLine().trim();
+                    if (input.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (input.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         numPlayers = Integer.parseInt(input);
                     } catch (NumberFormatException e) {
@@ -87,6 +123,16 @@ public class MainMenu implements MenuState{
                     System.out.println("Type the level of the game [L/2]:");
                     System.out.print(" > ");
                     String input = scanner.nextLine().trim();
+                    if (input.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (input.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         level = Objects.equals(input, "L") ? 0 : Integer.parseInt(input);
                     } catch (NumberFormatException e) {

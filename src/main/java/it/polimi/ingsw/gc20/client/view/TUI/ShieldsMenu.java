@@ -69,11 +69,17 @@ public class ShieldsMenu implements MenuState {
                 int xs, ys;
                 ClientGameModel.getInstance().printShip(username);
                 do {
-                    System.out.println("Type the coordinates of the shield you want to activate (row col):");
+                    System.out.println("Type the coordinates of the shield you want to activate (row col) or [b] to go back:");
                     System.out.print(" > ");
                     String input = scanner.nextLine().trim();
                     if (input.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
+                    if (input.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
                         return;
                     }
                     String[] inputCoordinates = input.split(" ");

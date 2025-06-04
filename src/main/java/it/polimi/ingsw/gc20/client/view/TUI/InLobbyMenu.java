@@ -27,9 +27,9 @@ public class InLobbyMenu implements MenuState {
     @Override
     public void displayMenu() {
         System.out.println("\u001B[1mLobby menu\u001B[22m");
-        System.out.println("─".repeat(ClientGameModel.getInstance().getCurrentLobby().toString().length() + 15));
-        System.out.println("\u001B[1mCurrent lobby: \u001B[22m" + ClientGameModel.getInstance().getCurrentLobby());
-        System.out.println("─".repeat(ClientGameModel.getInstance().getCurrentLobby().toString().length() + 15));
+        System.out.println("╭" + "─".repeat(ClientGameModel.getInstance().getCurrentLobby().toString().length() + 17) + "╮");
+        System.out.println("│ \u001B[1mCurrent lobby: \u001B[22m" + ClientGameModel.getInstance().getCurrentLobby() + " │");
+        System.out.println("╰" + "─".repeat(ClientGameModel.getInstance().getCurrentLobby().toString().length() + 17) + "╯");
         if(ClientGameModel.getInstance().getCurrentLobby().getOwner().equals(username)){
             System.out.println("1. Start game");
             System.out.println("2. Kill lobby");

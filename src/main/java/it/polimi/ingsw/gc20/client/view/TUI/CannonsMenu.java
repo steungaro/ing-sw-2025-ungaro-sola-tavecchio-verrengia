@@ -75,10 +75,16 @@ public class CannonsMenu implements MenuState {
                 boolean inputOk = true;
                 ClientGameModel.getInstance().printShip(username);
                 do {
-                    System.out.println("Type the coordinates of the cannons you want to activate separated by blank spaces (for example, row1 col1 row2 col2):");
+                    System.out.println("Type the coordinates of the cannons you want to activate separated by blank spaces (for example, row1 col1 row2 col2) or [b] to go back:");
                     System.out.print(" > ");
                     cannons.clear();
                     String cannonInput = scanner.nextLine().trim();
+                    if (cannonInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
                     if (cannonInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
                         return;
@@ -104,10 +110,16 @@ public class CannonsMenu implements MenuState {
                     }
                 } while (!inputOk);
                 do {
-                    System.out.println("Type the coordinates of the batteries you want to activate separated by blank spaces (for example, row1 col1 row2 col2):");
+                    System.out.println("Type the coordinates of the batteries you want to activate separated by blank spaces (for example, row1 col1 row2 col2) or [b] to go back:");
                     System.out.print(" > ");
                     batteries.clear();
                     String batteryInput = scanner.nextLine().trim();
+                    if (batteryInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
                     if (batteryInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
                         return;

@@ -114,11 +114,17 @@ public class BuildingMenu implements MenuState{
                 case "1":
                         int index;
                     do {
-                        System.out.println("Type the index of the covered component you want to take: (0 to " + (ClientGameModel.getInstance().getBoard().unviewedPile - 1) + ")");
+                        System.out.println("Type the index of the covered component you want to take (0 to " + (ClientGameModel.getInstance().getBoard().unviewedPile - 1) + ") or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the component to take
                         // Check if the index is valid
                         String input = scanner.nextLine().trim();
+                        if (input.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
                         try {
                             index = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
@@ -131,11 +137,18 @@ public class BuildingMenu implements MenuState{
                 case "2":
                         int index1;
                     do {
-                        System.out.println("Type the index of the uncovered component you want to take: (0 to " + (ClientGameModel.getInstance().getBoard().viewedPile.size() - 1) + ")");
+                        System.out.println("Type the index of the uncovered component you want to take (0 to " + (ClientGameModel.getInstance().getBoard().viewedPile.size() - 1) + ") or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the component to take
                         try {
-                            index1 = Integer.parseInt(scanner.nextLine().trim());
+                            String input = scanner.nextLine().trim();
+                            if (input.equals("b")) {
+                                TUI.clearConsole();
+                                displayMenu();
+                                ClientGameModel.getInstance().setFree();
+                                return;
+                            }
+                            index1 = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
                             System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
                             index1 = -1;
@@ -146,11 +159,18 @@ public class BuildingMenu implements MenuState{
                 case "3":
                     int index3;
                     do {
-                        System.out.println("Type the index of the board where you want to start the game: (1 to 4)");
+                        System.out.println("Type the index of the board where you want to start the game (1 to 4) or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the board to take
                         try {
-                            index3 = Integer.parseInt(scanner.nextLine().trim());
+                            String input = scanner.nextLine().trim();
+                            if (input.equals("b")) {
+                                TUI.clearConsole();
+                                displayMenu();
+                                ClientGameModel.getInstance().setFree();
+                                return;
+                            }
+                            index3 = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
                             index3 = -1;
                             System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
@@ -161,11 +181,18 @@ public class BuildingMenu implements MenuState{
                 case "4":
                     int index2;
                     do {
-                        System.out.println("Type the index of the booked component you want to take: (0 to 1)");
+                        System.out.println("Type the index of the booked component you want to take (0 to 1) or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the component to take
                         try {
-                            index2 = Integer.parseInt(scanner.nextLine().trim());
+                            String input = scanner.nextLine().trim();
+                            if (input.equals("b")) {
+                                TUI.clearConsole();
+                                displayMenu();
+                                ClientGameModel.getInstance().setFree();
+                                return;
+                            }
+                            index2 = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
                             index2 = -1;
                             System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
@@ -179,11 +206,18 @@ public class BuildingMenu implements MenuState{
                 case "6":
                     int index4;
                     do {
-                        System.out.println("Type the index of the deck you want to peek: (1 to 3)");
+                        System.out.println("Type the index of the deck you want to peek (1 to 3) or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the deck to peek
                         try {
-                            index4 = Integer.parseInt(scanner.nextLine().trim());
+                            String input = scanner.nextLine().trim();
+                            if (input.equals("b")) {
+                                TUI.clearConsole();
+                                displayMenu();
+                                ClientGameModel.getInstance().setFree();
+                                return;
+                            }
+                            index4 = Integer.parseInt(input);
                         } catch (NumberFormatException e) {
                             index4 = -1;
                             System.out.println("\u001B[31mInvalid input. Please enter a valid index.\u001B[0m");
@@ -214,10 +248,16 @@ public class BuildingMenu implements MenuState{
                     int row = 0;
                     int col = 0;
                     do {
-                        System.out.println("Type the coordinates of the component you want to add (row col):");
+                        System.out.println("Type the coordinates of where you want to place your component (row col) or [b] to go back:");
                         System.out.print(" > ");
                         // Read the coordinates of the component to add
                         String coordinates = scanner.nextLine().trim();
+                        if (coordinates.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
                         if (coordinates.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
                             return;

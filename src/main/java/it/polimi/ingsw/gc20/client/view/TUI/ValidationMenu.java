@@ -37,6 +37,7 @@ public class ValidationMenu implements MenuState{
             System.out.println("Ship is not valid");
             System.out.println("1. Remove a component from the ship");
         }
+        System.out.println("v. Viewing game options");
         System.out.print(" > ");
     }
 
@@ -66,11 +67,19 @@ public class ValidationMenu implements MenuState{
     public void handleInput(String choice) throws RemoteException {
         ClientGameModel.getInstance().setBusy();
         if (ClientGameModel.getInstance().getShip(username).isValid()){
-            // If the ship is already valid, wait for other players
-            System.out.println("\u001B[32mShip is already valid! Wait for other players before going to the next phase.\u001B[0m");
-            System.out.print(" > ");
-            ClientGameModel.getInstance().setFree();
-            return;
+            if (choice.equalsIgnoreCase("v")) {
+                TUI.viewOptionsMenu();
+                ClientGameModel.getInstance().setFree();
+                return;
+            } else if (choice.equalsIgnoreCase("q")) {
+                ClientGameModel.getInstance().shutdown();
+                return;
+            } else {
+                System.out.println("\u001B[33mInvalid input. Please try again.\u001B[0m");
+                System.out.print(" > ");
+                ClientGameModel.getInstance().setFree();
+                return;
+            }
         }
         // Handle user input from the validation menu
         switch (choice) {
@@ -78,11 +87,17 @@ public class ValidationMenu implements MenuState{
                 // Remove a component from the ship
                 int row, col;
                 do {
-                    System.out.println("Type the coordinates of the component you want to remove (row col):");
+                    System.out.println("Type the coordinates of the component you want to remove (row col) or [b] to go back:");
                     System.out.print(" > ");
                     String componentName = scanner.nextLine().trim();
                     if (componentName.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
+                    if (componentName.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
                         return;
                     }
                     try {

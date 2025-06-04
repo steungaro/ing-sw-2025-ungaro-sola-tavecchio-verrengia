@@ -75,11 +75,17 @@ public class PlanetMenu implements MenuState{
                 }
                 int planetIndex;
                 do {
-                    System.out.println("Type the index of the planet you want to land on:");
+                    System.out.println("Type the index of the planet you want to land on (1 to " + planets.size() + "), or [b] to go back:");
                     System.out.print(" > ");
                     String planetInput = scanner.nextLine().trim();
                     if (planetInput.equals("q")) {
                         ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
+                    if (planetInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
                         return;
                     }
                     try {

@@ -73,11 +73,17 @@ public class PopulateShipMenu implements MenuState{
                     ClientGameModel.getInstance().printShip(username);
                     do {
                         // Add alien to a cabin
-                        System.out.println("Type the coordinates of the cabin you want to add the alien to (row col):");
+                        System.out.println("Type the coordinates of the cabin you want to add the alien to (row col) or [b] to go back:");
                         System.out.print(" > ");
                         String componentName = scanner.nextLine().trim();
                         if (componentName.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
+                        if (componentName.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
                             return;
                         }
                         try {
@@ -97,6 +103,12 @@ public class PopulateShipMenu implements MenuState{
                         String alienColor = scanner.nextLine().trim();
                         if (alienColor.equals("q")) {
                             ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
+                        if (alienColor.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
                             return;
                         }
                         try {

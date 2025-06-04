@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 
 import java.rmi.RemoteException;
@@ -40,6 +41,9 @@ public class KeepPlayingMenu implements MenuState{
     public void handleInput(String choice) throws RemoteException {
         if (choice.equalsIgnoreCase("give up")) {
             ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
+        }
+        if (choice.equalsIgnoreCase("q")) {
+            ClientGameModel.getInstance().shutdown();
         }
     }
 

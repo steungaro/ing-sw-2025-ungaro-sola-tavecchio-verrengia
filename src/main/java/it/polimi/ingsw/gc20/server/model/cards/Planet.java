@@ -60,7 +60,7 @@ public class Planet implements Serializable {
         for (CargoColor color : reward) {
             sb.append(" ").append(color);
         }
-        sb.append(" Available: ").append(available);
+        sb.append(available ? " (\u001B[32mavailable\u001B[0m)" : " (\u001B[31mnot available\u001B[0m)");
         if (player != null) {
             sb.append(" Player: ").append(player.getUsername());
         }

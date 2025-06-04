@@ -68,9 +68,19 @@ public class CargoMenu implements MenuState{
                 int y;
                 ClientGameModel.getInstance().printShip(username);
                 do {
-                    System.out.println("Type the coordinates of the cargo you want to lose (row col):");
+                    System.out.println("Type the coordinates of the cargo you want to lose (row col) or [b] to go back:");
                     System.out.print(" > ");
                     String cargoInput = scanner.nextLine().trim();
+                    if (cargoInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (cargoInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         x = Integer.parseInt(cargoInput.split(" ")[0]) - 5;
                         y = Integer.parseInt(cargoInput.split(" ")[1]) - (ClientGameModel.getInstance().getShip(username).isLearner ? 5 : 4);
@@ -84,9 +94,19 @@ public class CargoMenu implements MenuState{
 
                 CargoColor cargoColor;
                 do {
-                    System.out.println("Type the color of the cargo you want to lose (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                    System.out.println("Type the color of the cargo you want to lose (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m) or [b] to go back:");
                     System.out.print(" > ");
                     String cargoColorInput = scanner.nextLine().trim();
+                    if (cargoColorInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (cargoColorInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         cargoColor = CargoColor.valueOf(cargoColorInput.toUpperCase());
                     } catch (IllegalArgumentException e) {
@@ -101,9 +121,19 @@ public class CargoMenu implements MenuState{
                 int moveY;
                 ClientGameModel.getInstance().printShip(username);
                 do {
-                    System.out.println("Type the coordinates of the cargo you want to move from (row col):");
+                    System.out.println("Type the coordinates of the cargo you want to move from (row col) or [b] to go back:");
                     System.out.print(" > ");
                     String moveInput = scanner.nextLine().trim();
+                    if (moveInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (moveInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
                         moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
@@ -117,9 +147,19 @@ public class CargoMenu implements MenuState{
                 int moveToX;
                 int moveToY;
                 do {
-                    System.out.println("Type the coordinates of the cargo you want to move to (row col):");
+                    System.out.println("Type the coordinates of the cargo you want to move to (row col) or [b] to go back:");
                     System.out.print(" > ");
                     String moveToInput = scanner.nextLine().trim();
+                    if (moveToInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (moveToInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
                         moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
@@ -132,9 +172,19 @@ public class CargoMenu implements MenuState{
                 Pair<Integer, Integer> moveToCoordinates = new Pair<>(moveToX, moveToY);
                 CargoColor moveCargoColor;
                 do {
-                    System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                    System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m) or [b] to go back:");
                     System.out.print(" > ");
                     String moveCargoColorInput = scanner.nextLine().trim();
+                    if (moveCargoColorInput.equals("b")) {
+                        TUI.clearConsole();
+                        displayMenu();
+                        ClientGameModel.getInstance().setFree();
+                        return;
+                    }
+                    if (moveCargoColorInput.equals("q")) {
+                        ClientGameModel.getInstance().shutdown();
+                        return;
+                    }
                     try {
                         moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
                     } catch (IllegalArgumentException e) {
@@ -152,9 +202,19 @@ public class CargoMenu implements MenuState{
                     int loadY;
                     ClientGameModel.getInstance().printShip(username);
                     do {
-                        System.out.println("Type the coordinates of the cargo hold you want to load to (row col):");
+                        System.out.println("Type the coordinates of the cargo hold you want to load to (row col) or [b] to go back:");
                         System.out.print(" > ");
                         String loadInput = scanner.nextLine().trim();
+                        if (loadInput.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
+                        if (loadInput.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
                         try {
                             loadX = Integer.parseInt(loadInput.split(" ")[0]) - 5;
                             loadY = Integer.parseInt(loadInput.split(" ")[1]) - 4;
@@ -167,9 +227,19 @@ public class CargoMenu implements MenuState{
                     Pair<Integer, Integer> loadCoordinates = new Pair<>(loadX, loadY);
                     CargoColor loadCargoColor;
                     do {
-                        System.out.println("Type the color of the cargo you want to load (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m):");
+                        System.out.println("Type the color of the cargo you want to load (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m) or [b] to go back:");
                         System.out.print(" > ");
                         String loadCargoColorInput = scanner.nextLine().trim();
+                        if (loadCargoColorInput.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
+                        if (loadCargoColorInput.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
                         try {
                             loadCargoColor = CargoColor.valueOf(loadCargoColorInput.toUpperCase());
                         } catch (IllegalArgumentException e) {
