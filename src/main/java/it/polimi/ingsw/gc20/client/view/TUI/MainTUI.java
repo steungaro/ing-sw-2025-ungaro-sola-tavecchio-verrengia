@@ -21,7 +21,6 @@ public class MainTUI {
                 // Start the TUI
                 tui.init();
                 tui.initNetwork();
-                tui.wait(2);
                 tui.login();
             } catch (Exception e) {
                 // Handle other exceptions
