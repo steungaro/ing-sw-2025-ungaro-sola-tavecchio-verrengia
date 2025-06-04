@@ -30,9 +30,6 @@ public class MainMenuController {
     @FXML
     private Button createLobbyButton;
 
-    @FXML
-    private Button logoutButton;
-
     private GUIView guiView;
     private String username;
 
@@ -41,7 +38,7 @@ public class MainMenuController {
         guiView = (GUIView) ClientGameModel.getInstance();
         lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        lobbiesListView.setCellFactory(listView -> new ListCell<ViewLobby>() {
+        lobbiesListView.setCellFactory(_ -> new ListCell<>() {
             @Override
             protected void updateItem(ViewLobby lobby, boolean empty) {
                 super.updateItem(lobby, empty);
@@ -50,8 +47,8 @@ public class MainMenuController {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    setText(lobby.getOwner() + " (Proprietario: " + lobby.getOwner() + ") - " +
-                            "Giocatori: " + lobby.getPlayersList() + "/" + lobby.getMaxPlayers());
+                    setText(lobby.getID() + " (Owner: " + lobby.getOwner() + ") - " +
+                            "Players: " + lobby.getPlayersList().size() + "/" + lobby.getMaxPlayers());
                 }
             }
         });
@@ -66,7 +63,6 @@ public class MainMenuController {
         //loadLobbies();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
-        logoutButton.setOnAction(event -> handleLogout());
     }
 
     private void onJoinLobby() {
@@ -84,7 +80,7 @@ public class MainMenuController {
         try {
             ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
         } catch (RemoteException e) {
-            System.out.println("Errore di connessione al server: " + e.getMessage());
+            System.out.println("Error while connecting to server: " + e.getMessage());
         }
         List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
         lobbiesListView.getItems().clear();
@@ -97,21 +93,17 @@ public class MainMenuController {
             try {
                 client.joinLobby(lobby.getID(), ClientGameModel.getInstance().getUsername());
             } catch (java.rmi.RemoteException e){
-                System.out.println("Errore di connessione al server: " + e.getMessage());
+                System.out.println("Error while connecting to server: " + e.getMessage());
             }
         }
     }
 
     public void setUsername(String username) {
         this.username = username;
-        welcomeLabel.setText("Benvenuto, " + username + "!");
+        welcomeLabel.setText("Welcome, " + username + "!");
     }
 
     private void handleCreateLobby() {
         guiView.showScene("createLobby");
-    }
-    private void handleLogout() {
-
-        guiView.showScene("network");
     }
 }

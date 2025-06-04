@@ -1,54 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="30" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.MainMenuController">
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="700.0" spacing="5.0" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.MainMenuController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
-    <Label text="GALAXY TRUCKER" textFill="WHITE">
+    <Label text="GALAXY TRUCKER" textFill="#ffe400">
         <font>
             <Font name="System Bold" size="32.0" />
         </font>
     </Label>
 
-    <Label fx:id="welcomeLabel" text="Benvenuto" textFill="#bbbbff">
+    <Label fx:id="welcomeLabel" text="Welcome" textFill="#bbbbff">
         <font>
             <Font size="18.0" />
         </font>
     </Label>
 
-        <Button fx:id="createLobbyButton" prefHeight="50" prefWidth="240" text="CREA NUOVA LOBBY">
-         <font>
-             <Font size="16.0" />
-         </font>
-         <style>
-                -fx-background-color: #5a6e93;
-                -fx-text-fill: white;
-            </style>
-     </Button>
-
-    <Label text="LOBBY DISPONIBILI" textFill="WHITE">
+    <Label text="Available lobbies" textFill="WHITE">
         <font>
-            <Font name="System Bold" size="24.0" />
+            <Font name="System Bold" size="18.0" />
         </font>
     </Label>
 
-    <ListView fx:id="lobbiesListView" prefHeight="250" prefWidth="500" VBox.vgrow="ALWAYS">
+    <ListView fx:id="lobbiesListView" VBox.vgrow="ALWAYS">
         <style>
             -fx-background-color: #4a5363;
-            -fx-control-inner-background: #333344;
-            -fx-text-fill: white;
-        </style>
+            -fx-control-inner-background: #333344;-fx-text-fill: white; -fx-background-radius: 10;</style>
     </ListView>
 
     <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="joinLobbyButton" disable="true" prefHeight="40" prefWidth="200" text="ENTRA NELLA LOBBY">
+
+        <Button fx:id="refreshButton" text="Update list">
+            <font>
+                <Font size="14.0" />
+            </font>
+            <style>
+                -fx-background-color: #5a6e93;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+   
+           <Button fx:id="createLobbyButton" text="Create a new lobby">
+            <font>
+                <Font size="14.0" />
+            </font>
+            <style>
+                -fx-background-color: #5a6e93;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+        <Button fx:id="joinLobbyButton" disable="true" text="Join lobby">
             <font>
                 <Font size="14.0" />
             </font>
@@ -57,25 +68,8 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-
-        <Button fx:id="refreshButton" prefHeight="40" prefWidth="150" text="AGGIORNA">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <style>
-                -fx-background-color: #5a6e93;
-                -fx-text-fill: white;
-            </style>
-        </Button>
+      <padding>
+         <Insets top="30.0" />
+      </padding>
     </HBox>
-
-    <Button fx:id="logoutButton" prefWidth="150" text="DISCONNETTI">
-        <font>
-            <Font size="14.0" />
-        </font>
-        <style>
-            -fx-background-color: #663333;
-            -fx-text-fill: white;
-        </style>
-    </Button>
 </VBox>

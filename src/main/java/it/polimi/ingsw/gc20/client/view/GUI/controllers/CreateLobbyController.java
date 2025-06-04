@@ -54,7 +54,7 @@ public class CreateLobbyController {
         String lobbyName = lobbyNameField.getText().trim();
 
         if (lobbyName.isEmpty()) {
-            errorLabel.setText("Il nome della lobby non può essere vuoto");
+            errorLabel.setText("Lobby name cannot be empty");
             errorLabel.setVisible(true);
             return;
         }
