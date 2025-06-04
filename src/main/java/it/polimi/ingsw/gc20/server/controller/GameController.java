@@ -695,10 +695,6 @@ public class GameController implements GameControllerInterface {
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
             state.removeComp(getPlayerByID(username), coordinates);
-            //notify the players of the ship changes
-            for (Player player : getPlayers()) {
-                NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(username, getPlayerByID(username).getShip(), "removed component"));
-            }
         } catch (Exception e) {
             //notify the player of the error
             NetworkService.getInstance().sendToClient(username, new ErrorMessage("Error removing component from ship: " + e.getMessage()));
