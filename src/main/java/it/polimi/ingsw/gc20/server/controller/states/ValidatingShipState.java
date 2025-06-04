@@ -117,8 +117,8 @@ public class ValidatingShipState extends State {
     public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException, InvalidTileException {
         if (phase!=StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot remove component from valid ship");
-        } else if (coordinates.getValue0() == 2 && coordinates.getValue1() == 3) {
-            throw new InvalidTileException("Cannot remove the central cabin");
+        } else if (player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1()).getIDComponent() == 1000) {
+            throw new InvalidTileException("Cannot remove center cabin from the ship now");
         }
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
