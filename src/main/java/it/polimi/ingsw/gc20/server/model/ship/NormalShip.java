@@ -290,7 +290,7 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-            if (row>getRows() || row<0 || col>getCols() || col<0) {
+            if (row>=getRows() || row<0 || col>=getCols() || col<0) {
                 continue;
             }
             if ( table[row][col].getComponent() == null) {
