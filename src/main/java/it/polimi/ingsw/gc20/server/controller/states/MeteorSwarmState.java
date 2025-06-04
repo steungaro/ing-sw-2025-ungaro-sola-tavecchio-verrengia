@@ -69,8 +69,12 @@ public class MeteorSwarmState extends PlayingState {
             throw new InvalidStateException("cannot activate cannons in this phase");
         }
         try {
+            if (cannons == null || cannons.isEmpty() || batteries == null || batteries.isEmpty()) {
+                fireManagerMap.get(player).activateCannon(null, null);
+            } else {
+                fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
+            }
             // activate the cannons of the current player
-            fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
             try {
                 //fire the projectile
                 fireManagerMap.get(player).fire();
