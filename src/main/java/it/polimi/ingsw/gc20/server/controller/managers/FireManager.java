@@ -18,7 +18,12 @@ public class FireManager {
     private final Validator validator;
     final Player player;
     public FireManager(GameModel model, List<Projectile> fires, Player p) {
-        this.fires = fires;
+        //create a copy of the list of fires to avoid modifying the original list
+        if (fires == null) {
+            this.fires = new ArrayList<>();
+        } else {
+            this.fires = new ArrayList<>(fires);
+        }
         this.skipNextFire = false;
         this.gm = model;
         this.player = p;
