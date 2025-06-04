@@ -40,7 +40,6 @@ public interface GameControllerInterface extends Remote {
     void acceptCard(String username) throws RemoteException;
     void loseCrew(String username, List<Pair<Integer, Integer>> cabins) throws RemoteException;
     void endMove(String username) throws RemoteException;
-    void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException;
     void giveUp(String username) throws RemoteException;
     void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException;
 

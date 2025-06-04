@@ -184,7 +184,7 @@ public class SmugglersState extends CargoState {
      * @throws InvalidCannonException if the cannon is not valid
      * @throws EnergyException if the player doesn't have enough energy
      */
-    public int shootEnemy(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
+    public void activateCannons (Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
         }
@@ -214,7 +214,6 @@ public class SmugglersState extends CargoState {
             phase = StatePhase.ACCEPT_PHASE;
             defeated = true;
             currentLostCargo = 0;
-            return 1;
         } else if (firePower == this.firePower) {
             //draw, go to the next player
             nextPlayer();
@@ -238,7 +237,6 @@ public class SmugglersState extends CargoState {
                 }
             }
             currentLostCargo = 0;
-            return 0;
         } else {
             for (String username: getController().getInGameConnectedPlayers()) {
                 if (username.equals(getCurrentPlayer())) {
@@ -250,7 +248,6 @@ public class SmugglersState extends CargoState {
             //lost, the player has to lose cargo
             phase = StatePhase.REMOVE_CARGO;
             currentLostCargo = lostCargo;
-            return -1;
         }
     }
 

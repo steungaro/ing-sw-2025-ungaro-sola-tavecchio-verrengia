@@ -299,15 +299,6 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries)  {
-        try {
-            gameService.shootEnemy(username, cannons, batteries);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during shooting enemy: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void giveUp(String username)  {
         try {
             gameService.giveUp(username);

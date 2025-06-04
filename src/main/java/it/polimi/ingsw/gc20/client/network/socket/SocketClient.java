@@ -382,17 +382,6 @@ public class SocketClient implements Client {
             LOGGER.warning("Error while ending move: " + e.getMessage());
         }
     }
-
-    @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
-        try {
-            out.writeObject(new ShootEnemyMessage(username, cannons, batteries));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while shooting enemy: " + e.getMessage());
-        }
-    }
-
     @Override
     public void giveUp(String username) {
         try {
