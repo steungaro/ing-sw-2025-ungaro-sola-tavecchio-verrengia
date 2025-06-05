@@ -168,12 +168,12 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void shieldsMenu(FireType fireType, int direction, int line) {
+    public void shieldsMenu(String message) {
 
     }
 
     @Override
-    public void rollDiceMenu(FireType fireType, int direction) {
+    public void rollDiceMenu(String message) {
 
     }
 
