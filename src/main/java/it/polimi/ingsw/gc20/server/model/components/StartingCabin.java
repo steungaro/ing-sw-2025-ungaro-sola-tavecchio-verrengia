@@ -1,5 +1,8 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCabin;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewStartingCabin;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
 
 public class StartingCabin extends Cabin {
@@ -60,6 +63,16 @@ public class StartingCabin extends Cabin {
     @Override
     public void removeSupport(LifeSupport ls) {
         super.setColor(AlienColor.NONE);
+    }
+
+    public ViewComponent createViewComponent (){
+        ViewStartingCabin viewStartingCabin = new ViewStartingCabin();
+        viewStartingCabin.astronauts = getAstronauts();
+        viewStartingCabin.alien = getAlien();
+        viewStartingCabin.alienColor = getAlienColor();
+        viewStartingCabin.cabinColor = getCabinColor();
+        initializeViewComponent(viewStartingCabin);
+        return viewStartingCabin;
     }
 
 }

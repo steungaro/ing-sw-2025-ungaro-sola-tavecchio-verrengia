@@ -1,4 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.components;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCargoHold;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewSpecialCargoHold;
 import it.polimi.ingsw.gc20.server.exceptions.CargoFullException;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
@@ -22,5 +25,17 @@ public class SpecialCargoHold extends CargoHold {
         }
         cargoHeld.put(g, cargoHeld.getOrDefault(g, 0) + 1);
         this.availableSlots--;
+    }
+
+    @Override
+    public ViewComponent createViewComponent() {
+        ViewSpecialCargoHold viewSpecialCargoHold = new ViewSpecialCargoHold();
+        viewSpecialCargoHold.red = cargoHeld.getOrDefault(CargoColor.RED, 0);
+        viewSpecialCargoHold.green = cargoHeld.getOrDefault(CargoColor.GREEN, 0);
+        viewSpecialCargoHold.blue = cargoHeld.getOrDefault(CargoColor.BLUE, 0);
+        viewSpecialCargoHold.yellow = cargoHeld.getOrDefault(CargoColor.YELLOW, 0);
+        viewSpecialCargoHold.free = availableSlots;
+        initializeViewComponent(viewSpecialCargoHold);
+        return viewSpecialCargoHold;
     }
 }

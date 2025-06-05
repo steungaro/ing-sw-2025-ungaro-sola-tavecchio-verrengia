@@ -15,6 +15,15 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20.server.model.components;
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
+    exports it.polimi.ingsw.gc20.server.model.ship;
+    exports it.polimi.ingsw.gc20.server.model.cards;
+    exports it.polimi.ingsw.gc20.server.model.player;
+    exports it.polimi.ingsw.gc20.server.controller;
+    exports it.polimi.ingsw.gc20.client.view.common.localmodel;
+    exports it.polimi.ingsw.gc20.client.view.common.localmodel.board;
+    exports it.polimi.ingsw.gc20.client.view.common.localmodel.ship;
+    exports it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
+    exports it.polimi.ingsw.gc20.server.exceptions;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.ship to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;
