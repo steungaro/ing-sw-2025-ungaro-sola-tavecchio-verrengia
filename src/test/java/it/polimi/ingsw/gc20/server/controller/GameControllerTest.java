@@ -620,14 +620,14 @@ class GameControllerTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         gameController.takeComponentFromUnviewed("player1", 0);
-        Pair<Integer, Integer> coordinates = new Pair<>(2, 2);
+        Pair<Integer, Integer> coordinates = new Pair<>(3, 4);
         gameController.placeComponent("player1", coordinates);
 
         ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
         gameController.setState(validatingShipState);
         gameController.removeComponentFromShip("player1", coordinates);
 
-        assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2));
+        assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(3,4));
     }
 
 
