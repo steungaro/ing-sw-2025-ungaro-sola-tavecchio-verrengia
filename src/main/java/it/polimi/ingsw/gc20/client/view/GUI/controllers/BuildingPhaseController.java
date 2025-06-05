@@ -63,9 +63,6 @@ public class BuildingPhaseController implements Initializable {
         componentInHandPane.setOnMouseClicked(event -> activatePlacementMode());
     }
 
-    /**
-     * Loads the ship (ship0.fxml or ship2.fxml) based on the player's ship type
-     */
     private void loadShip() {
         try {
             String username = ClientGameModel.getInstance().getUsername();
@@ -95,10 +92,8 @@ public class BuildingPhaseController implements Initializable {
         }
     }
 
-    /**
-     * Loads the covered deck (shows only the back of a card)
-     */
     private void loadCoveredDeck() {
+        // TODO -> Mettere l'immagine della carta coperta (da creare)
         Rectangle coveredCard = new Rectangle(0, 0, 120, 80);
         coveredCard.setFill(Color.DARKGRAY);
         coveredCard.setStroke(Color.BLACK);
@@ -107,17 +102,12 @@ public class BuildingPhaseController implements Initializable {
         coveredDeckPane.getChildren().add(coveredCard);
     }
 
-    /**
-     * Loads the uncovered components from the model
-     */
     private void loadUncoveredComponents() {
         uncoveredComponentsPane.getChildren().clear();
         ClientGameModel client = ClientGameModel.getInstance();
         List<ViewComponent> uncoveredComponents = new ArrayList<>();
         if (client.getBoard() != null && client.getBoard().viewedPile != null) {
-
             uncoveredComponents = client.getBoard().viewedPile;
-
             for (ViewComponent component : uncoveredComponents) {
                 Pane componentPane = createComponentPane(component);
                 componentPane.setOnMouseClicked(event -> selectComponent(component, componentPane));
@@ -146,7 +136,6 @@ public class BuildingPhaseController implements Initializable {
                     new Thread(() -> {
                         try {
                             Thread.sleep(500);
-
                             javafx.application.Platform.runLater(() -> {
                                 updateComponentInHand();
                             });
@@ -439,7 +428,6 @@ public class BuildingPhaseController implements Initializable {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                // Disabilita l'interazione con la griglia
                 if (shipController != null) {
                     shipController.disableGridInteraction();
                 }

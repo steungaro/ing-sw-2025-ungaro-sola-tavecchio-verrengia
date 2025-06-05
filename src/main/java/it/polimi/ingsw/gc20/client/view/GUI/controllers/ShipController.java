@@ -149,12 +149,10 @@ public abstract class ShipController {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
 
-            // Imposta ImageView per adattarsi completamente alla cella
             targetCell.setFitWidth(parent.getWidth() / getCols());
             targetCell.setFitHeight(parent.getHeight() / getRows());
             targetCell.setPreserveRatio(false);
 
-            // Imposta proprietà per far sì che l'immagine si adatti quando la cella cambia dimensione
             targetCell.fitWidthProperty().bind(parent.widthProperty().divide(getCols()));
             targetCell.fitHeightProperty().bind(parent.heightProperty().divide(getRows()));
 
@@ -162,10 +160,9 @@ public abstract class ShipController {
 
             setComponentProp(layeredPane, comp);
 
-            // Imposta il StackPane per occupare tutto lo spazio disponibile
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-            parent.add(layeredPane, col-1, row);
+            parent.add(layeredPane, col, row);
 
             // TODO Rotate the IMG
             gridComponents.put(cellId, componentId);
@@ -397,7 +394,7 @@ public abstract class ShipController {
 
                 Node cellNode = getNodeFromGridPane(componentsGrid, col, row);
 
-                if (cellNode == null) {
+                if (cellNode != null) {
                     Rectangle clickArea = new javafx.scene.shape.Rectangle(60, 60);
                     clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                     clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
