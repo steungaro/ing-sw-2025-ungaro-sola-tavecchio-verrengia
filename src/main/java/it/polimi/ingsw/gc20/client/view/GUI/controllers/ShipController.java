@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,7 +15,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
+import javafx.scene.shape.Rectangle;
 import java.util.*;
+import java.util.List;
 
 public abstract class ShipController {
 
@@ -22,7 +25,7 @@ public abstract class ShipController {
     protected int COLS = 0;
 
     private ViewShip ship;
-
+    protected CellClickHandler cellClickHandler;
     public enum ShipState {
         Building, Viewing
     }
@@ -48,7 +51,7 @@ public abstract class ShipController {
     );
 
     @FXML private ImageView boardImageView;
-    @FXML private GridPane componentsGrid; // Allineato con il nome nel FXML
+    @FXML private GridPane componentsGrid;
     @FXML private Pane gridWrapper;
     @FXML private Label X_Label;
     @FXML private Label Y_Label;
@@ -377,6 +380,81 @@ public abstract class ShipController {
                 }
             }
         }
+    }
+
+    public interface CellClickHandler {
+        void onCellClicked(int row, int col);
+    }
+
+    public void enableGridInteraction(CellClickHandler handler) {
+        this.cellClickHandler = handler;
+        System.out.println("Placing mode activated");
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                final int finalRow = row;
+                final int finalCol = col;
+
+                Node cellNode = getNodeFromGridPane(componentsGrid, col, row);
+
+                if (cellNode == null) {
+                    Rectangle clickArea = new javafx.scene.shape.Rectangle(60, 60);
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                    clickArea.setStrokeWidth(1);
+                    clickArea.setOpacity(0.3);
+
+                    componentsGrid.add(clickArea, col, row);
+                    cellNode = clickArea;
+                }
+
+                cellNode.setOnMouseClicked(event -> {
+                    if (cellClickHandler != null) {
+                        cellClickHandler.onCellClicked(finalRow, finalCol);
+                    }
+                });
+
+                cellNode.setStyle(cellNode.getStyle() + "; -fx-cursor: hand;");
+            }
+        }
+    }
+
+    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
+        for (Node node : gridPane.getChildren()) {
+            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public void disableGridInteraction() {
+        this.cellClickHandler = null;
+        System.out.println("Placing mode deactivated");
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                Node cell = getGridCellAt(row, col);
+                if (cell != null) {
+                    cell.setOnMouseClicked(null);
+                    cell.setStyle("");
+                    cell.setCursor(javafx.scene.Cursor.DEFAULT);
+                }
+            }
+        }
+    }
+
+    private Node getGridCellAt(int row, int col) {
+        for (Node child : componentsGrid.getChildren()) {
+            Integer rowIndex = GridPane.getRowIndex(child);
+            Integer colIndex = GridPane.getColumnIndex(child);
+
+            if (rowIndex != null && colIndex != null &&
+                    rowIndex == row && colIndex == col) {
+                return child;
+            }
+        }
+        return null;
     }
 
     protected abstract int getRows();

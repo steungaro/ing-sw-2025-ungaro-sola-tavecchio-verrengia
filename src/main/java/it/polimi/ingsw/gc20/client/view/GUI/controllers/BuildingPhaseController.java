@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -19,6 +20,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -45,6 +47,7 @@ public class BuildingPhaseController implements Initializable {
 
     private ViewComponent selectedComponent;
     private ShipController shipController;
+    private boolean placementModeActive = false;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,6 +59,8 @@ public class BuildingPhaseController implements Initializable {
         boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
         nonLearnerButtonsContainer.setVisible(!isLearner);
         nonLearnerButtonsContainer.setManaged(!isLearner);
+        coveredDeckPane.setOnMouseClicked(event -> takeCoveredComponent());
+        componentInHandPane.setOnMouseClicked(event -> activatePlacementMode());
     }
 
     /**
@@ -107,11 +112,11 @@ public class BuildingPhaseController implements Initializable {
      */
     private void loadUncoveredComponents() {
         uncoveredComponentsPane.getChildren().clear();
+        ClientGameModel client = ClientGameModel.getInstance();
+        List<ViewComponent> uncoveredComponents = new ArrayList<>();
+        if (client.getBoard() != null && client.getBoard().viewedPile != null) {
 
-        if (ClientGameModel.getInstance().getBoard() != null &&
-                ClientGameModel.getInstance().getBoard().viewedPile != null) {
-
-            List<ViewComponent> uncoveredComponents = ClientGameModel.getInstance().getBoard().viewedPile;
+            uncoveredComponents = client.getBoard().viewedPile;
 
             for (ViewComponent component : uncoveredComponents) {
                 Pane componentPane = createComponentPane(component);
@@ -121,14 +126,99 @@ public class BuildingPhaseController implements Initializable {
         }
     }
 
+    private void takeCoveredComponent() {
+        ClientGameModel model = ClientGameModel.getInstance();
+        int maxIndex = model.getBoard().unviewedPile - 1;
+
+        TextInputDialog dialog = new TextInputDialog("0");
+        dialog.setTitle("Take Covered Component");
+        dialog.setHeaderText("Select a component from the covered deck");
+        dialog.setContentText("Enter index (0 to " + maxIndex + "):");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(indexStr -> {
+            try {
+                int index = Integer.parseInt(indexStr);
+                if (index >= 0 && index <= maxIndex) {
+                    String username = model.getUsername();
+                    model.getClient().takeComponentFromUnviewed(username, index);
+
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(500);
+
+                            javafx.application.Platform.runLater(() -> {
+                                updateComponentInHand();
+                            });
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                } else {
+                    showError("Invalid index. Please enter a number between 0 and " + maxIndex);
+                }
+            } catch (NumberFormatException e) {
+                showError("Please enter a valid number");
+            } catch (Exception e) {
+                showError("Error taking component: " + e.getMessage());
+            }
+        });
+    }
+
+    private void updateComponentInHand() {
+        ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
+
+        componentInHandPane.getChildren().clear();
+
+        if (componentInHand != null) {
+            Pane componentPane = createComponentPane(componentInHand);
+            componentInHandPane.getChildren().add(componentPane);
+            selectedComponent = componentInHand;
+
+            String username = ClientGameModel.getInstance().getUsername();
+            boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
+            nonLearnerComponentInHandButtons.setVisible(!isLearner);
+            nonLearnerComponentInHandButtons.setManaged(!isLearner);
+        }
+    }
+
     /**
      * Creates a pane that visually represents a component
      */
     private Pane createComponentPane(ViewComponent component) {
         Pane pane = new Pane();
         pane.setPrefSize(80, 80);
+        pane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+
+        if (component == null) {
+            return pane;
+        }
+
+        String imageUrl = getComponentImageUrl(component);
+        if (imageUrl != null) {
+            try {
+                javafx.scene.image.Image image = new javafx.scene.image.Image(getClass().getResourceAsStream(imageUrl));
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
+                imageView.setFitWidth(70);
+                imageView.setFitHeight(70);
+                imageView.setPreserveRatio(true);
+                imageView.setX(5);
+                imageView.setY(5);
+                pane.getChildren().add(imageView);
+            } catch (Exception e) {
+                Rectangle fallback = new Rectangle(5, 5, 70, 70);
+                pane.getChildren().add(fallback);
+            }
+        }
 
         return pane;
+    }
+
+    private String getComponentImageUrl(ViewComponent component) {
+        if (component == null) return null;
+
+        String imagePath = "/fxml/tiles/" + component.id + ".jpg";
+        return imagePath;
     }
 
     /**
@@ -307,9 +397,6 @@ public class BuildingPhaseController implements Initializable {
         }
     }
 
-    /**
-     * Seleziona un componente e lo mostra nel pannello "componente in mano"
-     */
     private void selectComponent(ViewComponent component, Pane sourcePane) {
         selectedComponent = component;
 
@@ -321,10 +408,60 @@ public class BuildingPhaseController implements Initializable {
         });
         sourcePane.setStyle(sourcePane.getStyle() + "-fx-border-width: 3;");
 
-        // Mostra i pulsanti specifici per quando c'è un componente in mano per navi non-learner
         String username = ClientGameModel.getInstance().getUsername();
         boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
         nonLearnerComponentInHandButtons.setVisible(!isLearner);
         nonLearnerComponentInHandButtons.setManaged(!isLearner);
+    }
+
+    private void activatePlacementMode() {
+        if (ClientGameModel.getInstance().getComponentInHand() != null) {
+            System.out.println("No component in hand");
+            placementModeActive = true;
+            componentInHandPane.setStyle("-fx-border-color: green; -fx-border-width: 2;");
+
+            if (shipController != null) {
+                shipController.enableGridInteraction(this::handleCellClick);
+            } else {
+                System.out.println("ERROR: ShipController is null");
+            }
+        } else {
+            System.out.println("No component in hand to place");
+        }
+    }
+
+    private void handleCellClick(int row, int col) {
+        if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() != null) {
+            try {
+                String username = ClientGameModel.getInstance().getUsername();
+                ClientGameModel.getInstance().getClient().placeComponent(username, new org.javatuples.Pair<>(row, col));
+
+                placementModeActive = false;
+                componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+
+                // Disabilita l'interazione con la griglia
+                if (shipController != null) {
+                    shipController.disableGridInteraction();
+                }
+
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(500);
+                        javafx.application.Platform.runLater(() -> {
+                            updateComponentInHand();
+                            if (shipController != null) {
+                                shipController.buildShipComponents(ClientGameModel.getInstance().getShip(username));
+                            }
+                        });
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            } catch (Exception e) {
+                placementModeActive = false;
+                componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+                showError("Error during placement: " + e.getMessage());
+            }
+        }
     }
 }
