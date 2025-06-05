@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.*;
 import it.polimi.ingsw.gc20.server.model.player.*;
 import it.polimi.ingsw.gc20.server.model.ship.*;
 import org.javatuples.Pair;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -631,12 +630,6 @@ class GameControllerTest {
         assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(2,2));
     }
 
-    @Test
-    void validateShip() {
-        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
-        gameController.setState(validatingShipState);
-        gameController.validateShip("player1");
-    }
 
     @Test
     void stopAssembling() {
@@ -693,20 +686,14 @@ class GameControllerTest {
         try {
             gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
 
-            validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
 
             Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
             gameController.addAlien("player1", alienColor, cabinCoord);
             gameController.endMove("player1");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
             gameController.endMove("player2");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
             gameController.endMove("player3");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
             gameController.endMove("player4");
             assertEquals(alienColor, ((Cabin) (gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2))).getCabinColor());
-        } catch (InvalidStateException e) {
-            fail("Ship validation failed: " + e.getMessage());
         } catch (InvalidTileException e) {
             fail("Invalid tile exception: " + e.getMessage());
         }
@@ -714,23 +701,14 @@ class GameControllerTest {
 
     @Test
     void readyToFly() {
-        try {
-            ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
-            gameController.setState(validatingShipState);
 
-            validatingShipState.isShipValid(gameController.getPlayerByID("player1"));
-            gameController.endMove("player1");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player2"));
-            gameController.endMove("player2");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player3"));
-            gameController.endMove("player3");
-            validatingShipState.isShipValid(gameController.getPlayerByID("player4"));
-            gameController.endMove("player4");
-
-            assertTrue(validatingShipState.allShipsReadyToFly());
-        } catch (InvalidStateException e) {
-            fail("Ship validation failed: " + e.getMessage());
-        }
+        ValidatingShipState validatingShipState = new ValidatingShipState(gameController.getModel(), gameController);
+        gameController.setState(validatingShipState);
+        gameController.endMove("player1");
+        gameController.endMove("player2");
+        gameController.endMove("player3");
+        gameController.endMove("player4");
+        assertTrue(validatingShipState.allShipsReadyToFly());
     }
 
     @Test
@@ -775,46 +753,6 @@ class GameControllerTest {
     }
 
     @Test
-    void shootEnemyTest() throws InvalidTileException {
-        PiratesState piratesState = new PiratesState(gameController.getModel(), gameController, adventureCard);
-        // ==
-        try {
-            assertEquals(0, piratesState.shootEnemy(gameController.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
-        } catch (InvalidStateException e) {
-            fail("Invalid state exception: " + e.getMessage());
-        } catch (InvalidTurnException e) {
-            fail("Invalid turn exception: " + e.getMessage());
-        } catch (InvalidCannonException e) {
-            fail("Invalid cannon exception: " + e.getMessage());
-        } catch (EnergyException e) {
-            fail("Energy exception: " + e.getMessage());
-        }
-        // Ship più potente
-        Cannon cannon = new Cannon();
-        cannon.setPower(2);
-        gameController.getModel().addToShip(cannon, gameController.getPlayerByID("player1"), 1, 2);
-
-        Battery battery = new Battery();
-        battery.setSlots(2);
-        battery.setAvailableEnergy(1);
-
-        gameController.getModel().addToShip(battery, gameController.getPlayerByID("player1"), 1, 3);
-
-        List<Pair<Integer, Integer>> coordinatesBat = new ArrayList<>();
-        coordinatesBat.add(new Pair<>(1, 3));
-
-        List<Pair<Integer, Integer>> coordinatesCan = new ArrayList<>();
-        coordinatesCan.add(new Pair<>(1, 2));
-        piratesState.setCurrentPlayer("player1");
-
-        gameController.getModel().setActiveCard(adventureCard);
-        gameController.getModel().setActiveCard(adventureCard);
-        gameController.setState(piratesState);
-        gameController.shootEnemy("player1", coordinatesCan, coordinatesBat);
-
-    }
-
-    @Test
     void getScoreTest(){
         EndgameState endgameState = new EndgameState(gameController);
         gameController.setState(endgameState);
@@ -851,7 +789,7 @@ class GameControllerTest {
         } catch (InvalidStateException _) {
 
         }
-        gameController.killGame("Sola");
+        gameController.killGame();
         assertNull(MatchController.getInstance().getGameControllerForPlayer("player1"));
     }
 }

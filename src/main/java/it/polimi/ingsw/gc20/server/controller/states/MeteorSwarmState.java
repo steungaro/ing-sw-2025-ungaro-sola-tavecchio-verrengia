@@ -32,12 +32,13 @@ public class MeteorSwarmState extends PlayingState {
         super(model, controller);
         this.meteors = card.getProjectiles();
         //init the map
-        phase = StatePhase.ROLL_DICE_PHASE;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice");
-        getController().getMessageManager().notifyPhaseChange(phase, this);
         for (String username : getController().getInGameConnectedPlayers()) {
             fireManagerMap.put(getController().getPlayerByID(username), new FireManager(model, meteors, getController().getPlayerByID(username)));
         }
+        phase = StatePhase.ROLL_DICE_PHASE;
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice");
+        getController().getMessageManager().notifyPhaseChange(phase, this);
+
     }
 
     @Override
