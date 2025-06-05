@@ -421,10 +421,7 @@ class GameControllerTest {
         PreDrawState preDrawState = new PreDrawState(gameController);
         gameController.setState(preDrawState);
         gameController.giveUp("player1");
-        EndgameState endgameState = new EndgameState(gameController);
-        gameController.setState(endgameState);
-
-        assertFalse(gameController.getModel().getInGamePlayers().contains(gameController.getPlayerByID("player1")));
+        assertFalse(gameController.getPlayerByID("player1").isInGame());
     }
 
     @Test
