@@ -23,7 +23,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
-
+import it.polimi.ingsw.gc20.client.view.common.localmodel.LobbyListObserver;
+import java.util.ArrayList;
 
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
@@ -45,6 +46,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private MenuState currentMenuState;
     public boolean busy;
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
+    private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
+
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize default state if necessary
@@ -101,7 +104,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public abstract void displayErrorMessage(String message);
 
     public void setLobbyList(List<ViewLobby> lobbyList) {
-        this.lobbyList = lobbyList;
+        this.lobbyList = new ArrayList<>(lobbyList);
+        notifyLobbyListObservers();
         LOGGER.fine("Lobby list updated in model.");
     }
 
@@ -154,8 +158,20 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    public void addLobbyListObserver(LobbyListObserver observer) {
+        if (!lobbyListObservers.contains(observer)) {
+            lobbyListObservers.add(observer);
+        }
+    }
+
     public void removeListener(GameModelListener listener) {
         listeners.remove(listener);
+    }
+
+    protected void notifyLobbyListObservers() {
+        for (LobbyListObserver observer : lobbyListObservers) {
+            observer.onLobbyListChanged();
+        }
     }
 
     public static ClientGameModel getInstance() {

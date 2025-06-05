@@ -6,11 +6,12 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.LobbyListObserver;
 
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class MainMenuController {
+public class MainMenuController implements LobbyListObserver {
 
     @FXML
     private ListView<ViewLobby> lobbiesListView;
@@ -53,6 +54,7 @@ public class MainMenuController {
             }
         });
 
+        ClientGameModel.getInstance().addLobbyListObserver(this);
 
         lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             joinLobbyButton.setDisable(newVal == null);
@@ -60,9 +62,14 @@ public class MainMenuController {
 
         joinLobbyButton.setOnAction(event -> onJoinLobby());
         refreshButton.setOnAction(event -> onRefreshLobbies());
-        //loadLobbies();
+        loadLobbies();
 
         createLobbyButton.setOnAction(event -> handleCreateLobby());
+    }
+
+    @Override
+    public void onLobbyListChanged() {
+        loadLobbies();
     }
 
     private void onJoinLobby() {
@@ -73,18 +80,22 @@ public class MainMenuController {
     }
 
     private void onRefreshLobbies() {
-         loadLobbies();
+         askLobbyList();
     }
 
     private void loadLobbies() {
+        List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
+        lobbiesListView.getItems().clear();
+        if(lobbies!= null)
+            lobbiesListView.getItems().addAll(lobbies);
+    }
+
+    private void askLobbyList() {
         try {
             ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
         } catch (RemoteException e) {
             System.out.println("Error while connecting to server: " + e.getMessage());
         }
-        List<ViewLobby> lobbies = ClientGameModel.getInstance().getLobbyList();
-        lobbiesListView.getItems().clear();
-        lobbiesListView.getItems().addAll(lobbies);
     }
 
     private void joinLobbyOnServer(ViewLobby lobby) {
