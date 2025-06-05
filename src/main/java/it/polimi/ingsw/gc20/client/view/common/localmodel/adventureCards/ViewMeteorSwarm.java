@@ -78,10 +78,10 @@ public class ViewMeteorSwarm extends ViewAdventureCard {
 
             }
             switch(projectiles.get(i).getDirection()) {
-                case UP -> result.append("↑");
-                case DOWN -> result.append("↓");
-                case LEFT -> result.append("←");
-                case RIGHT -> result.append("→");
+                case DOWN -> result.append("↑");
+                case UP -> result.append("↓");
+                case RIGHT -> result.append("←");
+                case LEFT -> result.append("→");
             }
         }
         return result.toString();

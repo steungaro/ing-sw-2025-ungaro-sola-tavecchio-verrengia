@@ -13,6 +13,7 @@ import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
+import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
@@ -65,8 +66,12 @@ public class MeteorSwarmState extends PlayingState {
             throw new InvalidStateException("cannot activate cannons in this phase");
         }
         try {
+            if (cannons == null || cannons.isEmpty() || batteries == null || batteries.isEmpty()) {
+                fireManagerMap.get(player).activateCannon(null, null);
+            } else {
+                fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
+            }
             // activate the cannons of the current player
-            fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
             //fire the projectile
             fireManagerMap.get(player).fire();
             //go to the next player

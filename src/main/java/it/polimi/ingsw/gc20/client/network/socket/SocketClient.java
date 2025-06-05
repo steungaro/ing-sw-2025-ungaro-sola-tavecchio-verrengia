@@ -382,6 +382,7 @@ public class SocketClient implements Client {
             LOGGER.warning("Error while ending move: " + e.getMessage());
         }
     }
+
     @Override
     public void giveUp(String username) {
         try {

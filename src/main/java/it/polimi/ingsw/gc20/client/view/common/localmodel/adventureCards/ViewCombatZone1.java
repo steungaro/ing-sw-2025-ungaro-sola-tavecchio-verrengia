@@ -45,6 +45,15 @@ public class ViewCombatZone1 extends ViewAdventureCard {
                 DOWN;
     }
 
+    /**
+     * Constructs a string representation of the sequence of cannon projectiles fired.
+     * Each projectile is represented by its fire type and direction.
+     * Fire types are denoted as "H" for heavy fire and "L" for light fire.
+     * Directions are represented as arrows: "↑" for DOWN, "↓" for UP, "←" for RIGHT, and "→" for LEFT.
+     * A space separates the representations of consecutive projectiles.
+     *
+     * @return A formatted string summarizing the fire types and directions of all projectiles fired.
+     */
     private String cannonFires(){
         StringBuilder result = new StringBuilder();
         for(int i = 0; i < projectiles.size(); i++) {
@@ -63,10 +72,10 @@ public class ViewCombatZone1 extends ViewAdventureCard {
 
             }
             switch(projectiles.get(i).getDirection()) {
-                case UP -> result.append("↑");
-                case DOWN -> result.append("↓");
-                case LEFT -> result.append("←");
-                case RIGHT -> result.append("→");
+                case DOWN -> result.append("↑");
+                case UP -> result.append("↓");
+                case RIGHT -> result.append("←");
+                case LEFT -> result.append("→");
             }
         }
         return result.toString();

@@ -114,6 +114,10 @@ public class ValidatingShipState extends State {
         }
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
+        //notify the players of the ship changes
+        for (Player p : getController().getPlayers()) {
+            NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "removed component"));
+        }
         isShipValid(player);
     }
 

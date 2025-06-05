@@ -66,7 +66,7 @@ public class ViewPirates extends ViewAdventureCard {
      * Each projectile is represented by a combination of its fire type and direction.
      * Fire types are represented by "H" for heavy fire and "L" for light fire.
      * Directions are represented by specific arrow symbols:
-     * "↑" for UP, "↓" for DOWN, "←" for LEFT, and "→" for RIGHT.
+     * "↑" for DOWN, "↓" for UP, "←" for RIGHT, and "→" for LEFT.
      * The representation adds a space between subsequent projectiles.
      *
      * @return A string representing the sequence of projectiles fired, with their fire types
@@ -82,10 +82,10 @@ public class ViewPirates extends ViewAdventureCard {
                 }
 
                 switch(projectiles.get(i).getDirection()) {
-                    case UP -> result.append("↑");
-                    case DOWN -> result.append("↓");
-                    case LEFT -> result.append("←");
-                    case RIGHT -> result.append("→");
+                    case DOWN -> result.append("↑");
+                    case UP -> result.append("↓");
+                    case RIGHT -> result.append("←");
+                    case LEFT -> result.append("→");
                 }
             }
             else{
@@ -95,10 +95,10 @@ public class ViewPirates extends ViewAdventureCard {
                 }
 
                 switch(projectiles.get(i).getDirection()) {
-                    case UP -> result.append("↑");
-                    case DOWN -> result.append("↓");
-                    case LEFT -> result.append("←");
-                    case RIGHT -> result.append("→");
+                    case DOWN -> result.append("↑");
+                    case UP -> result.append("↓");
+                    case RIGHT -> result.append("←");
+                    case LEFT -> result.append("→");
                 }
             }
         }

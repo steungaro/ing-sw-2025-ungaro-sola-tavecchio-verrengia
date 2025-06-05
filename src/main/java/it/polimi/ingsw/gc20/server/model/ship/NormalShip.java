@@ -52,7 +52,7 @@ public class NormalShip extends Ship {
     }
 
     /**
-     *  Components that the player is holding in hand
+     *  Components that the player is holding in their hand
      */
     private final Component[] booked = new Component[2];
 
@@ -79,7 +79,7 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * Function to be called at the end of construction phase to move the booked components to the waste
+     * Function to be called at the end of the construction phase to move the booked components to the waste
      */
     @Override
     public void addBookedToWaste() {
@@ -90,7 +90,7 @@ public class NormalShip extends Ship {
 
     /**
      * Function to remove a component from the booked components
-     * @param c is the component to be removed
+     * @param c the component to be removed
      * @throws ComponentNotFoundException in booked
      */
     public void removeBooked(Component c) throws ComponentNotFoundException {
@@ -111,7 +111,7 @@ public class NormalShip extends Ship {
 
     /**
      * Add a component to the booked components
-     * @param c the component to be added to booked
+     * @param c the component to be added to the booked pile
      * @throws NoSpaceException if the booked array is already full
      */
     public void addBooked(Component c) throws NoSpaceException{
@@ -170,7 +170,7 @@ public class NormalShip extends Ship {
      * Function to calculate the firepower of the ship
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power: the firepower of the ship
-     * @throws EnergyException if the energy are not enough
+     * @throws EnergyException if the energy is not enough
      * @throws InvalidCannonException if the cannon is single
      */
     @Override
@@ -191,7 +191,7 @@ public class NormalShip extends Ship {
 
     /**
      * Function to unload a crew member from the ship
-     * @param c is the crew member to be unloaded
+     * @param c the crew member to be unloaded
      * @throws EmptyCabinException the cabin is empty
      */
     @Override
@@ -215,7 +215,7 @@ public class NormalShip extends Ship {
     }
 
     /**
-     * Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+     * Function to update the life support of the ship; we check the components that are connected to the life support if they are a cabin we update the color of the cabin
      * @param c: the component that was removed from the ship
      */
     public void updateLifeSupportRemoved(Component c) {
@@ -260,11 +260,11 @@ public class NormalShip extends Ship {
         }
     }
 
-    /** Function to update the life support of the ship, we check the components that are connected to the life support if they are a cabin we update the color of the cabin
+    /** Function to update the life support of the ship; we check the components that are connected to the life support if they are a cabin we update the color of the cabin
      * @param c: the component that was added from the ship
      */
     public void updateLifeSupportAdded(Component c) {
-        //Find if is there a Cabin connected to the LifeSupport
+        //Find if there is a Cabin connected to the LifeSupport
         int[] position = findComponent(c);
         if (position == null) {
             return;
@@ -290,7 +290,7 @@ public class NormalShip extends Ship {
                     col++;
                     break;
             }
-            if (row>getRows() || row<0 || col>getCols() || col<0) {
+            if (row>=getRows() || row<0 || col>=getCols() || col<0) {
                 continue;
             }
             if ( table[row][col].getComponent() == null) {
