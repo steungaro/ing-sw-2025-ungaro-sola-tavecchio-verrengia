@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
@@ -12,7 +11,6 @@ import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AssemblingState extends State {
@@ -267,12 +265,11 @@ public class AssemblingState extends State {
      * This method is used to peek a deck of cards
      * @param player the player who is peeking the deck
      * @param num the number of the deck to peek (1-3)
-     * @return List<AdventureCard> the list of cards in the deck
      * @implNote note that the phase does not change, so the player can still take a component,
      *          and when it does, the deck will not be peeked anymore
      */
     @Override
-    public List<AdventureCard> peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
+    public void peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
         if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("cannot peek deck in this phase");
         }
@@ -294,7 +291,7 @@ public class AssemblingState extends State {
         } else {
             throw new InvalidIndexException("Deck already peeked");
         }
-        return getModel().viewDeck(num);
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new DeckPeekedMessage(player.getUsername(), getModel().viewDeck(num)));
     }
 
     /**

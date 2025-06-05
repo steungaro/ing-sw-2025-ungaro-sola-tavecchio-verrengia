@@ -115,6 +115,7 @@ public class PiratesState extends PlayingState {
 
         //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         //fight with the pirates
         if (firePower > this.firePower) {
             //if the player has defeated the pirates, he can accept the card
@@ -246,6 +247,7 @@ public class PiratesState extends PlayingState {
         }
         //choose the branch
         manager.chooseBranch(player, coordinates);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "chose branch"));
         //check if we finished shooting
         finishManager();
     }
@@ -272,6 +274,7 @@ public class PiratesState extends PlayingState {
         try {
             //activate the shield
             manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             //fire the projectile
             manager.fire();
             //check if we finished shooting

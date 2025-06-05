@@ -85,7 +85,7 @@ public class CombatZone0State extends PlayingState {
      * @throws EnergyException if the player doesn't have enough energy
      */
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException, ComponentNotFoundException{
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         //check if the player is in the right phase
         if(phase != StatePhase.CANNONS_PHASE) {
             throw new InvalidStateException("You cannot activate cannons now");
@@ -103,6 +103,7 @@ public class CombatZone0State extends PlayingState {
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //calculate the firepower that the player declared
+        super.activateCannons(player, cannons, batteries);
         float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player.getUsername(), firepower);
         //pass the turn to the next player
@@ -238,6 +239,7 @@ public class CombatZone0State extends PlayingState {
                 throw new InvalidStateException("You didn't select enough cabins");
             }
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost crew"));
             lostCrew -= cabins.size();
             //check if the player has lost the necessary crew
             if (lostCrew == 0) {
@@ -281,6 +283,7 @@ public class CombatZone0State extends PlayingState {
         }
         //translate the coordinates to the components and calculate the engine power
         int enginePower = getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //save the engine power in the declaredEnginePower map
         declaredEnginePower.put(player.getUsername(), enginePower);
 
@@ -334,6 +337,7 @@ public class CombatZone0State extends PlayingState {
         //use the shield and battery to activate the shield
         try {
             manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             //fire the projectile
                 manager.fire();
                 if (manager.finished()) {
@@ -380,6 +384,7 @@ public class CombatZone0State extends PlayingState {
         }
         //choose the branch selected by the player
         manager.chooseBranch(player, coordinates);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "chose branch"));
         //check if the fire manager finished
         finishManager();
     }
@@ -442,7 +447,7 @@ public class CombatZone0State extends PlayingState {
                         // and the player will be removed from the array in the activateCannons method
                         activateCannons(player, new ArrayList<>(), new ArrayList<>());
                     } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
-                             ComponentNotFoundException e) {
+                             ComponentNotFoundException | InvalidShipException | DieNotRolledException e) {
                         //ignore
                     }
                 }

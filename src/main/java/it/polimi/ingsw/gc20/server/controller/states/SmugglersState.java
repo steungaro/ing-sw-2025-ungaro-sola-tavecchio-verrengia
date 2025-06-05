@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -190,6 +191,7 @@ public class SmugglersState extends CargoState {
 
         //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         if (firePower > this.firePower) {
             phase = StatePhase.ACCEPT_PHASE;
             setStandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card");

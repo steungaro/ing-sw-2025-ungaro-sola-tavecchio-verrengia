@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -58,6 +59,7 @@ public class OpenSpaceState extends PlayingState {
             energy.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //save the declared engine power in the map
         declaredEngines.put(player, getModel().EnginePower(player, engines.size(), energy));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //go to the next player
         nextPlayer();
         if (getCurrentPlayer() == null) {

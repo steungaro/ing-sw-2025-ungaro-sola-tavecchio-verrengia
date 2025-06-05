@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class SlaversState extends PlayingState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         if (firePower > this.firePower) {
             //won, the player can accept the card
             getController().getActiveCard().playCard();
@@ -131,6 +133,7 @@ public class SlaversState extends PlayingState {
         }
 
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost crew"));
         //next player
         nextPlayer();
         if (getCurrentPlayer() == null) {

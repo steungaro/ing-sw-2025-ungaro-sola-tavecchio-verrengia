@@ -13,7 +13,6 @@ import it.polimi.ingsw.gc20.server.model.components.Shield;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
@@ -71,6 +70,7 @@ public class MeteorSwarmState extends PlayingState {
             } else {
                 fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
             }
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
             // activate the cannons of the current player
             //fire the projectile
             fireManagerMap.get(player).fire();
@@ -179,6 +179,7 @@ public class MeteorSwarmState extends PlayingState {
         try {
             //activate the shield
             fireManagerMap.get(player).activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             fireManagerMap.get(player).fire();
             nextPlayer();
             //if all the player has received this projectile
@@ -224,6 +225,7 @@ public class MeteorSwarmState extends PlayingState {
         }
         //choose the branch selected by the player
         fireManagerMap.get(player).chooseBranch(player, coordinates);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "chose branch"));
         //after the player chose the branch, we check if there is a next player
         nextPlayer();
         if (getCurrentPlayer() == null) {

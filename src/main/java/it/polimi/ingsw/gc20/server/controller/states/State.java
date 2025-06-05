@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -81,9 +80,8 @@ public abstract class State{
     public void stopAssembling(Player player, int position) throws InvalidIndexException, InvalidStateException {
         exception();
     }
-    public List<AdventureCard> peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
+    public void peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
         exception();
-        return null;
     }
     public void turnHourglass(Player player) throws HourglassException, InvalidStateException {
         exception();

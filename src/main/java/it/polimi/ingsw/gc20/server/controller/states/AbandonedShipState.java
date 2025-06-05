@@ -11,6 +11,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -106,6 +107,8 @@ public class AbandonedShipState extends PlayingState {
             throw new InvalidStateException("You didn't select enough cabins");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost crew"));
+
         //mark the card as player and go to the standby phase
         getController().getActiveCard().playCard();
         phase = StatePhase.DRAW_CARD_PHASE;

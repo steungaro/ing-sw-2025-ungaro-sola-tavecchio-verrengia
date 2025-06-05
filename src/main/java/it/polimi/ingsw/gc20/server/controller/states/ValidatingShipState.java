@@ -115,9 +115,7 @@ public class ValidatingShipState extends State {
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
         //notify the players of the ship changes
-        for (Player p : getController().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "removed component"));
-        }
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "removed component"));
         isShipValid(player);
     }
 
@@ -140,6 +138,7 @@ public class ValidatingShipState extends State {
         }
         //add the alien to the ship
         getModel().setAlien(color, Translator.getComponentAt(player, cabin, Cabin.class), player);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "added alien"));
     }
 
     /**

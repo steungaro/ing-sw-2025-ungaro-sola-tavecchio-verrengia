@@ -80,7 +80,7 @@ public class    CombatZone1State extends CargoState {
      * @param batteries the batteries selected by the player
      */
     @Override
-    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, ComponentNotFoundException {
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         // check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn");
@@ -99,6 +99,7 @@ public class    CombatZone1State extends CargoState {
         //save the declared firepower in the map
         float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player.getUsername(), firepower);
+        super.activateCannons(player, cannons, batteries);
         //pass the turn to the next player
         nextPlayer();
         //check if the current player is null, if so, it means that all players have played
@@ -161,6 +162,7 @@ public class    CombatZone1State extends CargoState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //save the declared engine power in the map
         declaredEnginePower.put(player.getUsername(), getModel().EnginePower(player, engines.size(), batteriesComponents));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //pass the turn to the next player
         nextPlayer();
         //check if the current player is null, if so, it means that all players have played
@@ -270,6 +272,7 @@ public class    CombatZone1State extends CargoState {
         //use the shield adn battery to activate the shield
         try {
             manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             //fire the projectile
             fireProjectile(player);
         } catch (InvalidShipException e) {
@@ -423,6 +426,7 @@ public class    CombatZone1State extends CargoState {
         }
         //choose the branch selected by the player
         manager.chooseBranch(player, coordinates);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "chose branch"));
         //check if the fire manager is finished
         finishManager();
     }
@@ -482,7 +486,7 @@ public class    CombatZone1State extends CargoState {
                         // and the player will be removed from the array in the activateCannons method
                         activateCannons(player, new ArrayList<>(), new ArrayList<>());
                     } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
-                             ComponentNotFoundException e) {
+                             ComponentNotFoundException | InvalidShipException | DieNotRolledException e) {
                         //ignore
                     }
                 }

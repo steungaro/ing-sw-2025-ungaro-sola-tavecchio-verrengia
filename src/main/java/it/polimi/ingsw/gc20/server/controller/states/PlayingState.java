@@ -2,10 +2,13 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidTurnException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
+import org.javatuples.Pair;
+
+import java.util.List;
 
 public abstract class PlayingState extends State {
     public PlayingState(GameModel model, GameController controller) {
@@ -57,4 +60,8 @@ public abstract class PlayingState extends State {
         }
     }
 
+    @Override
+    public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidShipException, InvalidCannonException, EnergyException, DieNotRolledException, ComponentNotFoundException {
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
+    }
 }
