@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc20.server.model.components.Component;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
@@ -28,25 +27,23 @@ public class AssemblingState extends State {
         super(model, controller);
         //init the state
         getModel().initCountdown();
+        phase = StatePhase.ASSEMBLING_PHASE;
         for (Player player : getController().getPlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
-            phase = StatePhase.ASSEMBLING_PHASE;
-            //init all the local model of the view
-            for (Player p : getController().getPlayers()) {
-                NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
-            }
 
-            NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
-            NetworkService.getInstance().sendToClient(player.getUsername(), PileUpdateMessage.fromComponent(player.getUsername(), 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
-
+            //init all the ship of the clients
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
             if (model.getLevel() == 2) {
-                NetworkService.getInstance().sendToClient(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
+                getController().getMessageManager().sendToPlayer(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
             }
-            // notify each player of the phase they are in
-            NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
-
         }
+        //init the boards of the clients
+        getController().getMessageManager().broadcastUpdate(BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+        //init the component piles of the clients
+        getController().getMessageManager().broadcastUpdate(PileUpdateMessage.fromComponent("init", 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
+        //set the phase of the client with an AssemblingMessage
+        getController().getMessageManager().broadcastPhase(new AssemblingMessage(null));
         for (int i = 1; i < 4; i++) {
             deckPeeked.put(i, null);
         }
@@ -77,6 +74,7 @@ public class AssemblingState extends State {
         // take the component from the unviewed pile
         Component component =Translator.getFromUnviewed(getModel(), index);
         getModel().componentFromUnviewed(component);
+        pileUpdate(player.getUsername());
         takeComponent(player, component);
         //if the player has peeked a deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
@@ -103,6 +101,7 @@ public class AssemblingState extends State {
         //take the component from the viewed pile
         Component component =Translator.getFromViewed(getModel(), index);
         getModel().componentFromViewed(component);
+        pileUpdate(player.getUsername());
         takeComponent(player, component);
         //if the player has peeked a deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
@@ -129,6 +128,7 @@ public class AssemblingState extends State {
         // take the component from the booked pile
         Component component =Translator.getFromBooked(player, index);
         getModel().componentFromBooked(component, player);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "took component from booked"));
         takeComponent(player, component);
         //if the player has peeked a deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
@@ -152,11 +152,11 @@ public class AssemblingState extends State {
         }
         //put the component in the booked pile
         getModel().componentToBooked(componentsInHand.get(player), player);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "added component from booked"));
         // Remove component from player's hand
         componentsInHand.put(player, null);
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "added to booked"));
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
 
     /**
@@ -176,10 +176,10 @@ public class AssemblingState extends State {
         }
         // add the component to the viewed pile
         getModel().componentToViewed(componentsInHand.get(player));
-
+        pileUpdate(player.getUsername());
         // Remove component from player's hand
         componentsInHand.put(player, null);
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
     /**
      * This method is used to place a component on the ship.
@@ -192,17 +192,14 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
-
         //add the component in the hand to the ship
         getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
         // Remove component from player's hand
         componentsInHand.put(player, null);
         //notify the players of the ship changes
-        for (Player p : getController().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
-        }
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "placed component"));
         //notify the player that they go to the TAKE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(null));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
     /**
      * This method is used to rotate a component clockwise.
@@ -218,7 +215,7 @@ public class AssemblingState extends State {
         //rotate the component clockwise
         getModel().RotateClockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
     /**
      * This method is used to rotate a component counterclockwise.
@@ -233,7 +230,7 @@ public class AssemblingState extends State {
         //rotate the component counterclockwise
         getModel().RotateCounterclockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
 
     /** this method is used to stop assembling the ship
@@ -250,13 +247,11 @@ public class AssemblingState extends State {
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
         //notify the player that the position has been set
-        for (Player p : getController().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
-        }
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
         //mark the player as assembled
         assembled.put(player, true);
         //notify the player that they are in standby phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
     }
 
     /**
@@ -319,9 +314,7 @@ public class AssemblingState extends State {
             throw new HourglassException("Cannot turn hourglass if time is not 0");
         }
         getModel().turnHourglass();
-        for (String user: getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(user, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
-        }
+        getController().getMessageManager().broadcastUpdate(new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         //if the player has peeked a deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -334,7 +327,7 @@ public class AssemblingState extends State {
         // Add component to player's hand
         componentsInHand.put(player, component);
         //notify the player that they go to the PLACE_COMPONENT phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(component.createViewComponent()));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(component.createViewComponent()));
         // if the player has peeked at the deck, remove the peek so others can peek
         for (int i = 1; i < 4; i++) {
             if (deckPeeked.get(i) == player) {
@@ -347,17 +340,19 @@ public class AssemblingState extends State {
         return true;
     }
 
-    public void rejoin(String username){
+    public void rejoin(String username) {
         //notify the player that they are in the TAKE_COMPONENT phase after updating the model
-        NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
-        NetworkService.getInstance().sendToClient(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
+        getController().getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+        getController().getMessageManager().sendToPlayer(username, PileUpdateMessage.fromComponent(username, getModel().getGame().getPile().getUnviewed().size(), getModel().getGame().getPile().getViewed(), "init unviewed pile"));
         if (getModel().getLevel() == 2) {
-            NetworkService.getInstance().sendToClient(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
+            getController().getMessageManager().sendToPlayer(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         }
-        if (componentsInHand.get(getController().getPlayerByID(username))==null){
-            NetworkService.getInstance().sendToClient(username, new AssemblingMessage(null));
+        if (assembled.get(getController().getPlayerByID(username))) {
+            getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Waiting for others to finish assembling"));
+        }else if (componentsInHand.get(getController().getPlayerByID(username))==null){
+            getController().getMessageManager().sendToPlayer(username, new AssemblingMessage(null));
         }else {
-            NetworkService.getInstance().sendToClient(username, new AssemblingMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
+            getController().getMessageManager().sendToPlayer(username, new AssemblingMessage(componentsInHand.get(getController().getPlayerByID(username)).createViewComponent()));
         }
 
     }
@@ -370,12 +365,20 @@ public class AssemblingState extends State {
         for (Player player : getController().getPlayers()) {
             if (player.getUsername().equals(username)) {
                 rejoin(username);
-            }
-            if (assembled.get(player)) {
-                NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
+            } else if (assembled.get(player)) {
+                getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for " + username + " to finish assembling"));
+            } else if (componentsInHand.get(player) == null){
+                getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
             } else {
-                NetworkService.getInstance().sendToClient(player.getUsername(), new AssemblingMessage(componentsInHand.get(player) != null ? componentsInHand.get(player).createViewComponent() : null));
+                getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
             }
         }
+    }
+
+    private void pileUpdate(String username){
+        getController().getMessageManager().broadcastUpdate(PileUpdateMessage.fromComponent(username,
+                getModel().getGame().getPile().getUnviewed().size(),
+                getModel().getGame().getPile().getViewed(),
+                "taken from unviewed"));
     }
 }

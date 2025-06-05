@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 public class PausedState extends State {
     final State previousState;
@@ -15,9 +14,7 @@ public class PausedState extends State {
         super(model, controller);
         this.previousState = previousState;
         this.phase = StatePhase.STANDBY_PHASE;
-        for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for the game to resume"));
-        }
+        getController().getMessageManager().broadcastPhase(new StandbyMessage("waiting for the game to resume"));
     }
 
     public void resume(String reconnected) {
@@ -29,17 +26,7 @@ public class PausedState extends State {
                 //ignore cannot happen
             }
         } else {
-            for (String username : getController().getInGameConnectedPlayers()) {
-                try {
-                    if (username.equals(previousState.getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, previousState.getPhase().createMessage(previousState));
-                    } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + previousState.getCurrentPlayer() + " to finish their turn"));
-                    }
-                } catch (InvalidStateException e) {
-                    e.printStackTrace();
-                }
-            }
+            getController().getMessageManager().notifyPhaseChange(previousState.getPhase(), previousState);
         }
     }
 

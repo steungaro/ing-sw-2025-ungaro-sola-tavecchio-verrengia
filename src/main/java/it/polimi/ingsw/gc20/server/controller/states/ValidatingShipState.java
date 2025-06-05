@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.HashMap;
@@ -24,10 +23,10 @@ public class ValidatingShipState extends State {
      */
     public ValidatingShipState(GameModel model, GameController controller) {
         super(model, controller);
+        getController().getMessageManager().broadcastUpdate(BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
         for (Player player : model.getInGamePlayers()) {
             validShips.put(player, player.getShip().isValid());
             readyToFly.put(player, model.getLevel() == 0); // if level 0, alien is considered added
-            NetworkService.getInstance().sendToClient(player.getUsername(), BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
             phase = StatePhase.VALIDATE_SHIP_PHASE;
             for (String username : getController().getInGameConnectedPlayers()) {
                 try {
@@ -60,36 +59,27 @@ public class ValidatingShipState extends State {
             if (getModel().getLevel() == 0) {
                 readyToFly.put(player, true);
                 if (allShipsReadyToFly()) {
-                    //if all the players are ready to fly, go to the next phase
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-                    }
                     initAllShips();
                     for (Player p : getModel().getInGamePlayers()) {
-                        for (Player username : getController().getPlayers()) {
-                            NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
-                        }
+                        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
                     }
+                    getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                     phase = StatePhase.DRAW_CARD_PHASE;
                     getController().setState(new PreDrawState(getController()));
                 } else {
-                    NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+                    getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
             } else {
                 if (allShipsValidated()) {
                     phase = StatePhase.ADD_ALIEN_PHASE;
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
-                    }
+                    getController().getMessageManager().broadcastPhase(new AlienPlacementePhaseMessage());
                 } else {
-                    //notify all the players that the ship is valid and waiting for other players (validate-menu on client side checks if ships are valid and displays properly)
-                    NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+                    getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
             }
             return true;
         } else {
-            //if the ship is not valid, he cannot add the alien
-            NetworkService.getInstance().sendToClient(player.getUsername(), new ValidateShipPhase());
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new ValidateShipPhase());
         }
         return false;
     }
@@ -175,22 +165,15 @@ public class ValidatingShipState extends State {
         readyToFly.put(player, true);
         //check if all the players are ready to fly
         if (allShipsReadyToFly()) {
-            //if all the players are ready to fly, go to the next phase
-            for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
             initAllShips();
             for (Player p : getModel().getInGamePlayers()) {
-                for (Player username : getController().getPlayers()) {
-                    NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
-                }
+                getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(p.getUsername(), p.getShip(), "init ship"));
             }
-
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
             phase = StatePhase.DRAW_CARD_PHASE;
             getController().setState(new PreDrawState(getController()));
         } else {
-            //notify all the players that the ship is valid and waiting for other players
-            NetworkService.getInstance().sendToClient(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
         }
     }
 
@@ -200,13 +183,13 @@ public class ValidatingShipState extends State {
     }
 
     public void rejoin(String username){
-        NetworkService.getInstance().sendToClient(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+        getController().getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
         if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 2 && !readyToFly.get(getController().getPlayerByID(username))) {
-            NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
+            getController().getMessageManager().sendToPlayer(username, new AlienPlacementePhaseMessage());
         } else if (!validShips.get(getController().getPlayerByID(username)) && phase == StatePhase.VALIDATE_SHIP_PHASE) {
-            NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
+            getController().getMessageManager().sendToPlayer(username, new ValidateShipPhase());
         } else {
-            NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is ready to fly, wait for other players to terminate their turn."));
+            getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
         }
     }
 
@@ -215,22 +198,20 @@ public class ValidatingShipState extends State {
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(reconnected)) {
                     rejoin(username);
-                }
-                if (validShips.get(getController().getPlayerByID(username))){
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
+                } else if (validShips.get(getController().getPlayerByID(username))){
+                    getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
                 } else {
-                    NetworkService.getInstance().sendToClient(username, new ValidateShipPhase());
+                    getController().getMessageManager().sendToPlayer(username, new ValidateShipPhase());
                 }
             }
         } else if (phase == StatePhase.ADD_ALIEN_PHASE) {
             for (String username : getController().getInGameConnectedPlayers()) {
                 if (username.equals(reconnected)) {
                     rejoin(username);
-                }
-                if (readyToFly.get(getController().getPlayerByID(username))){
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Your ship is ready to fly, wait for other players to terminate their turn."));
+                } else if (readyToFly.get(getController().getPlayerByID(username))){
+                    getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Your ship is ready to fly, wait for other players to terminate their turn."));
                 } else {
-                    NetworkService.getInstance().sendToClient(username, new AlienPlacementePhaseMessage());
+                    getController().getMessageManager().sendToPlayer(username, new AlienPlacementePhaseMessage());
                 }
             }
         }

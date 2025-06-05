@@ -3,8 +3,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LeaderboardMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
-import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,8 +45,6 @@ public class EndgameState extends State {
                 .stream()
                 .map(entry -> Map.entry(entry.getKey().getUsername(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        for (Player player : getController().getPlayers()) {
-            NetworkService.getInstance().sendToClient(player.getUsername(), new LeaderboardMessage(score));
-        }
+        getController().getMessageManager().broadcastUpdate(new LeaderboardMessage(score));
     }
 }

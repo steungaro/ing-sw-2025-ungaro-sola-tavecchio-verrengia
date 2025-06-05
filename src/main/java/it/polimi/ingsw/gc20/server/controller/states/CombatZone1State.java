@@ -14,7 +14,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.*;
@@ -48,15 +47,8 @@ public class    CombatZone1State extends CargoState {
         this.manager = null;
         this.phase = StatePhase.CANNONS_PHASE;
         //notify the first player that he has to select the cannons
-        for (String username : getController().getInGameConnectedPlayers()) {
-            if (!username.equals(getCurrentPlayer())) {
-                //notify the player that he has to wait
-                NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage("You are the first player, select the cannons to use"));
-            } else {
-                //notify the player that he has to activate the cannons
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
-            }
-        }
+        setStandbyMessage(getCurrentPlayer() + " is activating the cannons");
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -75,14 +67,9 @@ public class    CombatZone1State extends CargoState {
         setCurrentPlayer(player.getUsername());
         //set the phase to the roll dice phase
         phase = StatePhase.ROLL_DICE_PHASE;
+        setStandbyMessage(getCurrentPlayer() + " is rolling the dice");
         //notify the current player that he has to roll the dice; others will go to the standby phase
-        for (String username : getController().getInGameConnectedPlayers()) {
-            if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
-            } else {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
-            }
-        }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
 
@@ -126,32 +113,17 @@ public class    CombatZone1State extends CargoState {
             //get the player with the minimum declaredFirePower and make it lose flight days
             getModel().movePlayer(p, - lostDays);
             //notify all connected players of the player who lost flight days
-            for (Player username : getController().getPlayers()){
-                NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces())));
-            }
+            getController().getMessageManager().broadcastPhase(new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces())));
             //set the current player to the first online player
             setCurrentPlayer(getController().getFirstOnlinePlayer());
             //set the phase to the next phase
             phase = StatePhase.ENGINES_PHASE;
+            setStandbyMessage(getCurrentPlayer() + " is activating the engines");
             //notify all the connected players that the current player has to select the engines
-            for (String username : getController().getInGameConnectedPlayers()){
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new EnginePhaseMessage("You are the first player, select the engines to use"));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to select the engines"));
-                }
-            }
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
-            //notify the next player that he has to activate the cannons and the others that they have to wait
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    //notify the player that he has to activate cannon
-                    NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-                } else {
-                    //notify the player that he has to activate the cannons
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
-                }
-            }
+            setStandbyMessage(getCurrentPlayer() + " is activating the cannons");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -215,39 +187,20 @@ public class    CombatZone1State extends CargoState {
             //if all cargos are zero and there is still cargo to remove, go to remove battery phase
             lostCargo--;
             if (allZero && lostCargo > 0) {
-                //if the player has no cargo to lose, set the phase to the remove battery phase
-                for (String username : getController().getInGameConnectedPlayers()){
-                    if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new RemoveBatteryMessage(lostCargo));
-                    } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to remove the batteries"));
-                    }
-                }
                 phase = StatePhase.BATTERY_PHASE;
+                setStandbyMessage(getCurrentPlayer() + " is selecting the batteries to remove");
+                getController().getMessageManager().notifyPhaseChange(phase, this);
             } else {
                 removingCargo = true;
                 //set the phase to the remove cargo phase
                 phase = StatePhase.REMOVE_CARGO;
-                //notify the current player that he has to remove the cargo
-                for (String username : getController().getInGameConnectedPlayers()){
-                    if (username.equals(getCurrentPlayer())) {
-                        NetworkService.getInstance().sendToClient(username, new RemoveCargoMessage(lostCargo));
-                    } else {
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to remove the cargo"));
-                    }
-                }
+                setStandbyMessage(getCurrentPlayer() + " is removing cargo");
+                getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         }else {
-            //notify the next player that he has to activate the cannons and the others that they have to wait
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    //notify the player that he has to activate cannon
-                    NetworkService.getInstance().sendToClient(username, new EnginePhaseMessage(createsEnginesMessage()));
-                } else {
-                    //notify the player that he has to activate the cannons
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
-                }
-            }
+            phase = StatePhase.ENGINES_PHASE;
+            setStandbyMessage(getCurrentPlayer() + " is activating the engines");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -272,16 +225,10 @@ public class    CombatZone1State extends CargoState {
         switch (manager.getFirstProjectile()) {
             case LIGHT_FIRE, LIGHT_METEOR:
                 phase = StatePhase.SELECT_SHIELD;
-                for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new ShieldPhaseMessage(createsShieldMessage()));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is selecting the shield"));
-                }
-            }
+                setStandbyMessage(getCurrentPlayer() + " is selecting the shield");
+                getController().getMessageManager().notifyPhaseChange(phase, this);
                 break;
             case HEAVY_METEOR:
-                phase = StatePhase.CANNONS_PHASE;
                 break;
             case HEAVY_FIRE:
                 //if the projectile is a heavy fire, the player can't do anything
@@ -291,9 +238,7 @@ public class    CombatZone1State extends CargoState {
                 //if the projectile is null, we can draw a new card
                 getModel().getActiveCard().playCard();
                 //notify all players that the card has been plated, next will be drawn
-                for (String username : getController().getInGameConnectedPlayers()){
-                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-                }
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                 phase = StatePhase.DRAW_CARD_PHASE;
                 getController().setState(new PreDrawState(getController()));
                 break;
@@ -329,18 +274,11 @@ public class    CombatZone1State extends CargoState {
             fireProjectile(player);
         } catch (InvalidShipException e) {
             //notify all the players of the ship update
-            for (Player player1 : getController().getPlayers()) {
-                NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
-            }
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             //notify all players that the current player has to choose the branch
-            for (String username : getController().getInGameConnectedPlayers()){
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
-                }
-            }
             phase = StatePhase.VALIDATE_SHIP_PHASE;
+            setStandbyMessage(getCurrentPlayer() + " is choosing the branch");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -351,18 +289,10 @@ public class    CombatZone1State extends CargoState {
             finishManager();
         } catch (InvalidShipException e) {
             //notify all the players of the ship update
-            for (Player player1 : getController().getPlayers()) {
-                NetworkService.getInstance().sendToClient(player1.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
-            }
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             phase = StatePhase.VALIDATE_SHIP_PHASE;
-            //notify all players that the current player has to choose the branch
-            for (String username : getController().getInGameConnectedPlayers()){
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new ChooseBranchMessage());
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the branch"));
-                }
-            }
+            setStandbyMessage(getCurrentPlayer() + " is choosing the branch");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         } catch (DieNotRolledException _) {
             //cannot happen
         }
@@ -372,22 +302,13 @@ public class    CombatZone1State extends CargoState {
         if (manager.finished()) {
             //if we finished shooting, set the phase to standby phase
             phase = StatePhase.DRAW_CARD_PHASE;
-            //notify all players that the card has been plated, next will be drawn
-            for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
             phase = StatePhase.ROLL_DICE_PHASE;
-            //notify the current player that he has to roll the dice; others will go to the standby phase
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new RollDiceMessage(createsRollDiceMessage()));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is rolling the dice"));
-                }
-            }
+            setStandbyMessage(getCurrentPlayer() + " is rolling the dice");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -421,15 +342,9 @@ public class    CombatZone1State extends CargoState {
         //if all cargos are zero and there is still cargo to remove, go to remove battery phase
         lostCargo--;
         if (allZero && lostCargo > 0) {
-            //if the player has no cargo to lose, set the phase to the remove battery phase and notify the player
-            for (String username : getController().getInGameConnectedPlayers()){
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new RemoveBatteryMessage(lostCargo));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " to remove the batteries"));
-                }
-            }
             phase = StatePhase.BATTERY_PHASE;
+            setStandbyMessage(getCurrentPlayer() + " is selecting the batteries to remove");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -457,9 +372,7 @@ public class    CombatZone1State extends CargoState {
         //if the player removed all the cargo, set the current player to the first online player
         setCurrentPlayer(getController().getFirstOnlinePlayer());
         //notify all players that an automatic action is being performed
-        for (String username : getController().getInGameConnectedPlayers()){
-            NetworkService.getInstance().sendToClient(username, new AutomaticActionMessage("finding player with minimum crew"));
-        }
+        getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("finding player with minimum crew"));
         //set the phase to the next phase
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
@@ -522,21 +435,14 @@ public class    CombatZone1State extends CargoState {
         //first, we check if we are in a penality phase:
         // REMOVE_CARGO or ROLL_DICE_PHASE, ACTIVATE_SHIELD or VALIDATE SHIP
         if (phase == StatePhase.REMOVE_CARGO){
-            //we go to the next phase
-            //notify all players that the current player has to remove the cargo
-            for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new AutomaticActionMessage("finding player with minimum crew"));
-            }
             phase = StatePhase.AUTOMATIC_ACTION;
+            getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("finding player with minimum crew"));
             automaticAction();
         }
         else if (phase == StatePhase.ROLL_DICE_PHASE || phase == StatePhase.SELECT_SHIELD){
             //we end the card
             phase = StatePhase.DRAW_CARD_PHASE;
-            //notify all players that the card has been plated, next will be drawn
-            for (String username : getController().getInGameConnectedPlayers()){
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
             getModel().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         }
@@ -545,14 +451,10 @@ public class    CombatZone1State extends CargoState {
                 //we auto choose the branch
                 chooseBranch(player, new Pair<>(-1, -1));
                 //notify the ship update
-                for (Player username : getController().getPlayers()){
-                    NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
-                }
+                getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "chose a branch"));
                 if (phase != StatePhase.DRAW_CARD_PHASE){
                     phase = StatePhase.DRAW_CARD_PHASE;
-                    for (String username : getController().getInGameConnectedPlayers()){
-                        NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-                    }
+                    getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                     //if we are not in the standby phase, we can draw a new card
                     getModel().getActiveCard().playCard();
                     getController().setState(new PreDrawState(getController()));
@@ -586,27 +488,11 @@ public class    CombatZone1State extends CargoState {
                 }
             } else {
                 if (phase == StatePhase.ENGINES_PHASE) {
-                    //notify the next player that he has to activate the cannons and the others that they have to wait
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        if (username.equals(getCurrentPlayer())) {
-                            //notify the player that he has to activate cannon
-                            NetworkService.getInstance().sendToClient(username, new EnginePhaseMessage(createsEnginesMessage()));
-                        } else {
-                            //notify the player that he has to activate the cannons
-                            NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
-                        }
-                    }
+                    setStandbyMessage(getCurrentPlayer() + " is activating the engines");
+                    getController().getMessageManager().notifyPhaseChange(phase, this);
                 } else if (phase == StatePhase.CANNONS_PHASE) {
-                    //notify the next player that he has to activate the cannons and the others that they have to wait
-                    for (String username : getController().getInGameConnectedPlayers()) {
-                        if (username.equals(getCurrentPlayer())) {
-                            //notify the player that he has to activate cannon
-                            NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-                        } else {
-                            //notify the player that he has to activate the cannons
-                            NetworkService.getInstance().sendToClient(username, new StandbyMessage(getCurrentPlayer() + "is activating the cannons"));
-                        }
-                    }
+                    setStandbyMessage(getCurrentPlayer() + " is activating the cannons");
+                    getController().getMessageManager().notifyPhaseChange(phase, this);
                 }
             }
         }

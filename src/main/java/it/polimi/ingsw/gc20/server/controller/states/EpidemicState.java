@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 
 @SuppressWarnings("unused") // dynamically created by Cards
 public class EpidemicState extends PlayingState {
@@ -17,9 +16,7 @@ public class EpidemicState extends PlayingState {
     public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         //notify the players that the epidemic is starting, and an automatic action is going to be performed
-        for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new AutomaticActionMessage(getAutomaticActionMessage()));
-        }
+        getController().getMessageManager().broadcastUpdate(new AutomaticActionMessage(getAutomaticActionMessage()));
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
     }
@@ -42,17 +39,13 @@ public class EpidemicState extends PlayingState {
                 .forEach(p -> p.getShip().epidemic());
         //notify all the players with all the ship updates
         for (Player p: getController().getModel().getInGamePlayers()) {
-            for (Player username : getController().getPlayers()) {
-                NetworkService.getInstance().sendToClient(username.getUsername(), Ship.messageFromShip(p.getUsername(), p.getShip(), "epidemic"));
-            }
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(p.getUsername(), p.getShip(), "epidemic"));
         }
 
         //effect ended, draw a new card
         phase = StatePhase.DRAW_CARD_PHASE;
         //notify all the players that the epidemic effect is over, and we wait for a new card
-        for (String player : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(player, new DrawCardPhaseMessage());
-        }
+        getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         getModel().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }

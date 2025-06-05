@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -29,7 +28,6 @@ public class AbandonedShipState extends PlayingState {
     private final int credits;
     private final int lostDays;
 
-
     /**
      * Default constructor
      */
@@ -38,16 +36,11 @@ public class AbandonedShipState extends PlayingState {
         this.lostCrew = card.getCrew();
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
-        //notify the first player that it's his turn with an acceptPhaseMessage and send the other players a standby message
-        for (String username: getController().getInGameConnectedPlayers()) {
-            if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Do you want to accept the card?"));
-            } else {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " turn"));
-            }
-        }
 
         this.phase = StatePhase.ACCEPT_PHASE;
+        setStandbyMessage(getCurrentPlayer() + " is choosing to accept or refuse the Abandoned Ship card. ");
+        // notify the players connected to the game to update the player data
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
@@ -76,19 +69,20 @@ public class AbandonedShipState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
-        //notify the players connected to the game to update the player data
-        for (Player p : getController().getPlayers()) {
-            NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(),
-                    credits,
-                    true,
-                    player.getColor(),
-                    (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
-        }
-        // la phase del current player diventa LOSE_CREW_PHASE,
+
+        PlayerUpdateMessage message = new PlayerUpdateMessage(player.getUsername(),
+                credits,
+                true,
+                player.getColor(),
+                (player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+        //notify all the players the update of the player
+        getController().getMessageManager().broadcastUpdate(message);
+
         // others will be in standby phase communicated via a message
         phase = StatePhase.LOSE_CREW_PHASE;
+        setStandbyMessage(getCurrentPlayer() + " is choosing the crew to lose. ");
         //notify the current player about the change of phase with a LoseCrewMessage
-        NetworkService.getInstance().sendToClient(player.getUsername(), new LoseCrewMessage(lostCrew));
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
     /**
      * method to remove the crew from the ship of the player whose turn it is
@@ -114,11 +108,10 @@ public class AbandonedShipState extends PlayingState {
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
         //mark the card as player and go to the standby phase
         getController().getActiveCard().playCard();
-        //notify all the players that the card has been played and the next card will be drawn
-        for (String username: getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-        }
         phase = StatePhase.DRAW_CARD_PHASE;
+        //notify all the players that the card has been played and the next card will be drawn
+        getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
+
         getController().setState(new PreDrawState(getController()));
     }
 

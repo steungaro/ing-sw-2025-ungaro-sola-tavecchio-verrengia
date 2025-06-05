@@ -10,7 +10,6 @@ import it.polimi.ingsw.gc20.server.model.components.Cabin;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -34,16 +33,9 @@ public class SlaversState extends PlayingState {
         this.lostMembers = card.getCrew();
         this.reward = card.getCredits();
         this.lostDays = card.getLostDays();
-        for (String username : getController().getInGameConnectedPlayers()) {
-            if (username.equals(getCurrentPlayer())) {
-                //send the player the cannon fire
-                NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-            } else {
-                //send the player a standby message
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
-            }
-        }
         phase = StatePhase.CANNONS_PHASE;
+        setStandbyMessage(getCurrentPlayer() + " is choosing cannons and batteries to shoot the salvers");
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
@@ -61,7 +53,7 @@ public class SlaversState extends PlayingState {
      * @param player the player that is shooting
      * @param cannons the cannons selected by the player
      * @param batteries the batteries selected by the player
-     * @return 1 if the player defeated the card, 0 if the player didn't defeat the card and -1 if the player lost
+     *
      * @throws InvalidStateException if the game is not in the cannon phase
      * @throws InvalidTurnException if it's not the player's turn
      * @throws InvalidCannonException if the cannon is not valid
@@ -87,46 +79,27 @@ public class SlaversState extends PlayingState {
         if (firePower > this.firePower) {
             //won, the player can accept the card
             getController().getActiveCard().playCard();
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Slavers defeated, do you want to accept the card?"));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card"));
-                }
-            }
             phase = StatePhase.ACCEPT_PHASE;
+            setStandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         } else if (firePower == this.firePower) {
             //draw, go to the next player
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw new card
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-                }
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                 phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    if (username.equals(getCurrentPlayer())) {
-                        //send the player the cannon fire
-                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-                    } else {
-                        //send the player a standby message
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
-                    }
-                }
+                phase = StatePhase.CANNONS_PHASE;
+                setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+                getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else {
-            //lost, the player has to lose crew
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new LoseCrewMessage(lostMembers));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to lose crew"));
-                }
-            }
             phase = StatePhase.LOSE_CREW_PHASE;
+            setStandbyMessage("waiting for " + getCurrentPlayer() + " to lose crew");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -162,24 +135,14 @@ public class SlaversState extends PlayingState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             //draw new card
-            for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
             phase = StatePhase.DRAW_CARD_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
-            //the next player has to fight
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    //send the player the cannon fire
-                    NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-                } else {
-                    //send the player a standby message
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
-                }
-            }
             phase = StatePhase.CANNONS_PHASE;
+            setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -199,12 +162,8 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
-        for (Player username : getController().getPlayers()){
-            NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
-        }
-        for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-        }
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -222,9 +181,7 @@ public class SlaversState extends PlayingState {
         if (phase != StatePhase.ACCEPT_PHASE) {
             throw new InvalidStateException("Card not defeated");
         }
-        for (String username : getController().getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-        }
+        getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
@@ -237,24 +194,14 @@ public class SlaversState extends PlayingState {
             nextPlayer();
             if (getCurrentPlayer() == null) {
                 //draw new card
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-                }
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                 phase = StatePhase.DRAW_CARD_PHASE;
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
             } else {
-                //the next player has to fight
-                for (String username : getController().getInGameConnectedPlayers()) {
-                    if (username.equals(getCurrentPlayer())) {
-                        //send the player the cannon fire
-                        NetworkService.getInstance().sendToClient(username, new CannonPhaseMessage(createsCannonsMessage()));
-                    } else {
-                        //send the player a standby message
-                        NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy"));
-                    }
-                }
                 phase = StatePhase.CANNONS_PHASE;
+                setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+                getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else if (phase == StatePhase.ACCEPT_PHASE){
             try {

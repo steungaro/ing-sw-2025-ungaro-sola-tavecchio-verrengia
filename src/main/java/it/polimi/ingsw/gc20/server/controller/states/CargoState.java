@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.server.model.components.CargoHold;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public abstract class CargoState extends PlayingState {
      */
     @Override
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws CargoNotLoadable, CargoFullException, InvalidStateException, CargoException, InvalidTurnException, ComponentNotFoundException {
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
         getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
     }
 
@@ -45,6 +47,7 @@ public abstract class CargoState extends PlayingState {
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException,  InvalidStateException, InvalidCargoException, ComponentNotFoundException{
         try {
             getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
         } catch (CargoNotLoadable | CargoFullException _) {
             //ignore this exception, we are unloading the cargo
         }
@@ -65,6 +68,7 @@ public abstract class CargoState extends PlayingState {
     @Override
     public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, InvalidStateException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         getModel().MoveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "moved cargo"));
     }
 
     /**
@@ -85,5 +89,6 @@ public abstract class CargoState extends PlayingState {
         List<Battery> batteries = new ArrayList<>();
         batteries.add(Translator.getComponentAt(player, battery, Battery.class));
         getModel().removeEnergy(player, batteries);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost energy"));
     }
 }

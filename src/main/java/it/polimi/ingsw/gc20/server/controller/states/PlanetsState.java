@@ -8,7 +8,6 @@ import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -34,13 +33,8 @@ public class PlanetsState extends CargoState {
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();
         phase = StatePhase.LAND_ON_PLANET;
-        for (String username : getController().getInGameConnectedPlayers()) {
-            if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new LandOnPlanetPhase(planets));
-            } else {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to land on a planet"));
-            }
-        }
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet");
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
@@ -77,14 +71,8 @@ public class PlanetsState extends CargoState {
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
             reward = planets.get(landedPlanetIndex).getReward();
-            //send the message to the player
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new AddCargoMessage(reward));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to load cargo"));
-                }
-            }
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
             throw new InvalidStateException("The planet is not available");
         }
@@ -178,25 +166,16 @@ public class PlanetsState extends CargoState {
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
             for (Player p : getModel().getInGamePlayers()) {
-                for (Player username : getController().getPlayers()) {
-                    NetworkService.getInstance().sendToClient(username.getUsername(), new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
-                }
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
             }
-            for (String username : getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage() );
             phase = StatePhase.DRAW_CARD_PHASE;
             getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
         } else {
-            for (String username : getController().getInGameConnectedPlayers()) {
-                if (username.equals(getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, new LandOnPlanetPhase(planets));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage("waiting for " + getCurrentPlayer() + " to land on a planet"));
-                }
-            }
             phase = StatePhase.LAND_ON_PLANET;
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 

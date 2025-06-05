@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.List;
@@ -37,15 +36,10 @@ public class AbandonedStationState extends CargoState {
         this.crewNeeded = card.getCrew();
         this.reward = card.getReward();
         this.lostDays = card.getLostDays();
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " turn");
         //notify the first player that it's his turn with an acceptPhaseMessage and send the other players a standby message
-        for (String username: getController().getInGameConnectedPlayers()) {
-            if (username.equals(getCurrentPlayer())) {
-                NetworkService.getInstance().sendToClient(username, new AcceptPhaseMessage("Do you want to accept the card?"));
-            } else {
-                NetworkService.getInstance().sendToClient(username, new StandbyMessage("Waiting for " + getCurrentPlayer() + " turn"));
-            }
-        }
         this.phase = StatePhase.ACCEPT_PHASE;
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
@@ -75,8 +69,9 @@ public class AbandonedStationState extends CargoState {
         }
         //set the phase to the next phase
         phase = StatePhase.ADD_CARGO;
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo");
         //notify the current player of the new phase
-        NetworkService.getInstance().sendToClient(player.getUsername(), new AddCargoMessage(reward));
+        getController().getMessageManager().notifyPhaseChange(phase, this);
         //mark the card as played
         getController().getActiveCard().playCard();
     }
@@ -174,15 +169,12 @@ public class AbandonedStationState extends CargoState {
             //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
             //notify all the player of the player update
-            for (Player p : getController().getPlayers()) {
-                NetworkService.getInstance().sendToClient(p.getUsername(), new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
-            }
+            PlayerUpdateMessage pum = new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+            getController().getMessageManager().broadcastUpdate(pum);
             //change the phase to standby phase
             phase = StatePhase.DRAW_CARD_PHASE;
             //notify all the players that the card has been played and the next card will be drawn
-            for (String username: getController().getInGameConnectedPlayers()) {
-                NetworkService.getInstance().sendToClient(username, new DrawCardPhaseMessage());
-            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
             //draw a new card
             getController().setState(new PreDrawState(getController()));
         } else {

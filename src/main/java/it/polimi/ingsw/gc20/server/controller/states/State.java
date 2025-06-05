@@ -17,6 +17,7 @@ public abstract class State{
     private final GameModel model;
     private final GameController controller;
     protected StatePhase phase;
+    private String standbyMessage;
     /**
      * Default constructor
      */
@@ -31,6 +32,14 @@ public abstract class State{
     public State(GameModel model) {
         this.model = model;
         this.controller = null;
+    }
+
+    public void setStandbyMessage(String standbyMessage) {
+        this.standbyMessage = standbyMessage;
+    }
+
+    public String getStandbyMessage() {
+        return standbyMessage;
     }
 
     public StatePhase getPhase() {
