@@ -17,8 +17,8 @@ public class GUIApplication extends Application {
         ClientGameModel.setInstance(guiView);
         guiView.initGUI(primaryStage);
         primaryStage.setTitle("Galaxy Trucker");
-        primaryStage.setMinWidth(700);
-        primaryStage.setMinHeight(500);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(700);
         primaryStage.show();
     }
 

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.GUI.GUIApplication;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
