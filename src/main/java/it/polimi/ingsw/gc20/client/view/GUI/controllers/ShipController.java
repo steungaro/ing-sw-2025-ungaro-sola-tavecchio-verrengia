@@ -89,15 +89,6 @@ public abstract class ShipController {
         buildShipComponents(ship);
     }
 
-    private void updateCoordinateLabels(double width, double height) {
-        if (X_Label != null) {
-            X_Label.setText(String.format("W: %.0f", width));
-        }
-        if (Y_Label != null) {
-            Y_Label.setText(String.format("H: %.0f", height));
-        }
-    }
-
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
         if (row < 0 || row >= getRows() || col < 0 || col >= getCols()) {

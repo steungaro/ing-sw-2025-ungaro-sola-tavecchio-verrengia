@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane fx:id="rootPane" style="-fx-background-color: #222233; -fx-background-image: url('cardboard/cardboard-1.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController0">
+   <BorderPane prefHeight="200.0" prefWidth="200.0">
+      <top>
+   
+           <!-- Header -->
+           <HBox alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
+               <padding>
+                   <Insets bottom="10" left="20" right="20" top="10" />
+               </padding>
+               <Label text="Building phase" textFill="WHITE">
+                   <font>
+                       <Font name="System Bold" size="24.0" />
+                   </font>
+               </Label>
+           </HBox>
+      </top>
+      <right>
+   
+           <!-- Right Panel - Components -->
+           <VBox alignment="TOP_CENTER" minHeight="500.0" minWidth="200.0" spacing="15" BorderPane.alignment="CENTER">
+               <padding>
+                   <Insets bottom="10" left="10" right="10" top="10" />
+               </padding>
+   
+               <!-- Component in hand -->
+               <VBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
+                   <Label text="Component in hand" textFill="WHITE" wrapText="true">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Label>
+                   <StackPane fx:id="componentInHandPane" minHeight="80" style="-fx-border-color: #444; -fx-border-width: 1;">
+                       <VBox.margin>
+                           <Insets bottom="5" top="5" />
+                       </VBox.margin>
+                   </StackPane>
+               </VBox>
+   
+               <!-- Covered deck -->
+               <VBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
+                   <Label text="Covered deck" textFill="WHITE">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Label>
+                   <StackPane fx:id="coveredDeckPane" minHeight="80" style="-fx-border-color: #444; -fx-border-width: 1;">
+                       <VBox.margin>
+                           <Insets bottom="5" top="5" />
+                       </VBox.margin>
+                   </StackPane>
+               </VBox>
+   
+               <Region VBox.vgrow="ALWAYS" />
+           </VBox>
+      </right>
+      <bottom>
+           <!-- Bottom Panel - Uncovered Components -->
+           <VBox alignment="CENTER" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" spacing="10" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
+               <padding>
+                   <Insets bottom="10" left="10" right="10" top="10" />
+               </padding>
+   
+               <Label text="Uncovered components" textFill="WHITE">
+                   <font>
+                       <Font size="16.0" />
+                   </font>
+               </Label>
+   
+               <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                   <FlowPane fx:id="uncoveredComponentsPane" alignment="CENTER" hgap="10" style="-fx-background-color: rgba(68,68,85,0.7);" vgap="10">
+                       <padding>
+                           <Insets bottom="10" left="10" right="10" top="10" />
+                       </padding>
+                   </FlowPane>
+               </ScrollPane>
+   
+               <!-- Non-learner buttons -->
+               <HBox fx:id="nonLearnerButtonsContainer" alignment="CENTER" managed="false" spacing="20" visible="false">
+                   <Button maxWidth="Infinity" minHeight="40" onAction="#takeBookedComponent" style="-fx-background-color: #5cb85c; -fx-text-fill: white;" text="Take booked component" wrapText="true" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Button>
+                   <Button maxWidth="Infinity" minHeight="40" onAction="#turnHourglass" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Turn hourglass" wrapText="true" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Button>
+                   <Button maxWidth="Infinity" minHeight="40" onAction="#peekDeck" style="-fx-background-color: #f0ad4e; -fx-text-fill: white;" text="Peek deck" wrapText="true" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Button>
+               </HBox>
+   
+               <HBox fx:id="nonLearnerComponentInHandButtons" alignment="CENTER" managed="false" spacing="20" visible="false">
+                   <Button maxWidth="Infinity" minHeight="40" onAction="#bookComponent" style="-fx-background-color: #5cb85c; -fx-text-fill: white;" text="Book component" wrapText="true" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Button>
+                   <Button maxWidth="Infinity" minHeight="40" onAction="#turnHourglass" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Turn hourglass" wrapText="true" HBox.hgrow="ALWAYS">
+                       <font>
+                           <Font size="14.0" />
+                       </font>
+                   </Button>
+               </HBox>
+           </VBox>
+      </bottom>
+      <center>
+          <BorderPane prefHeight="200.0" prefWidth="200.0">
+              <left>
+                  <!-- Player Info Panel - Left Side -->
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="200" minHeight="250.0" minWidth="150.0" prefWidth="150.0" spacing="8.0" style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 8; -fx-padding: 15;" BorderPane.alignment="CENTER">
+
+                      <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;" text="Player Info" />
+                      <Region prefHeight="5" />
+                      <Label fx:id="playerColorLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Color: " wrapText="true" />
+                      <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Username: " wrapText="true" />
+                      <Label fx:id="creditsLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Credits: " wrapText="true" />
+                      <Label fx:id="inGameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="In Game: " wrapText="true" />
+
+                      <!-- Debug labels -->
+                      <Region prefHeight="10" />
+                      <Label fx:id="X_Label" style="-fx-text-fill: yellow; -fx-font-size: 10;" text="W: " />
+                      <Label fx:id="Y_Label" style="-fx-text-fill: yellow; -fx-font-size: 10;" text="H: " />
+                  </VBox>
+              </left>
+              <right>
+              </right>
+              <center>
+                  <StackPane fx:id="shipContainer" BorderPane.alignment="CENTER">
+                      <ImageView fx:id="bgImage" fitHeight="300.0" preserveRatio="true" style="-fx-background-color: white; -fx-border-color: red;">
+                          <Image url="@cardboard/cardboard-1.jpg"/>
+                      </ImageView>
+                      <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
+                          <columnConstraints>
+                              <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
+                              <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
+                              <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
+                              <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
+                              <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
+                          </columnConstraints>
+
+                          <rowConstraints>
+                              <RowConstraints percentHeight="20.0" vgrow="ALWAYS" />
+                              <RowConstraints percentHeight="20.0" vgrow="ALWAYS" />
+                              <RowConstraints percentHeight="20.0" vgrow="ALWAYS" />
+                              <RowConstraints percentHeight="20.0" vgrow="ALWAYS" />
+                              <RowConstraints percentHeight="20.0" vgrow="ALWAYS" />
+                          </rowConstraints>
+
+                          <!-- Row 0 - All cells perfectly responsive -->
+                          <ImageView fx:id="imageCell_0_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_0_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_0_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_0_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_0_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+
+                          <!-- Row 1 -->
+                          <ImageView fx:id="imageCell_1_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_1_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_1_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_1_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_1_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+
+                          <!-- Row 2 -->
+                          <ImageView fx:id="imageCell_2_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_2_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_2_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_2_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_2_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+
+                          <!-- Row 3 -->
+                          <ImageView fx:id="imageCell_3_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_3_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_3_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_3_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_3_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+
+                          <!-- Row 4 -->
+                          <ImageView fx:id="imageCell_4_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_4_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_4_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_4_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                          <ImageView fx:id="imageCell_4_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                      </GridPane>
+                  </StackPane>
+              </center>
+          </BorderPane>
+      </center>
+   </BorderPane>
+</StackPane>

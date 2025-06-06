@@ -194,7 +194,11 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void AssemblingStateMenu() {
-        showScene("buildingPhase");
+        if(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).isLearner){
+            showScene("buildingPhase0");
+        } else {
+            showScene("buildingPhase2");
+        }
     }
 
     @Override
