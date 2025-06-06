@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -192,11 +193,11 @@ public abstract class BuildingPhaseController {
                 super.updateItem(player, empty);
                 if (empty || player == null) {
                     setText(null);
-                    setStyle("");
+                    setStyle("-fx-background-color: rgba(51,51,68,0.8)");
                     setOnMouseClicked(null);
                 } else {
                     setText(player.username);
-                    setStyle("-fx-text-fill: black;");
+                    setStyle("-fx-text-fill: white; -fx-background-color: rgba(51,51,68,0.8);");
 
                     setOnMouseClicked(event -> {
                         ViewPlayer clickedPlayer = getItem();
@@ -840,11 +841,26 @@ public abstract class BuildingPhaseController {
         if (ClientGameModel.getInstance().getComponentInHand() != null) {
             placementModeActive = true;
             componentInHandPane.setStyle("-fx-border-color: green; -fx-border-width: 2;");
+            uncoveredComponentsPane.setStyle("-fx-border-color: green; -fx-border-width: 2;");
 
             enableGridInteraction(this::handleCellClick);
-
+            enableUncoveredComponentsInteraction(this::handleUncoveredClick);
         } else {
             System.out.println("No component in hand to place");
+        }
+    }
+
+    public void enableUncoveredComponentsInteraction(Runnable handler) {
+        if (uncoveredComponentsPane != null) {
+            uncoveredComponentsPane.setOnMouseClicked(event -> {
+                if (handler != null) {
+                    handler.run();
+                }
+            });
+            uncoveredComponentsPane.setCursor(Cursor.HAND);
+            System.out.println("Uncovered components interaction enabled.");
+        } else {
+            System.err.println("uncoveredComponentsPane is null. Cannot enable interaction.");
         }
     }
 
@@ -922,6 +938,60 @@ public abstract class BuildingPhaseController {
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
                 showError("Error during placement: " + e.getMessage());
             }
+        }
+    }
+
+    private void handleUncoveredClick() {
+        if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() != null) {
+            try {
+                String username = ClientGameModel.getInstance().getUsername();
+                if (username == null) {
+                    showError("User not identified. Cannot add component to viewed pile.");
+                    return;
+                }
+                ClientGameModel.getInstance().getClient().addComponentToViewed(username);
+
+                placementModeActive = false;
+                componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+
+                disableGridInteraction();
+                disableUncoveredComponentsInteraction();
+
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(200);
+                        Platform.runLater(() -> {
+                            updateComponentInHand();
+                            loadUncoveredComponents();
+                        });
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        Platform.runLater(() -> showError("UI update interrupted after adding to viewed pile."));
+                    }
+                }).start();
+
+            } catch (Exception e) {
+                placementModeActive = false;
+                componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+                disableGridInteraction();
+                disableUncoveredComponentsInteraction();
+                showError("Error adding component to viewed pile: " + e.getMessage());
+            }
+        } else {
+            if (!placementModeActive) {
+                System.out.println("Uncovered components pane clicked, but placement mode is not active.");
+            } else if (ClientGameModel.getInstance().getComponentInHand() == null) {
+                Platform.runLater(() -> showError("No component in hand to add to viewed pile."));
+            }
+        }
+    }
+
+    public void disableUncoveredComponentsInteraction() {
+        if (uncoveredComponentsPane != null) {
+            uncoveredComponentsPane.setOnMouseClicked(null);
+            uncoveredComponentsPane.setCursor(Cursor.DEFAULT);
+            uncoveredComponentsPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
+            System.out.println("Uncovered components interaction deactivated.");
         }
     }
 

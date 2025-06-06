@@ -82,7 +82,7 @@
       </right>
       <bottom>
            <!-- Bottom Panel - Uncovered Components -->
-           <VBox alignment="CENTER" maxHeight="100.0" minHeight="100.0" prefHeight="100.0" spacing="10" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
+           <VBox alignment="CENTER" maxHeight="100.0" minHeight="150.0" prefHeight="100.0" spacing="10" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
                <padding>
                    <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
@@ -92,15 +92,15 @@
                        <Font size="16.0" />
                    </font>
                </Label>
-   
-               <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                   <FlowPane fx:id="uncoveredComponentsPane" alignment="CENTER" hgap="10" style="-fx-background-color: rgba(68,68,85,0.7);" vgap="10">
+
+               <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" style="-fx-background: transparent; -fx-background-color: transparent;" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+                   <FlowPane fx:id="uncoveredComponentsPane" alignment="CENTER" hgap="2" minHeight="100.0" orientation="HORIZONTAL" style="-fx-background-color: rgba(68,68,85,0.7);" vgap="10">
                        <padding>
                            <Insets bottom="10" left="10" right="10" top="10" />
                        </padding>
                    </FlowPane>
                </ScrollPane>
-   
+
                <!-- Non-learner buttons -->
                <HBox fx:id="nonLearnerButtonsContainer" alignment="CENTER" managed="false" spacing="20" visible="false">
                    <Button maxWidth="Infinity" minHeight="40" onAction="#takeBookedComponent" style="-fx-background-color: #5cb85c; -fx-text-fill: white;" text="Take booked component" wrapText="true" HBox.hgrow="ALWAYS">
@@ -146,11 +146,6 @@
                       <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Username: " wrapText="true" />
                       <Label fx:id="creditsLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Credits: " wrapText="true" />
                       <Label fx:id="inGameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="In Game: " wrapText="true" />
-
-                      <!-- Debug labels -->
-                      <Region prefHeight="10" />
-                      <Label fx:id="X_Label" style="-fx-text-fill: yellow; -fx-font-size: 10;" text="W: " />
-                      <Label fx:id="Y_Label" style="-fx-text-fill: yellow; -fx-font-size: 10;" text="H: " />
                   </VBox>
               </left>
               <right>
