@@ -72,10 +72,10 @@ public abstract class BuildingPhaseController {
     private Label Y_Label;
 
     private ViewComponent selectedComponent;
-    private ShipController shipController;
     private boolean placementModeActive = false;
     protected ViewShip ship;
     protected final Map<String, Integer> gridComponents = new HashMap<>();
+    protected ShipController.CellClickHandler cellClickHandler;
 
     private final List<double[]> cargoCord3 = List.of(
             new double[]{0.3, 0.45},    // Relative positions (0-1)
@@ -177,11 +177,6 @@ public abstract class BuildingPhaseController {
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
-
-            // Bind size to parent cell for perfect fit
-            targetCell.fitWidthProperty().bind(layeredPane.widthProperty());
-            targetCell.fitHeightProperty().bind(layeredPane.heightProperty());
-            targetCell.setPreserveRatio(false);
 
             layeredPane.getChildren().add(targetCell);
             setComponentProp(layeredPane, comp);
@@ -388,17 +383,8 @@ public abstract class BuildingPhaseController {
                 if (index >= 0 && index <= maxIndex) {
                     String username = model.getUsername();
                     model.getClient().takeComponentFromUnviewed(username, index);
+                    updateComponentInHand();
 
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(500);
-                            javafx.application.Platform.runLater(() -> {
-                                updateComponentInHand();
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
                 } else {
                     showError("Invalid index. Please enter a number between 0 and " + maxIndex);
                 }
@@ -489,12 +475,12 @@ public abstract class BuildingPhaseController {
             return;
         }
 
-        if (shipController != null) {
-            selectedComponent = null;
-            componentInHandPane.getChildren().clear();
 
-            loadUncoveredComponents();
-        }
+        selectedComponent = null;
+        componentInHandPane.getChildren().clear();
+
+        loadUncoveredComponents();
+
     }
 
     /**
@@ -661,17 +647,60 @@ public abstract class BuildingPhaseController {
 
     private void activatePlacementMode() {
         if (ClientGameModel.getInstance().getComponentInHand() != null) {
-            System.out.println("No component in hand");
             placementModeActive = true;
             componentInHandPane.setStyle("-fx-border-color: green; -fx-border-width: 2;");
 
-            if (shipController != null) {
-                shipController.enableGridInteraction(this::handleCellClick);
-            } else {
-                System.out.println("ERROR: ShipController is null");
-            }
+            enableGridInteraction(this::handleCellClick);
+
         } else {
             System.out.println("No component in hand to place");
+        }
+    }
+
+    public void enableGridInteraction(ShipController.CellClickHandler handler) {
+        this.cellClickHandler = handler;
+        System.out.println("Placing mode activated");
+
+        // Add click overlays to all cells
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                final int finalRow = row;
+                final int finalCol = col;
+
+                Rectangle clickArea = new Rectangle();
+                clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                clickArea.setStrokeWidth(2);
+                clickArea.setOpacity(0.7);
+
+                // Bind size to grid cell
+                clickArea.widthProperty().bind(
+                        componentsGrid.widthProperty().divide(getCols()).subtract(4)
+                );
+                clickArea.heightProperty().bind(
+                        componentsGrid.heightProperty().divide(getRows()).subtract(4)
+                );
+
+                clickArea.setOnMouseClicked(event -> {
+                    if (cellClickHandler != null) {
+                        cellClickHandler.onCellClicked(finalRow, finalCol);
+                    }
+                });
+
+                clickArea.setOnMouseEntered(e -> {
+                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                    clickArea.setCursor(javafx.scene.Cursor.HAND);
+                });
+
+                clickArea.setOnMouseExited(e -> {
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                });
+
+                componentsGrid.add(clickArea, col, row);
+                GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+            }
         }
     }
 
@@ -684,18 +713,14 @@ public abstract class BuildingPhaseController {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                if (shipController != null) {
-                    shipController.disableGridInteraction();
-                }
+                disableGridInteraction();
 
                 new Thread(() -> {
                     try {
                         Thread.sleep(500);
                         javafx.application.Platform.runLater(() -> {
                             updateComponentInHand();
-                            if (shipController != null) {
-                                shipController.buildShipComponents(ClientGameModel.getInstance().getShip(username));
-                            }
+                                buildShipComponents(ClientGameModel.getInstance().getShip(username));
                         });
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -707,6 +732,13 @@ public abstract class BuildingPhaseController {
                 showError("Error during placement: " + e.getMessage());
             }
         }
+    }
+
+    public void disableGridInteraction() {
+        this.cellClickHandler = null;
+        System.out.println("Placing mode deactivated");
+
+        componentsGrid.getChildren().removeIf(node -> node instanceof Rectangle);
     }
 
     protected abstract int getRows();

@@ -97,9 +97,22 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
             componentsGrid.setMinSize(gridWidth, gridHeight);
 
             // Debug output
-            System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
-            System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
+            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+
+            // Set the size of each ImageView to match the grid cell size
+            double cellWidth = gridWidth / COLS;
+            double cellHeight = gridHeight / ROWS;
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    ImageView imageView = getImageViewAt(row, col);
+                    if (imageView != null) {
+                        imageView.setFitWidth(cellWidth);
+                        imageView.setFitHeight(cellHeight);
+                    }
+                }
+            }
         });
     }
 
