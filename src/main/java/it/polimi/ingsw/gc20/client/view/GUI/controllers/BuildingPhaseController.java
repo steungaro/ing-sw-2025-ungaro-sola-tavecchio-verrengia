@@ -368,6 +368,10 @@ public abstract class BuildingPhaseController {
     }
 
     private void takeCoveredComponent() {
+        if (ClientGameModel.getInstance().getComponentInHand() != null) {
+            showError("You already have a component in hand!"); // TODO: show a dialog instead
+            return;
+        }
         ClientGameModel model = ClientGameModel.getInstance();
         int maxIndex = model.getBoard().unviewedPile - 1;
 
