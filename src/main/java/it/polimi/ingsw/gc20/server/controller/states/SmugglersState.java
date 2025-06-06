@@ -134,7 +134,11 @@ public class SmugglersState extends CargoState {
         if (phase != StatePhase.REMOVE_CARGO && phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You are not in the cargo managing phase");
         }
+
         super.unloadCargo(player, unloaded, ch);
+
+        currentLostCargo--;
+
         //check if the player has no more cargo
         Map<CargoColor, Integer> cargo = player.getShip().getCargo();
         boolean allZero = true;
@@ -145,10 +149,12 @@ public class SmugglersState extends CargoState {
             }
         }
         //if all cargo is zero and there are still cargos to remove, go to remove battery phase
-        currentLostCargo--;
         if (allZero && currentLostCargo > 0 && phase == StatePhase.REMOVE_CARGO) {
             phase = StatePhase.BATTERY_PHASE;
             setStandbyMessage("waiting for " + getCurrentPlayer() + " to move the battery");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
+        } else if (phase == StatePhase.REMOVE_CARGO) {
+            setStandbyMessage("waiting for " + getCurrentPlayer() + " to unload cargo");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -188,7 +194,7 @@ public class SmugglersState extends CargoState {
         List<Battery> batteriesComponents = new ArrayList<>();
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
-
+        currentLostCargo = 0;
         //calculate the firepower
         float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
@@ -198,7 +204,6 @@ public class SmugglersState extends CargoState {
             getController().getMessageManager().notifyPhaseChange(phase, this);
             getController().getActiveCard().playCard();
             defeated = true;
-            currentLostCargo = 0;
         } else if (firePower == this.firePower) {
             //draw, go to the next player
             nextPlayer();
@@ -212,7 +217,6 @@ public class SmugglersState extends CargoState {
                 setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
             }
-            currentLostCargo = 0;
         } else {
             currentLostCargo = lostCargo;
             //check if the player has no more cargo
@@ -225,7 +229,7 @@ public class SmugglersState extends CargoState {
                 }
             }
 
-            if (allZero && currentLostCargo > 0) {
+            if (allZero) {
                 phase = StatePhase.BATTERY_PHASE;
                 setStandbyMessage("waiting for " + getCurrentPlayer() + " to move the battery");
                 getController().getMessageManager().notifyPhaseChange(phase, this);

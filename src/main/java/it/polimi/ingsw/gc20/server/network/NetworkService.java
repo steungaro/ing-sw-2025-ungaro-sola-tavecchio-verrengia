@@ -34,6 +34,7 @@ public class NetworkService {
 
     public void sendToClient(String username, Message message) {
         ClientHandler client = clients.get(username);
+        System.out.println("\n Sending message to client: " + username + " - Message: " + message + "\n");
         if (client != null) {
             client.sendToClient(message);
         }
