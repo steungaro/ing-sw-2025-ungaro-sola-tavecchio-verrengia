@@ -250,12 +250,11 @@ public class CargoMenu implements MenuState{
                         }
                     } while (loadCargoColor == null);
                     ClientGameModel.getInstance().getClient().loadCargo(username, loadCargoColor, loadCoordinates);
-                break;
                 } else {
                     System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
                     System.out.print(" > ");
-                    break;
                 }
+                break;
             case "q":
                 ClientGameModel.getInstance().shutdown();
                 break;
