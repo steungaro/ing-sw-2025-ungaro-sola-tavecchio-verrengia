@@ -127,19 +127,13 @@ public abstract class Component {
             opposite = Direction.LEFT;
         }
 
-        if (this.connectors.get(d) == ConnectorEnum.ZERO && c.connectors.get(opposite) != ConnectorEnum.ZERO) {
-            return false;
-        }
-        if (this.connectors.get(d) != ConnectorEnum.ZERO && c.connectors.get(opposite) == ConnectorEnum.ZERO) {
-            return false;
-        }
         if(this.connectors.get(d) == c.connectors.get(opposite)){
             return true;
         }
-        if(this.connectors.get(d) == ConnectorEnum.U && c.connectors.get(opposite) != ConnectorEnum.ZERO){
+        if (this.connectors.get(d) == ConnectorEnum.U && c.connectors.get(opposite) != ConnectorEnum.ZERO) {
             return true;
         }
-        return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(d) != ConnectorEnum.ZERO;
+        return this.connectors.get(d) != ConnectorEnum.ZERO && c.connectors.get(opposite) == ConnectorEnum.U;
     }
 
     /**
