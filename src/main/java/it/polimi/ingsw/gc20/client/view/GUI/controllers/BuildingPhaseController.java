@@ -11,10 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -28,7 +25,7 @@ import java.util.ResourceBundle;
 public class BuildingPhaseController implements Initializable {
 
     @FXML
-    private BorderPane shipContainer;
+    private StackPane shipContainer;
 
     @FXML
     private Pane componentInHandPane;
@@ -82,9 +79,10 @@ public class BuildingPhaseController implements Initializable {
             Parent shipRoot = loader.load();
 
             shipController = loader.getController();
-            shipController.setShipState(ShipController.ShipState.Building);
 
-            shipContainer.setCenter(shipRoot);
+            // Inserisco shipRoot nel container
+            shipContainer.getChildren().clear();
+            shipContainer.getChildren().add(shipRoot);
 
         } catch (IOException e) {
             e.printStackTrace();

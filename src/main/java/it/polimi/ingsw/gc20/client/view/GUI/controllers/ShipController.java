@@ -7,15 +7,18 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
-
 import javafx.scene.shape.Rectangle;
+
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -30,34 +33,29 @@ public abstract class ShipController {
         Building, Viewing
     }
 
-    @FXML private ImageView imageBooked_0_0;
-    @FXML private ImageView imageBooked_0_1;
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
     @FXML protected Label inGameLabel;
+    @FXML protected StackPane rootPane;
 
-    // 3 Slot -> 60x90, 125x57, 125x124
-    // 2 Slot -> 90x57, 90x124
-    private final List<int[]> cargoCord3 = List.of(
-            new int[]{60, 90},
-            new int[]{125, 57},
-            new int[]{125, 124}
+    private final List<double[]> cargoCord3 = List.of(
+            new double[]{0.3, 0.45},    // Relative positions (0-1)
+            new double[]{0.625, 0.285},
+            new double[]{0.625, 0.62}
     );
 
-    private final List<int[]> cargoCord2 = List.of(
-            new int[]{90, 57},
-            new int[]{90, 124}
+    private final List<double[]> cargoCord2 = List.of(
+            new double[]{0.45, 0.285},
+            new double[]{0.45, 0.62}
     );
 
-    @FXML private ImageView boardImageView;
-    @FXML private GridPane componentsGrid;
-    @FXML private Pane gridWrapper;
+    @FXML protected GridPane componentsGrid;
     @FXML private Label X_Label;
     @FXML private Label Y_Label;
+    @FXML protected ImageView bgImage;
 
-    private final Map<String, Integer> gridComponents = new HashMap<>();
-    private ShipState shipState = ShipState.Viewing;
+    protected final Map<String, Integer> gridComponents = new HashMap<>();
 
     public void updateStatisticBoard(ViewPlayer player) {
         if (player != null) {
@@ -69,19 +67,8 @@ public abstract class ShipController {
     }
 
     @FXML
-    private void initialize() {
+    protected void initialize() {
         ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-
-        if (boardImageView != null && boardImageView.getImage() != null) {
-            setupGridBounds();
-        } else if (boardImageView != null) {
-            boardImageView.imageProperty().addListener((obs, oldImg, newImg) -> {
-                if (newImg != null) {
-                    setupGridBounds();
-                }
-            });
-        }
-
         ClientGameModel clientGameModel = ClientGameModel.getInstance();
         if (clientGameModel != null) {
             String currentUsername = clientGameModel.getUsername();
@@ -94,36 +81,20 @@ public abstract class ShipController {
             }
         }
 
+        bgImage.fitWidthProperty().bind(rootPane.widthProperty());
+        bgImage.fitHeightProperty().bind(rootPane.heightProperty());
+
+        bgImage.setPreserveRatio(true);
+
         buildShipComponents(ship);
     }
 
-    private void setupGridBounds() {
-        Platform.runLater(() -> {
-            if (boardImageView == null || componentsGrid == null) return;
-
-            double boardWidth = boardImageView.getBoundsInParent().getWidth();
-            double boardHeight = boardImageView.getBoundsInParent().getHeight();
-
-            double gridX = boardWidth * 0.25;
-            double gridY = boardHeight * 0.18;
-            double gridWidth = boardWidth * 0.5;
-            double gridHeight = boardHeight * 0.64;
-
-            componentsGrid.setLayoutX(gridX);
-            componentsGrid.setLayoutY(gridY);
-            componentsGrid.setPrefSize(gridWidth, gridHeight);
-            componentsGrid.setMaxSize(gridWidth, gridHeight);
-
-            updateCoordinateLabels(gridX, gridY);
-        });
-    }
-
-    private void updateCoordinateLabels(double x, double y) {
+    private void updateCoordinateLabels(double width, double height) {
         if (X_Label != null) {
-            X_Label.setText(String.format("X: %.2f", x));
+            X_Label.setText(String.format("W: %.0f", width));
         }
         if (Y_Label != null) {
-            Y_Label.setText(String.format("Y: %.2f", y));
+            Y_Label.setText(String.format("H: %.0f", height));
         }
     }
 
@@ -140,6 +111,7 @@ public abstract class ShipController {
             return false;
         }
 
+        // Remove the old cell and create a new layered pane
         GridPane parent = (GridPane) targetCell.getParent();
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
@@ -149,22 +121,23 @@ public abstract class ShipController {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
 
-            targetCell.setFitWidth(parent.getWidth() / getCols());
-            targetCell.setFitHeight(parent.getHeight() / getRows());
+            // Bind size to parent cell for perfect fit
+            targetCell.fitWidthProperty().bind(layeredPane.widthProperty());
+            targetCell.fitHeightProperty().bind(layeredPane.heightProperty());
             targetCell.setPreserveRatio(false);
 
-            targetCell.fitWidthProperty().bind(parent.widthProperty().divide(getCols()));
-            targetCell.fitHeightProperty().bind(parent.heightProperty().divide(getRows()));
-
             layeredPane.getChildren().add(targetCell);
-
             setComponentProp(layeredPane, comp);
 
+            // Make sure the layered pane fills the cell completely
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            GridPane.setFillWidth(layeredPane, true);
+            GridPane.setFillHeight(layeredPane, true);
+            GridPane.setHgrow(layeredPane, Priority.ALWAYS);
+            GridPane.setVgrow(layeredPane, Priority.ALWAYS);
 
             parent.add(layeredPane, col, row);
 
-            // TODO Rotate the IMG
             gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
@@ -178,40 +151,34 @@ public abstract class ShipController {
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
-        // Implementazione specifica per ViewBattery, se necessario
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
+        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
         try {
             ImageView batteryIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/battery.png")));
-            batteryIcon.setFitHeight(25);
-            batteryIcon.setFitWidth(25);
+            batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
+            batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
 
-            StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.TOP_LEFT);
+            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.TOP_LEFT);
             StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.BOTTOM_LEFT);
 
             layeredPane.getChildren().addAll(batteryLabel, batteryIcon);
         } catch (Exception e) {
-            System.err.println("Impossibile caricare l'immagine della batterua: " + e.getMessage());
+            System.err.println("Impossibile caricare l'immagine della batteria: " + e.getMessage());
             layeredPane.getChildren().add(batteryLabel);
         }
-        return;
     }
 
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
-        // Gestione degli alieni nella cabina
         if (comp.alien) {
-            String alienImagePath;
-            if (comp.alienColor == AlienColor.PURPLE) {
-                alienImagePath = "/images/icons/purple_alien.png";
-            } else {
-                alienImagePath = "/images/icons/brown_alien.png";
-            }
+            String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
+                    "/images/icons/purple_alien.png" : "/images/icons/brown_alien.png";
 
             try {
                 ImageView alienIcon = new ImageView(new Image(getClass().getResourceAsStream(alienImagePath)));
-                alienIcon.setFitHeight(30);
-                alienIcon.setFitWidth(30);
+                alienIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.4));
+                alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
                 alienIcon.setPreserveRatio(true);
 
                 StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
@@ -220,13 +187,13 @@ public abstract class ShipController {
                 System.err.println("Impossibile caricare l'immagine dell'alieno: " + e.getMessage());
             }
         } else if (comp.astronauts > 0) {
-            // Aggiungi il numero di astronauti
             Label astronautsLabel = new Label(Integer.toString(comp.astronauts));
+            astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
             try {
                 ImageView astronautIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/astr.png")));
-                astronautIcon.setFitHeight(25);
-                astronautIcon.setFitWidth(25);
+                astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
+                astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
 
                 StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.TOP_LEFT);
@@ -240,102 +207,79 @@ public abstract class ShipController {
         }
 
         if (comp.cabinColor != AlienColor.NONE) {
-            String colorStr;
-            switch (comp.cabinColor) {
-                case PURPLE -> colorStr = "purple";
-                case BROWN -> colorStr = "brown";
-                case BOTH -> colorStr = "both";
-                default -> colorStr = null;
-            }
+            String colorStr = switch (comp.cabinColor) {
+                case PURPLE -> "purple";
+                case BROWN -> "brown";
+                case BOTH -> "linear-gradient(45deg, purple 50%, brown 50%)";
+                default -> null;
+            };
 
             if (colorStr != null) {
                 Label colorIndicator = new Label("");
-                colorIndicator.setStyle("-fx-background-color: " + colorStr + "; -fx-min-width: 10px; -fx-min-height: 10px; -fx-border-color: white;");
+                colorIndicator.setStyle("-fx-background: " + colorStr +
+                        "; -fx-min-width: 15px; -fx-min-height: 15px; -fx-border-color: white; -fx-border-width: 1px;");
                 StackPane.setAlignment(colorIndicator, javafx.geometry.Pos.BOTTOM_RIGHT);
+                StackPane.setMargin(colorIndicator, new Insets(0, 5, 5, 0));
                 layeredPane.getChildren().add(colorIndicator);
             }
         }
     }
 
-    // 3 Slot -> 60x90, 125x57, 125x124
-    // 2 Slot -> 90x57, 90x124
-    // Cargo 30px x 30px
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        List<int[]> coordinates;
-        if (comp.getSize() == 2) {
-            coordinates = cargoCord2;
-        } else {
-            coordinates = cargoCord3;
-        }
-
+        List<double[]> coordinates = comp.getSize() == 2 ? cargoCord2 : cargoCord3;
         int index = 0;
 
-        for (int i = 0; i < comp.red; i++) {
-            if (index < coordinates.size()) {
-                Pane cargoBox = createCargoBox("red");
-                cargoBox.setLayoutX(coordinates.get(index)[0]);
-                cargoBox.setLayoutY(coordinates.get(index)[1]);
-                layeredPane.getChildren().add(cargoBox);
-                index++;
-            }
+        // Create cargo boxes with relative positioning
+        for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "red");
         }
-
-        for (int i = 0; i < comp.green; i++) {
-            if (index < coordinates.size()) {
-                Pane cargoBox = createCargoBox("green");
-                cargoBox.setLayoutX(coordinates.get(index)[0]);
-                cargoBox.setLayoutY(coordinates.get(index)[1]);
-                layeredPane.getChildren().add(cargoBox);
-                index++;
-            }
+        for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "green");
         }
-
-        for (int i = 0; i < comp.blue; i++) {
-            if (index < coordinates.size()) {
-                Pane cargoBox = createCargoBox("blue");
-                cargoBox.setLayoutX(coordinates.get(index)[0]);
-                cargoBox.setLayoutY(coordinates.get(index)[1]);
-                layeredPane.getChildren().add(cargoBox);
-                index++;
-            }
+        for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "blue");
         }
-
-        for (int i = 0; i < comp.yellow; i++) {
-            if (index < coordinates.size()) {
-                Pane cargoBox = createCargoBox("yellow");
-                cargoBox.setLayoutX(coordinates.get(index)[0]);
-                cargoBox.setLayoutY(coordinates.get(index)[1]);
-                layeredPane.getChildren().add(cargoBox);
-                index++;
-            }
+        for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "yellow");
         }
-
-        for (int i = 0; i < comp.free; i++) {
-            if (index < coordinates.size()) {
-                Pane cargoBox = createCargoBox("empty");
-                cargoBox.setLayoutX(coordinates.get(index)[0]);
-                cargoBox.setLayoutY(coordinates.get(index)[1]);
-                layeredPane.getChildren().add(cargoBox);
-                index++;
-            }
+        for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "empty");
         }
     }
 
-    private Pane createCargoBox(String type) {
-        Pane box = new Pane();
-        box.setPrefSize(30, 30);
-        box.setMinSize(30, 30);
-        box.setMaxSize(30, 30);
+    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
+        Rectangle box = new Rectangle();
 
+        // Bind size to parent for scaling
+        box.widthProperty().bind(parent.widthProperty().multiply(0.15));
+        box.heightProperty().bind(parent.heightProperty().multiply(0.15));
+
+        // Set color based on type
         switch (type) {
-            case "red" -> box.setStyle("-fx-background-color: red; -fx-border-color: black; -fx-border-width: 1px;");
-            case "green" -> box.setStyle("-fx-background-color: green; -fx-border-color: black; -fx-border-width: 1px;");
-            case "blue" -> box.setStyle("-fx-background-color: blue; -fx-border-color: black; -fx-border-width: 1px;");
-            case "yellow" -> box.setStyle("-fx-background-color: yellow; -fx-border-color: black; -fx-border-width: 1px;");
-            case "empty" -> box.setStyle("-fx-background-color: white; -fx-border-color: black; -fx-border-width: 1px; -fx-border-style: dashed;");
+            case "red" -> box.setFill(javafx.scene.paint.Color.RED);
+            case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
+            case "blue" -> box.setFill(javafx.scene.paint.Color.BLUE);
+            case "yellow" -> box.setFill(javafx.scene.paint.Color.YELLOW);
+            case "empty" -> {
+                box.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                box.setStroke(javafx.scene.paint.Color.WHITE);
+                box.setStrokeWidth(1);
+                box.getStrokeDashArray().addAll(5.0, 5.0);
+            }
         }
 
-        return box;
+        box.setStroke(javafx.scene.paint.Color.BLACK);
+        box.setStrokeWidth(1);
+
+        // Position using binding for responsive layout
+        box.translateXProperty().bind(
+                parent.widthProperty().multiply(relativePos[0] - 0.5)
+        );
+        box.translateYProperty().bind(
+                parent.heightProperty().multiply(relativePos[1] - 0.5)
+        );
+
+        parent.getChildren().add(box);
     }
 
     public boolean removeComponent(int row, int col) {
@@ -344,21 +288,48 @@ public abstract class ShipController {
         }
 
         String cellId = row + "_" + col;
-        ImageView targetCell = getImageViewAt(row, col);
 
-        if (targetCell == null) {
-            return false;
+        // Find the node in the grid at this position
+        Node nodeToRemove = null;
+        for (Node node : componentsGrid.getChildren()) {
+            Integer nodeRow = GridPane.getRowIndex(node);
+            Integer nodeCol = GridPane.getColumnIndex(node);
+            if (nodeRow != null && nodeCol != null && nodeRow == row && nodeCol == col) {
+                nodeToRemove = node;
+                break;
+            }
         }
 
-        targetCell.setImage(null);
+        if (nodeToRemove != null) {
+            componentsGrid.getChildren().remove(nodeToRemove);
+
+            // Re-add empty ImageView
+            ImageView emptyCell = getImageViewAt(row, col);
+            if (emptyCell != null) {
+                emptyCell.setImage(null);
+                GridPane.setFillWidth(emptyCell, true);
+                GridPane.setFillHeight(emptyCell, true);
+                componentsGrid.add(emptyCell, col, row);
+            }
+        }
+
         gridComponents.remove(cellId);
         return true;
     }
 
     public void clearAllComponents() {
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                removeComponent(row, col);
+        componentsGrid.getChildren().clear();
+
+        // Re-add all empty ImageViews
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                ImageView cell = getImageViewAt(row, col);
+                if (cell != null) {
+                    cell.setImage(null);
+                    GridPane.setFillWidth(cell, true);
+                    GridPane.setFillHeight(cell, true);
+                    componentsGrid.add(cell, col, row);
+                }
             }
         }
         gridComponents.clear();
@@ -387,82 +358,60 @@ public abstract class ShipController {
         this.cellClickHandler = handler;
         System.out.println("Placing mode activated");
 
+        // Add click overlays to all cells
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
                 final int finalRow = row;
                 final int finalCol = col;
 
-                Node cellNode = getNodeFromGridPane(componentsGrid, col, row);
+                Rectangle clickArea = new Rectangle();
+                clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                clickArea.setStrokeWidth(2);
+                clickArea.setOpacity(0.7);
 
-                if (cellNode != null) {
-                    Rectangle clickArea = new javafx.scene.shape.Rectangle(60, 60);
-                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
-                    clickArea.setStrokeWidth(1);
-                    clickArea.setOpacity(0.3);
+                // Bind size to grid cell
+                clickArea.widthProperty().bind(
+                        componentsGrid.widthProperty().divide(getCols()).subtract(4)
+                );
+                clickArea.heightProperty().bind(
+                        componentsGrid.heightProperty().divide(getRows()).subtract(4)
+                );
 
-                    componentsGrid.add(clickArea, col, row);
-                    cellNode = clickArea;
-                }
-
-                cellNode.setOnMouseClicked(event -> {
+                clickArea.setOnMouseClicked(event -> {
                     if (cellClickHandler != null) {
                         cellClickHandler.onCellClicked(finalRow, finalCol);
                     }
                 });
 
-                cellNode.setStyle(cellNode.getStyle() + "; -fx-cursor: hand;");
-            }
-        }
-    }
+                clickArea.setOnMouseEntered(e -> {
+                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                    clickArea.setCursor(javafx.scene.Cursor.HAND);
+                });
 
-    private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-        for (Node node : gridPane.getChildren()) {
-            if (GridPane.getColumnIndex(node) == col && GridPane.getRowIndex(node) == row) {
-                return node;
+                clickArea.setOnMouseExited(e -> {
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                });
+
+                componentsGrid.add(clickArea, col, row);
+                GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
             }
         }
-        return null;
     }
 
     public void disableGridInteraction() {
         this.cellClickHandler = null;
         System.out.println("Placing mode deactivated");
 
-        for (int row = 0; row < getRows(); row++) {
-            for (int col = 0; col < getCols(); col++) {
-                Node cell = getGridCellAt(row, col);
-                if (cell != null) {
-                    cell.setOnMouseClicked(null);
-                    cell.setStyle("");
-                    cell.setCursor(javafx.scene.Cursor.DEFAULT);
-                }
-            }
-        }
-    }
-
-    private Node getGridCellAt(int row, int col) {
-        for (Node child : componentsGrid.getChildren()) {
-            Integer rowIndex = GridPane.getRowIndex(child);
-            Integer colIndex = GridPane.getColumnIndex(child);
-
-            if (rowIndex != null && colIndex != null &&
-                    rowIndex == row && colIndex == col) {
-                return child;
-            }
-        }
-        return null;
+        componentsGrid.getChildren().removeIf(node -> node instanceof Rectangle);
     }
 
     protected abstract int getRows();
     protected abstract int getCols();
 
-    protected ImageView getImageViewAt(int row, int col){
+    protected ImageView getImageViewAt(int row, int col) {
         return null;
     }
-
-    public void setShipState(ShipState state) {
-        this.shipState = state;
-    }
-
 }
