@@ -43,10 +43,6 @@ public class AssemblingStateTest {
         componentsInHandField.setAccessible(true);
         Map<Player, Component> componentsInHand = (Map<Player, Component>) componentsInHandField.get(state);
 
-        Field playersPhaseField = AssemblingState.class.getDeclaredField("playersPhase");
-        playersPhaseField.setAccessible(true);
-        Map<Player, StatePhase> playersPhase = (Map<Player, StatePhase>) playersPhaseField.get(state);
-
         Field deckPeekedField = AssemblingState.class.getDeclaredField("deckPeeked");
         deckPeekedField.setAccessible(true);
         Map<Integer, Player> deckPeeked = (Map<Integer, Player>) deckPeekedField.get(state);
@@ -54,7 +50,6 @@ public class AssemblingStateTest {
         for (Player player : controller.getModel().getInGamePlayers()) {
             assert assembled.get(player) == false;
             assert componentsInHand.get(player) == null;
-            assert playersPhase.get(player) == StatePhase.ASSEMBLING_PHASE;
         }
 
         assertNull(deckPeeked.get(1));

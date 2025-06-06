@@ -69,6 +69,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("Player is not in the correct phase");
         }
+        checkHourglass();
         // take the component from the unviewed pile
         Component component =Translator.getFromUnviewed(getModel(), index);
         getModel().componentFromUnviewed(component);
@@ -96,6 +97,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("Player is not in the correct phase");
         }
+        checkHourglass();
         //take the component from the viewed pile
         Component component =Translator.getFromViewed(getModel(), index);
         getModel().componentFromViewed(component);
@@ -123,6 +125,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase");
         }
+        checkHourglass();
         // take the component from the booked pile
         Component component =Translator.getFromBooked(player, index);
         getModel().componentFromBooked(component, player);
@@ -273,6 +276,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) != null) {
             throw new InvalidStateException("cannot peek deck in this phase");
         }
+        checkHourglass();
         //before doing anything, check if the index is correct
         if (num < 1 || num > 3) {
             throw new InvalidIndexException("Invalid deck number");
@@ -377,5 +381,12 @@ public class AssemblingState extends State {
                 getModel().getGame().getPile().getUnviewed().size(),
                 getModel().getGame().getPile().getViewed(),
                 "taken from unviewed"));
+    }
+
+    private void checkHourglass() throws InvalidStateException{
+        //check if the hourglass has been turned
+        if (getModel().getLevel()==2 && getModel().getTurnedHourglass() == 2 && getModel().getRemainingTime() == 0 ) {
+            throw new InvalidStateException("cannot take a component if the reamining time is 0");
+        }
     }
 }
