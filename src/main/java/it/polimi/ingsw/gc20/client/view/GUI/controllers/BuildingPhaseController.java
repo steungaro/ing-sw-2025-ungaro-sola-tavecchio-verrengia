@@ -6,23 +6,26 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class BuildingPhaseController {
 
@@ -66,19 +69,17 @@ public abstract class BuildingPhaseController {
     protected GridPane componentsGrid;
 
     @FXML
-    private Label X_Label;
-
-    @FXML
-    private Label Y_Label;
+    private ListView<ViewPlayer> otherPlayersShipsList;
 
     private ViewComponent selectedComponent;
     private boolean placementModeActive = false;
     protected ViewShip ship;
     protected final Map<String, Integer> gridComponents = new HashMap<>();
     protected ShipController.CellClickHandler cellClickHandler;
+    private ViewPlayer currentPlayerBeingViewed;
 
     private final List<double[]> cargoCord3 = List.of(
-            new double[]{0.3, 0.45},    // Relative positions (0-1)
+            new double[]{0.3, 0.45},
             new double[]{0.625, 0.285},
             new double[]{0.625, 0.62}
     );
@@ -90,16 +91,175 @@ public abstract class BuildingPhaseController {
 
 
     public void initialize() {
+        String myUsername = ClientGameModel.getInstance().getUsername();
+        this.currentPlayerBeingViewed = getPlayerFromModel(myUsername);
+
+        if (this.currentPlayerBeingViewed == null) {
+            showError("Could not load current player data. Building phase may not function correctly.");
+            nonLearnerButtonsContainer.setVisible(false);
+            nonLearnerButtonsContainer.setManaged(false);
+            nonLearnerComponentInHandButtons.setVisible(false);
+            nonLearnerComponentInHandButtons.setManaged(false);
+        } else {
+            loadShipData(this.currentPlayerBeingViewed);
+        }
+
         loadShip();
         loadCoveredDeck();
         loadUncoveredComponents();
+        loadOtherPlayersList();
 
-        String username = ClientGameModel.getInstance().getUsername();
-        boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
-        nonLearnerButtonsContainer.setVisible(!isLearner);
-        nonLearnerButtonsContainer.setManaged(!isLearner);
-        coveredDeckPane.setOnMouseClicked(event -> takeCoveredComponent());
-        componentInHandPane.setOnMouseClicked(event -> activatePlacementMode());
+        coveredDeckPane.setOnMouseClicked(event -> {
+            if (isViewingOwnShip()) {
+                takeCoveredComponent();
+            } else {
+                showError("You can only take covered components for your own ship.");
+            }
+        });
+        componentInHandPane.setOnMouseClicked(event -> {
+            if (isViewingOwnShip()) {
+                activatePlacementMode();
+            } else {
+                showError("Placement mode is only available for your own ship.");
+            }
+        });
+        updateComponentInHand();
+    }
+
+    private ViewPlayer getPlayerFromModel(String username) {
+        ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
+        if (players == null || username == null) return null;
+        return Arrays.stream(players)
+                .filter(p -> p != null && username.equals(p.username))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean isViewingOwnShip() {
+        return currentPlayerBeingViewed != null &&
+                currentPlayerBeingViewed.username.equals(ClientGameModel.getInstance().getUsername());
+    }
+
+    private void loadShipData(ViewPlayer playerToView) {
+        if (playerToView == null) {
+            showError("Player data is null. Cannot display ship.");
+            clearAllComponents();
+            updateStatisticBoard(null);
+            nonLearnerButtonsContainer.setVisible(false);
+            nonLearnerButtonsContainer.setManaged(false);
+            nonLearnerComponentInHandButtons.setVisible(false);
+            nonLearnerComponentInHandButtons.setManaged(false);
+            if(componentInHandPane != null) componentInHandPane.getChildren().clear();
+            return;
+        }
+
+        this.currentPlayerBeingViewed = playerToView;
+        this.ship = ClientGameModel.getInstance().getShip(playerToView.username);
+
+        updateStatisticBoard(playerToView);
+
+        if (this.ship == null) {
+            System.out.println("Ship data not found for player: " + playerToView.username + ". Displaying empty grid.");
+            clearAllComponents();
+        } else {
+            buildShipComponents(this.ship);
+        }
+
+        boolean isLoggedInPlayerLearner = (this.ship != null) && this.ship.isLearner;
+
+        nonLearnerButtonsContainer.setVisible(!isLoggedInPlayerLearner);
+        nonLearnerButtonsContainer.setManaged(!isLoggedInPlayerLearner);
+
+        updateComponentInHand();
+    }
+
+    private void loadOtherPlayersList() {
+        ClientGameModel model = ClientGameModel.getInstance();
+        ViewPlayer[] allPlayers = model.getPlayers();
+        String myUsername = model.getUsername();
+
+        if (allPlayers == null) return;
+
+        List<ViewPlayer> displayPlayers = Arrays.stream(allPlayers)
+                .filter(p -> p != null && !p.username.equals(myUsername))
+                .collect(Collectors.toList());
+
+        otherPlayersShipsList.getItems().setAll(displayPlayers);
+
+        otherPlayersShipsList.setCellFactory(lv -> new ListCell<ViewPlayer>() {
+            @Override
+            protected void updateItem(ViewPlayer player, boolean empty) {
+                super.updateItem(player, empty);
+                if (empty || player == null) {
+                    setText(null);
+                    setStyle("");
+                    setOnMouseClicked(null);
+                } else {
+                    setText(player.username);
+                    setStyle("-fx-text-fill: black;");
+
+                    setOnMouseClicked(event -> {
+                        ViewPlayer clickedPlayer = getItem();
+                        if (clickedPlayer != null && !clickedPlayer.username.equals(myUsername)) {
+                            navigateToOpponentShipScreen(clickedPlayer);
+                        }
+                    });
+                }
+            }
+        });
+
+        otherPlayersShipsList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                if (!newSelection.username.equals(myUsername)) {
+                    navigateToOpponentShipScreen(newSelection);
+                } else {
+                    System.out.println("Selected own player from list. View remains on own ship.");
+                    Platform.runLater(() -> {
+                        if (otherPlayersShipsList.getSelectionModel().getSelectedItem() == null ||
+                                !otherPlayersShipsList.getSelectionModel().getSelectedItem().equals(newSelection)) {
+                        }
+                    });
+                }
+            }
+        });
+
+        // Select the current player in the list initially if they are present
+        if (this.currentPlayerBeingViewed != null) {
+            Optional<ViewPlayer> selfInList = displayPlayers.stream()
+                    .filter(p -> p.username.equals(this.currentPlayerBeingViewed.username))
+                    .findFirst();
+            selfInList.ifPresent(player -> otherPlayersShipsList.getSelectionModel().select(player));
+        }
+    }
+
+    private void navigateToOpponentShipScreen(ViewPlayer opponent) {
+        System.out.println("Navigating to view ship of: " + opponent.username);
+        try {
+            String shipType;
+            if (ship.isLearner) {
+                shipType = "ship0";
+            } else{
+                shipType = "ship2";
+            }
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + shipType + ".fxml"));
+            Parent opponentViewRoot = loader.load();
+
+            Object controller = loader.getController();
+            if (controller instanceof ShipController c) {
+                c.buildShipComponents(ClientGameModel.getInstance().getShip(opponent.username));
+                c.updateStatisticBoard(opponent);
+            }
+
+            Stage stage = new Stage();
+            stage.setTitle("Opponent Ship: " + opponent.username);
+            stage.setScene(new Scene(opponentViewRoot));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Could not load opponent ship view: " + e.getMessage());
+        }
     }
 
     private void loadShip() {
@@ -401,20 +561,47 @@ public abstract class BuildingPhaseController {
     }
 
     private void updateComponentInHand() {
-        ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
+        new Thread(() -> {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Thread interrupted: " + e.getMessage());
+                return;
+            }
 
-        componentInHandPane.getChildren().clear();
+            ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
 
-        if (componentInHand != null) {
-            Pane componentPane = createComponentPane(componentInHand);
-            componentInHandPane.getChildren().add(componentPane);
-            selectedComponent = componentInHand;
+            Platform.runLater(() -> {
+                componentInHandPane.getChildren().clear();
 
-            String username = ClientGameModel.getInstance().getUsername();
-            boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
-            nonLearnerComponentInHandButtons.setVisible(!isLearner);
-            nonLearnerComponentInHandButtons.setManaged(!isLearner);
-        }
+                if (componentInHand != null) {
+                    Pane componentPane = createComponentPane(componentInHand);
+                    componentInHandPane.getChildren().add(componentPane);
+                    selectedComponent = componentInHand;
+
+                    String username = ClientGameModel.getInstance().getUsername();
+                    if (username != null) {
+                        ViewShip ship = ClientGameModel.getInstance().getShip(username);
+                        if (ship != null) {
+                            boolean isLearner = ship.isLearner;
+                            nonLearnerComponentInHandButtons.setVisible(!isLearner);
+                            nonLearnerComponentInHandButtons.setManaged(!isLearner);
+                        } else {
+                            nonLearnerComponentInHandButtons.setVisible(false);
+                            nonLearnerComponentInHandButtons.setManaged(false);
+                        }
+                    } else {
+                        nonLearnerComponentInHandButtons.setVisible(false);
+                        nonLearnerComponentInHandButtons.setManaged(false);
+                    }
+                } else {
+                    nonLearnerComponentInHandButtons.setVisible(false);
+                    nonLearnerComponentInHandButtons.setManaged(false);
+                    selectedComponent = null;
+                }
+            });
+        }).start();
     }
 
     /**

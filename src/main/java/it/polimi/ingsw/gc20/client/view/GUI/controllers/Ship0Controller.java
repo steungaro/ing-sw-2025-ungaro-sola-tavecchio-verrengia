@@ -48,17 +48,17 @@ public class Ship0Controller extends ShipController{
     @FXML
     @Override
     protected void initialize() {
-
         super.initialize();
-
         Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource("/fxml/cardboard/cardboard-1.jpg")).toExternalForm());
         final double imageWidth = backgroundImage.getWidth();
         final double imageHeight = backgroundImage.getHeight();
         final double imageRatio = imageWidth / imageHeight;
 
         rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            double containerWidth = newBounds.getWidth();
-            double containerHeight = newBounds.getHeight();
+            bgImage.setFitWidth(newBounds.getWidth()*0.7);
+            bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            double containerWidth = bgImage.getFitWidth();
+            double containerHeight = bgImage.getFitHeight();
             double containerRatio = containerWidth / containerHeight;
 
             double actualWidth, actualHeight;
@@ -79,9 +79,22 @@ public class Ship0Controller extends ShipController{
             componentsGrid.setMinSize(gridWidth, gridHeight);
 
             // Debug output
-            System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
-            System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
+            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+
+            // Set the size of each ImageView to match the grid cell size
+            double cellWidth = gridWidth / COLS;
+            double cellHeight = gridHeight / ROWS;
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    ImageView imageView = getImageViewAt(row, col);
+                    if (imageView != null) {
+                        imageView.setFitWidth(cellWidth);
+                        imageView.setFitHeight(cellHeight);
+                    }
+                }
+            }
         });
     }
 
