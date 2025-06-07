@@ -211,9 +211,7 @@ public class AssemblingState extends State {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         //rotate the component clockwise
-        Component component = componentsInHand.get(player);
-        getModel().RotateClockwise(component);
-        componentsInHand.put(player, component);
+        getModel().RotateClockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
@@ -228,9 +226,7 @@ public class AssemblingState extends State {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
         }
         //rotate the component counterclockwise
-        Component component = componentsInHand.get(player);
-        getModel().RotateCounterclockwise(component);
-        componentsInHand.put(player, component);
+        getModel().RotateCounterclockwise(componentsInHand.get(player));
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
