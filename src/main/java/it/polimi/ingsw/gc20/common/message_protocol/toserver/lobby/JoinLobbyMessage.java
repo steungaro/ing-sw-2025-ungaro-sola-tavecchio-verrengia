@@ -14,6 +14,6 @@ public record JoinLobbyMessage(
 
     @Override
     public void handleMessage() {
-        MatchController.getInstance().joinLobby(username, lobbyCode);
+        MatchController.getInstance().joinLobby(lobbyCode, username);
     }
 }
