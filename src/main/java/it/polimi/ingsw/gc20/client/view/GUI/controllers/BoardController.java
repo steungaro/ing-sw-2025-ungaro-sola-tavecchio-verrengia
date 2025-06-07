@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -13,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
@@ -63,5 +65,31 @@ public abstract class BoardController {
         if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
             circleLabels.get(circleIndex).setText(String.valueOf(number));
         }
+    }
+
+    public void updateBoardDisplay(ViewBoard newBoard) {
+        if (newBoard == null) {
+            System.err.println("BoardController: updateBoardDisplay chiamato con newBoard nullo.");
+            return;
+        }
+
+        for (int i = 0; i < Math.max(circles.size(), circleLabels.size()); i++) {
+            clearPosition(i);
+        }
+
+        /*Map<Integer, List<PlayerColor>> playerPositions = newBoard.getPlayerPositions();
+        if (playerPositions != null) {
+            playerPositions.forEach((positionIndex, colors) -> {
+                if (colors != null && !colors.isEmpty()) {
+                    setPlayerPosition(positionIndex, colors.getFirst());
+                }
+            });
+        }
+
+        Map<Integer, Integer> numbersOnBoard = newBoard.getNumbersOnBoard();
+        if (numbersOnBoard != null) {
+            numbersOnBoard.forEach(this::setNumberInCircle);
+        }
+        System.out.println("BoardController: Display updated");*/
     }
 }
