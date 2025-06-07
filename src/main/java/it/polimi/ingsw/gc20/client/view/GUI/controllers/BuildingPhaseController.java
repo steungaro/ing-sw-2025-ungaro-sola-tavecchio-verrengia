@@ -292,7 +292,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         clearAllComponents();
 
         for (int row = 0; row < getRows(); row++) {
-            for (int col = 0; col < getCols(); col++) {
+            for (int col = 0; col < getCols()+1; col++) {
                 ViewComponent comp = ship.getComponent(row, col);
                 if (comp != null) {
                     addComponent(comp, row, col);
@@ -364,8 +364,8 @@ public abstract class BuildingPhaseController implements GameModelListener {
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
-            if (comp.rotation >= 0 && comp.rotation <= 3) {
-                targetCell.setRotate(comp.rotation * 90);
+            if (comp.rotComp >= 0 && comp.rotComp <= 3) {
+                targetCell.setRotate(comp.rotComp * 90);
             }
 
             layeredPane.getChildren().add(targetCell);
@@ -670,8 +670,8 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 imageView.setPreserveRatio(true);
                 imageView.setX(5);
                 imageView.setY(5);
-                if (component.rotation >= 0 && component.rotation <= 3) {
-                    imageView.setRotate(component.rotation * 90);
+                if (component.rotComp >= 0 && component.rotComp <= 3) {
+                    imageView.setRotate(component.rotComp * 90);
                 }
                 pane.getChildren().add(imageView);
             } catch (Exception e) {
@@ -953,6 +953,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private void handleCellClick(int row, int col) {
         if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() != null) {
             try {
+                ViewComponent component = ClientGameModel.getInstance().getComponentInHand();
                 String username = ClientGameModel.getInstance().getUsername();
                 ClientGameModel.getInstance().getClient().placeComponent(username, new org.javatuples.Pair<>(row, col));
 
