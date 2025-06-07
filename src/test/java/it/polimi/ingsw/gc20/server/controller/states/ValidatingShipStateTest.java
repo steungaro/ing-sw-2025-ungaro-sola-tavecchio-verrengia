@@ -16,8 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidatingShipStateTest {
     static GameController controller;
@@ -150,7 +149,7 @@ public class ValidatingShipStateTest {
 
     @Test
     void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException, InvalidTileException {
-
+        assertFalse(state.isShipValid(controller.getPlayerByID("player1")));
         state.removeComp(controller.getPlayerByID("player1"), new Pair<>(1, 3));
         state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
         state.endMove(controller.getPlayerByID("player1"));
