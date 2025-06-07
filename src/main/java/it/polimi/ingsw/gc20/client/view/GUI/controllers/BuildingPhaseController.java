@@ -1,8 +1,8 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
@@ -25,10 +25,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class BuildingPhaseController {
+public abstract class BuildingPhaseController implements GameModelListener {
 
     @FXML
     protected StackPane shipContainer;
@@ -109,6 +110,8 @@ public abstract class BuildingPhaseController {
         loadCoveredDeck();
         loadUncoveredComponents();
         loadOtherPlayersList();
+
+        ClientGameModel.getInstance().addListener(this);
 
         coveredDeckPane.setOnMouseClicked(event -> {
             if (isViewingOwnShip()) {
@@ -522,7 +525,9 @@ public abstract class BuildingPhaseController {
             uncoveredComponents = client.getBoard().viewedPile;
             for (ViewComponent component : uncoveredComponents) {
                 Pane componentPane = createComponentPane(component);
-                componentPane.setOnMouseClicked(event -> selectComponent(component, componentPane));
+                // Take the index of the component in the list to use as a unique identifier
+                int index = uncoveredComponents.indexOf(component);
+                componentPane.setOnMouseClicked(event -> selectComponent(component, componentPane, index));
                 uncoveredComponentsPane.getChildren().add(componentPane);
             }
         }
@@ -820,21 +825,27 @@ public abstract class BuildingPhaseController {
         }
     }
 
-    private void selectComponent(ViewComponent component, Pane sourcePane) {
-        selectedComponent = component;
+    private void selectComponent(ViewComponent component, Pane sourcePane, int index) {
 
-        componentInHandPane.getChildren().clear();
-        componentInHandPane.getChildren().add(createComponentPane(component));
+        // If there's a componentInHand, ignore
+        if (ClientGameModel.getInstance().getComponentInHand() != null) {
+            return;
+        }
+
+        // Add to componentInHand
+        try{
+            ClientGameModel.getInstance().getClient().takeComponentFromViewed(ClientGameModel.getInstance().getUsername(), index);
+        } catch (RemoteException e) {
+            showError("Error selecting component: " + e.getMessage());
+            return;
+        }
+
+        loadUncoveredComponents();
 
         uncoveredComponentsPane.getChildren().forEach(node -> {
             node.setStyle(node.getStyle().replace("-fx-border-width: 3;", ""));
         });
         sourcePane.setStyle(sourcePane.getStyle() + "-fx-border-width: 3;");
-
-        String username = ClientGameModel.getInstance().getUsername();
-        boolean isLearner = ClientGameModel.getInstance().getShip(username).isLearner;
-        nonLearnerComponentInHandButtons.setVisible(!isLearner);
-        nonLearnerComponentInHandButtons.setManaged(!isLearner);
     }
 
     private void activatePlacementMode() {
@@ -1005,4 +1016,32 @@ public abstract class BuildingPhaseController {
     protected abstract int getRows();
     protected abstract int getCols();
 
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // TODO
+        return;
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // Not needed for this controller
+        return;
+    }
+
+    @Override
+    public void onPlayerListUpdated(List<ViewPlayer> players) {
+        // Not needed for this controller
+        return;
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // Maybe to implement
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        updateComponentInHand();
+        loadUncoveredComponents();
+    }
 }

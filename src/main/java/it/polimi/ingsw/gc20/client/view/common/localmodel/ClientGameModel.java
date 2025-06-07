@@ -123,6 +123,10 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setComponentInHand(ViewComponent componentInHand) {
         this.componentInHand = componentInHand;
+        LOGGER.fine("Component in hand updated in model.");
+        for (GameModelListener listener : listeners) {
+            listener.onComponentInHandUpdated(this.componentInHand);
+        }
     }
     public ViewBoard getBoard() {
         return board;
@@ -286,7 +290,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         });
     }
 
-    // --- Updaters that notify listeners ---
     public void updatePlayerShip(ViewShip ship) {
         this.playerShip = ship;
         LOGGER.fine("Player ship updated in model.");
@@ -300,14 +303,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         LOGGER.fine("Lobby updated in model: " + (lobby != null ? lobby.getID() : "null"));
         for (GameModelListener listener : listeners) {
             listener.onLobbyUpdated(this.currentLobby);
-        }
-    }
-
-    public void updateGamePhase(GamePhase newPhase) {
-        this.currentPhase = newPhase;
-        LOGGER.fine("Game phase updated in model to: " + newPhase);
-        for (GameModelListener listener : listeners) {
-            listener.onPhaseChanged(this.currentPhase);
         }
     }
 
