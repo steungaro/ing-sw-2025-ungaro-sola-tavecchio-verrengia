@@ -13,6 +13,8 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20;
     exports it.polimi.ingsw.gc20.server.model.gamesets;
     exports it.polimi.ingsw.gc20.server.model.components;
+    exports it.polimi.ingsw.gc20.client.view.common.localmodel.components;
+
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.ship to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;
