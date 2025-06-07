@@ -87,6 +87,23 @@ public abstract class ShipController {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
+        if (componentId >= 1000 && componentId <= 1003) {
+            String username = ClientGameModel.getInstance().getUsername();
+            ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
+            ViewPlayer currentPlayer = Arrays.stream(players)
+                    .filter(p -> p != null && username.equals(p.username))
+                    .findFirst()
+                    .orElse(null);
+            if (currentPlayer != null && currentPlayer.playerColor != null) {
+                switch (currentPlayer.playerColor) {
+                    case BLUE -> componentId = 1000;
+                    case RED -> componentId = 1001;
+                    case GREEN -> componentId = 1002;
+                    case YELLOW -> componentId = 1003;
+                }
+            }
+        }
+
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));

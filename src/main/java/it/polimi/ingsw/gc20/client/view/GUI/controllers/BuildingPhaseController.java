@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +29,8 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Locale.filter;
 
 public abstract class BuildingPhaseController implements GameModelListener {
 
@@ -336,6 +339,25 @@ public abstract class BuildingPhaseController implements GameModelListener {
         GridPane parent = (GridPane) targetCell.getParent();
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
+
+        // If componentID = 1000 -> blue = 1000, red = 1001, green = 1002, yellow = 1003
+
+        if (componentId >= 1000 && componentId <= 1003) {
+            String username = ClientGameModel.getInstance().getUsername();
+            ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
+            ViewPlayer currentPlayer = Arrays.stream(players)
+                    .filter(p -> p != null && username.equals(p.username))
+                    .findFirst()
+                    .orElse(null);
+            if (currentPlayer != null && currentPlayer.playerColor != null) {
+                switch (currentPlayer.playerColor) {
+                    case BLUE -> componentId = 1000;
+                    case RED -> componentId = 1001;
+                    case GREEN -> componentId = 1002;
+                    case YELLOW -> componentId = 1003;
+                }
+            }
+        }
 
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
