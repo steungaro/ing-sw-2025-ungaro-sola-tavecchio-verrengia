@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -363,6 +364,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
         try {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
+            if (comp.rotation >= 0 && comp.rotation <= 3) {
+                targetCell.setRotate(comp.rotation * 90);
+            }
 
             layeredPane.getChildren().add(targetCell);
             setComponentProp(layeredPane, comp);
@@ -603,6 +607,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
             Platform.runLater(() -> {
                 componentInHandPane.getChildren().clear();
 
+                HBox rotationButtonsContainer = (HBox) rootPane.lookup("#rotationButtonsContainer");
+                if (rotationButtonsContainer != null) {
+                    rotationButtonsContainer.setVisible(true);
+                    rotationButtonsContainer.setManaged(true);
+                }
+
+
                 if (componentInHand != null) {
                     Pane componentPane = createComponentPane(componentInHand);
                     componentInHandPane.getChildren().add(componentPane);
@@ -624,6 +635,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
                         nonLearnerComponentInHandButtons.setManaged(false);
                     }
                 } else {
+                    if (rotationButtonsContainer != null) {
+                        rotationButtonsContainer.setVisible(false);
+                        rotationButtonsContainer.setManaged(false);
+                    }
+
                     nonLearnerComponentInHandButtons.setVisible(false);
                     nonLearnerComponentInHandButtons.setManaged(false);
                     selectedComponent = null;
@@ -654,6 +670,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 imageView.setPreserveRatio(true);
                 imageView.setX(5);
                 imageView.setY(5);
+                if (component.rotation >= 0 && component.rotation <= 3) {
+                    imageView.setRotate(component.rotation * 90);
+                }
                 pane.getChildren().add(imageView);
             } catch (Exception e) {
                 Rectangle fallback = new Rectangle(5, 5, 70, 70);
@@ -669,19 +688,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
         String imagePath = "/fxml/tiles/" + component.id + ".jpg";
         return imagePath;
-    }
-
-    /**
-     * Rotates the selected component
-     */
-    @FXML
-    private void rotateComponent() {
-        if (selectedComponent != null) {
-            componentInHandPane.getChildren().clear();
-            componentInHandPane.getChildren().add(createComponentPane(selectedComponent));
-        } else {
-            showError("No component selected!");
-        }
     }
 
     /**
@@ -1037,6 +1043,26 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
     protected abstract int getRows();
     protected abstract int getCols();
+
+    @FXML
+    private void rotateComponentClockwise() {
+        try {
+            String username = ClientGameModel.getInstance().getUsername();
+            ClientGameModel.getInstance().getClient().rotateComponentClockwise(username);
+        } catch (Exception e) {
+            showError("Error rotating component clockwise: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void rotateComponentCounterclockwise() {
+        try {
+            String username = ClientGameModel.getInstance().getUsername();
+            ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
+        } catch (Exception e) {
+            showError("Error rotating component counterclockwise: " + e.getMessage());
+        }
+    }
 
     @Override
     public void onShipUpdated(ViewShip ship) {

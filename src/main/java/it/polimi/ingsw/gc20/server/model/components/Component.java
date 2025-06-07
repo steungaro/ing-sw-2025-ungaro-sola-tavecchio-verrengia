@@ -30,6 +30,7 @@ public abstract class Component {
     protected final Map<Direction, ConnectorEnum> connectors = new HashMap<>();
     protected int ID;
     private Tile tile = null;
+    private int rotation = 0; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
 
     public Component() {}
 
@@ -42,6 +43,7 @@ public abstract class Component {
         connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
         connectors.put(Direction.RIGHT, conn);
+        rotation = (rotation + 1) % 4;
     }
 
     /**
@@ -53,6 +55,7 @@ public abstract class Component {
         connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
         connectors.put(Direction.LEFT, conn);
+        rotation = (rotation + 3) % 4;
     }
 
     /**
@@ -196,6 +199,7 @@ public abstract class Component {
 
     public void initializeViewComponent(ViewComponent viewComponent) {
         viewComponent.id = ID;
+        viewComponent.rotation = rotation;
         viewComponent.upConnectors = connectors.get(Direction.UP).getValue();
         viewComponent.downConnectors = connectors.get(Direction.DOWN).getValue();
         viewComponent.leftConnectors = connectors.get(Direction.LEFT).getValue();

@@ -42,6 +42,23 @@
                            <Insets bottom="5" top="5" />
                        </VBox.margin>
                    </StackPane>
+
+                   <HBox fx:id="rotationButtonsContainer" alignment="CENTER" spacing="10" visible="false" managed="false">
+                       <Button fx:id="rotateClockwiseButton" onAction="#rotateComponentClockwise"
+                               style="-fx-background-color: #5bc0de; -fx-text-fill: white;"
+                               text="Rotate clockwise" minWidth="100" minHeight="30">
+                           <font>
+                               <Font size="12.0" />
+                           </font>
+                       </Button>
+                       <Button fx:id="rotateCounterclockwiseButton" onAction="#rotateComponentCounterclockwise"
+                               style="-fx-background-color: #5bc0de; -fx-text-fill: white;"
+                               text="Rotate counterclockwise" minWidth="100" minHeight="30">
+                           <font>
+                               <Font size="12.0" />
+                           </font>
+                       </Button>
+                   </HBox>
                </VBox>
    
                <!-- Covered deck -->
