@@ -110,8 +110,28 @@ public abstract class BuildingPhaseController implements GameModelListener {
             loadShipData(this.currentPlayerBeingViewed);
         }
 
+        if (coveredDeckPane != null) {
+            try {
+                Image deckBackgroundImage = new Image(getClass().getResourceAsStream("/fxml/tiles/component.png"));
+                if (deckBackgroundImage.isError()) {
+                    coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
+                } else {
+                    BackgroundImage bgImage = new BackgroundImage(
+                            deckBackgroundImage,
+                            BackgroundRepeat.NO_REPEAT, // Corrisponde a background-repeat
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundPosition.CENTER,  // Corrisponde a background-position
+                            new BackgroundSize(1.0, 1.0, true, true, true, false) // Corrisponde a background-size: contain
+                    );
+                    coveredDeckPane.setBackground(new Background(bgImage));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
+            }
+        }
+
         loadShip();
-        loadCoveredDeck();
         loadUncoveredComponents();
         loadOtherPlayersList();
 
@@ -524,16 +544,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         parent.getChildren().add(box);
     }
 
-    private void loadCoveredDeck() {
-        // TODO -> Mettere l'immagine della carta coperta (da creare)
-        Rectangle coveredCard = new Rectangle(0, 0, 120, 80);
-        coveredCard.setFill(Color.DARKGRAY);
-        coveredCard.setStroke(Color.BLACK);
-        coveredCard.setArcWidth(10);
-        coveredCard.setArcHeight(10);
-        coveredDeckPane.getChildren().add(coveredCard);
-    }
-
     public void updateStatisticBoard(ViewPlayer player) {
         if (player != null) {
             playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
@@ -613,9 +623,18 @@ public abstract class BuildingPhaseController implements GameModelListener {
                     rotationButtonsContainer.setManaged(true);
                 }
 
-
                 if (componentInHand != null) {
                     Pane componentPane = createComponentPane(componentInHand);
+                    componentPane.setTranslateX((componentInHandPane.getWidth() - componentPane.getPrefWidth()) / 2);
+                    componentPane.setTranslateY((componentInHandPane.getHeight() - componentPane.getPrefHeight()) / 2);
+
+                    componentPane.translateXProperty().bind(
+                            componentInHandPane.widthProperty().subtract(componentPane.prefWidthProperty()).divide(2)
+                    );
+                    componentPane.translateYProperty().bind(
+                            componentInHandPane.heightProperty().subtract(componentPane.prefHeightProperty()).divide(2)
+                    );
+
                     componentInHandPane.getChildren().add(componentPane);
                     selectedComponent = componentInHand;
 
@@ -654,7 +673,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private Pane createComponentPane(ViewComponent component) {
         Pane pane = new Pane();
         pane.setPrefSize(80, 80);
-        pane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
         if (component == null) {
             return pane;
@@ -1062,6 +1080,40 @@ public abstract class BuildingPhaseController implements GameModelListener {
             ClientGameModel.getInstance().getClient().rotateComponentCounterclockwise(username);
         } catch (Exception e) {
             showError("Error rotating component counterclockwise: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void navigateToGameBoard() {
+        System.out.println("Navigando al tabellone di gioco");
+        try {
+            String boardType;
+            if (ship != null && ship.isLearner) {
+                boardType = "board0";
+            } else {
+                boardType = "board2";
+            }
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + boardType + ".fxml"));
+            Parent boardViewRoot = loader.load();
+
+            // Se il controller ha metodi di inizializzazione specifici, li puoi chiamare qui
+        /*
+        Object controller = loader.getController();
+        if (controller instanceof BoardController c) {
+            c.initializeBoard(ClientGameModel.getInstance().getBoard());
+        }
+        */
+
+            Stage stage = new Stage();
+            stage.setTitle("Tabellone di Gioco");
+            stage.setScene(new Scene(boardViewRoot));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Impossibile caricare la vista del tabellone: " + e.getMessage());
         }
     }
 
