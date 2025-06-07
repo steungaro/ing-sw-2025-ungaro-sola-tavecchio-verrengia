@@ -519,7 +519,7 @@ public abstract class Ship {
         if (position == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
-        if (!this.isNormal() || !c.isLifeSupport()) {
+        if (this.isNormal() || !c.isLifeSupport()) {
             c.updateParameter(this, -1);
         }
         try {

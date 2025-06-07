@@ -26,8 +26,8 @@ class SmugglersStateTest {
     static SmugglersState state;
     static AdventureCard card;
 
-    @BeforeAll
-    static void setUp() throws InvalidStateException, EmptyCabinException, CargoNotLoadable, CargoFullException {
+    @BeforeEach
+    void setUp() throws InvalidStateException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
         card = new AdventureCard();
         card.setFirePower(2);
@@ -167,13 +167,13 @@ class SmugglersStateTest {
 
     @Test
     void testSmugglersState() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, InvalidShipException, DieNotRolledException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
-        assertEquals("SmugglersState", state.toString());
+        assertEquals("SmugglersState{ lostCargo=2, firePower=2, lostDays=1, reward=[YELLOW, BLUE]}", state.toString());
         assertEquals("player1", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
-        assertEquals(0, state.shootEnemy(controller.getPlayerByID("player1"), List.of(new Pair<> (1, 3)), List.of(new Pair<> (2, 2))));
+        state.activateCannons(controller.getPlayerByID("player1"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));
         assertEquals("player2", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
-        assertEquals(-1, state.shootEnemy(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>()));
+        state.activateCannons(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         assertEquals(StatePhase.REMOVE_CARGO, state.phase);
         assertEquals("player2", state.getCurrentPlayer());
         state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
@@ -181,7 +181,7 @@ class SmugglersStateTest {
         state.endMove(controller.getPlayerByID("player2"));
         assertEquals("player3", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
-        state.shootEnemy(controller.getPlayerByID("player3"), List.of(new Pair<> (1, 3), new Pair<>(3, 3)), List.of(new Pair<> (2, 2), new Pair<>(2,2)));
+        state.activateCannons(controller.getPlayerByID("player3"), List.of(new Pair<>(1, 3), new Pair<>(3, 3)), List.of(new Pair<>(2, 2), new Pair<>(2, 2)));
         assertEquals("player3", state.getCurrentPlayer());
         assertEquals(StatePhase.ACCEPT_PHASE, state.phase);
         state.acceptCard(controller.getPlayerByID("player3"));
@@ -191,4 +191,35 @@ class SmugglersStateTest {
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.BLUE, new Pair<>(1, 4));
         state.endMove(controller.getPlayerByID("player3"));
         assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
-    }}
+    }
+
+    @Test
+    void testSmugglersState2() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException {
+        CargoHold cargoHold = (CargoHold) controller.getPlayerByID("player2").getShip().getComponentAt(1, 2);
+        controller.getPlayerByID("player2").getShip().loadCargo(CargoColor.GREEN, cargoHold);
+        assertEquals("SmugglersState{ lostCargo=2, firePower=2, lostDays=1, reward=[YELLOW, BLUE]}", state.toString());
+        assertEquals("player1", state.getCurrentPlayer());
+        assertEquals(StatePhase.CANNONS_PHASE, state.phase);
+        state.activateCannons(controller.getPlayerByID("player1"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));
+        assertEquals("player2", state.getCurrentPlayer());
+        assertEquals(StatePhase.CANNONS_PHASE, state.phase);
+        state.activateCannons(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        assertEquals(StatePhase.REMOVE_CARGO, state.phase);
+        assertEquals("player2", state.getCurrentPlayer());
+        state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
+        state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
+        state.endMove(controller.getPlayerByID("player2"));
+        assertEquals("player3", state.getCurrentPlayer());
+        assertEquals(StatePhase.CANNONS_PHASE, state.phase);
+        state.activateCannons(controller.getPlayerByID("player3"), List.of(new Pair<>(1, 3), new Pair<>(3, 3)), List.of(new Pair<>(2, 2), new Pair<>(2, 2)));
+        assertEquals("player3", state.getCurrentPlayer());
+        assertEquals(StatePhase.ACCEPT_PHASE, state.phase);
+        state.acceptCard(controller.getPlayerByID("player3"));
+        assertEquals(StatePhase.ADD_CARGO, state.phase);
+        state.loadCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2));
+        state.moveCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));
+        state.loadCargo(controller.getPlayerByID("player3"), CargoColor.BLUE, new Pair<>(1, 4));
+        state.endMove(controller.getPlayerByID("player3"));
+        assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
+    }
+}

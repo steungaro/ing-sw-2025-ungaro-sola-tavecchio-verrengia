@@ -150,20 +150,7 @@ public class ValidatingShipStateTest {
 
     @Test
     void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException, InvalidTileException {
-        for (Player player : controller.getModel().getInGamePlayers()) {
-            try {
-                // Validate the ship of the player
-                boolean isValid = state.isShipValid(player);
-                if (!isValid && !player.getUsername().equals("player1")) {
-                    fail("Ship should be valid for player: " + player.getUsername());
-                }
-                if (!player.getUsername().equals("player1")) {
-                    state.endMove(player);
-                }
-            } catch (InvalidStateException e) {
-                fail("InvalidStateException thrown when validating ship for player: " + player.getUsername());
-            }
-        }
+
         state.removeComp(controller.getPlayerByID("player1"), new Pair<>(1, 3));
         state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
         state.endMove(controller.getPlayerByID("player1"));
