@@ -44,7 +44,7 @@ public class InLobbyController {
     private ViewLobby currentLobby;
     private boolean isOwner = false;
     private String currentUsername;
-    private ClientGameModel clientController = ClientGameModel.getInstance();
+    private final ClientGameModel clientController = ClientGameModel.getInstance();
 
     @FXML
     public void initialize() {
@@ -65,6 +65,8 @@ public class InLobbyController {
             updatePlayerList(lobby, username);
 
             isOwner = username.equals(lobby.getOwner());
+            waitingMessageLabel.setVisible(!isOwner);
+            waitingMessageLabel.setManaged(!isOwner);
             ownerControlsBox.setVisible(isOwner);
             leaveLobbyButton.setVisible(!isOwner);
             ownerControlsBox.setManaged(isOwner);
@@ -84,23 +86,20 @@ public class InLobbyController {
         }
 
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.scheduleAtFixedRate(() -> {
-            Platform.runLater(() -> {
-                if (currentLobby != null) {
-                    ViewLobby updatedLobby = clientController.getCurrentLobby();
-                    if (updatedLobby != null) {
-                        updatePlayerList(updatedLobby, currentUsername);
+        scheduler.scheduleAtFixedRate(() -> Platform.runLater(() -> {
+            if (currentLobby != null) {
+                ViewLobby updatedLobby = clientController.getCurrentLobby();
+                if (updatedLobby != null) {
+                    updatePlayerList(updatedLobby, currentUsername);
 
-                        // Aggiorna anche il contatore dei giocatori
-                        playerCountLabel.setText(String.format("%d/%d",
-                                updatedLobby.getPlayersList().size(),
-                                updatedLobby.getMaxPlayers()));
-
-                        updateStartButtonState();
-                    }
+                    playerCountLabel.setText(String.format("%d/%d",
+                            updatedLobby.getPlayersList().size(),
+                            updatedLobby.getMaxPlayers()));
+                    currentLobby = updatedLobby;
+                    updateStartButtonState();
                 }
-            });
-        }, 0, 3, TimeUnit.SECONDS);
+            }
+        }), 0, 3, TimeUnit.SECONDS);
     }
 
     private void stopPeriodicUpdates() {
@@ -129,7 +128,7 @@ public class InLobbyController {
 
         if (!canStart) {
             startGameButton.setStyle("-fx-background-color: #555555; -fx-text-fill: #aaaaaa;");
-            startGameButton.setText("Wait for other players...");
+            startGameButton.setText("Waiting for other players...");
         } else {
             startGameButton.setStyle("-fx-background-color: #4a7eb3; -fx-text-fill: white;");
             startGameButton.setText("Start Game");
