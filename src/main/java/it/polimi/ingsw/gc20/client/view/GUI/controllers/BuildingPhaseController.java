@@ -33,13 +33,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
     protected StackPane shipContainer;
 
     @FXML
-    private Pane componentInHandPane;
+    protected Pane componentInHandPane;
 
     @FXML
     private Pane coveredDeckPane;
 
     @FXML
-    private FlowPane uncoveredComponentsPane;
+    protected FlowPane uncoveredComponentsPane;
 
     @FXML
     private HBox nonLearnerButtonsContainer;
@@ -72,7 +72,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private ListView<ViewPlayer> otherPlayersShipsList;
 
     private ViewComponent selectedComponent;
-    private boolean placementModeActive = false;
+    protected boolean placementModeActive = false;
     protected ViewShip ship;
     protected final Map<String, Integer> gridComponents = new HashMap<>();
     protected ShipController.CellClickHandler cellClickHandler;
@@ -309,7 +309,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         clearAllComponents();
 
         for (int row = 0; row < getRows(); row++) {
-            for (int col = 0; col < getCols()+1; col++) {
+            for (int col = 0; col < getCols(); col++) {
                 ViewComponent comp = ship.getComponent(row, col);
                 if (comp != null) {
                     addComponent(comp, row, col);
@@ -885,7 +885,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         sourcePane.setStyle(sourcePane.getStyle() + "-fx-border-width: 3;");
     }
 
-    private void activatePlacementMode() {
+    protected void activatePlacementMode() {
         if (ClientGameModel.getInstance().getComponentInHand() != null) {
             placementModeActive = true;
             componentInHandPane.setStyle("-fx-border-color: green; -fx-border-width: 2;");
@@ -916,9 +916,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
         this.cellClickHandler = handler;
         System.out.println("Placing mode activated");
 
-        // Add click overlays to all cells
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
+                if(!checkIsValid(row,col))
+                    continue;
+
                 final int finalRow = row;
                 final int finalCol = col;
 
@@ -930,10 +932,10 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
                 // Bind size to grid cell
                 clickArea.widthProperty().bind(
-                        componentsGrid.widthProperty().divide(getCols()).subtract(4)
+                        componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
                 );
                 clickArea.heightProperty().bind(
-                        componentsGrid.heightProperty().divide(getRows()).subtract(4)
+                        componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
                 );
 
                 clickArea.setOnMouseClicked(_ -> {
@@ -959,7 +961,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    private void handleCellClick(int row, int col) {
+    protected abstract boolean checkIsValid(int row,int col);
+
+    protected void handleCellClick(int row, int col) {
         if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() != null) {
             try {
                 String username = ClientGameModel.getInstance().getUsername();
@@ -989,7 +993,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    private void handleUncoveredClick() {
+    protected void handleUncoveredClick() {
         if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() != null) {
             try {
                 String username = ClientGameModel.getInstance().getUsername();

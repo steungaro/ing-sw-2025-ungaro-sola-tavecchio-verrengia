@@ -180,4 +180,36 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
     protected int getCols() {
         return COLS;
     }
+
+    @Override
+    public void updateShipDisplay(ViewShip ship) {
+        // TODO
+    }
+
+    @Override
+    protected boolean checkIsValid(int row,int col){
+        if(row == 0 && col!=2)
+            return false;
+        if(row == 1 && (col == 0 || col == 4))
+            return false;
+        if(row == 4 && col == 2)
+            return false;
+        return true;
+    }
+
+    @Override
+    public void buildShipComponents(ViewShip ship) {
+        if (ship == null || componentsGrid == null) return;
+
+        clearAllComponents();
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols()+1; col++) {
+                ViewComponent comp = ship.getComponent(row, col);
+                if (comp != null) {
+                    addComponent(comp, row, col);
+                }
+            }
+        }
+    }
 }
