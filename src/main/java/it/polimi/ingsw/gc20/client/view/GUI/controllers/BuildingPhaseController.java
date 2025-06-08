@@ -277,6 +277,8 @@ public abstract class BuildingPhaseController implements GameModelListener {
             stage.setTitle("Opponent Ship: " + opponent.username);
             stage.setScene(new Scene(opponentViewRoot));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setWidth(500);
+            stage.setHeight(500);
             stage.showAndWait();
 
         } catch (IOException e) {
