@@ -17,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -78,6 +77,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     protected ShipController.CellClickHandler cellClickHandler;
     private ViewPlayer currentPlayerBeingViewed;
 
+    /*
     private final List<double[]> cargoCord3 = List.of(
             new double[]{0.3, 0.45},
             new double[]{0.625, 0.285},
@@ -87,7 +87,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private final List<double[]> cargoCord2 = List.of(
             new double[]{0.45, 0.285},
             new double[]{0.45, 0.62}
-    );
+    );*/
 
 
     public void initialize() {
@@ -104,27 +104,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
             loadShipData(this.currentPlayerBeingViewed);
         }
 
-        if (coveredDeckPane != null) {
-            try {
-                Image deckBackgroundImage = new Image(getClass().getResourceAsStream("/fxml/tiles/component.png"));
-                if (deckBackgroundImage.isError()) {
-                    coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
-                } else {
-                    BackgroundImage bgImage = new BackgroundImage(
-                            deckBackgroundImage,
-                            BackgroundRepeat.NO_REPEAT, // Corrisponde a background-repeat
-                            BackgroundRepeat.NO_REPEAT,
-                            BackgroundPosition.CENTER,  // Corrisponde a background-position
-                            new BackgroundSize(1.0, 1.0, true, true, true, false) // Corrisponde a background-size: contain
-                    );
-                    coveredDeckPane.setBackground(new Background(bgImage));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
-            }
-        }
-
+        loadCoveredDeck();
         loadShip();
         loadUncoveredComponents();
         loadOtherPlayersList();
@@ -138,6 +118,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 showError("You can only take covered components for your own ship.");
             }
         });
+
         componentInHandPane.setOnMouseClicked(_ -> {
             if (isViewingOwnShip()) {
                 activatePlacementMode();
@@ -146,6 +127,29 @@ public abstract class BuildingPhaseController implements GameModelListener {
             }
         });
         updateComponentInHand();
+    }
+
+    private void loadCoveredDeck(){
+        if (coveredDeckPane != null) {
+            try {
+                Image deckBackgroundImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/tiles/component.png")));
+                if (deckBackgroundImage.isError()) {
+                    coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
+                } else {
+                    BackgroundImage bgImage = new BackgroundImage(
+                            deckBackgroundImage,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundRepeat.NO_REPEAT,
+                            BackgroundPosition.CENTER,
+                            new BackgroundSize(1.0, 1.0, true, true, true, false)
+                    );
+                    coveredDeckPane.setBackground(new Background(bgImage));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
+            }
+        }
     }
 
     private ViewPlayer getPlayerFromModel(String username) {
@@ -239,7 +243,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
                     Platform.runLater(() -> {
                         if (otherPlayersShipsList.getSelectionModel().getSelectedItem() == null ||
                                 !otherPlayersShipsList.getSelectionModel().getSelectedItem().equals(newSelection)) {
-                            // TODO
                         }
                     });
                 }
@@ -567,7 +570,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
     private void takeCoveredComponent() {
         if (ClientGameModel.getInstance().getComponentInHand() != null) {
-            showError("You already have a component in hand!"); // TODO: show a dialog instead
+            showError("You already have a component in hand!");
             return;
         }
         ClientGameModel model = ClientGameModel.getInstance();

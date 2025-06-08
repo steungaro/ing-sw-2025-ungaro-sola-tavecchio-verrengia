@@ -1,19 +1,12 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GameAction;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GamePhase;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class BuildingPhaseController0 extends BuildingPhaseController {
     private final int ROWS = 5;
@@ -182,19 +175,12 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
     }
 
     @Override
-    public void updateShipDisplay(ViewShip ship) {
-        // TODO
-    }
-
-    @Override
     protected boolean checkIsValid(int row,int col){
         if(row == 0 && col!=2)
             return false;
         if(row == 1 && (col == 0 || col == 4))
             return false;
-        if(row == 4 && col == 2)
-            return false;
-        return true;
+        return row != 4 || col != 2;
     }
 
     @Override

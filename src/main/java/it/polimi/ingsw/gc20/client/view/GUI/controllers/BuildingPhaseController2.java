@@ -301,7 +301,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         try {
             ClientGameModel.getInstance().getClient().takeComponentFromBooked(ClientGameModel.getInstance().getUsername(), i);
         } catch (RemoteException e){
-            e.printStackTrace();
+            System.err.println("Error taking component from booked: " + e.getMessage());
         }
 
 
@@ -315,9 +315,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             return false;
         if(row == 1 && col == 6)
             return false;
-        if (row == 4 && col == 3)
-            return false;
-        return true;
+        return row != 4 || col != 3;
     }
 
     public interface BookedClickHandler {
@@ -372,10 +370,12 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         try {
             ClientGameModel.getInstance().getClient().addComponentToBooked(username);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            System.err.println("Error taking component from booked: " + e.getMessage());
         }
     }
 
+    // TODO add listener to update booked components in CLientGameModel
+    /* USELESS
     @Override
     public void onShipUpdated(ViewShip ship) {
         super.onShipUpdated(ship);
@@ -394,7 +394,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         } else {
             imageBooked_1.setImage(null);
         }
-    }
+    }*/
 
     private void addComponentToImageView(ImageView imageView, ViewComponent component) {
         if (component == null || imageView == null) return;
@@ -421,10 +421,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
                 if (component != null) {
                     String imagePath = "/fxml/tiles/" + component.id + ".jpg";
                     try {
-                        Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
+                        Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
                         if (i == 0) {
                             imageBooked_0.setImage(componentImage);
-                        } else if (i == 1) {
+                        } else {
                             imageBooked_1.setImage(componentImage);
                         }
                     } catch (Exception e) {
