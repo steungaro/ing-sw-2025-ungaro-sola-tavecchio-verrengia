@@ -44,6 +44,7 @@ public class CannonTest {
         assertEquals(ConnectorEnum.D, cannon.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.ZERO, cannon.getConnectors().get(Direction.LEFT));
         assertEquals(ConnectorEnum.U, cannon.getConnectors().get(Direction.RIGHT));
+
         cannon.rotateCounterclockwise();
         assertEquals(Direction.UP, cannon.getOrientation());
         assertEquals(ConnectorEnum.ZERO, cannon.getConnectors().get(Direction.DOWN));

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.ShieldsMenuController"
+      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
+      prefHeight="600.0" prefWidth="700.0">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Shields Menu" textFill="WHITE">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label fx:id="messageLabel" textFill="WHITE" wrapText="true">
+        <font>
+            <Font size="16.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Your ship:" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+        <Pane fx:id="shipPane" prefHeight="200" prefWidth="500" />
+    </VBox>
+
+    <VBox fx:id="shieldActivationBox" spacing="15" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Shield Activation" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+
+        <HBox spacing="20" alignment="CENTER">
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Shield Coordinates" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="Row:" textFill="WHITE">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="shieldRowField" prefWidth="50" />
+
+                    <Label text="Column:" textFill="WHITE">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="shieldColField" prefWidth="50" />
+                </HBox>
+            </VBox>
+
+            <VBox spacing="5" alignment="CENTER">
+                <Label text="Battery Coordinates" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="Row:" textFill="WHITE">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="batteryRowField" prefWidth="50" />
+
+                    <Label text="Column:" textFill="WHITE">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="batteryColField" prefWidth="50" />
+                </HBox>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="20" alignment="CENTER">
+        <Button fx:id="activateButton" prefHeight="50" prefWidth="200" text="Activate Shield" onAction="#handleActivateShield">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
+        <Button fx:id="skipButton" prefHeight="50" prefWidth="200" text="Don't Activate" onAction="#handleSkipActivation">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
+        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="150" text="View Options" onAction="#handleViewOptions">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+    </HBox>
+
+    <Label fx:id="errorLabel" visible="false" textFill="RED" wrapText="true">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Label>
+</VBox>

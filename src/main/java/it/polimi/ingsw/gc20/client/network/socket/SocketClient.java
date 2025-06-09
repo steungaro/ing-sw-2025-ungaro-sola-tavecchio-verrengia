@@ -436,7 +436,7 @@ public class SocketClient implements Client {
     @Override
     public void joinLobby(String id, String user) {
         try {
-            out.writeObject(new JoinLobbyMessage(id, user));
+            out.writeObject(new JoinLobbyMessage(user, id));
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while joining lobby: " + e.getMessage());

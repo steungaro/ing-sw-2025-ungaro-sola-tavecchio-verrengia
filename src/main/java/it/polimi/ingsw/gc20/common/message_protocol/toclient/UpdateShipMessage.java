@@ -45,7 +45,6 @@ public record UpdateShipMessage(
         viewShip.setBooked(0, componentsBooked[0]);
         viewShip.setBooked(1, componentsBooked[1]);
         viewShip.setValid(isValid);
-        // da capire dove mettere il component in hand
         ClientGameModel.getInstance().setShip(username, viewShip);
     }
 

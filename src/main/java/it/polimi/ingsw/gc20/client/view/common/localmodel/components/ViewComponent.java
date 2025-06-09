@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 public class ViewComponent implements Serializable {
     public int id;
     public int rotation; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
+    public int rotComp; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
     public int upConnectors;
     public int downConnectors;
     public int leftConnectors;
