@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.List;
 
 public abstract class ShipController {
+    // TODO: Display battery, cabin, cargo hold, aliens (look at buildingPhaese for first implementation)
+    // TODO: Clickacle section for ship components, so that the user can click on a component and do thinks (custom for menu)
 
     protected int ROWS = 0;
     protected int COLS = 0;

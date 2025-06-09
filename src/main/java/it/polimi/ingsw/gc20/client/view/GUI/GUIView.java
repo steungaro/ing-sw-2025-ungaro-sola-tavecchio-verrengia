@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
+import it.polimi.ingsw.gc20.client.view.TUI.LoseEnergyMenu;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
@@ -51,7 +52,12 @@ public class GUIView extends ClientGameModel {
         BOARD0("board0"),
         SHIP0("ship0"),
         CARD_ACCEPTANCE_MENU("cardAcceptanceMenu"),
-        SHIP2("ship2");
+        SHIP2("ship2"),
+        CARGO_MENU("cargoMenu"),
+        CANNONS_MENU("cannonsMenu"),
+        LEADER_BOARD_MENU("leaderBoardMenu"),
+        AUTOMATIC_ACTION("automaticAction"),
+        ENGINE_MENU("engineMenu");
 
         private final String fxmlFileName;
 
@@ -269,16 +275,19 @@ public class GUIView extends ClientGameModel {
     @Override
     public void planetMenu(List<Planet> planets) {
         setCurrentGuiState(GuiState.PLANET_MENU);
+        // TODO: ALL
     }
 
     @Override
     public void populateShipMenu() {
         setCurrentGuiState(GuiState.POPULATE_SHIP_MENU);
+        // TODO: ALL
     }
 
     @Override
     public void automaticAction(String message) {
-        // currentGuiState = GuiState.AUTOMATIC_ACTION;
+        currentGuiState = GuiState.AUTOMATIC_ACTION;
+        // TODO: ALL
     }
 
     @Override
@@ -294,26 +303,42 @@ public class GUIView extends ClientGameModel {
     @Override
     public void shieldsMenu(String message) {
         setCurrentGuiState(GuiState.SHIELDS_MENU);
+        // TODO : Check button handler
     }
 
     @Override
     public void rollDiceMenu(String message) {
         setCurrentGuiState(GuiState.ROLL_DICE_MENU);
+        // TODO: Choose to implement in another window
     }
 
     @Override
     public void cargoMenu(int cargoNum) {
-        // currentGuiState = GuiState.CARGO_MENU;
+        currentGuiState = GuiState.CARGO_MENU;
+        // Necessary?
     }
 
     @Override
     public void loseCrewMenu(int crewNum) {
         setCurrentGuiState(GuiState.LOSE_CREW_MENU);
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof LoseCrewMenuController) {
+                    ((LoseCrewMenuController) controller).initializeWithCrewToLose(crewNum);
+                } else {
+                    System.err.println("Controller for LOSE_CREW_MENU is not of type LoseCreeMenu or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup lose crew menu: primaryStage, scene, or root is null.");
+            }
+        });
     }
 
     @Override
     public void removeBatteryMenu(int batteryNum) {
         setCurrentGuiState(GuiState.LOSE_ENERGY_MENU);
+        // Necessary?
     }
 
     @Override
@@ -332,7 +357,8 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-        // currentGuiState = GuiState.LEADER_BOARD_MENU;
+        currentGuiState = GuiState.LEADER_BOARD_MENU;
+        // Necessary?
     }
 
     @Override
@@ -394,31 +420,49 @@ public class GUIView extends ClientGameModel {
     @Override
     public void branchMenu() {
         setCurrentGuiState(GuiState.BRANCH_MENU);
+        // TODO: Improvment
     }
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
         setCurrentGuiState(GuiState.BUILDING_PHASE);
+        // TODO: bugs in buildingPhase2
     }
 
     @Override
     public void cannonsMenu(String message) {
-        // currentGuiState = GuiState.CANNONS_MENU;
+        currentGuiState = GuiState.CANNONS_MENU;
+        // TODO: Check button handler
     }
 
     @Override
     public void cardAcceptanceMenu(String message) {
         setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
+        // TODO: Check button handler
     }
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        // currentGuiState = GuiState.CARGO_MENU;
+        currentGuiState = GuiState.CARGO_MENU;
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof CargoMenuController) {
+                    ((CargoMenuController) controller).initializeWithParameters(message, cargoToLose, cargoToGain, losing);
+                } else {
+                    System.err.println("Controller for CARGO_MENU is not of type CargoMenuController or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup cargo menu: primaryStage, scene, or root is null.");
+            }
+        });
+        // TODO: Check button handler
     }
 
     @Override
     public void engineMenu(String message) {
-        // currentGuiState = GuiState.ENGINE_MENU;
+        currentGuiState = GuiState.ENGINE_MENU;
+        // TODO: Check button handler
     }
 
     @Override
@@ -429,7 +473,6 @@ public class GUIView extends ClientGameModel {
     @Override
     public void login() {
         currentGuiState = GuiState.LOGIN;
-        // TODO Try to remove this line, put it in the controller instead
         client.login(username);
         this.username = username;
     }

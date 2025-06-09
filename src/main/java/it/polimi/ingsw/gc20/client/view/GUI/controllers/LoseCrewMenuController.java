@@ -4,11 +4,14 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +31,7 @@ public class LoseCrewMenuController {
 
     private int crewToLose;
     private String username;
+    private ViewShip ship;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
@@ -36,12 +40,31 @@ public class LoseCrewMenuController {
     public void initializeWithCrewToLose(int crewToLose) {
         this.crewToLose = crewToLose;
         crewToLoseLabel.setText("You need to lose " + crewToLose + " crew members!");
-
+        ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
     }
 
     private void loadShipView() {
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
+        try {
+            if (ship == null) {
+                showError("Error, ship not found: " + username);
+                return;
+            }
+
+            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent shipView = loader.load();
+
+            shipPane.getChildren().clear();
+            shipPane.getChildren().add(shipView);
+
+            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
+            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+
+        } catch (IOException e) {
+            showError("Error uploading ship: " + e.getMessage());
+        }
     }
 
     @FXML

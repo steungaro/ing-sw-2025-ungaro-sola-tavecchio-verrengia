@@ -3,11 +3,14 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,7 @@ public class EngineMenuController {
     @FXML private TextField enginesField;
     @FXML private TextField batteriesField;
 
+    private ViewShip ship;
     private String username;
 
     @FXML
@@ -28,12 +32,31 @@ public class EngineMenuController {
 
     public void initializeWithMessage(String message) {
         messageLabel.setText(message);
-
+        ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
     }
 
     private void loadShipView() {
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
+        try {
+            if (ship == null) {
+                showError("Error, ship not found: " + username);
+                return;
+            }
+
+            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent shipView = loader.load();
+
+            shipPane.getChildren().clear();
+            shipPane.getChildren().add(shipView);
+
+            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
+            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+
+        } catch (IOException e) {
+            showError("Error uploading ship: " + e.getMessage());
+        }
     }
 
     @FXML
