@@ -40,7 +40,7 @@ public class CargoMenu implements MenuState{
             System.out.println("2. End turn");
         } else {
             System.out.println("You have to gain " +
-                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue().toString()) +
+                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue().toString()).reduce((a, b) -> a + ", " + b).orElse("") +
                     " cargo.");
             System.out.println("1. Unload cargo");
             System.out.println("2. Move cargo");
