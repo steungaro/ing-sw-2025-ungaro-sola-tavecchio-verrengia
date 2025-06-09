@@ -226,8 +226,8 @@ public class ViewBoard  implements Serializable {
         StringBuilder sb = new StringBuilder();
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer viewPlayer : players) {
-            if (viewPlayer != null && viewPlayer.position >= 0) {
-                positions.put(viewPlayer.position, viewPlayer);
+            if (viewPlayer != null) {
+                positions.put(viewPlayer.position % (isLearner ? 18 : 24), viewPlayer);
             }
         }
         sb.append(TOPPER).append("\n");
@@ -236,7 +236,7 @@ public class ViewBoard  implements Serializable {
         for (int i = 0; i < players.length; i++) {
             ViewPlayer player = players[players.length - i - 1];
             if (player != null) {
-                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append((i == players.length - 1 ? "\u001B[1m (Leader) \u001B[22m" : "          ")).append(" ".repeat(120-2-13-10 - player.username.length())).append("│").append("\n");
+                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append((i == 0 ? "\u001B[1m (Leader) \u001B[22m" : "          ")).append(" ".repeat(120-2-13-10 - player.username.length())).append("│").append("\n");
             }
         }
         sb.append(EMPTY_ROW).append("\n");

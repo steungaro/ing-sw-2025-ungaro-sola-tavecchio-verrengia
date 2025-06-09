@@ -133,7 +133,7 @@ public class EngineMenu implements MenuState {
                 ClientGameModel.getInstance().getClient().activateEngines(username, engines, batteries);
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, new ArrayList<>(), new ArrayList<>());
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();
