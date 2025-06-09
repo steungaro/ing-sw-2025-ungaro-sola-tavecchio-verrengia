@@ -621,14 +621,14 @@ public abstract class Ship {
                 if(c!= null && c.isCabin()){
                     for (int k = 0; k < 4; k++) {
                         if (c.getConnectors().get(Direction.values()[k]) != ConnectorEnum.ZERO) {
-                            if (k == 0) { // take left
-                                adj = getComponentAt(i, j - 1);
-                            } else if (k == 1) { // take up
+                            if (k == 0) { // take up
                                 adj = getComponentAt(i - 1, j);
-                            } else if (k == 2) { // take right
-                                adj = getComponentAt(i, j + 1);
-                            } else { // take down
+                            } else if (k == 1) { // take left
+                                adj = getComponentAt(i , j - 1 );
+                            } else if (k == 2) { // take down
                                 adj = getComponentAt(i + 1, j);
+                            } else { // take right
+                                adj = getComponentAt(i, j - 1);
                             }
                             if (adj != null) {
                                 if (adj.isCabin()) {
