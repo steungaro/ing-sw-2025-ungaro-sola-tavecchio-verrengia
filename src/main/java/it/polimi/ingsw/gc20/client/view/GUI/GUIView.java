@@ -50,6 +50,7 @@ public class GUIView extends ClientGameModel {
         IDLE_MENU("idleMenu"),
         BOARD0("board0"),
         SHIP0("ship0"),
+        CARD_ACCEPTANCE_MENU("cardAcceptanceMenu"),
         SHIP2("ship2");
 
         private final String fxmlFileName;
@@ -407,7 +408,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cardAcceptanceMenu(String message) {
-        // currentGuiState = GuiState.CARD_ACCEPTANCE_MENU;
+        setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
     }
 
     @Override

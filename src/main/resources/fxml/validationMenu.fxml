@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.ValidationMenuController"
-      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="600.0" prefWidth="700.0">
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.ValidationMenuController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
@@ -36,42 +32,8 @@
         <Pane fx:id="shipPane" prefHeight="200" prefWidth="500" />
     </VBox>
 
-    <VBox fx:id="removeComponentBox" spacing="15" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label text="Remove Component" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-
-        <HBox spacing="10" alignment="CENTER">
-            <Label text="Row:" textFill="WHITE">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Label>
-            <TextField fx:id="rowField" prefWidth="50" />
-
-            <Label text="Column:" textFill="WHITE">
-                <font>
-                    <Font size="14.0" />
-                </font>
-            </Label>
-            <TextField fx:id="colField" prefWidth="50" />
-        </HBox>
-
-        <Button fx:id="removeButton" prefHeight="40" prefWidth="200" text="Remove Component" onAction="#handleRemoveComponent">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-    </VBox>
-
-    <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="validateButton" prefHeight="50" prefWidth="200" text="Validate Ship" onAction="#handleValidateShip">
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="validateButton" onAction="#handleValidateShip" prefHeight="50" prefWidth="200" text="Validate Ship">
             <font>
                 <Font size="16.0" />
             </font>
@@ -81,7 +43,7 @@
             </style>
         </Button>
 
-        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="200" text="View Options" onAction="#handleViewOptions">
+        <Button fx:id="viewOptionsButton" onAction="#handleViewOptions" prefHeight="50" prefWidth="200" text="View Options">
             <font>
                 <Font size="16.0" />
             </font>
@@ -92,7 +54,7 @@
         </Button>
     </HBox>
 
-    <Label fx:id="errorLabel" visible="false" textFill="RED" wrapText="true">
+    <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true">
         <font>
             <Font size="14.0" />
         </font>

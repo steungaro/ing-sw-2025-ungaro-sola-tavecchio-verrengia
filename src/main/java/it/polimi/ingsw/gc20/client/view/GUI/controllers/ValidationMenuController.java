@@ -1,16 +1,23 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class ValidationMenuController {
@@ -38,15 +45,18 @@ public class ValidationMenuController {
 
     private String username;
     private boolean isLearnerShip;
+    private ViewShip ship;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
 
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
+        ship = ClientGameModel.getInstance().getShip(username);
         isLearnerShip = ship != null && ship.isLearner;
 
         updateValidationStatus();
         loadShipView();
+
+        // TODO: Load the ship view into the shipPane
     }
 
     private void updateValidationStatus() {
@@ -54,7 +64,7 @@ public class ValidationMenuController {
 
         if (isValid) {
             validationStatusLabel.setText("Ship is already valid! Wait for other players before going to the next phase.");
-            validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;"); // Green text
+            validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;");
             removeComponentBox.setDisable(true);
             validateButton.setDisable(true);
         } else {
@@ -66,16 +76,32 @@ public class ValidationMenuController {
     }
 
     private void loadShipView() {
-        // TODO
+        try {
+            if (ship == null) {
+                showError("Error, ship not found: " + username);
+                return;
+            }
+
+            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent shipView = loader.load();
+
+            shipPane.getChildren().clear();
+            shipPane.getChildren().add(shipView);
+
+            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
+            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+
+        } catch (IOException e) {
+            showError("Errore durante il caricamento della vista della nave: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleValidateShip() {
         try {
-            ClientGameModel.getInstance().setBusy();
             // TODO
-            ClientGameModel.getInstance().setFree();
-
             updateValidationStatus();
         } catch (Exception e) {
             // TODO
