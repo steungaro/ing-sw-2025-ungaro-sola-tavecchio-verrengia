@@ -139,6 +139,7 @@ public class ValidatingShipState extends State {
         //add the alien to the ship
         getModel().setAlien(color, Translator.getComponentAt(player, cabin, Cabin.class), player);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "added alien"));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AlienPlacementePhaseMessage());
     }
 
     /**

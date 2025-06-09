@@ -115,6 +115,7 @@ public class SmugglersState extends CargoState {
         }
         super.loadCargo(player, loaded, chTo);
         reward.remove(loaded);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -152,11 +153,8 @@ public class SmugglersState extends CargoState {
         if (allZero && currentLostCargo > 0 && phase == StatePhase.REMOVE_CARGO) {
             phase = StatePhase.BATTERY_PHASE;
             setStandbyMessage("waiting for " + getCurrentPlayer() + " to move the battery");
-            getController().getMessageManager().notifyPhaseChange(phase, this);
-        } else if (phase == StatePhase.REMOVE_CARGO) {
-            setStandbyMessage("waiting for " + getCurrentPlayer() + " to unload cargo");
-            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override

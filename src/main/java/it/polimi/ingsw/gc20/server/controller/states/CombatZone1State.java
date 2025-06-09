@@ -348,6 +348,11 @@ public class    CombatZone1State extends CargoState {
             phase = StatePhase.BATTERY_PHASE;
             setStandbyMessage(getCurrentPlayer() + " is selecting the batteries to remove");
             getController().getMessageManager().notifyPhaseChange(phase, this);
+        } else {
+            removingCargo = true;
+            phase = StatePhase.REMOVE_CARGO;
+            setStandbyMessage(getCurrentPlayer() + " is removing cargo");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
@@ -405,6 +410,7 @@ public class    CombatZone1State extends CargoState {
         if (player.getShip().getTotalEnergy() == 0) {
             lostCargo = 0;
         }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**

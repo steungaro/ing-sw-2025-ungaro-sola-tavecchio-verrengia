@@ -102,6 +102,7 @@ public class AbandonedStationState extends CargoState {
         }
         reward.remove(loaded);
         super.loadCargo(player, loaded, chTo);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -124,6 +125,7 @@ public class AbandonedStationState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         super.unloadCargo(player, unloaded, ch);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -150,6 +152,7 @@ public class AbandonedStationState extends CargoState {
             throw new InvalidTurnException("It's not your turn");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
