@@ -172,7 +172,7 @@ public class AbandonedStationState extends CargoState {
             //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
             //notify all the player of the player update
-            PlayerUpdateMessage pum = new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+            PlayerUpdateMessage pum = new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces());
             getController().getMessageManager().broadcastUpdate(pum);
             //change the phase to standby phase
             phase = StatePhase.DRAW_CARD_PHASE;

@@ -165,7 +165,7 @@ public class SlaversState extends PlayingState {
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
-        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();

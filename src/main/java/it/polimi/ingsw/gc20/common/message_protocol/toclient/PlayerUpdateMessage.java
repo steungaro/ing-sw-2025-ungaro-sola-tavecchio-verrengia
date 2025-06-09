@@ -7,7 +7,6 @@ import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 import java.util.Arrays;
 
-//TODO wait for the view structure to be defined
 public record PlayerUpdateMessage(
         String username, // The username of the receiving client (broadcast to all clients)
         int creditsAdded,
