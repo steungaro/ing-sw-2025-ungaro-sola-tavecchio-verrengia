@@ -13,7 +13,7 @@ public enum StatePhase {
         ACCEPT_PHASE {
             @Override
             public Message createMessage(State state) {
-                return new AcceptPhaseMessage ("do you want to accept the card?");
+                return new AcceptPhaseMessage ("Do you want to accept the card?");
             }
         },
         LOSE_CREW_PHASE {
@@ -70,7 +70,7 @@ public enum StatePhase {
         STANDBY_PHASE{
             @Override
             public Message createMessage(State state) {
-                return new StandbyMessage("waiting for the other players");
+                return new StandbyMessage("Waiting for the other players");
             }
         },
         ROLL_DICE_PHASE{

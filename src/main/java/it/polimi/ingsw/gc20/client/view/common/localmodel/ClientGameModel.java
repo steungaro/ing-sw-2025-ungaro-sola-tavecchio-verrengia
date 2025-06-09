@@ -101,6 +101,26 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Sets the current menu state without clearing any queued menu states. If the system is busy,
+     * the specified menu state is added to a queue. Otherwise, it is immediately set as the current
+     * menu state and displayed.
+     *
+     * @param currentMenuState The menu state to set or queue.
+     */
+    public void setCurrentMenuStateNoClear(MenuState currentMenuState) {
+        if (busy){
+            menuStateQueue.add(currentMenuState);
+        } else {
+            if (menuStateQueue.isEmpty()) {
+                this.currentMenuState = currentMenuState;
+                this.currentMenuState.displayMenu();
+            } else {
+                menuStateQueue.add(currentMenuState);
+            }
+        }
+    }
+
     public abstract void displayErrorMessage(String message);
 
     public void setLobbyList(List<ViewLobby> lobbyList) {

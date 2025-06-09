@@ -244,6 +244,8 @@ public class TUI extends ClientGameModel {
     }
 
     public void automaticAction(String message){
+        clearConsole();
+        ClientGameModel.getInstance().printBoard();
         System.out.println(message);
     }
 
@@ -289,7 +291,7 @@ public class TUI extends ClientGameModel {
     }
 
     public void keepPlayingMenu(){
-        ClientGameModel.getInstance().setCurrentMenuState(new KeepPlayingMenu());
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(new KeepPlayingMenu());
     }
 
     @Override
