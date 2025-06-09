@@ -177,7 +177,7 @@ public class ValidatingShipState extends State {
             phase = StatePhase.DRAW_CARD_PHASE;
             getController().setState(new PreDrawState(getController()));
         } else {
-            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
         }
     }
 
