@@ -38,7 +38,6 @@ public class MeteorSwarmState extends PlayingState {
         phase = StatePhase.ROLL_DICE_PHASE;
         setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice");
         getController().getMessageManager().notifyPhaseChange(phase, this);
-
     }
 
     @Override

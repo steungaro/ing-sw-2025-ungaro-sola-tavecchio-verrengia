@@ -105,6 +105,7 @@ public class PlanetsState extends CargoState {
         } else {
             throw new CargoException("You can't load this cargo, it's not in the reward");
         }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -125,6 +126,7 @@ public class PlanetsState extends CargoState {
             throw new InvalidStateException("You can't unload cargo unless you are on the planet");
         }
         super.unloadCargo(player, unloaded, ch);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -147,6 +149,7 @@ public class PlanetsState extends CargoState {
             throw new InvalidStateException("You can't move cargo unless you are on the planet");
         }
         super.moveCargo(player, cargo, from, to);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**

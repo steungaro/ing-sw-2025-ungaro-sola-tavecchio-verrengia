@@ -322,6 +322,13 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
+        if (componentsInHand.get(player) != null) {
+            //notify the player that they go to the PLACE_COMPONENT phase
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
+        } else {
+            //notify the player that they go to the TAKE_COMPONENT phase
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
+        }
     }
 
     private void takeComponent (Player player, Component component){
