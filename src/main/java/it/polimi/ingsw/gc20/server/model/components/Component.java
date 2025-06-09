@@ -143,6 +143,9 @@ public abstract class Component {
      */
     public void updateParameter(Ship s, int sign) {}
 
+    public int getRotation() {
+        return rotComp;
+    }
 
     /** Function that returns true if the component is a shield and cover the direction d
      *

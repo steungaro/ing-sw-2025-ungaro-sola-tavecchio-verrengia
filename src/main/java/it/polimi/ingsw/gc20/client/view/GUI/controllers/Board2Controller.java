@@ -49,7 +49,9 @@ public class Board2Controller extends BoardController {
     private final double originalContentHeight = 330.0; // Altezza originale del Pane
 
     @FXML
-    private void initialize() {
+    public void initialize() {
+        super.initialize();
+
         circles.add(circle0);
         circles.add(circle1);
         circles.add(circle2);

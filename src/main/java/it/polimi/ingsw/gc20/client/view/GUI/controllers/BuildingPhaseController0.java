@@ -1,19 +1,12 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GameAction;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GamePhase;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.net.URL;
-import java.util.List;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
 public class BuildingPhaseController0 extends BuildingPhaseController {
     private final int ROWS = 5;
@@ -179,5 +172,30 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
 
     protected int getCols() {
         return COLS;
+    }
+
+    @Override
+    protected boolean checkIsValid(int row,int col){
+        if(row == 0 && col!=2)
+            return false;
+        if(row == 1 && (col == 0 || col == 4))
+            return false;
+        return row != 4 || col != 2;
+    }
+
+    @Override
+    public void buildShipComponents(ViewShip ship) {
+        if (ship == null || componentsGrid == null) return;
+
+        clearAllComponents();
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols()+1; col++) {
+                ViewComponent comp = ship.getComponent(row, col);
+                if (comp != null) {
+                    addComponent(comp, row, col);
+                }
+            }
+        }
     }
 }

@@ -38,11 +38,10 @@ public class Board0Controller extends BoardController {
     // @FXML private Label creditsLabel;
     // @FXML private Label inGameLabel;
 
-    private final double originalContentWidth = 800.0;
-    private final double originalContentHeight = 330.0;
-
     @FXML
-    private void initialize() {
+    public void initialize() {
+        super.initialize();
+
         circles.add(circle0);
         circles.add(circle1);
         circles.add(circle2);
@@ -82,7 +81,6 @@ public class Board0Controller extends BoardController {
                     ((Group) newParent).getChildren().add(label);
                 }
             });
-            // Se scalableContent è già disponibile, aggiungi subito la label
             if (scalableContent != null && circle.getParent() == scalableContent) {
                 scalableContent.getChildren().add(label);
             }
@@ -116,7 +114,9 @@ public class Board0Controller extends BoardController {
             return;
         }
 
+        double originalContentWidth = 800.0;
         double scaleX = newPaneWidth / originalContentWidth;
+        double originalContentHeight = 330.0;
         double scaleY = newPaneHeight / originalContentHeight;
         double scaleFactor = Math.min(scaleX, scaleY);
 

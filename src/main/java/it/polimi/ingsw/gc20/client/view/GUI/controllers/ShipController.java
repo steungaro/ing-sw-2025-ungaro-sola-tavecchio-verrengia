@@ -67,7 +67,7 @@ public abstract class ShipController {
         if (clientGameModel != null) {
             String currentUsername = clientGameModel.getUsername();
         }
-        //buildShipComponents(ship);
+        buildShipComponents(ship);
     }
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
