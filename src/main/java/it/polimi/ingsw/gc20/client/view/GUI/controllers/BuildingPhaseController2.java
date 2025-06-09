@@ -124,21 +124,30 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             double bookedGridWidth = actualWidth * 0.26;
             double bookedGridHeight = actualHeight * 0.18;
 
-            double centerX = actualWidth / 2;
-            double centerY = actualHeight / 2;
-            double bookedGridX = centerX + actualWidth * 0.346 - bookedGridWidth / 2;
-            double bookedGridY = centerY - actualHeight * 0.379 - bookedGridHeight / 2;
+            double bookedGridX = actualWidth * 0.346;
+            double bookedGridY = -actualHeight * 0.379;
 
             bookedGrid.setPrefSize(bookedGridWidth, bookedGridHeight);
             bookedGrid.setMaxSize(bookedGridWidth, bookedGridHeight);
             bookedGrid.setMinSize(bookedGridWidth, bookedGridHeight);
 
-            bookedGrid.setLayoutX(bookedGridX);
-            bookedGrid.setLayoutY(bookedGridY);
+            bookedGrid.setTranslateX(bookedGridX);
+            bookedGrid.setTranslateY(bookedGridY);
 
             componentsGrid.setPrefSize(gridWidth, gridHeight);
             componentsGrid.setMaxSize(gridWidth, gridHeight);
             componentsGrid.setMinSize(gridWidth, gridHeight);
+
+            double bookedCellWidth = bookedGridWidth / 2;
+            double bookedCellHeight = bookedGridHeight;
+
+            imageBooked_0.setFitWidth(bookedCellWidth);
+            imageBooked_0.setFitHeight(bookedCellHeight);
+            imageBooked_1.setFitWidth(bookedCellWidth);
+            imageBooked_1.setFitHeight(bookedCellHeight);
+
+            imageBooked_0.setPreserveRatio(false);
+            imageBooked_1.setPreserveRatio(false);
 
             // Debug output
             // System.out.println("Container: " + containerWidth + "x" + containerHeight);
@@ -236,6 +245,27 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             enableBookedComponentsInteraction(this::handleBookedClick);
         } else {
             System.out.println("No component in hand to place");
+        }
+    }
+
+    @Override
+    protected void disactivatePlacementMode(){
+        disableGridInteraction();
+        disableUncoveredComponentsInteraction();
+        disableBookedComponentsInteraction();
+    }
+
+    private void disableBookedComponentsInteraction(){
+        if (bookedGrid != null) {
+            java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
+
+            for (javafx.scene.Node node : bookedGrid.getChildren()) {
+                if (node instanceof Rectangle) {
+                    nodesToRemove.add(node);
+                }
+            }
+            bookedGrid.getChildren().removeAll(nodesToRemove);
+            bookedGrid.setOnMouseClicked(null);
         }
     }
 
@@ -338,10 +368,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         clickArea.setOpacity(0.7);
 
         clickArea.widthProperty().bind(
-                bookedGrid.widthProperty().divide(2).subtract(2)
+                imageView.fitWidthProperty().subtract(4)
         );
         clickArea.heightProperty().bind(
-                bookedGrid.heightProperty().subtract(2)
+                imageView.fitHeightProperty().subtract(4)
         );
 
         clickArea.setOnMouseClicked(_ -> {
@@ -361,8 +391,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         });
 
         bookedGrid.add(clickArea, index, 0);
+
         GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
         GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+        GridPane.setMargin(clickArea, new javafx.geometry.Insets(2));
     }
 
     private void handleBookedClick(int index) {
@@ -370,31 +402,9 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         try {
             ClientGameModel.getInstance().getClient().addComponentToBooked(username);
         } catch (RemoteException e) {
-            System.err.println("Error taking component from booked: " + e.getMessage());
+            System.err.println("Error taking comxponent from booked: " + e.getMessage());
         }
     }
-
-    // TODO add listener to update booked components in CLientGameModel
-    /* USELESS
-    @Override
-    public void onShipUpdated(ViewShip ship) {
-        super.onShipUpdated(ship);
-        ViewShip playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-
-        if (playerShip == null) return;
-
-        if (playerShip.getBooked(0) != null) {
-            addComponentToImageView(imageBooked_0, playerShip.getBooked(0));
-        } else {
-            imageBooked_0.setImage(null);
-        }
-
-        if (playerShip.getBooked(1) != null) {
-            addComponentToImageView(imageBooked_1, playerShip.getBooked(1));
-        } else {
-            imageBooked_1.setImage(null);
-        }
-    }*/
 
     private void addComponentToImageView(ImageView imageView, ViewComponent component) {
         if (component == null || imageView == null) return;
@@ -410,7 +420,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
     }
 
-    private void updateBookedComponents() {
+    protected void updateBookedComponents() {
         imageBooked_0.setImage(null);
         imageBooked_1.setImage(null);
 

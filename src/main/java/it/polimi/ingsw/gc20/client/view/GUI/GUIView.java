@@ -185,7 +185,7 @@ public class GUIView extends ClientGameModel {
         });
     }
 
-    private void notifyCurrentShipController(ViewShip newShip) {
+    /*private void notifyCurrentShipController(ViewShip newShip) {
         Platform.runLater(() -> {
             if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
                 Object controller = primaryStage.getScene().getRoot().getUserData();
@@ -194,7 +194,7 @@ public class GUIView extends ClientGameModel {
                 }
             }
         });
-    }
+    }*/
 
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";

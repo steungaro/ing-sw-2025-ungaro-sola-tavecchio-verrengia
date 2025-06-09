@@ -21,6 +21,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.Console;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -486,7 +487,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
+    /*public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
         List<double[]> coordinates = comp.getSize() == 2 ? cargoCord2 : cargoCord3;
         int index = 0;
 
@@ -506,7 +507,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
             addCargoBox(layeredPane, coordinates.get(index), "empty");
         }
-    }
+    }*/
 
     private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         Rectangle box = new Rectangle();
@@ -901,6 +902,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
+    protected void disactivatePlacementMode(){
+        disableGridInteraction();
+        disableUncoveredComponentsInteraction();
+    }
+
     public void enableUncoveredComponentsInteraction(Runnable handler) {
         if (uncoveredComponentsPane != null) {
             uncoveredComponentsPane.setOnMouseClicked(_ -> {
@@ -975,7 +981,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                disableGridInteraction();
+                disactivatePlacementMode();
 
                 new Thread(() -> {
                     try {
@@ -1009,8 +1015,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                disableGridInteraction();
-                disableUncoveredComponentsInteraction();
+                disactivatePlacementMode();
 
                 new Thread(() -> {
                     try {
@@ -1028,8 +1033,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
             } catch (Exception e) {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
-                disableGridInteraction();
-                disableUncoveredComponentsInteraction();
+                disactivatePlacementMode();
                 showError("Error adding component to viewed pile: " + e.getMessage());
             }
         } else {
@@ -1114,9 +1118,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
+    protected void updateBookedComponents() {
+        return;
+    }
+
     @Override
     public void onShipUpdated(ViewShip ship) {
-        // TODO
+        updateBookedComponents();
     }
 
     @Override
