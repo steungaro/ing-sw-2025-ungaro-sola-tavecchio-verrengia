@@ -38,6 +38,7 @@ public class MainMenuController implements LobbyListObserver {
     public void initialize() {
         guiView = (GUIView) ClientGameModel.getInstance();
         lobbiesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        setUsername( ClientGameModel.getInstance().getUsername());
 
         lobbiesListView.setCellFactory(_ -> new ListCell<>() {
             @Override

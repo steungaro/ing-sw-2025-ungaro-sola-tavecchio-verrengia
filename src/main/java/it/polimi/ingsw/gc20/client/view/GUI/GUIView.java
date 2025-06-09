@@ -1,14 +1,12 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.BranchMenuController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.InLobbyController;
-import it.polimi.ingsw.gc20.client.view.GUI.controllers.ShipController;
+import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.FireType;
@@ -68,7 +66,7 @@ public class GUIView extends ClientGameModel {
     private GuiState currentGuiState;
 
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
-
+    private final ObjectProperty<ViewBoard> boardProperty = new SimpleObjectProperty<>();
     private static Stage primaryStage;
 
     public GUIView() throws RemoteException {
@@ -90,6 +88,12 @@ public class GUIView extends ClientGameModel {
                 });
             }
         });
+
+        boardProperty.addListener((observable, oldBoard, newBoard) -> {
+            if (newBoard != null) {
+                notifyCurrentBoardController(newBoard);
+            }
+        });
     }
 
     public GuiState getCurrentGuiState() {
@@ -104,7 +108,7 @@ public class GUIView extends ClientGameModel {
     public void displayErrorMessage(String message) {
         Platform.runLater(() -> {
             if (primaryStage == null) {
-                System.err.println("Errore: primaryStage not initialized: " + message);
+                System.err.println("Error: primaryStage not initialized: " + message);
                 return;
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -170,6 +174,28 @@ public class GUIView extends ClientGameModel {
         return null;
     }
 
+    private void notifyCurrentBoardController(ViewBoard newBoard) {
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof BoardController) {
+                    ((BoardController) controller).updateBoardDisplay(newBoard);
+                }
+            }
+        });
+    }
+
+    /*private void notifyCurrentShipController(ViewShip newShip) {
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof ViewShip) {
+                    ((BuildingPhaseController) controller).updateShipDisplay(newShip);
+                }
+            }
+        });
+    }*/
+
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
@@ -232,6 +258,12 @@ public class GUIView extends ClientGameModel {
             }
         }
     }*/
+
+    @Override
+    public void setBoard(ViewBoard board) {
+        this.board = board;
+        this.boardProperty.set(board);
+    }
 
     @Override
     public void planetMenu(List<Planet> planets) {

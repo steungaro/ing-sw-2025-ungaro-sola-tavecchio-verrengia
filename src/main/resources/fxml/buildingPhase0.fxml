@@ -6,8 +6,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane fx:id="rootPane" prefHeight="1500.0" prefWidth="1500.0" style="-fx-background-color: #222233; -fx-background-image: url('cardboard/cardboard-1.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController0">
-   <BorderPane prefHeight="200.0" prefWidth="200.0">
+<StackPane fx:id="rootPane" prefHeight="578.0" prefWidth="767.0" style="-fx-background-color: #222233; -fx-background-image: url('cardboard/cardboard-1.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController0">
+   <BorderPane prefHeight="664.0" prefWidth="767.0">
       <top>
    
            <!-- Header -->
@@ -25,55 +25,51 @@
       <right>
    
            <!-- Right Panel - Components -->
-           <VBox alignment="TOP_CENTER" minHeight="500.0" minWidth="200.0" spacing="15" BorderPane.alignment="CENTER">
+           <VBox alignment="TOP_CENTER" prefHeight="456.0" prefWidth="181.0" spacing="15" BorderPane.alignment="CENTER">
                <padding>
                    <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
    
                <!-- Component in hand -->
-               <VBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
+               <VBox alignment="CENTER" fillWidth="false" prefHeight="139.0" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
                    <Label text="Component in hand" textFill="WHITE" wrapText="true">
                        <font>
                            <Font size="14.0" />
                        </font>
                    </Label>
-                   <StackPane fx:id="componentInHandPane" minHeight="80" style="-fx-border-color: #444; -fx-border-width: 1;">
+                   <StackPane fx:id="componentInHandPane" minHeight="80" prefHeight="80.0" prefWidth="80.0" style="-fx-border-color: #444; -fx-border-width: 1;">
                        <VBox.margin>
                            <Insets bottom="5" top="5" />
                        </VBox.margin>
                    </StackPane>
 
-                   <HBox fx:id="rotationButtonsContainer" alignment="CENTER" spacing="10" visible="false" managed="false">
-                       <Button fx:id="rotateClockwiseButton" onAction="#rotateComponentClockwise"
-                               style="-fx-background-color: #5bc0de; -fx-text-fill: white;"
-                               text="Rotate clockwise" minWidth="100" minHeight="30">
+                   <HBox fx:id="rotationButtonsContainer" alignment="CENTER" managed="false" spacing="10" visible="false">
+                       <Button fx:id="rotateClockwiseButton" minHeight="30" minWidth="100" onAction="#rotateComponentClockwise" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Rotate clockwise">
                            <font>
-                               <Font size="12.0" />
+                               <Font size="9.0" />
                            </font>
                        </Button>
-                       <Button fx:id="rotateCounterclockwiseButton" onAction="#rotateComponentCounterclockwise"
-                               style="-fx-background-color: #5bc0de; -fx-text-fill: white;"
-                               text="Rotate counterclockwise" minWidth="100" minHeight="30">
+                       <Button fx:id="rotateCounterclockwiseButton" minHeight="30" minWidth="100" onAction="#rotateComponentCounterclockwise" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Rotate counterclockwise">
                            <font>
-                               <Font size="12.0" />
+                               <Font size="9.0" />
                            </font>
                        </Button>
                    </HBox>
                </VBox>
    
                <!-- Covered deck -->
-               <VBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
+               <VBox alignment="CENTER" fillWidth="false" prefHeight="139.0" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
                    <Label text="Covered deck" textFill="WHITE">
                        <font>
                            <Font size="14.0" />
                        </font>
                    </Label>
-                   <StackPane fx:id="coveredDeckPane" minHeight="80" style="-fx-border-color: #444; -fx-border-width: 1;">
+                   <StackPane fx:id="coveredDeckPane" minHeight="80" prefHeight="80.0" prefWidth="80.0" style="-fx-border-color: #444; -fx-border-width: 1;">
                        <VBox.margin>
                            <Insets bottom="5" top="5" />
                        </VBox.margin>
                   <children>
-                     <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                     <ImageView fitHeight="80.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                            <Image url="@tiles/component.png" />
                         </image>
@@ -83,13 +79,11 @@
                </VBox>
 
                <!-- Header -->
-               <HBox alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
+               <HBox alignment="CENTER" prefHeight="50.0" spacing="20" BorderPane.alignment="CENTER">
                    <padding>
                        <Insets bottom="10" left="20" right="20" top="10" />
                    </padding>
-                   <Button fx:id="stopAssemblingButton" onAction="#stopAssembling"
-                           style="-fx-background-color: #d9534f; -fx-text-fill: white;"
-                           text="Stop assembling ship" minWidth="150" minHeight="30">
+                   <Button fx:id="stopAssemblingButton" minHeight="30" minWidth="150" onAction="#stopAssembling" style="-fx-background-color: #d9534f; -fx-text-fill: white; -fx-background-radius: 5;" text="Stop assembling ship">
                        <font>
                            <Font size="14.0" />
                        </font>
@@ -97,13 +91,13 @@
                </HBox>
 
                <!-- Other Players' Ships -->
-               <VBox alignment="CENTER" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
-                   <Label text="Other Players' Ships" textFill="WHITE">
+               <VBox alignment="CENTER" prefHeight="97.0" spacing="5" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 1em; -fx-padding: 1em;" VBox.vgrow="NEVER">
+                   <Label prefWidth="123.0" text="Other Players' Ships" textFill="WHITE">
                        <font>
                            <Font size="14.0" />
                        </font>
                    </Label>
-                   <ListView fx:id="otherPlayersShipsList" prefHeight="100.0" style="-fx-background-color: rgba(68,68,85,0.7); -fx-border-color: #444; -fx-border-width: 1;">
+                   <ListView fx:id="otherPlayersShipsList" prefHeight="41.0" prefWidth="248.0" style="-fx-background-color: rgba(68,68,85,0.7); -fx-border-color: #444; -fx-border-width: 1; -fx-border-radius: 10; -fx-background-radius: 10;">
                        <VBox.margin>
                            <Insets bottom="5" top="5" />
                        </VBox.margin>
@@ -113,19 +107,19 @@
       </right>
       <bottom>
            <!-- Bottom Panel - Uncovered Components -->
-           <VBox alignment="CENTER" maxHeight="100.0" minHeight="150.0" prefHeight="100.0" spacing="10" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
+           <VBox alignment="CENTER" maxHeight="432.0" prefHeight="166.0" prefWidth="767.0" spacing="10" style="-fx-background-color: rgba(51,51,68,0.8); -fx-background-radius: 10 10 0 0;" BorderPane.alignment="CENTER">
                <padding>
                    <Insets bottom="10" left="10" right="10" top="10" />
                </padding>
    
-               <Label text="Uncovered components" textFill="WHITE">
+               <Label prefHeight="0.0" prefWidth="169.0" text="Uncovered components" textFill="WHITE">
                    <font>
                        <Font size="16.0" />
                    </font>
                </Label>
 
                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="ALWAYS" style="-fx-background: transparent; -fx-background-color: transparent;" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
-                   <FlowPane fx:id="uncoveredComponentsPane" alignment="CENTER" hgap="2" minHeight="100.0" orientation="HORIZONTAL" style="-fx-background-color: rgba(68,68,85,0.7);" vgap="10">
+                   <FlowPane fx:id="uncoveredComponentsPane" alignment="CENTER" hgap="2" minHeight="91.0" orientation="HORIZONTAL" prefHeight="102.0" prefWidth="758.0" style="-fx-background-color: rgba(68,68,85,0.7); -fx-background-radius: 10;" vgap="10">
                        <padding>
                            <Insets bottom="10" left="10" right="10" top="10" />
                        </padding>
@@ -166,17 +160,20 @@
            </VBox>
       </bottom>
       <center>
-          <BorderPane prefHeight="200.0" prefWidth="200.0">
+          <BorderPane prefHeight="991.0" prefWidth="1284.0">
               <left>
                   <!-- Player Info Panel - Left Side -->
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="200" minHeight="250.0" minWidth="150.0" prefWidth="150.0" spacing="8.0" style="-fx-background-color: rgba(0,0,0,0.7); -fx-background-radius: 8; -fx-padding: 15;" BorderPane.alignment="CENTER">
+                  <VBox layoutX="620.0" layoutY="20.0" prefWidth="160.0" spacing="10.0">
+                      <Label style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: white;" text="Player" />
+                      <Label fx:id="playerColorLabel" style="-fx-text-fill: white;" text="Color: " />
+                      <Label fx:id="usernameLabel" style="-fx-text-fill: white;" text="Username: " />
+                      <Label fx:id="creditsLabel" style="-fx-text-fill: white;" text="Credits: " />
+                      <Label fx:id="inGameLabel" style="-fx-text-fill: white;" text="In Game: " />
 
-                      <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;" text="Player Info" />
-                      <Region prefHeight="5" />
-                      <Label fx:id="playerColorLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Color: " wrapText="true" />
-                      <Label fx:id="usernameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Username: " wrapText="true" />
-                      <Label fx:id="creditsLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="Credits: " wrapText="true" />
-                      <Label fx:id="inGameLabel" style="-fx-text-fill: white; -fx-font-size: 12;" text="In Game: " wrapText="true" />
+                      <Button fx:id="viewBoardButton" onAction="#navigateToGameBoard" prefWidth="160.0" style="-fx-background-color: #4a7ba7; -fx-text-fill: white; -fx-font-weight: bold;" text="View Game Board">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin></Button>
                   </VBox>
               </left>
               <right>
@@ -186,7 +183,7 @@
                       <ImageView fx:id="bgImage" fitHeight="300.0" preserveRatio="true">
                           <Image url="@cardboard/cardboard-1.jpg" />
                       </ImageView>
-                      <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
+                      <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" prefHeight="456.0" prefWidth="405.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
                           <columnConstraints>
                               <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
                               <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />

@@ -1,23 +1,18 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javafx.scene.transform.Scale;
 
-import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
+public class Board2Controller extends BoardController {
 
-public class Board2Controller extends BoardController{
+    @FXML private Pane rootPane;
+    @FXML private Group scalableContent;
 
     @FXML private Circle circle0;
     @FXML private Circle circle1;
@@ -44,8 +39,19 @@ public class Board2Controller extends BoardController{
     @FXML private Circle circle22;
     @FXML private Circle circle23;
 
+    // @FXML private Label playerColorLabel;
+    // @FXML private Label usernameLabel;
+    // @FXML private Label creditsLabel;
+    // @FXML private Label inGameLabel;
+
+    // Dimensioni originali del contenuto come definito nell'FXML
+    private final double originalContentWidth = 800.0; // Larghezza originale del Pane
+    private final double originalContentHeight = 330.0; // Altezza originale del Pane
+
     @FXML
-    private void initialize() {
+    public void initialize() {
+        super.initialize();
+
         circles.add(circle0);
         circles.add(circle1);
         circles.add(circle2);
@@ -76,17 +82,69 @@ public class Board2Controller extends BoardController{
             label.setFont(new Font(16.0));
             label.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
 
-            label.layoutXProperty().bind(circle.layoutXProperty().subtract(8));
-            label.layoutYProperty().bind(circle.layoutYProperty().subtract(12));
+            label.layoutXProperty().bind(circle.layoutXProperty().subtract(label.widthProperty().divide(2)).add(circle.getRadius() / 2 - 8));
+            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 10)); // Leggermente aggiustato per font 16 e raggio 17
 
             circleLabels.add(label);
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
-                if (newParent != null) {
-                    ((Pane) newParent).getChildren().add(label);
+                if (newParent instanceof Group) { // Assicurati che sia il Group scalabile
+                    ((Group) newParent).getChildren().add(label);
                 }
             });
+            if (scalableContent != null && circle.getParent() == scalableContent) {
+                scalableContent.getChildren().add(label);
+            }
         }
+
+        Runnable updateOperation = this::updateScaleAndPosition;
+
+        rootPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.windowProperty().addListener((obsWindow, oldWindow, newWindow) -> {
+                    if (newWindow != null) {
+                        newWindow.showingProperty().addListener((obsShowing, oldShowing, showing) -> {
+                            if (showing) {
+                                Platform.runLater(updateOperation);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        rootPane.widthProperty().addListener((obs, oldVal, newVal) -> updateOperation.run());
+        rootPane.heightProperty().addListener((obs, oldVal, newVal) -> updateOperation.run());
     }
 
+    private void updateScaleAndPosition() {
+        double newPaneWidth = rootPane.getWidth();
+        double newPaneHeight = rootPane.getHeight();
+
+        if (scalableContent == null || newPaneWidth <= 0 || newPaneHeight <= 0) {
+            return;
+        }
+
+        double scaleX = newPaneWidth / originalContentWidth;
+        double scaleY = newPaneHeight / originalContentHeight;
+
+        double scaleFactor = Math.min(scaleX, scaleY);
+
+        if (Double.isInfinite(scaleFactor) || Double.isNaN(scaleFactor) || scaleFactor <= 0) {
+            scaleFactor = 1.0;
+        }
+
+        scalableContent.getTransforms().clear();
+        Scale scaleTransform = new Scale(scaleFactor, scaleFactor, 0, 0);
+        scalableContent.getTransforms().add(scaleTransform);
+
+        double scaledContentActualWidth = originalContentWidth * scaleFactor;
+        double scaledContentActualHeight = originalContentHeight * scaleFactor;
+
+        double offsetX = (newPaneWidth - scaledContentActualWidth) / 2;
+        double offsetY = (newPaneHeight - scaledContentActualHeight) / 2;
+
+        scalableContent.setLayoutX(offsetX);
+        scalableContent.setLayoutY(offsetY);
+    }
 }

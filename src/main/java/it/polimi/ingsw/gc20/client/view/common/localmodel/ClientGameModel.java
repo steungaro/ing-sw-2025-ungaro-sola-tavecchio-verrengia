@@ -37,7 +37,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public boolean loggedIn;
     protected String username;
     protected Client client;
-    private ViewBoard board;
+    protected ViewBoard board;
     protected Map<String, ViewShip> ships;
     protected ViewAdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
@@ -150,6 +150,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setShip (String username, ViewShip ship) {
         ships.put(username, ship);
+        for (GameModelListener listener : listeners) {
+            listener.onShipUpdated(this.ships.get(username));
+        }
     }
 
     public void ping() {
