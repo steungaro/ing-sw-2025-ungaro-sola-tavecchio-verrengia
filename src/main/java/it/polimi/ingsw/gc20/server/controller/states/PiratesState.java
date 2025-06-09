@@ -76,7 +76,7 @@ public class PiratesState extends PlayingState {
         //get the reward of the card
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
-        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), credits, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces())));
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), credits, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         try {
             endMove(player);
         } catch (InvalidShipException e) {

@@ -41,11 +41,11 @@ public class PreDrawState extends State{
         for (Player p : getModel().getGame().getPlayers()) {
             if (getModel().getGame().getPlayers().getFirst().getPosition()-p.getPosition() >= getModel().getGame().getBoard().getSpaces()){
                 p.setGameStatus(false);
-                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             }
             if (p.getShip().getAstronauts()==0){
                 p.setGameStatus(false);
-                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             }
         }
         getController().drawCard();

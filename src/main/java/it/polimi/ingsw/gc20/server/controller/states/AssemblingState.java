@@ -248,7 +248,7 @@ public class AssemblingState extends State {
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
         //notify the player that the position has been set
-        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition()%getModel().getGame().getBoard().getSpaces())));
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         //mark the player as assembled
         assembled.put(player, true);
         //notify the player that they are in standby phase

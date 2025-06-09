@@ -11,8 +11,6 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -22,8 +20,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.LobbyListObserver;
 import java.util.ArrayList;
 
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
@@ -57,6 +53,27 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.ships = new HashMap<>();
     }
     public ViewAdventureCard getCurrentCard() {
+        if (currentCard == null) {
+            return new ViewAdventureCard(
+            ) {
+                /**
+                 * Converts a specific part of the card to its string representation
+                 * based on the given line index.
+                 *
+                 * @param i the index of the line to retrieve as a string representation
+                 * @return the string representation of the specified line; returns an empty string if the line index is invalid
+                 */
+                @Override
+                public String toLine(int i) {
+                    return switch (i) {
+                        case 0 -> UP;
+                        case 1, 2, 3, 4, 5, 6, 7, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+                        case 10 -> DOWN;
+                        default -> "";
+                    };
+                }
+            };
+        }
         return currentCard;
     }
 

@@ -169,7 +169,7 @@ public class PlanetsState extends CargoState {
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
             for (Player p : getModel().getInGamePlayers()) {
-                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             }
             getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage() );
             phase = StatePhase.DRAW_CARD_PHASE;

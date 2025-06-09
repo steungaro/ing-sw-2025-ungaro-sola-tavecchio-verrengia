@@ -92,7 +92,7 @@ public class OpenSpaceState extends PlayingState {
         //notify all players that all the player position has been updated
 
         for (Player player : getModel().getInGamePlayers()) {
-            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         }
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
