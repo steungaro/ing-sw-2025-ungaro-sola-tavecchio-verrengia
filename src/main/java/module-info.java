@@ -24,6 +24,12 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.ship;
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
     exports it.polimi.ingsw.gc20.server.exceptions;
+    exports it.polimi.ingsw.gc20.server.controller.states;
+    exports it.polimi.ingsw.gc20.server.controller.managers;
+    exports it.polimi.ingsw.gc20.common.message_protocol.toclient;
+    exports it.polimi.ingsw.gc20.common.message_protocol.toserver;
+    exports it.polimi.ingsw.gc20.client.view.TUI;
+    exports it.polimi.ingsw.gc20.client.view.GUI.controllers;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.ship to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;
