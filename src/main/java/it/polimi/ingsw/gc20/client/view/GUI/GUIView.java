@@ -290,13 +290,41 @@ public class GUIView extends ClientGameModel {
     @Override
     public void shieldsMenu(String message) {
         setCurrentGuiState(GuiState.SHIELDS_MENU);
-        // TODO : Check button handler
+        // TODO : Check if message is needed to be passed to the controller (maybe to indicate the side)
     }
 
     @Override
     public void rollDiceMenu(String message) {
-        setCurrentGuiState(GuiState.ROLL_DICE_MENU);
-        // TODO: Choose to implement in another window
+        // setCurrentGuiState(GuiState.ROLL_DICE_MENU);
+
+        Platform.runLater(() -> {
+            try {
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Roll Dice");
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/rollDiceMenu.fxml"));
+                Parent root = loader.load();
+
+                Scene scene = new Scene(root);
+                dialogStage.setScene(scene);
+
+                RollDiceMenuController controller = loader.getController();
+                controller.initializeWithMessage(message);
+
+                dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+
+                dialogStage.setMinWidth(600);
+                dialogStage.setMinHeight(500);
+                dialogStage.centerOnScreen();
+
+                dialogStage.show();
+            } catch (IOException e) {
+                System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
+                e.printStackTrace();
+                displayErrorMessage("Error opening roll dice window: " + e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -407,13 +435,13 @@ public class GUIView extends ClientGameModel {
     @Override
     public void branchMenu() {
         setCurrentGuiState(GuiState.BRANCH_MENU);
-        // TODO: Improvment
+        // TODO: Improvment (
     }
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
         setCurrentGuiState(GuiState.BUILDING_PHASE);
-        // TODO: bugs in buildingPhase2
+        // TODO: bugs in buildingPhase2 and add for peekDecks
     }
 
     @Override
@@ -449,7 +477,7 @@ public class GUIView extends ClientGameModel {
     @Override
     public void engineMenu(String message) {
         currentGuiState = GuiState.ENGINE_MENU;
-        // TODO: Check button handler
+        // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
     }
 
     @Override

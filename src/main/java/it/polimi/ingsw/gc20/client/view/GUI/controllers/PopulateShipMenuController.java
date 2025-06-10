@@ -56,8 +56,8 @@ public class PopulateShipMenuController {
             if (controller instanceof ShipController shipController) {
                 shipController.enableCellClickHandler(this::selectCabinToPopulate);
             } else {
-                showError("Unable to get the ship controller");            }
-
+                showError("Unable to get the ship controller");
+            }
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());

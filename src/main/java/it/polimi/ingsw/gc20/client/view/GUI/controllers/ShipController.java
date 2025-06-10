@@ -65,10 +65,7 @@ public abstract class ShipController {
     @FXML
     protected void initialize() {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
-        ClientGameModel clientGameModel = ClientGameModel.getInstance();
-        if (clientGameModel != null) {
-            String currentUsername = clientGameModel.getUsername();
-        }
+        // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
         loadObjects();
     }
