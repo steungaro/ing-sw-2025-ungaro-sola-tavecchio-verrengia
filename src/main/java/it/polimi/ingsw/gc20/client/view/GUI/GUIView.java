@@ -249,7 +249,19 @@ public class GUIView extends ClientGameModel {
     @Override
     public void planetMenu(List<Planet> planets) {
         setCurrentGuiState(GuiState.PLANET_MENU);
-        // TODO: ALL
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof LoseCrewMenuController) {
+                    ((PlanetMenuController) controller).initializeWithPlanets(planets);
+                } else {
+                    System.err.println("Controller for PLANET_MENU_CONTROLLER is not of type planetMenu or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup planet menu: primaryStage, scene, or root is null.");
+            }
+        });
+        // TODO: to test, no handler needed
     }
 
     @Override
