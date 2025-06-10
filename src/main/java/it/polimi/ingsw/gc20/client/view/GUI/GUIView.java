@@ -129,7 +129,7 @@ public class GUIView extends ClientGameModel {
 
     public void initGUI(Stage stage) {
         primaryStage = stage;
-        setCurrentGuiState(GuiState.WELCOME); // Imposta lo stato iniziale, triggerando il listener
+        setCurrentGuiState(GuiState.WELCOME);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down GUIView...");
             ClientGameModel.getInstance().shutdown();
@@ -192,17 +192,6 @@ public class GUIView extends ClientGameModel {
         });
     }
 
-    /*private void notifyCurrentShipController(ViewShip newShip) {
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof ViewShip) {
-                    ((BuildingPhaseController) controller).updateShipDisplay(newShip);
-                }
-            }
-        });
-    }*/
-
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
@@ -240,7 +229,7 @@ public class GUIView extends ClientGameModel {
                 message.handleMessage();
             } catch (Exception e) {
                 System.out.println("Error while handling message: " + e.getMessage());
-                e.printStackTrace(); // Utile per il debug
+                e.printStackTrace();
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
@@ -250,21 +239,6 @@ public class GUIView extends ClientGameModel {
     public void mainMenuState(){
         setCurrentGuiState(GuiState.MAIN_MENU);
     }
-
-    /*@Override
-    public void setShip (String username, ViewShip ship) {
-        ships.put(username, ship);
-        if (primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null &&
-                primaryStage.getScene().getRoot().getId() != null &&
-                (currentGuiState.getFxmlFileName().equals("ship0") || currentGuiState.getFxmlFileName().equals("ship2"))) {
-            // Get the controller of the current ship view
-            ShipController shipController = primaryStage.getScene().getRoot().getUserData() instanceof ShipController ?
-                    (ShipController) primaryStage.getScene().getRoot().getUserData() : null;
-            if (shipController != null) {
-                shipController.buildShipComponents(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()));
-            }
-        }
-    }*/
 
     @Override
     public void setBoard(ViewBoard board) {
