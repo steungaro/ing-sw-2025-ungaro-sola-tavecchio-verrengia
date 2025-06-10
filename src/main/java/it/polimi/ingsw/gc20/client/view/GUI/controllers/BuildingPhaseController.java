@@ -487,28 +487,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    /*public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        List<double[]> coordinates = comp.getSize() == 2 ? cargoCord2 : cargoCord3;
-        int index = 0;
-
-        // Create cargo boxes with relative positioning
-        for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "red");
-        }
-        for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "green");
-        }
-        for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "blue");
-        }
-        for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "yellow");
-        }
-        for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "empty");
-        }
-    }*/
-
     private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         Rectangle box = new Rectangle();
 
@@ -1097,14 +1075,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + boardType + ".fxml"));
             Parent boardViewRoot = loader.load();
-
-            // Se il controller ha metodi di inizializzazione specifici, li puoi chiamare qui
-        /*
-        Object controller = loader.getController();
-        if (controller instanceof BoardController c) {
-            c.initializeBoard(ClientGameModel.getInstance().getBoard());
-        }
-        */
 
             Stage stage = new Stage();
             stage.setTitle("Tabellone di Gioco");
