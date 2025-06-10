@@ -267,13 +267,14 @@ public class GUIView extends ClientGameModel {
     @Override
     public void populateShipMenu() {
         setCurrentGuiState(GuiState.POPULATE_SHIP_MENU);
-        // TODO: ALL
+        // TODO: to test, no other handler needed
     }
 
     @Override
     public void automaticAction(String message) {
-        currentGuiState = GuiState.AUTOMATIC_ACTION;
-        // TODO: ALL
+        // ignore this method for now
+        // currentGuiState = GuiState.AUTOMATIC_ACTION;
+        // TODO: DECIDE WHATO TO DO
     }
 
     @Override

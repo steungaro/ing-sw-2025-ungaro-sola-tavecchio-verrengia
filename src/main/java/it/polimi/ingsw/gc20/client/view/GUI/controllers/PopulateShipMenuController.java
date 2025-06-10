@@ -52,12 +52,56 @@ public class PopulateShipMenuController {
             ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
-            // Call ShipController.enableCellClickHandler() to enable cell click handling
+            Object controller = loader.getController();
+            if (controller instanceof ShipController shipController) {
+                shipController.enableCellClickHandler(this::selectCabinToPopulate);
+            } else {
+                showError("Unable to get the ship controller");            }
 
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
+    }
+
+    private void selectCabinToPopulate(int row, int col) {
+        int x = row - 5;
+        int y = col - (ship.isLearner ? 5 : 4);
+        VBox dialogContent = new VBox(10);
+        ComboBox<AlienColor> colorComboBox = new ComboBox<>(
+                FXCollections.observableArrayList(AlienColor.PURPLE, AlienColor.BROWN)
+        );
+        colorComboBox.setPromptText("Select an alien color");
+        colorComboBox.setValue(AlienColor.PURPLE);
+
+        dialogContent.getChildren().add(new Label("Color:"));
+        dialogContent.getChildren().add(colorComboBox);
+
+        javafx.scene.control.Dialog<AlienColor> dialog = new javafx.scene.control.Dialog<>();
+        dialog.setTitle("Add alien");
+        dialog.setHeaderText("Choose the alien color for the cabin at position (" + x + ", " + y + ")");
+        dialog.getDialogPane().setContent(dialogContent);
+
+        dialog.getDialogPane().getButtonTypes().addAll(javafx.scene.control.ButtonType.OK, javafx.scene.control.ButtonType.CANCEL);
+
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == javafx.scene.control.ButtonType.OK) {
+                return colorComboBox.getValue();
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(alienColor -> {
+            try {
+                ClientGameModel.getInstance().getClient().addAlien(
+                        username,
+                        alienColor,
+                        new Pair<>(x, y)
+                );
+            } catch (RemoteException e) {
+                showError("Error adding alien: " + e.getMessage());
+            }
+        });
     }
 
     @FXML
