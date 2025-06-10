@@ -26,6 +26,6 @@ module it.polimi.ingsw.gc20 {
     opens it.polimi.ingsw.gc20.server.network.RMI to java.rmi;
     exports it.polimi.ingsw.gc20.common.message_protocol.toserver;
 
-    exports it.polimi.ingsw.gc20.client.view.GUI to javafx.graphics;
+    exports it.polimi.ingsw.gc20.client.view .GUI to javafx.graphics;
     opens it.polimi.ingsw.gc20.client.view.GUI.controllers to javafx.fxml;
 }

@@ -57,6 +57,7 @@ public class GUIView extends ClientGameModel {
         CANNONS_MENU("cannonsMenu"),
         LEADER_BOARD_MENU("leaderBoardMenu"),
         AUTOMATIC_ACTION("automaticAction"),
+        PEEK_DECKS("peekDecks"),
         ENGINE_MENU("engineMenu");
 
         private final String fxmlFileName;
@@ -440,7 +441,19 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
-        setCurrentGuiState(GuiState.BUILDING_PHASE);
+        setCurrentGuiState(GuiState.PEEK_DECKS);
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof PeekDecksController) {
+                    ((PeekDecksController) controller).initializeWithCards(cards);
+                } else {
+                    System.err.println("Controller for PEEKDECKS is not of type PeekDeckController or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup peek deck phase: primaryStage, scene, or root is null.");
+            }
+        });
         // TODO: bugs in buildingPhase2 and add for peekDecks
     }
 

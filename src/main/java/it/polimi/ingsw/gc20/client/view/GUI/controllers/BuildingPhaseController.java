@@ -2,9 +2,11 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.*;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -21,7 +23,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.Console;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -71,6 +72,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     @FXML
     private ListView<ViewPlayer> otherPlayersShipsList;
 
+    private List<ViewAdventureCard> deck;
     private ViewComponent selectedComponent;
     protected boolean placementModeActive = false;
     protected ViewShip ship;
@@ -128,6 +130,10 @@ public abstract class BuildingPhaseController implements GameModelListener {
             }
         });
         updateComponentInHand();
+    }
+
+    public void initializeWithCards(List<ViewAdventureCard> deck){
+        this.deck = deck;
     }
 
     private void loadCoveredDeck(){
@@ -241,16 +247,10 @@ public abstract class BuildingPhaseController implements GameModelListener {
                     navigateToOpponentShipScreen(newSelection);
                 } else {
                     System.out.println("Selected own player from list. View remains on own ship.");
-                    Platform.runLater(() -> {
-                        if (otherPlayersShipsList.getSelectionModel().getSelectedItem() == null ||
-                                !otherPlayersShipsList.getSelectionModel().getSelectedItem().equals(newSelection)) {
-                        }
-                    });
                 }
             }
         });
 
-        // Select the current player in the list initially if they are present
         if (this.currentPlayerBeingViewed != null) {
             Optional<ViewPlayer> selfInList = displayPlayers.stream()
                     .filter(p -> p.username.equals(this.currentPlayerBeingViewed.username))
