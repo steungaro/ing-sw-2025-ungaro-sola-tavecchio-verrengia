@@ -31,6 +31,7 @@ public abstract class ShipController {
     public String playerUsername;;
     private ViewShip ship;
 
+    @FXML protected GridPane compoentsGrid;
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
@@ -49,7 +50,6 @@ public abstract class ShipController {
     );
 
     @FXML protected GridPane componentsGrid;
-    @FXML protected ImageView bgImage;
 
     protected final Map<String, Integer> gridComponents = new HashMap<>();
 
@@ -298,6 +298,51 @@ public abstract class ShipController {
 
     public interface CellClickHandler {
         void onCellClicked(int row, int col);
+    }
+
+    public void enableCellClickHandler(CellClickHandler handler) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                ImageView cell = getImageViewAt(row, col);
+                if (cell != null) {
+                    int finalRow = row;
+                    int finalCol = col;
+
+                    Rectangle clickArea = new Rectangle();
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                    clickArea.setStrokeWidth(2);
+                    clickArea.setOpacity(0.7);
+
+                    clickArea.widthProperty().bind(
+                            componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
+                    );
+                    clickArea.heightProperty().bind(
+                            componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
+                    );
+
+                    clickArea.setOnMouseEntered(_ -> {
+                        clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                        clickArea.setCursor(javafx.scene.Cursor.HAND);
+                    });
+
+                    clickArea.setOnMouseExited(_ -> {
+                        clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                    });
+
+                    clickArea.setOnMouseClicked(event -> {
+                        if (handler != null) {
+                            handler.onCellClicked(finalRow, finalCol);
+                        }
+                    });
+
+                    componentsGrid.add(clickArea, col, row);
+                    GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                    GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                }
+            }
+        }
     }
 
     protected abstract int getRows();
