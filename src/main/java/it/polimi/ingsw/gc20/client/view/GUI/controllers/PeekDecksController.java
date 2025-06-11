@@ -26,7 +26,7 @@ public class PeekDecksController {
     }
 
     private Image getCardImage(int id) {
-        String imagePath = "/fxml/cards/GT-cards_" + (id > 20 ? "II" : "I") + "_IT_0" + (id > 20 ? id - 20 : id) + ".png";
+        String imagePath = "/fxml/cards/GT-cards_" + (id > 20 ? "II" : "I") + "_IT_0" + (id > 20 ? id - 20 : id) + ".jpg";
         return new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
     }
 }
