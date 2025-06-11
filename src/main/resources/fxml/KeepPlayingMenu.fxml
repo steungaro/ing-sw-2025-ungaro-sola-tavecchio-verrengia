@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.KeepPlayingMenuController"
+      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
+      prefHeight="400.0" prefWidth="600.0">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Next Card Coming Soon" textFill="WHITE">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <Label text="The next card will be drawn in a few seconds..." textFill="WHITE">
+        <font>
+            <Font size="16.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 30; -fx-background-radius: 10;">
+        <Label text="Would you like to continue playing or give up?" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+
+        <Label text="Wait here to continue playing" textFill="#80ffaa">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+
+        <Label text="OR" textFill="WHITE">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+
+        <Button fx:id="giveUpButton" prefHeight="50" prefWidth="200" text="Give Up (Early Landing)" onAction="#handleGiveUp">
+            <font>
+                <Font size="14.0" />
+            </font>
+            <style>
+                -fx-background-color: #b34a4a;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+    </VBox>
+
+    <ProgressIndicator fx:id="loadingIndicator" progress="-1.0">
+        <style>
+            -fx-progress-color: #4a7eb3;
+        </style>
+    </ProgressIndicator>
+</VBox>

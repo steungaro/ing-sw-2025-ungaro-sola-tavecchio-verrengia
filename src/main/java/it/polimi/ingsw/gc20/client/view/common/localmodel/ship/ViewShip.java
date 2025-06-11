@@ -5,7 +5,6 @@ import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
 import org.javatuples.Triplet;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -102,15 +101,21 @@ public class ViewShip {
 
     private String formatFixedLength(String lineContent) {
         int targetLength = 118; // Desired fixed length
-        int currentLength = lineContent.length();
+        String strippedContent = lineContent.replaceAll("\u001B\\[[;\\d]*m", ""); // Remove ANSI escape sequences
+        int currentLength = strippedContent.length();
+
         if (currentLength < targetLength) {
-            // Add padding spaces to reach 120 characters
+            // Add padding spaces to reach the target length
             return lineContent + " ".repeat(targetLength - currentLength);
         } else if (currentLength > targetLength) {
-            // If content exceeds, truncate it to fit
-            return lineContent.substring(0, targetLength);
+            // If content exceeds target length, truncate while considering ANSI codes
+            String truncatedContent = strippedContent.substring(0, targetLength);
+            int visibleLength = truncatedContent.length();
+            // Include the matching ANSI codes from the original content
+            return lineContent.substring(0, lineContent.indexOf(truncatedContent) + visibleLength);
         }
-        return lineContent; // Already the correct length
+
+        return lineContent; // Already at correct length
     }
 
     private String level2Ship() {
@@ -256,7 +261,7 @@ public class ViewShip {
         viewShip.baseFirepower = 5;
         viewShip.baseEnginePower = 9;
         viewShip.astronauts = 3;
-        viewShip.aliens = AlienColor.PURPLE;
+        viewShip.aliens = AlienColor.BROWN;
         viewShip.isLearner = false;
 
         // Initialize components and booked
@@ -309,7 +314,7 @@ public class ViewShip {
         System.out.println(viewShip);
     }
 
-    
+
     public List<Triplet<Integer, Integer, Integer>> getCrew() {
         List<Triplet<Integer, Integer, Integer>> crew = new ArrayList<>();
         for (int i = 0; i < components.length; i++) {

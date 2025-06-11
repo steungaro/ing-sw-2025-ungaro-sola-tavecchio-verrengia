@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 
 public abstract class ViewAdventureCard {
     public String type;
+    public int id;
     protected static final String UP =          "╭──────────────────────╮";
     protected static final String DOWN =        "╰──────────────────────╯";
     protected static final String EMPTY_ROW =    "                      ";
@@ -56,5 +57,6 @@ public abstract class ViewAdventureCard {
      */
     protected void initialize(AdventureCard adventureCard) {
         this.type = adventureCard.getName();
+        this.id = adventureCard.getIDCard();
     }
 }

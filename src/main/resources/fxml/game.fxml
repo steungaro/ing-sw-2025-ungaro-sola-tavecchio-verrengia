@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.GameController"
+            prefHeight="800.0" prefWidth="1200.0"
+            style="-fx-background-color: #222233;">
+
+    <top>
+        <ToolBar style="-fx-background-color: #333344; -fx-padding: 10;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Players' ships:" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+                <HBox fx:id="shipsButtonContainer" spacing="10" />
+
+            </HBox>
+
+            <HBox spacing="10" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                <Label fx:id="playerInfoLabel" text="Player: ?" textFill="WHITE">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+
+            </HBox>
+        </ToolBar>
+    </top>
+
+    <center>
+        <StackPane fx:id="gameContent" style="-fx-background-color: #2a2a3a;">
+        </StackPane>
+    </center>
+
+    <bottom>
+        <VBox style="-fx-background-color: #333344; -fx-padding: 10;">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Messages:" textFill="WHITE">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+                <Label fx:id="messageLabel" text="" textFill="#aaaaaa" HBox.hgrow="ALWAYS">
+                    <font>
+                        <Font size="12.0" />
+                    </font>
+                </Label>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

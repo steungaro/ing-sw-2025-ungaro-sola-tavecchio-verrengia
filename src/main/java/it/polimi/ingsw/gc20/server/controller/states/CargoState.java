@@ -30,8 +30,8 @@ public abstract class CargoState extends PlayingState {
      */
     @Override
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws CargoNotLoadable, CargoFullException, InvalidStateException, CargoException, InvalidTurnException, ComponentNotFoundException {
-        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
         getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
     }
 
     /**

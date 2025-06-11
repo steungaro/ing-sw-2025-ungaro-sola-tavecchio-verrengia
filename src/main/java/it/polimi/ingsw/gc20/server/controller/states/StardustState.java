@@ -44,7 +44,7 @@ public class StardustState extends PlayingState {
                 .forEach(player -> getModel().movePlayer(player, -player.getShip().getAllExposed()));
         //draw a new card
         for (String player : getController().getInGameConnectedPlayers()) {
-            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces()));
+            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), (getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         }
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;

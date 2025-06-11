@@ -24,7 +24,7 @@ public class MainMenu implements MenuState{
                 .max()
                 .orElse(50);
         System.out.println      ("╭" + "─".repeat(lobbyMaxLength + 2) + "╮");
-        ClientGameModel.getInstance().getLobbyList().forEach(lobby -> {System.out.println("│ " + lobby.toString() + " │");});
+        ClientGameModel.getInstance().getLobbyList().forEach(lobby -> System.out.println("│ " + lobby.toString() + " │"));
         if (ClientGameModel.getInstance().getLobbyList().isEmpty()) {
             System.out.println  ("│               (No lobbies available)               │");
         }

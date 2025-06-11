@@ -114,7 +114,7 @@ public class    CombatZone1State extends CargoState {
             //get the player with the minimum declaredFirePower and make it lose flight days
             getModel().movePlayer(p, - lostDays);
             //notify all connected players of the player who lost flight days
-            getController().getMessageManager().broadcastPhase(new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces())));
+            getController().getMessageManager().broadcastPhase(new PlayerUpdateMessage(p.getUsername(), 0, true, p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             //set the current player to the first online player
             setCurrentPlayer(getController().getFirstOnlinePlayer());
             //set the phase to the next phase

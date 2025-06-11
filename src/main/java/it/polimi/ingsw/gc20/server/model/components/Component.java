@@ -30,6 +30,7 @@ public abstract class Component {
     protected final Map<Direction, ConnectorEnum> connectors = new HashMap<>();
     protected int ID;
     private Tile tile = null;
+    private int rotComp = 0; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
 
     public Component() {}
 
@@ -42,6 +43,7 @@ public abstract class Component {
         connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
         connectors.put(Direction.RIGHT, conn);
+        rotComp = (rotComp + 1) % 4;
     }
 
     /**
@@ -53,6 +55,7 @@ public abstract class Component {
         connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
         connectors.put(Direction.LEFT, conn);
+        rotComp = (rotComp + 3) % 4;
     }
 
     /**
@@ -140,6 +143,9 @@ public abstract class Component {
      */
     public void updateParameter(Ship s, int sign) {}
 
+    public int getRotation() {
+        return rotComp;
+    }
 
     /** Function that returns true if the component is a shield and cover the direction d
      *
@@ -196,6 +202,7 @@ public abstract class Component {
 
     public void initializeViewComponent(ViewComponent viewComponent) {
         viewComponent.id = ID;
+        viewComponent.rotComp = rotComp;
         viewComponent.upConnectors = connectors.get(Direction.UP).getValue();
         viewComponent.downConnectors = connectors.get(Direction.DOWN).getValue();
         viewComponent.leftConnectors = connectors.get(Direction.LEFT).getValue();

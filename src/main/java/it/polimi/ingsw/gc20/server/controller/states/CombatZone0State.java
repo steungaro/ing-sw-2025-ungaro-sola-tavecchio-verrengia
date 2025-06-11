@@ -66,7 +66,7 @@ public class CombatZone0State extends PlayingState {
         //move the player
         getModel().movePlayer(p, -lostDays);
         //notify all players connected with an update player message
-        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition()%getModel().getGame().getBoard().getSpaces())));
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         //set the phase to engine phase
         this.phase = StatePhase.ENGINES_PHASE;
         setStandbyMessage(p.getUsername() + " is activating engines");

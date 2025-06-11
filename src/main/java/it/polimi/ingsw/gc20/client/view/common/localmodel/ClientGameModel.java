@@ -11,8 +11,6 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
-import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -22,8 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-
+import java.util.ArrayList;
 
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
@@ -36,8 +33,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     public boolean loggedIn;
     protected String username;
     protected Client client;
-    private ViewBoard board;
-    private Map<String, ViewShip> ships;
+    protected ViewBoard board;
+    protected Map<String, ViewShip> ships;
     protected ViewAdventureCard currentCard;
     private final List<GameModelListener> listeners = new ArrayList<>();
     private ViewComponent componentInHand;
@@ -45,6 +42,8 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private MenuState currentMenuState;
     public boolean busy;
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
+    private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
+
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize default state if necessary
@@ -54,6 +53,27 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.ships = new HashMap<>();
     }
     public ViewAdventureCard getCurrentCard() {
+        if (currentCard == null) {
+            return new ViewAdventureCard(
+            ) {
+                /**
+                 * Converts a specific part of the card to its string representation
+                 * based on the given line index.
+                 *
+                 * @param i the index of the line to retrieve as a string representation
+                 * @return the string representation of the specified line; returns an empty string if the line index is invalid
+                 */
+                @Override
+                public String toLine(int i) {
+                    return switch (i) {
+                        case 0 -> UP;
+                        case 1, 2, 3, 4, 5, 6, 7, 8, 9 -> LATERAL + EMPTY_ROW + LATERAL;
+                        case 10 -> DOWN;
+                        default -> "";
+                    };
+                }
+            };
+        }
         return currentCard;
     }
 
@@ -98,10 +118,31 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Sets the current menu state without clearing any queued menu states. If the system is busy,
+     * the specified menu state is added to a queue. Otherwise, it is immediately set as the current
+     * menu state and displayed.
+     *
+     * @param currentMenuState The menu state to set or queue.
+     */
+    public void setCurrentMenuStateNoClear(MenuState currentMenuState) {
+        if (busy){
+            menuStateQueue.add(currentMenuState);
+        } else {
+            if (menuStateQueue.isEmpty()) {
+                this.currentMenuState = currentMenuState;
+                this.currentMenuState.displayMenu();
+            } else {
+                menuStateQueue.add(currentMenuState);
+            }
+        }
+    }
+
     public abstract void displayErrorMessage(String message);
 
     public void setLobbyList(List<ViewLobby> lobbyList) {
-        this.lobbyList = lobbyList;
+        this.lobbyList = new ArrayList<>(lobbyList);
+        notifyLobbyListObservers();
         LOGGER.fine("Lobby list updated in model.");
     }
 
@@ -119,6 +160,10 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setComponentInHand(ViewComponent componentInHand) {
         this.componentInHand = componentInHand;
+        LOGGER.fine("Component in hand updated in model.");
+        for (GameModelListener listener : listeners) {
+            listener.onComponentInHandUpdated(this.componentInHand);
+        }
     }
     public ViewBoard getBoard() {
         return board;
@@ -142,6 +187,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setShip (String username, ViewShip ship) {
         ships.put(username, ship);
+        for (GameModelListener listener : listeners) {
+            listener.onShipUpdated(this.ships.get(username));
+        }
     }
 
     public void ping() {
@@ -154,8 +202,20 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    public void addLobbyListObserver(LobbyListObserver observer) {
+        if (!lobbyListObservers.contains(observer)) {
+            lobbyListObservers.add(observer);
+        }
+    }
+
     public void removeListener(GameModelListener listener) {
         listeners.remove(listener);
+    }
+
+    protected void notifyLobbyListObservers() {
+        for (LobbyListObserver observer : lobbyListObservers) {
+            observer.onLobbyListChanged();
+        }
     }
 
     public static ClientGameModel getInstance() {
@@ -270,7 +330,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         });
     }
 
-    // --- Updaters that notify listeners ---
     public void updatePlayerShip(ViewShip ship) {
         this.playerShip = ship;
         LOGGER.fine("Player ship updated in model.");
@@ -287,20 +346,18 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-    public void updateGamePhase(GamePhase newPhase) {
-        this.currentPhase = newPhase;
-        LOGGER.fine("Game phase updated in model to: " + newPhase);
-        for (GameModelListener listener : listeners) {
-            listener.onPhaseChanged(this.currentPhase);
-        }
-    }
-    
     public void setErrorMessage(String message) {
         this.errorMessage = message;
         LOGGER.warning("Error message set in model: " + message);
         for (GameModelListener listener: listeners) {
             listener.onErrorMessageReceived(message);
         }
+    }
+
+    public abstract void login();
+
+    public void setUsername(String username){
+        this.username = username;
     }
 
     // --- Getters ---
@@ -318,7 +375,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     public abstract void shutdown();
-
     public abstract void branchMenu();
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
     public abstract void cannonsMenu(String message);

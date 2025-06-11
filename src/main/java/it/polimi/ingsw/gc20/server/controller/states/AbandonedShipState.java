@@ -75,7 +75,7 @@ public class AbandonedShipState extends PlayingState {
                 credits,
                 true,
                 player.getColor(),
-                (player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces());
         //notify all the players the update of the player
         getController().getMessageManager().broadcastUpdate(message);
 
