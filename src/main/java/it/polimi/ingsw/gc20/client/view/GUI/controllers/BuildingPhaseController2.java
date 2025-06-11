@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 import java.rmi.RemoteException;
@@ -17,8 +19,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     private final int ROWS = 5;
     private final int COLS = 7;
 
-    @FXML
-    private GridPane bookedGrid;
     @FXML
     private ImageView imageCell_0_0;
     @FXML
@@ -255,30 +255,25 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         disableBookedComponentsInteraction();
     }
 
-    private void disableBookedComponentsInteraction(){
-        if (bookedGrid != null) {
-            java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
-
-            for (javafx.scene.Node node : bookedGrid.getChildren()) {
-                if (node instanceof Rectangle) {
-                    nodesToRemove.add(node);
-                }
-            }
-            bookedGrid.getChildren().removeAll(nodesToRemove);
-            bookedGrid.setOnMouseClicked(null);
+    @Override
+    protected void updateComponentInHand() {
+        super.updateComponentInHand();
+        if (ClientGameModel.getInstance().getComponentInHand() == null) {
+            enableBookedtoHandInteraction(this::handleBookedtoHandClick);
         }
     }
 
-    public void enableBookedComponentsInteraction(Runnable handler) {
+    public interface BookedToHandClickHandler {
+        void onBookedToHandClicked(int index);
+    }
+
+    public void enableBookedtoHandInteraction(BookedToHandClickHandler handler) {
         if (bookedGrid != null) {
-            uncoveredComponentsPane.setOnMouseClicked(_ -> {
-                if (handler != null) {
-                    handler.run();
-                }
-            });
             System.out.println("booked components interaction enabled.");
 
-            for(int i = 0; i < 2; i++){
+            for (int i = 0; i < 2; i++) {
+                if(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).getBooked(i) == null)
+                    continue;
                 Rectangle clickArea = new Rectangle();
                 clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
@@ -292,9 +287,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
                         componentsGrid.heightProperty().divide(getRows()).subtract(1)
                 );
 
+                final int index = i;
                 clickArea.setOnMouseClicked(_ -> {
                     if (handler != null) {
-                        handler.run();
+                        handler.onBookedToHandClicked(index);
                     }
                 });
 
@@ -317,8 +313,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
     }
 
-    // Handle click on booked components (no component in hand)
-    // TODO
     protected void handleBookedtoHandClick(int i) {
         if (i != 0 && i != 1) {
             return;
@@ -330,11 +324,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
         try {
             ClientGameModel.getInstance().getClient().takeComponentFromBooked(ClientGameModel.getInstance().getUsername(), i);
+            updateBookedComponents();
         } catch (RemoteException e){
             System.err.println("Error taking component from booked: " + e.getMessage());
         }
-
-
     }
 
     @Override
@@ -397,35 +390,14 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         GridPane.setMargin(clickArea, new javafx.geometry.Insets(2));
     }
 
-    private void handleBookedClick(int index) {
-        String username = ClientGameModel.getInstance().getUsername();
-        try {
-            ClientGameModel.getInstance().getClient().addComponentToBooked(username);
-        } catch (RemoteException e) {
-            System.err.println("Error taking comxponent from booked: " + e.getMessage());
-        }
-    }
-
-    private void addComponentToImageView(ImageView imageView, ViewComponent component) {
-        if (component == null || imageView == null) return;
-
-        String imagePath = "/fxml/tiles/" + component.id + ".jpg";
-        try {
-            javafx.scene.image.Image componentImage = new javafx.scene.image.Image(
-                    Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            imageView.setImage(componentImage);
-            imageView.setRotate(component.rotComp * 90);
-        } catch (Exception e) {
-            System.err.println("Error uploading component img: " + e.getMessage());
-        }
-    }
-
     protected void updateBookedComponents() {
         imageBooked_0.setImage(null);
         imageBooked_1.setImage(null);
 
         ViewShip ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
         if (ship != null && (ship.getBooked(0) != null || ship.getBooked(1) != null)) {
+            disableBookedComponentsInteraction();
+            enableBookedtoHandInteraction(this::handleBookedtoHandClick);
             for (int i = 0; i < 2; i++) {
                 ViewComponent component = ship.getBooked(i);
                 if (component != null) {
@@ -434,8 +406,10 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
                         Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
                         if (i == 0) {
                             imageBooked_0.setImage(componentImage);
+                            imageBooked_0.setRotate(component.rotComp * 90);
                         } else {
                             imageBooked_1.setImage(componentImage);
+                            imageBooked_1.setRotate(component.rotComp * 90);
                         }
                     } catch (Exception e) {
                         System.err.println("Error uploading image: " + e.getMessage());

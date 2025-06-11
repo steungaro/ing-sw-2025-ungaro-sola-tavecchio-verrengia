@@ -127,31 +127,13 @@
                 </ScrollPane>
 
                 <!-- Non-learner buttons -->
-                <HBox fx:id="nonLearnerButtonsContainer" alignment="CENTER" managed="false" spacing="20" visible="false">
-                    <Button maxWidth="Infinity" minHeight="40" onAction="#takeBookedComponent" style="-fx-background-color: #5cb85c; -fx-text-fill: white;" text="Take booked component" wrapText="true" HBox.hgrow="ALWAYS">
+                <HBox fx:id="nonLearnerButtonsContainer" alignment="CENTER" managed="false" spacing="20">
+                    <Button maxWidth="Infinity" minHeight="30" minWidth="150" onAction="#turnHourglass" style="-fx-background-color: #4a7ba7; -fx-text-fill: white; -fx-background-radius: 5;" text="Turn hourglass" wrapText="true" HBox.hgrow="ALWAYS">
                         <font>
                             <Font size="14.0" />
                         </font>
                     </Button>
-                    <Button maxWidth="Infinity" minHeight="40" onAction="#turnHourglass" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Turn hourglass" wrapText="true" HBox.hgrow="ALWAYS">
-                        <font>
-                            <Font size="14.0" />
-                        </font>
-                    </Button>
-                    <Button maxWidth="Infinity" minHeight="40" onAction="#peekDeck" style="-fx-background-color: #f0ad4e; -fx-text-fill: white;" text="Peek deck" wrapText="true" HBox.hgrow="ALWAYS">
-                        <font>
-                            <Font size="14.0" />
-                        </font>
-                    </Button>
-                </HBox>
-
-                <HBox fx:id="nonLearnerComponentInHandButtons" alignment="CENTER" managed="false" spacing="20" visible="false">
-                    <Button maxWidth="Infinity" minHeight="40" onAction="#bookComponent" style="-fx-background-color: #5cb85c; -fx-text-fill: white;" text="Book component" wrapText="true" HBox.hgrow="ALWAYS">
-                        <font>
-                            <Font size="14.0" />
-                        </font>
-                    </Button>
-                    <Button maxWidth="Infinity" minHeight="40" onAction="#turnHourglass" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Turn hourglass" wrapText="true" HBox.hgrow="ALWAYS">
+                    <Button maxWidth="Infinity" minHeight="30" minWidth="150" onAction="#peekDeck" style="-fx-background-color: #4a7ba7; -fx-text-fill: white; -fx-background-radius: 5;" text="Peek deck" wrapText="true" HBox.hgrow="ALWAYS">
                         <font>
                             <Font size="14.0" />
                         </font>
@@ -255,9 +237,13 @@
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
                     </rowConstraints>
                       <ImageView fx:id="imageBooked_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
-                      <ImageView fx:id="imageBooked_1" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+                      <ImageView fx:id="imageBooked_1" GridPane.columnIndex="1" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
                   </GridPane>
                     </StackPane>
                 </center>
