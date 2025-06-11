@@ -68,7 +68,7 @@ public class AssemblingState extends State {
     public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
         if (componentsInHand.get(player) != null) {
-            throw new InvalidStateException("Player is not in the correct phase");
+            throw new InvalidStateException("Player is not in the correct phase.");
         }
         checkHourglass();
         // take the component from the unviewed pile
@@ -96,7 +96,7 @@ public class AssemblingState extends State {
     public void takeComponentFromViewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException{
         //check if the player is in the TAKE_COMPONENT phase
         if (componentsInHand.get(player) != null) {
-            throw new InvalidStateException("Player is not in the correct phase");
+            throw new InvalidStateException("Player is not in the correct phase.");
         }
         checkHourglass();
         //take the component from the viewed pile
@@ -124,7 +124,7 @@ public class AssemblingState extends State {
     public void takeComponentFromBooked(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
         if (componentsInHand.get(player) != null) {
-            throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the TAKE_COMPONENT phase.");
         }
         checkHourglass();
         // take the component from the booked pile
@@ -150,7 +150,7 @@ public class AssemblingState extends State {
     @Override
     public void addComponentToBooked(Player player) throws InvalidStateException, NoSpaceException {
         if (componentsInHand.get(player) == null) {
-            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
         //put the component in the booked pile
         getModel().componentToBooked(componentsInHand.get(player), player);
@@ -171,10 +171,10 @@ public class AssemblingState extends State {
     public void addComponentToViewed(Player player) throws InvalidStateException, DuplicateComponentException {
         // check if the player is in the PLACE_COMPONENT phase
         if (componentsInHand.get(player) == null) {
-            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
         if (fromBooked){
-            throw new InvalidStateException("Cannot add component to viewed pile after taking it from booked pile");
+            throw new InvalidStateException("Cannot add a booked component back to the viewed pile!");
         }
         // add the component to the viewed pile
         getModel().componentToViewed(componentsInHand.get(player));
@@ -192,7 +192,7 @@ public class AssemblingState extends State {
     public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException {
         //check if the player is in the PLACE_COMPONENT phase
         if (componentsInHand.get(player) == null) {
-            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
         //add the component in the hand to the ship
         getModel().addToShip(componentsInHand.get(player), player, coordinates.getValue0(), coordinates.getValue1());
@@ -212,7 +212,7 @@ public class AssemblingState extends State {
     public void rotateComponentClockwise(Player player) throws InvalidStateException{
         //check if the player has a component in the hand
         if (componentsInHand.get(player) == null) {
-            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
         //rotate the component clockwise
         getModel().RotateClockwise(componentsInHand.get(player));
@@ -227,7 +227,7 @@ public class AssemblingState extends State {
     @Override
     public void rotateComponentCounterclockwise(Player player) throws InvalidStateException {
         if (componentsInHand.get(player) == null) {
-            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase");
+            throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
         //rotate the component counterclockwise
         getModel().RotateCounterclockwise(componentsInHand.get(player));
@@ -244,7 +244,7 @@ public class AssemblingState extends State {
     public void stopAssembling(Player player, int position) throws InvalidIndexException, InvalidStateException {
         //check if the player is in the PLACE_COMPONENT phase
         if (componentsInHand.get(player) != null) {
-            throw new InvalidStateException("Place the component before stopping assembling");
+            throw new InvalidStateException("Place the component before stopping assembling.");
         }
         //end the assembling phase for the player and set the player in the correct position
         getModel().stopAssembling(player, position);
@@ -253,7 +253,7 @@ public class AssemblingState extends State {
         //mark the player as assembled
         assembled.put(player, true);
         //notify the player that they are in standby phase
-        getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling"));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for other players to finish assembling."));
     }
 
     /**
@@ -275,12 +275,12 @@ public class AssemblingState extends State {
     @Override
     public void peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
         if (componentsInHand.get(player) != null) {
-            throw new InvalidStateException("cannot peek deck in this phase");
+            throw new InvalidStateException("Cannot peek deck with a component in hand.");
         }
         checkHourglass();
         //before doing anything, check if the index is correct
         if (num < 1 || num > 3) {
-            throw new InvalidIndexException("Invalid deck number");
+            throw new InvalidIndexException("Invalid deck number.");
         }
         //check if the player has peeked a deck already
         for (int i = 1; i < 4; i++) {
@@ -294,7 +294,7 @@ public class AssemblingState extends State {
         if (deckPeeked.get(num) == null) {
             deckPeeked.put(num, player);
         } else {
-            throw new InvalidIndexException("Deck already peeked");
+            throw new InvalidIndexException("Deck already peeked by " + deckPeeked.get(num).getUsername());
         }
         getController().getMessageManager().sendToPlayer(player.getUsername(), new DeckPeekedMessage(player.getUsername(), getModel().viewDeck(num)));
     }
@@ -309,11 +309,11 @@ public class AssemblingState extends State {
         //check if the hourglass can be turned
         //note that to turn the hourglass the last time, you have to have finished the assembling
         if (getModel().getTurnedHourglass() == 1 && !assembled.get(player)) {
-            throw new HourglassException("Cannot turn hourglass for the last time for a player that has not completed assembling yet");
+            throw new HourglassException("Cannot turn hourglass for the last time if you have not finished assembling your ship yet.");
         }
         //check if the hourglass has no remaining time
         if (getModel().getRemainingTime() != 0) {
-            throw new HourglassException("Cannot turn hourglass if time is not 0");
+            throw new HourglassException("Cannot turn hourglass if remaining time is not 0.");
         }
         getModel().turnHourglass();
         getController().getMessageManager().broadcastUpdate(new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
@@ -357,7 +357,7 @@ public class AssemblingState extends State {
             getController().getMessageManager().sendToPlayer(username, new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
         }
         if (assembled.get(getController().getPlayerByID(username))) {
-            getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Waiting for others to finish assembling"));
+            getController().getMessageManager().sendToPlayer(username, new StandbyMessage("Waiting for others to finish assembling."));
         }else if (componentsInHand.get(getController().getPlayerByID(username))==null){
             getController().getMessageManager().sendToPlayer(username, new AssemblingMessage(null));
         }else {
@@ -375,7 +375,7 @@ public class AssemblingState extends State {
             if (player.getUsername().equals(username)) {
                 rejoin(username);
             } else if (assembled.get(player)) {
-                getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for " + username + " to finish assembling"));
+                getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for " + username + " to finish assembling."));
             } else if (componentsInHand.get(player) == null){
                 getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
             } else {
@@ -394,7 +394,7 @@ public class AssemblingState extends State {
     private void checkHourglass() throws InvalidStateException{
         //check if the hourglass has been turned
         if (getModel().getLevel()==2 && getModel().getTurnedHourglass() == 2 && getModel().getRemainingTime() == 0 ) {
-            throw new InvalidStateException("cannot take a component if the reamining time is 0");
+            throw new InvalidStateException("Cannot take a new component if the remaining time is 0! Please end your move.");
         }
     }
 }

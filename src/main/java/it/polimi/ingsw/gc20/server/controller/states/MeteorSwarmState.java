@@ -36,7 +36,7 @@ public class MeteorSwarmState extends PlayingState {
             fireManagerMap.put(getController().getPlayerByID(username), new FireManager(model, meteors, getController().getPlayerByID(username)));
         }
         phase = StatePhase.ROLL_DICE_PHASE;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -59,10 +59,10 @@ public class MeteorSwarmState extends PlayingState {
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.CANNONS_PHASE) {
-            throw new InvalidStateException("cannot activate cannons in this phase");
+            throw new InvalidStateException("Cannot activate cannons in this phase.");
         }
         try {
             if (cannons == null || cannons.isEmpty() || batteries == null || batteries.isEmpty()) {
@@ -82,14 +82,14 @@ public class MeteorSwarmState extends PlayingState {
                 RestartTurn();
             } else {
                 phase = StatePhase.CANNONS_PHASE;
-                setStandbyMessage("Waiting for " + getCurrentPlayer() + " to select the cannons");
+                setStandbyMessage("Waiting for " + getCurrentPlayer() + " to activate the cannons.");
                 NotifyDefensiveCannon();
             }
         } catch (InvalidShipException e) {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
             phase = StatePhase.VALIDATE_SHIP_PHASE;
             phaseSave = StatePhase.CANNONS_PHASE;
-            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to validate the ship");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to validate their ship.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } catch (DieNotRolledException _) {
             //cannot happen
@@ -98,7 +98,7 @@ public class MeteorSwarmState extends PlayingState {
 
     private void NotifyDefensiveCannon() {
         phase = StatePhase.CANNONS_PHASE;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to select the cannons");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to activate the cannons.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -119,7 +119,7 @@ public class MeteorSwarmState extends PlayingState {
 
     private void NotifyRollDice() {
         phase = StatePhase.ROLL_DICE_PHASE;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -133,13 +133,13 @@ public class MeteorSwarmState extends PlayingState {
     @Override
     public int rollDice(Player player) throws InvalidTurnException, InvalidStateException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (fireManagerMap.get(player).finished()) {
-            throw new InvalidStateException("Cannot roll dice when not firing");
+            throw new InvalidStateException("Cannot roll dice now, your ship has survived through the meteor swarm!");
         }
         if (phase != StatePhase.ROLL_DICE_PHASE) {
-            throw new InvalidStateException("Cannot roll dice in this phase");
+            throw new InvalidStateException("Cannot roll dice in this phase.");
         }
         //roll the dice
         result = getModel().getGame().rollDice();
@@ -169,11 +169,11 @@ public class MeteorSwarmState extends PlayingState {
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the correct state
         if (phase != StatePhase.SELECT_SHIELD) {
-            throw new InvalidStateException("cannot activate shield in this phase");
+            throw new InvalidStateException("Cannot activate shield in this phase.");
         }
 
         try {
@@ -193,7 +193,7 @@ public class MeteorSwarmState extends PlayingState {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed by a heavy meteor"));
             phase = StatePhase.VALIDATE_SHIP_PHASE;
             phaseSave = StatePhase.SELECT_SHIELD;
-            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to validate the ship");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to validate their ship.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } catch (DieNotRolledException _) {
             //cannot happen
@@ -202,7 +202,7 @@ public class MeteorSwarmState extends PlayingState {
 
     private void notifyDefensiveShield() {
         phase = StatePhase.SELECT_SHIELD;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to select the shield");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to activate the shields.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -217,11 +217,11 @@ public class MeteorSwarmState extends PlayingState {
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the correct state
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
-            throw new InvalidStateException("cannot choose branch in this phase");
+            throw new InvalidStateException("Cannot choose branch in this phase.");
         }
         //choose the branch selected by the player
         fireManagerMap.get(player).chooseBranch(player, coordinates);
@@ -296,16 +296,16 @@ public class MeteorSwarmState extends PlayingState {
 
     @Override
     public String createsShieldMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the shield to use";
+        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the shields to activate.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side, roll the dice to see where it hits";
+        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side, roll the dice to see where it will hit.";
     }
 
     @Override
     public String createsCannonsMessage() {
-        return "a " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming, from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the cannons to use";
+        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the cannons to activate.";
     }
 }

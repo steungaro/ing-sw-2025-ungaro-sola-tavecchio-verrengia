@@ -81,10 +81,10 @@ public abstract class CargoState extends PlayingState {
     @Override
     public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
-            throw new InvalidStateException("Cannot lose energy if having cargo available");
+            throw new InvalidStateException("Cannot lose energy if having cargo available. Please unload your cargo first.");
         }
         List<Battery> batteries = new ArrayList<>();
         batteries.add(Translator.getComponentAt(player, battery, Battery.class));

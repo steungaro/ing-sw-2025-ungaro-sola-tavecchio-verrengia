@@ -62,11 +62,11 @@ public class AbandonedShipState extends PlayingState {
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player has enough crew to accept the card
         if (player.getShip().crew() < lostCrew) {
-            throw new InvalidStateException("You don't have enough crew to accept the card");
+            throw new InvalidStateException("You don't have enough crew to accept the card, you need at least " + lostCrew + " crew members.");
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, credits);
@@ -76,12 +76,12 @@ public class AbandonedShipState extends PlayingState {
                 true,
                 player.getColor(),
                 (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces());
-        //notify all the players the update of the player
+        //notify all the players of the update of the player
         getController().getMessageManager().broadcastUpdate(message);
 
-        // others will be in standby phase communicated via a message
+        // others will be in the standby phase communicated via a message
         phase = StatePhase.LOSE_CREW_PHASE;
-        setStandbyMessage(getCurrentPlayer() + " is choosing the crew to lose. ");
+        setStandbyMessage(getCurrentPlayer() + " is choosing the cabins to lose crew from.");
         //notify the current player about the change of phase with a LoseCrewMessage
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
@@ -96,15 +96,15 @@ public class AbandonedShipState extends PlayingState {
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, InvalidStateException, EmptyCabinException, ComponentNotFoundException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the correct phase
         if (phase != StatePhase.LOSE_CREW_PHASE) {
-            throw new InvalidStateException("You are not in the lose crew phase");
+            throw new InvalidStateException("Player not in the lose crew phase.");
         }
         //remove the crew from the ship of the player
         if (cabins.size() < lostCrew) {
-            throw new InvalidStateException("You didn't select enough cabins");
+            throw new InvalidStateException("Invalid number of cabins selected, you need to select at least " + lostCrew + " cabins.");
         }
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost crew"));
@@ -127,7 +127,7 @@ public class AbandonedShipState extends PlayingState {
     public void endMove(Player player) throws InvalidTurnException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         abandonedEndMove();
     }

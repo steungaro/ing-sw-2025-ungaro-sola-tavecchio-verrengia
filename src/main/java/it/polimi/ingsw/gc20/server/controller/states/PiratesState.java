@@ -48,7 +48,7 @@ public class PiratesState extends PlayingState {
         this.credits = card.getCredits();
         this.lostDays = card.getLostDays();
         phase = StatePhase.CANNONS_PHASE;
-        setStandbyMessage(getCurrentPlayer() + " is shooting the enemy");
+        setStandbyMessage(getCurrentPlayer() + " is shooting at the enemy.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -67,11 +67,11 @@ public class PiratesState extends PlayingState {
     public void acceptCard(Player player) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.ACCEPT_PHASE) {
-            throw new InvalidStateException("Card not defeated");
+            throw new InvalidStateException("Card not defeated.");
         }
         //get the reward of the card
         getModel().movePlayer(player, -lostDays);
@@ -79,7 +79,7 @@ public class PiratesState extends PlayingState {
         getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), credits, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         try {
             endMove(player);
-        } catch (InvalidShipException e) {
+        } catch (InvalidShipException _) {
             //cannot happen
         }
 
@@ -99,11 +99,11 @@ public class PiratesState extends PlayingState {
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.CANNONS_PHASE) {
-            throw new InvalidStateException("Cannot perform this action in " + phase + " state");
+            throw new InvalidStateException("Cannot perform this action in " + phase + " state.");
         }
         //translate the cannons and batteries
         Set<Cannon> cannonsComponents = new HashSet<>();
@@ -120,7 +120,7 @@ public class PiratesState extends PlayingState {
         if (firePower > this.firePower) {
             //if the player has defeated the pirates, he can accept the card
             phase = StatePhase.ACCEPT_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " has defeated the pirates");
+            setStandbyMessage(getCurrentPlayer() + " has defeated the pirates.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
             getController().getActiveCard().playCard();
         } else if (firePower == this.firePower) {
@@ -134,14 +134,14 @@ public class PiratesState extends PlayingState {
                 getController().setState(new PreDrawState(getController()));
             } else {
                 phase = StatePhase.CANNONS_PHASE;
-                setStandbyMessage(getCurrentPlayer() + " is activating cannons and batteries");
+                setStandbyMessage(getCurrentPlayer() + " is activating cannons to fight the pirates.");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else {
             //if the player has lost against the pirates, he has to roll the dice and get shot
             phase = StatePhase.ROLL_DICE_PHASE;
             manager = new FireManager(getModel(), cannonFire, player);
-            setStandbyMessage(getCurrentPlayer() + " has lost against the pirates, he is rolling the dice");
+            setStandbyMessage(getCurrentPlayer() + " has lost against the pirates, he is rolling the dice to see where the projectile hits.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -158,11 +158,11 @@ public class PiratesState extends PlayingState {
     public int rollDice(Player player) throws InvalidTurnException, InvalidStateException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.ROLL_DICE_PHASE) {
-            throw new InvalidStateException("not in the right phase");
+            throw new InvalidStateException("Not in the right phase.");
         }
         //roll the dice
         result = getModel().getGame().rollDice();
@@ -187,12 +187,12 @@ public class PiratesState extends PlayingState {
                         } else {
                             //if there is a next player, we can go to the cannon phase
                             phase = StatePhase.CANNONS_PHASE;
-                            setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+                            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to shoot at the enemy.");
                             getController().getMessageManager().notifyPhaseChange(phase, this);
                         }
                     } else {
                         phase = StatePhase.ROLL_DICE_PHASE;
-                        setStandbyMessage(getCurrentPlayer() + " is rolling the dice");
+                        setStandbyMessage(getCurrentPlayer() + " is rolling the dice.");
                         getController().getMessageManager().notifyPhaseChange(phase, this);
                     }
                 } catch (InvalidShipException e) {
@@ -206,7 +206,7 @@ public class PiratesState extends PlayingState {
             case LIGHT_FIRE:
                 //player can choose to activate a shield or not
                 phase = StatePhase.SELECT_SHIELD;
-                setStandbyMessage(getCurrentPlayer() + " is selecting the shield");
+                setStandbyMessage(getCurrentPlayer() + " is selecting the shield to activate.");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
                 break;
             case null:
@@ -220,7 +220,7 @@ public class PiratesState extends PlayingState {
                 } else {
                     //the next player needs to fight pirates
                     phase = StatePhase.CANNONS_PHASE;
-                    setStandbyMessage(getCurrentPlayer() + " is activating cannons and batteries");
+                    setStandbyMessage(getCurrentPlayer() + " is activating cannons to fight the pirates.");
                     getController().getMessageManager().notifyPhaseChange(phase, this);
                 }
                 break;
@@ -239,11 +239,11 @@ public class PiratesState extends PlayingState {
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.VALIDATE_SHIP_PHASE){
-            throw new InvalidStateException("Cannot perform this action in " + phase + " state");
+            throw new InvalidStateException("Cannot perform this action in " + phase + " state.");
         }
         //choose the branch
         manager.chooseBranch(player, coordinates);
@@ -265,11 +265,11 @@ public class PiratesState extends PlayingState {
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         // check if the player is in the right phase
         if (phase != StatePhase.SELECT_SHIELD) {
-            throw new InvalidStateException("not in the right phase");
+            throw new InvalidStateException("Not in the right phase.");
         }
         try {
             //activate the shield
@@ -307,20 +307,20 @@ public class PiratesState extends PlayingState {
     public void endMove(Player player) throws InvalidTurnException, InvalidShipException, InvalidStateException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if we are still shooting
         if (manager != null && !manager.finished()) {
-            throw new InvalidStateException("You have to finish the fire before ending your turn");
+            throw new InvalidStateException("You have to finish the fires before ending your turn.");
         }
         //check if the ship is valid
         if (manager != null && manager.isSplit()) {
             phase = StatePhase.VALIDATE_SHIP_PHASE;
-            throw new InvalidShipException("Ship not valid");
+            throw new InvalidShipException("Ship not valid!");
         }
         //check if the card has been defeated
         if (!getController().getActiveCard().isPlayed()) {
-            throw new InvalidStateException("Card not defeated");
+            throw new InvalidStateException("Card not defeated.");
         }
         //draw a new card
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
@@ -367,7 +367,7 @@ public class PiratesState extends PlayingState {
             getController().setState(new PreDrawState(getController()));
         } else {
             phase = StatePhase.CANNONS_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " is activating cannons and batteries");
+            setStandbyMessage(getCurrentPlayer() + " is activating cannons to fight the pirates.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -383,16 +383,16 @@ public class PiratesState extends PlayingState {
 
     @Override
     public String createsCannonsMessage(){
-        return "You are fighting pirates, enemy firepower is " + firePower + ", select the cannons and batteries to use";
+        return "You are fighting pirates, enemy firepower is " + firePower + ", select the cannons to use.";
     }
 
     @Override
     public String createsShieldMessage() {
-        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shield to use";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shield to activate.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it hits";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it will hit.";
     }
 }

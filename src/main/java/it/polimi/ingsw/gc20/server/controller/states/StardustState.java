@@ -15,9 +15,10 @@ public class StardustState extends PlayingState {
      */
     public StardustState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
-        getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("Stardust card is played"));
+        getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("You encountered a some stardust along your journey! You will lose some days and move backward based on the number of exposed connectors in your ship."));
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
+        card.playCard();
     }
 
     @Override
@@ -45,6 +46,11 @@ public class StardustState extends PlayingState {
         //draw a new card
         for (String player : getController().getInGameConnectedPlayers()) {
             getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player, 0, getController().getPlayerByID(player).isInGame(), getController().getPlayerByID(player).getColor(), (getController().getPlayerByID(player).getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
+        }
+        try {
+            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
