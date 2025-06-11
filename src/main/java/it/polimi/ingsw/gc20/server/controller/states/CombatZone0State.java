@@ -43,7 +43,7 @@ public class CombatZone0State extends PlayingState {
             declaredEnginePower.put(player.getUsername(), 0);
         }
         //notify the players that they are in the automatic action phase
-        getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("finding the player with the minimum crew"));
+        getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("Finding the player with the minimum crew..."));
         this.manager = null;
         try {
             Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
@@ -69,7 +69,7 @@ public class CombatZone0State extends PlayingState {
         getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         //set the phase to engine phase
         this.phase = StatePhase.ENGINES_PHASE;
-        setStandbyMessage(p.getUsername() + " is activating engines");
+        setStandbyMessage(p.getUsername() + " is activating engines.");
         //notify the first player that he has to activate the engines and the others that they have to wait
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
@@ -88,11 +88,11 @@ public class CombatZone0State extends PlayingState {
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         //check if the player is in the right phase
         if(phase != StatePhase.CANNONS_PHASE) {
-            throw new InvalidStateException("You cannot activate cannons now");
+            throw new InvalidStateException("You cannot activate cannons now.");
         }
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //translate the coordinates to the components
         Set<Cannon> cannonsComponents = new HashSet<>();
@@ -123,11 +123,11 @@ public class CombatZone0State extends PlayingState {
             //set the current player to the player with the minimum firepower
             setCurrentPlayer(p.getUsername());
             manager = new FireManager(getModel(), cannonFires, p);
-            setStandbyMessage(p.getUsername() + " is rolling the dice");
+            setStandbyMessage(p.getUsername() + " is rolling the dice.");
             //notify the current player that he has to roll the dice; others will go to the standby phase
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
-            setStandbyMessage(getCurrentPlayer() + " is activating cannons");
+            setStandbyMessage(getCurrentPlayer() + " is activating cannons.");
             //notify the next player that he has to activate the cannons and the others that they have to wait
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
@@ -145,11 +145,11 @@ public class CombatZone0State extends PlayingState {
     public int rollDice(Player player) throws InvalidStateException, InvalidTurnException{
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.ROLL_DICE_PHASE) {
-            throw new InvalidStateException("You cannot roll dice now");
+            throw new InvalidStateException("You cannot roll dice now.");
         }
         //roll the dice
         result = getModel().getGame().rollDice();
@@ -157,7 +157,7 @@ public class CombatZone0State extends PlayingState {
         switch (manager.getFirstProjectile()) {
             case LIGHT_FIRE, LIGHT_METEOR:
                 phase = StatePhase.SELECT_SHIELD;
-                setStandbyMessage(getCurrentPlayer() + " is selecting shield");
+                setStandbyMessage(getCurrentPlayer() + " is selecting the shields to activate.");
                 //notify the current player that he has to select the shield
                 getController().getMessageManager().notifyPhaseChange(phase, this);
                 break;
@@ -176,7 +176,7 @@ public class CombatZone0State extends PlayingState {
                     //notify all the players of the ship update
                     getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                     phase = StatePhase.VALIDATE_SHIP_PHASE;
-                    setStandbyMessage(getCurrentPlayer() + " is validating ship");
+                    setStandbyMessage(getCurrentPlayer() + " is validating their ship.");
                     //notify the current player that he has to choose the branch
                     getController().getMessageManager().notifyPhaseChange(phase, this);
                 } catch (DieNotRolledException _){
@@ -208,7 +208,7 @@ public class CombatZone0State extends PlayingState {
         } else {
             //if we didn't finish shooting, we have to roll the dice again
             phase = StatePhase.ROLL_DICE_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " is rolling the dice");
+            setStandbyMessage(getCurrentPlayer() + " is rolling the dice.");
             //notify the current player that he has to roll the dice again
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
@@ -226,7 +226,7 @@ public class CombatZone0State extends PlayingState {
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException, InvalidStateException, ComponentNotFoundException {
         //check if we are in the right phase
         if (phase != StatePhase.LOSE_CREW_PHASE) {
-            throw new InvalidStateException("You cannot remove crew now");
+            throw new InvalidStateException("You cannot remove crew now.");
         }
         if (player.getUsername().equals(getCurrentPlayer())) {
             //check if the player has enough crew to lose
@@ -236,7 +236,7 @@ public class CombatZone0State extends PlayingState {
             }
             //check if the player has selected enough cabins
             if (cabins.size() != lostCrew) {
-                throw new InvalidStateException("You didn't select enough cabins");
+                throw new InvalidStateException("Invalid number of cabins selected, you need to select exactly " + lostCrew + " cabins.");
             }
             getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost crew"));
@@ -246,7 +246,7 @@ public class CombatZone0State extends PlayingState {
                 setCannonPhase();
             }
         } else {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
     }
 
@@ -275,11 +275,11 @@ public class CombatZone0State extends PlayingState {
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidEngineException, ComponentNotFoundException{
         //check if the player is in the right phase
         if(phase != StatePhase.ENGINES_PHASE) {
-            throw new InvalidStateException("You cannot activate engines now");
+            throw new InvalidStateException("You cannot activate engines now.");
         }
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //translate the coordinates to the components and calculate the engine power
         int enginePower = getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
@@ -303,13 +303,13 @@ public class CombatZone0State extends PlayingState {
             phase = StatePhase.LOSE_CREW_PHASE;
             //set the current player to the player with the minimum Engine power
             setCurrentPlayer(p.getUsername());
-            setStandbyMessage(p.getUsername() + " is losing crew");
+            setStandbyMessage(p.getUsername() + " is choosing the cabins to lose crew from.");
             //notify the current player that he has to lose crew; others will go to the standby phase
             getController().getMessageManager().notifyPhaseChange(phase, this);
 
         } else {
             phase = StatePhase.ENGINES_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " is activating engines");
+            setStandbyMessage(getCurrentPlayer() + " is activating engines.");
             //notify the next player that he has to activate the engines and the others that they have to wait
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
@@ -328,11 +328,11 @@ public class CombatZone0State extends PlayingState {
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase!=StatePhase.SELECT_SHIELD) {
-            throw new InvalidStateException("You cannot activate shield now");
+            throw new InvalidStateException("You cannot activate shield now.");
         }
         //use the shield and battery to activate the shield
         try {
@@ -349,7 +349,7 @@ public class CombatZone0State extends PlayingState {
                     getController().setState(new PreDrawState(getController()));
                 } else {
                     phase = StatePhase.ROLL_DICE_PHASE;
-                    setStandbyMessage(getCurrentPlayer() + " is rolling the dice");
+                    setStandbyMessage(getCurrentPlayer() + " is rolling the dice.");
                     //notify the current player that he has to roll the dice again
                     getController().getMessageManager().notifyPhaseChange(phase, this);
                 }
@@ -358,7 +358,7 @@ public class CombatZone0State extends PlayingState {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             //notify the current player that he has to choose the branch
             phase = StatePhase.VALIDATE_SHIP_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " is validating ship");
+            setStandbyMessage(getCurrentPlayer() + " is validating their ship.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } catch (DieNotRolledException e) {
             //cannot happen
@@ -376,11 +376,11 @@ public class CombatZone0State extends PlayingState {
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         //check if the player is in the right turn
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the right phase
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
-            throw new InvalidStateException("You cannot choose branch now");
+            throw new InvalidStateException("You cannot choose a branch now.");
         }
         //choose the branch selected by the player
         manager.chooseBranch(player, coordinates);
@@ -453,7 +453,7 @@ public class CombatZone0State extends PlayingState {
 
     private void setCannonPhase(){
         phase = StatePhase.CANNONS_PHASE;
-        setStandbyMessage(getCurrentPlayer() + " is activating cannons");
+        setStandbyMessage(getCurrentPlayer() + " is activating cannons.");
         //set the current player to the first online player
         setCurrentPlayer(getController().getFirstOnlinePlayer());
         //notify the first player that he has to activate the cannons and the others that they have to wait
@@ -463,9 +463,9 @@ public class CombatZone0State extends PlayingState {
     @Override
     public String createsCannonsMessage() {
         //write the message to notify the next player that he has to activate the cannons and show him the declared firepower of the previous players
-        StringBuilder message = new StringBuilder("You are the next player, select the cannons to use. The declared firepower of the previous players are: ");
+        StringBuilder message = new StringBuilder("It's your turn, please select the cannons to activate. The declared firepower of the other players is: \n");
         for (Map.Entry<String, Float> entry : declaredFirepower.entrySet()) {
-            message.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
+            message.append(" - ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
         return message.toString();
     }
@@ -473,9 +473,9 @@ public class CombatZone0State extends PlayingState {
     @Override
     public String createsEnginesMessage() {
         //write the message to notify the next player that he has to activate the engines and show him the declared engine power of the previous players
-        StringBuilder message = new StringBuilder("You are the next player, select the engines to use. The declared engine power of the previous players are: ");
+        StringBuilder message = new StringBuilder("It's your turn, please select the engines to activate. The declared engine power of the other players is: ");
         for (Map.Entry<String, Integer> entry : declaredEnginePower.entrySet()) {
-            message.append(entry.getKey()).append(": ").append(entry.getValue()).append(", ");
+            message.append(" - ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
         return message.toString();
     }
@@ -488,11 +488,11 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public String createsShieldMessage() {
-        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shield to use";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + " side at line " + result + ", select the shield to activate.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "a " + manager.getFirstProjectile().getFireType() + " is coming, from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it hits";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + " side, roll the dice to see where it will hit.";
     }
 }

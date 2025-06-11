@@ -6,8 +6,20 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class PausedState extends State {
     final State previousState;
+    private final ScheduledExecutorService scheduler;
+
+    private void shutdown() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
+    }
+
     /**
      * Default constructor
      */
@@ -15,15 +27,22 @@ public class PausedState extends State {
         super(model, controller);
         this.previousState = previousState;
         this.phase = StatePhase.STANDBY_PHASE;
-        getController().getMessageManager().broadcastPhase(new StandbyMessage("waiting for the game to resume"));
+        getController().getMessageManager().broadcastPhase(new StandbyMessage("Everyone disconnected. Waiting for the game to resume."));
+        // If nobody reconnects in 30 seconds, the remaining player wins the game
+        this.scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(() -> {
+            getController().setState(new EndgameState(getController()));
+            shutdown();
+        }, 30, TimeUnit.SECONDS);
     }
 
     public void resume(String reconnected) {
+        shutdown();
         getController().setState(previousState);
         if (previousState.isConcurrent()){
             try {
                 previousState.resume(reconnected);
-            } catch (InvalidStateException e) {
+            } catch (InvalidStateException _) {
                 //ignore cannot happen
             }
         } else {

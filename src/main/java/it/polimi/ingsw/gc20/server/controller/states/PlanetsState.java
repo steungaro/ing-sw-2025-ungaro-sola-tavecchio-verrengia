@@ -33,7 +33,7 @@ public class PlanetsState extends CargoState {
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();
         phase = StatePhase.LAND_ON_PLANET;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -59,10 +59,10 @@ public class PlanetsState extends CargoState {
     @Override
     public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException, InvalidStateException {
         if (!getCurrentPlayer().equals(player.getUsername())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.LAND_ON_PLANET) {
-            throw new InvalidStateException("You can't land on a planet unless you are in the planet phase");
+            throw new InvalidStateException("You can't land on a planet unless you are in the planet phase.");
         }
         if (planets.get(planetIndex).getAvailable()) {
             planets.get(planetIndex).setAvailable(false);
@@ -71,10 +71,10 @@ public class PlanetsState extends CargoState {
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
             reward = planets.get(landedPlanetIndex).getReward();
-            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo from the planet.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
-            throw new InvalidStateException("The planet is not available");
+            throw new InvalidStateException("The planet is not available.");
         }
     }
 
@@ -93,17 +93,17 @@ public class PlanetsState extends CargoState {
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws ComponentNotFoundException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
         //check if the player is on the planet
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new InvalidTurnException("You can't load cargo unless you are on the planet");
+            throw new InvalidTurnException("You can't load cargo unless you are on the planet.");
         }
         //check if the planet is available
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't load cargo unless you are on the planet");
+            throw new InvalidStateException("You can't load cargo unless you are on the planet.");
         }
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
             super.loadCargo(player, loaded, chTo);
         } else {
-            throw new CargoException("You can't load this cargo, it's not in the reward");
+            throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
@@ -120,10 +120,10 @@ public class PlanetsState extends CargoState {
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws ComponentNotFoundException, InvalidTurnException, InvalidCargoException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new InvalidStateException("You can't unload cargo unless you are on the planet");
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet.");
         }
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't unload cargo unless you are on the planet");
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet.");
         }
         super.unloadCargo(player, unloaded, ch);
         getController().getMessageManager().notifyPhaseChange(phase, this);
@@ -143,10 +143,10 @@ public class PlanetsState extends CargoState {
     @Override
     public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new InvalidTurnException("You can't move cargo unless you are on the planet");
+            throw new InvalidTurnException("You can't move cargo unless you are on the planet.");
         }
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't move cargo unless you are on the planet");
+            throw new InvalidStateException("You can't move cargo unless you are on the planet.");
         }
         super.moveCargo(player, cargo, from, to);
         getController().getMessageManager().notifyPhaseChange(phase, this);
@@ -160,7 +160,7 @@ public class PlanetsState extends CargoState {
     @Override
     public void endMove(Player player) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         landedPlayer = null;
         landedPlanetIndex = -1;
@@ -177,7 +177,7 @@ public class PlanetsState extends CargoState {
             getController().setState(new PreDrawState(getController()));
         } else {
             phase = StatePhase.LAND_ON_PLANET;
-            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }

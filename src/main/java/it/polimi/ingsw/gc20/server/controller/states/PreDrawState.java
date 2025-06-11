@@ -16,7 +16,7 @@ public class PreDrawState extends State{
     /**
      * Constructs a PreDrawState.
      * It initializes a scheduler that will call the {@link #nextRound()} method after a 5-second delay.
-     * It also notifies the controller to let it connect the players that are in queue.
+     * It also notifies the controller to let it connect the players that are in the queue.
      * @param controller The game controller.
      */
     public PreDrawState(GameController controller) {
