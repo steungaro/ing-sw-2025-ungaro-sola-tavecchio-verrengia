@@ -73,6 +73,8 @@ public class GUIView extends ClientGameModel {
 
     private GuiState currentGuiState;
 
+    private Stage peekDecksStage;
+    private PeekDecksController peekDecksController;
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ViewBoard> boardProperty = new SimpleObjectProperty<>();
     private static Stage primaryStage;
@@ -441,20 +443,24 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
-        setCurrentGuiState(GuiState.PEEK_DECKS);
         Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof PeekDecksController) {
-                    ((PeekDecksController) controller).initializeWithCards(cards);
-                } else {
-                    System.err.println("Controller for PEEKDECKS is not of type PeekDeckController or is null.");
-                }
-            } else {
-                System.err.println("Cannot setup peek deck phase: primaryStage, scene, or root is null.");
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/peekDecks.fxml"));
+                Parent root = loader.load();
+                peekDecksController = loader.getController();
+
+                peekDecksStage = new Stage();
+                peekDecksStage.setScene(new Scene(root));
+                peekDecksStage.setTitle("Peek Decks");
+                peekDecksStage.initOwner(primaryStage);
+                peekDecksStage.show();
+
+                peekDecksController.initializeWithCards(cards);
+            } catch (IOException e) {
+                e.printStackTrace();
+                displayErrorMessage("Error opening peek decks window: " + e.getMessage());
             }
         });
-        // TODO: bugs in buildingPhase2 and add for peekDecks
     }
 
     @Override
