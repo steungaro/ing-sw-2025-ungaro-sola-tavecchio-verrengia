@@ -32,12 +32,13 @@ public class AssemblingState extends State {
 
             //init all the ship of the clients
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
-            if (model.getLevel() == 2) {
-                getController().getMessageManager().sendToPlayer(player.getUsername(), new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
-            }
         }
         //init the boards of the clients
         getController().getMessageManager().broadcastUpdate(BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
+        //init the hourglass of the clients
+        if (model.getLevel() == 2) {
+            getController().getMessageManager().broadcastUpdate(new HourglassMessage(getModel().getTurnedHourglass(), getModel().getHourglassTimestamp()));
+        }
         //init the component piles of the clients
         getController().getMessageManager().broadcastUpdate(PileUpdateMessage.fromComponent("init", 152, getModel().getGame().getPile().getViewed(), "init unviewed pile"));
         //set the phase of the client with an AssemblingMessage
