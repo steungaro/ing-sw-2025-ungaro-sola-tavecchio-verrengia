@@ -355,6 +355,71 @@ public abstract class ShipController {
         }
     }
 
+    public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
+        Set<int[]> selectedCells = new HashSet<>();
+        Map<Rectangle, int[]> rectToCoord = new HashMap<>();
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                ImageView cell = getImageViewAt(row, col);
+                if (cell != null) {
+                    Rectangle clickArea = new Rectangle();
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                    clickArea.setStrokeWidth(2);
+                    clickArea.setOpacity(0.7);
+
+                    clickArea.widthProperty().bind(
+                            componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
+                    );
+                    clickArea.heightProperty().bind(
+                            componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
+                    );
+
+                    int[] coord = new int[]{row, col};
+                    rectToCoord.put(clickArea, coord);
+
+                    clickArea.setOnMouseClicked(event -> {
+                        if (selectedCells.contains(coord)) {
+                            selectedCells.remove(coord);
+                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        } else {
+                            selectedCells.add(coord);
+                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                        }
+                    });
+
+                    clickArea.setOnMouseEntered(_ -> {
+                        if (!selectedCells.contains(coord)) {
+                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.1));
+                        }
+                        clickArea.setCursor(javafx.scene.Cursor.HAND);
+                    });
+
+                    clickArea.setOnMouseExited(_ -> {
+                        if (!selectedCells.contains(coord)) {
+                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        }
+                        clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                    });
+
+                    componentsGrid.add(clickArea, col, row);
+                    GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                    GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                }
+            }
+        }
+
+        Runnable finalizeSelection = () -> {
+            List<int[]> selected = new ArrayList<>(selectedCells);
+            handler.onCellsClicked(selected);
+        };
+    }
+
+    public interface MultipleCellClickHandler {
+        void onCellsClicked(List<int[]> coordinates);
+    }
+
     protected abstract int getRows();
     protected abstract int getCols();
 
