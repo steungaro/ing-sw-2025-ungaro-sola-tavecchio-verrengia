@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.DrawCardPhaseMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
@@ -26,6 +27,12 @@ public class PausedState extends State {
                 //ignore cannot happen
             }
         } else {
+            if (getController().getActiveCard().getName().equals("CombatZone")) {
+                phase = StatePhase.DRAW_CARD_PHASE;
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            }
             getController().getMessageManager().notifyPhaseChange(previousState.getPhase(), previousState);
         }
     }
