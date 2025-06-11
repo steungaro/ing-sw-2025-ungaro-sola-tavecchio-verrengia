@@ -429,35 +429,23 @@ public class CombatZone0State extends PlayingState {
             }
         }else {
             //if we are not in a penality phase, we can pass the turn to the next player
-            nextPlayer();
-            if (getCurrentPlayer() == null) {
-                //we need to verify based on the phase
-                if (phase == StatePhase.ENGINES_PHASE) {
-                    try {
-                        //we auto-activate the engines,
-                        // and the player will be removed from the array in the activateEngines method
-                        activateEngines(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException |
-                             ComponentNotFoundException e) {
-                        //ignore
-                    }
-                } else if (phase == StatePhase.CANNONS_PHASE) {
-                    try {
-                        //we auto-activate the cannons,
-                        // and the player will be removed from the array in the activateCannons method
-                        activateCannons(player, new ArrayList<>(), new ArrayList<>());
-                    } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
-                             ComponentNotFoundException | InvalidShipException | DieNotRolledException e) {
-                        //ignore
-                    }
+            if (phase == StatePhase.ENGINES_PHASE){
+                try{
+                    //we auto-activate the engines,
+                    // and the player will be removed from the array in the activateEngines method
+                    activateEngines(player, new ArrayList<>(), new ArrayList<>());
+                } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidEngineException |
+                         ComponentNotFoundException e) {
+                    //ignore
                 }
-            }  else {
-                if (phase == StatePhase.ENGINES_PHASE) {
-                    setStandbyMessage(getCurrentPlayer() + " is activating engines");
-                    getController().getMessageManager().notifyPhaseChange(phase, this);
-                } else if (phase == StatePhase.CANNONS_PHASE) {
-                    setStandbyMessage(getCurrentPlayer() + " is activating cannons");
-                    getController().getMessageManager().notifyPhaseChange(phase, this);
+            } else if (phase == StatePhase.CANNONS_PHASE) {
+                try {
+                    //we auto-activate the cannons,
+                    // and the player will be removed from the array in the activateCannons method
+                    activateCannons(player, new ArrayList<>(), new ArrayList<>());
+                } catch (InvalidTurnException | InvalidStateException | EnergyException | InvalidCannonException |
+                         ComponentNotFoundException | InvalidShipException | DieNotRolledException e) {
+                    //ignore
                 }
             }
         }
