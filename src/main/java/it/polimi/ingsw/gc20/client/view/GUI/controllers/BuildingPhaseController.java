@@ -718,16 +718,16 @@ public abstract class BuildingPhaseController implements GameModelListener {
      */
     @FXML
     private void stopAssembling() {
-        TextInputDialog dialog = new TextInputDialog("0");
+        TextInputDialog dialog = new TextInputDialog("1");
         dialog.setTitle("Stop Assembling Ship");
         dialog.setHeaderText("Choose your starting board position");
-        dialog.setContentText("Enter board index (0-4):");
+        dialog.setContentText("Enter board index (1-4):");
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(boardIndex -> {
             try {
                 int index = Integer.parseInt(boardIndex);
-                if (index >= 0 && index <= 4) {
+                if (index >= 1 && index <= 4) {
                     ClientGameModel.getInstance().getClient().stopAssembling(
                             ClientGameModel.getInstance().getUsername(),
                             index
