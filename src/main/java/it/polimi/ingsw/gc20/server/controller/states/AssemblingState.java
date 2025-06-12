@@ -323,7 +323,9 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        if (componentsInHand.get(player) != null) {
+        if (assembled.get(player)) {
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for others to finish assembling."));
+        } else if(componentsInHand.get(player) != null) {
             //notify the player that they go to the PLACE_COMPONENT phase
             getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
         } else {

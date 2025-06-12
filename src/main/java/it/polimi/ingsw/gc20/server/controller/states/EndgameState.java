@@ -17,7 +17,7 @@ public class EndgameState extends State {
      */
     public EndgameState(GameController controller) {
         super(controller);
-        getController().getScore();
+        getScore();
         scheduler.schedule(this::killGame, 30, TimeUnit.SECONDS);
     }
 
