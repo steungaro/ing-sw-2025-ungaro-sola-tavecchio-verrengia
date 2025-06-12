@@ -57,6 +57,7 @@ public class SocketClient implements Client {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
+            ClientGameModel.getInstance().shutdown();
         } catch (Exception e) {
             LOGGER.warning("Error while stopping socket client: " + e.getMessage());
         }
@@ -77,7 +78,6 @@ public class SocketClient implements Client {
 
                 ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
                 disconnect();
             }
         }
@@ -138,7 +138,7 @@ public class SocketClient implements Client {
                 try {
                     receiveMessages();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.warning("Error while receiving messages: " + e.getMessage());
                 }
             });
             messageReceiverThread.start();

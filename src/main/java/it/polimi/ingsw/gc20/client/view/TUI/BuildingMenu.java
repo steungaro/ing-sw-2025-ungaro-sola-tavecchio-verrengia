@@ -159,6 +159,7 @@ public class BuildingMenu implements MenuState{
                 case "3":
                     int index3;
                     do {
+                        ClientGameModel.getInstance().printBoard();
                         System.out.println("Type the index of the board where you want to start the game (1 to 4) or [b] to go back:");
                         System.out.print(" > ");
                         // Read the index of the board to take
