@@ -33,7 +33,7 @@ public class PausedState extends State {
         scheduler.schedule(() -> {
             getController().setState(new EndgameState(getController()));
             shutdown();
-        }, 30, TimeUnit.SECONDS);
+        }, 120, TimeUnit.SECONDS);
     }
 
     public void resume(String reconnected) {
