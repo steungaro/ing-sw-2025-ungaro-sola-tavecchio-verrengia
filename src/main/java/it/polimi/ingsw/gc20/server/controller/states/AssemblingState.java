@@ -396,7 +396,7 @@ public class AssemblingState extends State {
     private void checkHourglass() throws InvalidStateException{
         //check if the hourglass has been turned
         if (getModel().getLevel()==2 && getModel().getTurnedHourglass() == 2 && getModel().getRemainingTime() == 0 ) {
-            throw new InvalidStateException("Cannot take a new component if the remaining time is 0! Please end your move.");
+            throw new InvalidStateException("Time's up! Please end your move.");
         }
     }
 }
