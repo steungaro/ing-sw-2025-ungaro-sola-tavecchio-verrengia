@@ -79,6 +79,8 @@ public class EngineMenu implements MenuState {
                     String engineInput = scanner.nextLine().trim();
                     if (engineInput.equals("b")) {
                         ClientGameModel.getInstance().setFree();
+                        TUI.clearConsole();
+                        displayMenu();
                         return;
                     }
                     if (engineInput.equals("q")) {
