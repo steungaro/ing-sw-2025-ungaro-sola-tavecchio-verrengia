@@ -29,7 +29,7 @@ public abstract class ShipController {
     protected int ROWS = 0;
     protected int COLS = 0;
     public String playerUsername;;
-    private ViewShip ship;
+    protected ViewShip ship;
 
     @FXML protected GridPane compoentsGrid;
     @FXML protected Label playerColorLabel;
@@ -64,6 +64,7 @@ public abstract class ShipController {
 
     @FXML
     protected void initialize() {
+        playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
