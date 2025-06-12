@@ -51,7 +51,7 @@ public class GUIView extends ClientGameModel {
         IDLE_MENU("idleMenu"),
         BOARD0("board0"),
         SHIP0("ship0"),
-        CARD_ACCEPTANCE_MENU("cardAcceptanceMenu"),
+        CARD_ACCEPTANCE_MENU("cardAcceptance"),
         SHIP2("ship2"),
         CARGO_MENU("cargoMenu"),
         CANNONS_MENU("cannonsMenu"),
