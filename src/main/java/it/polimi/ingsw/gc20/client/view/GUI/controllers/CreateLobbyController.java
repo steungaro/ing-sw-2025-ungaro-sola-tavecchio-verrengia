@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
@@ -117,7 +118,8 @@ public class CreateLobbyController {
 
     @FXML
     private void handleCancelButton() {
-        closeStage();
+        ((GUIView)ClientGameModel.getInstance()).showScene("mainMenu");
+
     }
 
     private void closeStage() {
