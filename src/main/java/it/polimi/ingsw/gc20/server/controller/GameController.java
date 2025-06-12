@@ -374,7 +374,7 @@ public class GameController implements GameControllerInterface {
             }
             if(connectedPlayers.size() == 1){
                 state = new PausedState(state, model, this);
-            }else if(connectedPlayers.isEmpty()){
+            }else if(connectedPlayers.isEmpty() && pendingPlayers.isEmpty()){
                 killGame();
             }
         } catch (Exception e) {
