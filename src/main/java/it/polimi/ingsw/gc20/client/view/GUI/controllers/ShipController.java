@@ -101,10 +101,9 @@ public abstract class ShipController {
         StackPane layeredPane = new StackPane();
 
         if (componentId >= 1000 && componentId <= 1003) {
-            String username = ClientGameModel.getInstance().getUsername();
             ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
             ViewPlayer currentPlayer = Arrays.stream(players)
-                    .filter(p -> p != null && username.equals(p.username))
+                    .filter(p -> p != null && playerUsername.equals(p.username))
                     .findFirst()
                     .orElse(null);
             if (currentPlayer != null && currentPlayer.playerColor != null) {
