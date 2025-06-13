@@ -32,6 +32,7 @@ public class PlanetMenuController {
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
+        loadShipView();
     }
 
     public void initializeWithPlanets(List<Planet> planets) {
