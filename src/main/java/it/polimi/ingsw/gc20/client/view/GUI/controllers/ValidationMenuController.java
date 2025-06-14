@@ -29,15 +29,6 @@ public class ValidationMenuController {
     private Pane shipPane;
 
     @FXML
-    private VBox removeComponentBox;
-
-    @FXML
-    private TextField rowField;
-
-    @FXML
-    private TextField colField;
-
-    @FXML
     private Button validateButton;
 
     @FXML
@@ -55,8 +46,6 @@ public class ValidationMenuController {
 
         updateValidationStatus();
         loadShipView();
-
-        // TODO: Load the ship view into the shipPane
     }
 
     private void updateValidationStatus() {
@@ -65,12 +54,10 @@ public class ValidationMenuController {
         if (isValid) {
             validationStatusLabel.setText("Ship is already valid! Wait for other players before going to the next phase.");
             validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;");
-            removeComponentBox.setDisable(true);
             validateButton.setDisable(true);
         } else {
             validationStatusLabel.setText("Ship is not valid");
             validationStatusLabel.setStyle("-fx-text-fill: #ff6b6b;"); // Red text
-            removeComponentBox.setDisable(false);
             validateButton.setDisable(false);
         }
     }
@@ -93,50 +80,42 @@ public class ValidationMenuController {
             ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
+            Object controller = loader.getController();
+            if (controller instanceof ShipController shipController) {
+                shipController.enableCellClickHandler(this::selectComponentToRemove);
+            } else {
+                showError("Unable to get the ship controller");
+            }
+
         } catch (IOException e) {
-            showError("Errore durante il caricamento della vista della nave: " + e.getMessage());
+            showError("Error while loading the ship view: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleValidateShip() {
         try {
-            // TODO
             updateValidationStatus();
         } catch (Exception e) {
-            // TODO
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 
     @FXML
-    private void handleRemoveComponent() {
+    private void selectComponentToRemove(int row, int col) {
         try {
-            int row = Integer.parseInt(rowField.getText().trim()) - 5;
-            int col = Integer.parseInt(colField.getText().trim()) - (isLearnerShip ? 5 : 4);
-
-            if (row < 0 || row > 4 || col < 0 || col > 6) {
-                showError("Invalid coordinates. Row must be between 5-9 and column between " +
-                        (isLearnerShip ? "5-11" : "4-10"));
-                return;
-            }
+            int x = row - 5;
+            int y = col - (isLearnerShip ? 5 : 4);
 
             Pair<Integer, Integer> coordinates = new Pair<>(row, col);
 
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().removeComponentFromShip(username, coordinates);
-            ClientGameModel.getInstance().setFree();
-
-            rowField.clear();
-            colField.clear();
 
             loadShipView();
         } catch (NumberFormatException e) {
             showError("Please enter valid numbers for coordinates");
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 

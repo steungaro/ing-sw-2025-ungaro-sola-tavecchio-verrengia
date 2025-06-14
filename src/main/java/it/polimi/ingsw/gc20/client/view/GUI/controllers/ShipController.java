@@ -23,12 +23,15 @@ import java.util.*;
 import java.util.List;
 
 public abstract class ShipController {
+    // TODO: Display battery, cabin, cargo hold, aliens (look at buildingPhaese for first implementation)
+    // TODO: Clickacle section for ship components, so that the user can click on a component and do thinks (custom for menu)
 
     protected int ROWS = 0;
     protected int COLS = 0;
     public String playerUsername;;
-    private ViewShip ship;
+    protected ViewShip ship;
 
+    @FXML protected GridPane compoentsGrid;
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
@@ -47,7 +50,6 @@ public abstract class ShipController {
     );
 
     @FXML protected GridPane componentsGrid;
-    @FXML protected ImageView bgImage;
 
     protected final Map<String, Integer> gridComponents = new HashMap<>();
 
@@ -62,12 +64,23 @@ public abstract class ShipController {
 
     @FXML
     protected void initialize() {
+        playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
-        ClientGameModel clientGameModel = ClientGameModel.getInstance();
-        if (clientGameModel != null) {
-            String currentUsername = clientGameModel.getUsername();
-        }
+        // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
+        loadObjects();
+    }
+
+    public void loadObjects() {
+        for (int i=0; i<ROWS; i++) {
+            for (int j=0; j<COLS; j++) {
+                ImageView imageView = getImageViewAt(i, j);
+                ViewComponent comp = ship.getComponent(i, j);
+                if (imageView != null && comp != null) {
+                    setComponentProp((StackPane) imageView.getParent(), comp);
+                }
+            }
+        }
     }
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
@@ -88,10 +101,9 @@ public abstract class ShipController {
         StackPane layeredPane = new StackPane();
 
         if (componentId >= 1000 && componentId <= 1003) {
-            String username = ClientGameModel.getInstance().getUsername();
             ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
             ViewPlayer currentPlayer = Arrays.stream(players)
-                    .filter(p -> p != null && username.equals(p.username))
+                    .filter(p -> p != null && playerUsername.equals(p.username))
                     .findFirst()
                     .orElse(null);
             if (currentPlayer != null && currentPlayer.playerColor != null) {
@@ -296,6 +308,116 @@ public abstract class ShipController {
 
     public interface CellClickHandler {
         void onCellClicked(int row, int col);
+    }
+
+    public void enableCellClickHandler(CellClickHandler handler) {
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                ImageView cell = getImageViewAt(row, col);
+                if (cell != null) {
+                    int finalRow = row;
+                    int finalCol = col;
+
+                    Rectangle clickArea = new Rectangle();
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                    clickArea.setStrokeWidth(2);
+                    clickArea.setOpacity(0.7);
+
+                    clickArea.widthProperty().bind(
+                            componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
+                    );
+                    clickArea.heightProperty().bind(
+                            componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
+                    );
+
+                    clickArea.setOnMouseEntered(_ -> {
+                        clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                        clickArea.setCursor(javafx.scene.Cursor.HAND);
+                    });
+
+                    clickArea.setOnMouseExited(_ -> {
+                        clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                    });
+
+                    clickArea.setOnMouseClicked(event -> {
+                        if (handler != null) {
+                            handler.onCellClicked(finalRow, finalCol);
+                        }
+                    });
+
+                    componentsGrid.add(clickArea, col, row);
+                    GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                    GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                }
+            }
+        }
+    }
+
+    public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
+        Set<int[]> selectedCells = new HashSet<>();
+        Map<Rectangle, int[]> rectToCoord = new HashMap<>();
+
+        for (int row = 0; row < getRows(); row++) {
+            for (int col = 0; col < getCols(); col++) {
+                ImageView cell = getImageViewAt(row, col);
+                if (cell != null) {
+                    Rectangle clickArea = new Rectangle();
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
+                    clickArea.setStrokeWidth(2);
+                    clickArea.setOpacity(0.7);
+
+                    clickArea.widthProperty().bind(
+                            componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
+                    );
+                    clickArea.heightProperty().bind(
+                            componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
+                    );
+
+                    int[] coord = new int[]{row, col};
+                    rectToCoord.put(clickArea, coord);
+
+                    clickArea.setOnMouseClicked(event -> {
+                        if (selectedCells.contains(coord)) {
+                            selectedCells.remove(coord);
+                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        } else {
+                            selectedCells.add(coord);
+                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
+                        }
+                    });
+
+                    clickArea.setOnMouseEntered(_ -> {
+                        if (!selectedCells.contains(coord)) {
+                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.1));
+                        }
+                        clickArea.setCursor(javafx.scene.Cursor.HAND);
+                    });
+
+                    clickArea.setOnMouseExited(_ -> {
+                        if (!selectedCells.contains(coord)) {
+                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
+                        }
+                        clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
+                    });
+
+                    componentsGrid.add(clickArea, col, row);
+                    GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
+                    GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                }
+            }
+        }
+
+        Runnable finalizeSelection = () -> {
+            List<int[]> selected = new ArrayList<>(selectedCells);
+            handler.onCellsClicked(selected);
+        };
+    }
+
+    public interface MultipleCellClickHandler {
+        void onCellsClicked(List<int[]> coordinates);
     }
 
     protected abstract int getRows();

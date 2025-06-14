@@ -2,14 +2,19 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import org.javatuples.Pair;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -26,11 +31,13 @@ public class CargoMenuController {
     @FXML private Button loadButton;
     @FXML private Button endTurnButton;
 
+    private Message message;
     private String username;
     private int cargoToLose;
-    private Map<CargoColor, Integer> cargoToGain;
+    private List<CargoColor> cargoToGain;
     private boolean losing;
     private Pattern coordinatePattern = Pattern.compile("^\\d+\\s+\\d+$");
+    private ViewShip ship;
 
     @FXML
     public void initialize() {
@@ -38,7 +45,7 @@ public class CargoMenuController {
         cargoColorComboBox.setItems(FXCollections.observableArrayList(CargoColor.values()));
     }
 
-    public void initializeWithParameters(String message, int cargoToLose, Map<CargoColor, Integer> cargoToGain, boolean losing) {
+    public void initializeWithParameters(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
         this.cargoToLose = cargoToLose;
         this.cargoToGain = cargoToGain;
         this.losing = losing;
@@ -46,20 +53,41 @@ public class CargoMenuController {
         messageLabel.setText(message);
 
         if (losing) {
-            operationTitle.setText("Devi perdere " + cargoToLose + " cargo");
+            operationTitle.setText("You lose " + cargoToLose + " cargo");
             loadButton.setDisable(true);
         } else {
-            StringBuilder cargoMessage = new StringBuilder("Devi guadagnare: ");
-            cargoToGain.forEach((color, quantity) ->
-                    cargoMessage.append(color).append(" ").append(quantity).append(", "));
+            StringBuilder cargoMessage = new StringBuilder("You gain: ");
+            cargoToGain.forEach((color) ->
+                    cargoMessage.append(color).append(", "));
             operationTitle.setText(cargoMessage.toString());
         }
+
+        ship = ClientGameModel.getInstance().getShip(username);
 
         loadShipView();
     }
 
     private void loadShipView() {
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
+        try {
+            if (ship == null) {
+                showError("Error, ship not found: " + username);
+                return;
+            }
+
+            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent shipView = loader.load();
+
+            shipPane.getChildren().clear();
+            shipPane.getChildren().add(shipView);
+
+            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
+            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+
+        } catch (IOException e) {
+            showError("Error uploading ship: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -72,12 +100,9 @@ public class CargoMenuController {
         Pair<Integer, Integer> coords = parseCoordinates(fromCoordinatesField.getText());
 
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().unloadCargo(username, color, coords);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            showError("Errore di connessione: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
+            showError("Connection error: " + e.getMessage());
         }
     }
 
@@ -92,12 +117,9 @@ public class CargoMenuController {
         Pair<Integer, Integer> to = parseCoordinates(toCoordinatesField.getText());
 
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().moveCargo(username, color, from, to);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            showError("Errore di connessione: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
+            showError("Connection error: " + e.getMessage());
         }
     }
 
@@ -111,30 +133,23 @@ public class CargoMenuController {
         Pair<Integer, Integer> coords = parseCoordinates(toCoordinatesField.getText());
 
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().loadCargo(username, color, coords);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            showError("Errore di connessione: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
+            showError("Connection error: " + e.getMessage());
         }
     }
 
     @FXML
     private void handleEndTurn() {
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().endMove(username);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            showError("Errore di connessione: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
-        }
+            showError("Connection error: " + e.getMessage());}
     }
 
     private boolean validateCargoColor() {
         if (cargoColorComboBox.getValue() == null) {
-            showError("Seleziona un colore del carico");
+            showError("Select a cargo to load");
             return false;
         }
         return true;
@@ -143,7 +158,7 @@ public class CargoMenuController {
     private boolean validateFromCoordinates() {
         String text = fromCoordinatesField.getText();
         if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Inserisci coordinate valide per l'origine (riga col)");
+            showError("Enter valid coordinates for the origin (row col)");
             return false;
         }
         return true;
@@ -152,7 +167,7 @@ public class CargoMenuController {
     private boolean validateToCoordinates() {
         String text = toCoordinatesField.getText();
         if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Inserisci coordinate valide per la destinazione (riga col)");
+            showError("Enter valid coordinates for the origin (row col)");
             return false;
         }
         return true;

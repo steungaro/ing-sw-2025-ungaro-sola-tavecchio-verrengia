@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.EngineMenuController"
-      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="600.0" prefWidth="700.0">
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.EngineMenuController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
@@ -21,7 +17,7 @@
         </font>
     </Label>
 
-    <Label fx:id="messageLabel" wrapText="true" textFill="WHITE">
+    <Label fx:id="messageLabel" textFill="WHITE" wrapText="true">
         <font>
             <Font size="14.0" />
         </font>
@@ -42,26 +38,8 @@
         <Pane fx:id="shipPane" prefHeight="250" prefWidth="500" />
     </VBox>
 
-    <VBox spacing="15" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label text="Select engines and batteries to activate:" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-
-        <VBox spacing="5">
-            <Label text="Engines (row col, separated by spaces)" textFill="WHITE" />
-            <TextField fx:id="enginesField" promptText="e.g. 5 4 5 5" />
-        </VBox>
-
-        <VBox spacing="5">
-            <Label text="Batteries (row col, separated by spaces)" textFill="WHITE" />
-            <TextField fx:id="batteriesField" promptText="e.g. 5 4 5 5" />
-        </VBox>
-    </VBox>
-
-    <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="activateButton" prefHeight="50" prefWidth="200" text="Activate engines" onAction="#handleActivateEngines">
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="activateButton" onAction="#handleActivateEngines" prefHeight="50" prefWidth="200" text="Activate engines">
             <font>
                 <Font size="16.0" />
             </font>
@@ -71,7 +49,7 @@
             </style>
         </Button>
 
-        <Button fx:id="skipButton" prefHeight="50" prefWidth="200" text="Do not activate" onAction="#handleSkipActivation">
+        <Button fx:id="skipButton" onAction="#handleSkipActivation" prefHeight="50" prefWidth="200" text="Do not activate">
             <font>
                 <Font size="16.0" />
             </font>

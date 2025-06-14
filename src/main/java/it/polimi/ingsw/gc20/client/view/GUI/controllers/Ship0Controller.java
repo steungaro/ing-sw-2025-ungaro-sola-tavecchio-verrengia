@@ -98,8 +98,6 @@ public class Ship0Controller extends ShipController{
         });
     }
 
-    // Il campo nella classe per disabilitare l'allineamento predefinito
-
     protected ImageView getImageViewAt(int row, int col) {
         return switch (row) {
             case 0 -> switch (col) {

@@ -14,8 +14,7 @@
         <DropShadow color="#00000080" height="10.0" radius="4.5" width="10.0" />
     </effect>
     <children>
-        <Label alignment="CENTER" style="-fx-font-weight: bold; -fx-text-fill: white;" text="Accettazione Carta">
-            <font>
+        <Label alignment="CENTER" style="-fx-font-weight: bold; -fx-text-fill: white;" text="Card Acceptance">            <font>
                 <Font name="System Bold" size="26.0" />
             </font>
             <effect>
@@ -30,7 +29,7 @@
             </effect>
         </ImageView>
 
-        <Label fx:id="messageLabel" alignment="CENTER" style="-fx-text-fill: #e0e0e0;" text="Vuoi accettare questa carta?" wrapText="true">
+        <Label fx:id="messageLabel" alignment="CENTER" style="-fx-text-fill: #e0e0e0;" text="Do you want to accept this card?" wrapText="true">
             <font>
                 <Font size="18.0" />
             </font>

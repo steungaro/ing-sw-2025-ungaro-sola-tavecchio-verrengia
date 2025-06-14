@@ -11,8 +11,12 @@ import javafx.scene.layout.Pane;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Ship2Controller extends ShipController{
+
+    private final int ROWS = 5;
+    private final int COLS = 7;
 
     @FXML private ImageView imageCell_0_0;
     @FXML private ImageView imageCell_0_1;
@@ -50,11 +54,60 @@ public class Ship2Controller extends ShipController{
     @FXML private ImageView imageCell_4_5;
     @FXML private ImageView imageCell_4_6;
 
-    @FXML private ImageView imageBooked_0;
-    @FXML private ImageView imageBooked_1;
+    @FXML protected ImageView bgImage;
 
-    private final int ROWS = 5;
-    private final int COLS = 7;
+    @FXML
+    @Override
+    protected void initialize() {
+        super.initialize();
+        Image backgroundImage = new Image(Objects.requireNonNull(getClass().getResource("/fxml/cardboard/cardboard-1b.jpg")).toExternalForm());
+        final double imageWidth = backgroundImage.getWidth();
+        final double imageHeight = backgroundImage.getHeight();
+        final double imageRatio = imageWidth / imageHeight;
+
+        rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+            bgImage.setFitWidth(newBounds.getWidth()*0.7);
+            bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            double containerWidth = bgImage.getFitWidth();
+            double containerHeight = bgImage.getFitHeight();
+            double containerRatio = containerWidth / containerHeight;
+
+            double actualWidth, actualHeight;
+
+            if (imageRatio > containerRatio) {
+                actualWidth = containerWidth;
+                actualHeight = containerWidth / imageRatio;
+            } else {
+                actualHeight = containerHeight;
+                actualWidth = containerHeight * imageRatio;
+            }
+
+            double gridWidth = actualWidth * (1 - 0.04 - 0.04);
+            double gridHeight = actualHeight * (1 - 0.04 - 0.04);
+
+            componentsGrid.setPrefSize(gridWidth, gridHeight);
+            componentsGrid.setMaxSize(gridWidth, gridHeight);
+            componentsGrid.setMinSize(gridWidth, gridHeight);
+
+            // Debug output
+            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
+            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+
+            // Set the size of each ImageView to match the grid cell size
+            double cellWidth = gridWidth / COLS;
+            double cellHeight = gridHeight / ROWS;
+            for (int row = 0; row < ROWS; row++) {
+                for (int col = 0; col < COLS; col++) {
+                    ImageView imageView = getImageViewAt(row, col);
+                    if (imageView != null) {
+                        imageView.setFitWidth(cellWidth);
+                        imageView.setFitHeight(cellHeight);
+                    }
+                }
+            }
+        });
+    }
 
     protected ImageView getImageViewAt(int row, int col) {
         return switch (row) {

@@ -50,7 +50,7 @@ public class CardAcceptanceController {
     private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {
         String series = (viewAdventureCard.id > 20) ? "II" : "I";
         int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
-        String imagePath = "/GT-cards_" + series + "_IT_0" + adjustedId + ".png";
+        String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
         return new javafx.scene.image.Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
     }
 

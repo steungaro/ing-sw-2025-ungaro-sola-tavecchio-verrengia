@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
+import it.polimi.ingsw.gc20.client.view.TUI.LoseEnergyMenu;
 import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
@@ -50,8 +51,14 @@ public class GUIView extends ClientGameModel {
         IDLE_MENU("idleMenu"),
         BOARD0("board0"),
         SHIP0("ship0"),
-        CARD_ACCEPTANCE_MENU("cardAcceptanceMenu"),
-        SHIP2("ship2");
+        CARD_ACCEPTANCE_MENU("cardAcceptance"),
+        SHIP2("ship2"),
+        CARGO_MENU("cargoMenu"),
+        CANNONS_MENU("cannonsMenu"),
+        LEADER_BOARD_MENU("leaderBoardMenu"),
+        AUTOMATIC_ACTION("automaticAction"),
+        PEEK_DECKS("peekDecks"),
+        ENGINE_MENU("engineMenu");
 
         private final String fxmlFileName;
 
@@ -66,6 +73,8 @@ public class GUIView extends ClientGameModel {
 
     private GuiState currentGuiState;
 
+    private Stage peekDecksStage;
+    private PeekDecksController peekDecksController;
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ViewBoard> boardProperty = new SimpleObjectProperty<>();
     private static Stage primaryStage;
@@ -123,7 +132,7 @@ public class GUIView extends ClientGameModel {
 
     public void initGUI(Stage stage) {
         primaryStage = stage;
-        setCurrentGuiState(GuiState.WELCOME); // Imposta lo stato iniziale, triggerando il listener
+        setCurrentGuiState(GuiState.WELCOME);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutting down GUIView...");
             ClientGameModel.getInstance().shutdown();
@@ -186,17 +195,6 @@ public class GUIView extends ClientGameModel {
         });
     }
 
-    /*private void notifyCurrentShipController(ViewShip newShip) {
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof ViewShip) {
-                    ((BuildingPhaseController) controller).updateShipDisplay(newShip);
-                }
-            }
-        });
-    }*/
-
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
@@ -234,7 +232,7 @@ public class GUIView extends ClientGameModel {
                 message.handleMessage();
             } catch (Exception e) {
                 System.out.println("Error while handling message: " + e.getMessage());
-                e.printStackTrace(); // Utile per il debug
+                e.printStackTrace();
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
@@ -245,21 +243,6 @@ public class GUIView extends ClientGameModel {
         setCurrentGuiState(GuiState.MAIN_MENU);
     }
 
-    /*@Override
-    public void setShip (String username, ViewShip ship) {
-        ships.put(username, ship);
-        if (primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null &&
-                primaryStage.getScene().getRoot().getId() != null &&
-                (currentGuiState.getFxmlFileName().equals("ship0") || currentGuiState.getFxmlFileName().equals("ship2"))) {
-            // Get the controller of the current ship view
-            ShipController shipController = primaryStage.getScene().getRoot().getUserData() instanceof ShipController ?
-                    (ShipController) primaryStage.getScene().getRoot().getUserData() : null;
-            if (shipController != null) {
-                shipController.buildShipComponents(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()));
-            }
-        }
-    }*/
-
     @Override
     public void setBoard(ViewBoard board) {
         this.board = board;
@@ -269,16 +252,32 @@ public class GUIView extends ClientGameModel {
     @Override
     public void planetMenu(List<Planet> planets) {
         setCurrentGuiState(GuiState.PLANET_MENU);
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof LoseCrewMenuController) {
+                    ((PlanetMenuController) controller).initializeWithPlanets(planets);
+                } else {
+                    System.err.println("Controller for PLANET_MENU_CONTROLLER is not of type planetMenu or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup planet menu: primaryStage, scene, or root is null.");
+            }
+        });
+        // TODO: to test, no handler needed
     }
 
     @Override
     public void populateShipMenu() {
         setCurrentGuiState(GuiState.POPULATE_SHIP_MENU);
+        // TODO: to test, no other handler needed
     }
 
     @Override
     public void automaticAction(String message) {
+        // ignore this method for now
         // currentGuiState = GuiState.AUTOMATIC_ACTION;
+        // TODO: DECIDE WHATO TO DO
     }
 
     @Override
@@ -294,26 +293,70 @@ public class GUIView extends ClientGameModel {
     @Override
     public void shieldsMenu(String message) {
         setCurrentGuiState(GuiState.SHIELDS_MENU);
+        // TODO : Check if message is needed to be passed to the controller (maybe to indicate the side)
     }
 
     @Override
     public void rollDiceMenu(String message) {
-        setCurrentGuiState(GuiState.ROLL_DICE_MENU);
+        // setCurrentGuiState(GuiState.ROLL_DICE_MENU);
+
+        Platform.runLater(() -> {
+            try {
+                Stage dialogStage = new Stage();
+                dialogStage.setTitle("Roll Dice");
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/rollDiceMenu.fxml"));
+                Parent root = loader.load();
+
+                Scene scene = new Scene(root);
+                dialogStage.setScene(scene);
+
+                RollDiceMenuController controller = loader.getController();
+                controller.initializeWithMessage(message);
+
+                dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
+                dialogStage.initOwner(primaryStage);
+
+                dialogStage.setMinWidth(600);
+                dialogStage.setMinHeight(500);
+                dialogStage.centerOnScreen();
+
+                dialogStage.show();
+            } catch (IOException e) {
+                System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
+                e.printStackTrace();
+                displayErrorMessage("Error opening roll dice window: " + e.getMessage());
+            }
+        });
     }
 
     @Override
     public void cargoMenu(int cargoNum) {
-        // currentGuiState = GuiState.CARGO_MENU;
+        currentGuiState = GuiState.CARGO_MENU;
+        // Necessary?
     }
 
     @Override
     public void loseCrewMenu(int crewNum) {
         setCurrentGuiState(GuiState.LOSE_CREW_MENU);
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof LoseCrewMenuController) {
+                    ((LoseCrewMenuController) controller).initializeWithCrewToLose(crewNum);
+                } else {
+                    System.err.println("Controller for LOSE_CREW_MENU is not of type LoseCreeMenu or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup lose crew menu: primaryStage, scene, or root is null.");
+            }
+        });
     }
 
     @Override
     public void removeBatteryMenu(int batteryNum) {
         setCurrentGuiState(GuiState.LOSE_ENERGY_MENU);
+        // Necessary?
     }
 
     @Override
@@ -332,7 +375,8 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-        // currentGuiState = GuiState.LEADER_BOARD_MENU;
+        currentGuiState = GuiState.LEADER_BOARD_MENU;
+        // Necessary?
     }
 
     @Override
@@ -394,31 +438,65 @@ public class GUIView extends ClientGameModel {
     @Override
     public void branchMenu() {
         setCurrentGuiState(GuiState.BRANCH_MENU);
+        // TODO: Improvment (
     }
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
-        setCurrentGuiState(GuiState.BUILDING_PHASE);
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/peekDecks.fxml"));
+                Parent root = loader.load();
+                peekDecksController = loader.getController();
+
+                peekDecksStage = new Stage();
+                peekDecksStage.setScene(new Scene(root));
+                peekDecksStage.setTitle("Peek Decks");
+                peekDecksStage.initOwner(primaryStage);
+                peekDecksStage.show();
+
+                peekDecksController.initializeWithCards(cards);
+            } catch (IOException e) {
+                e.printStackTrace();
+                displayErrorMessage("Error opening peek decks window: " + e.getMessage());
+            }
+        });
     }
 
     @Override
     public void cannonsMenu(String message) {
-        // currentGuiState = GuiState.CANNONS_MENU;
+        currentGuiState = GuiState.CANNONS_MENU;
+        // TODO: Check button handler
     }
 
     @Override
     public void cardAcceptanceMenu(String message) {
         setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
+        // TODO: Check button handler
     }
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        // currentGuiState = GuiState.CARGO_MENU;
+        currentGuiState = GuiState.CARGO_MENU;
+        Platform.runLater(() -> {
+            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                Object controller = primaryStage.getScene().getRoot().getUserData();
+                if (controller instanceof CargoMenuController) {
+                    ((CargoMenuController) controller).initializeWithParameters(message, cargoToLose, cargoToGain, losing);
+                } else {
+                    System.err.println("Controller for CARGO_MENU is not of type CargoMenuController or is null.");
+                }
+            } else {
+                System.err.println("Cannot setup cargo menu: primaryStage, scene, or root is null.");
+            }
+        });
+        // TODO: Check button handler
     }
 
     @Override
     public void engineMenu(String message) {
-        // currentGuiState = GuiState.ENGINE_MENU;
+        currentGuiState = GuiState.ENGINE_MENU;
+        // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
     }
 
     @Override
@@ -429,7 +507,6 @@ public class GUIView extends ClientGameModel {
     @Override
     public void login() {
         currentGuiState = GuiState.LOGIN;
-        // TODO Try to remove this line, put it in the controller instead
         client.login(username);
         this.username = username;
     }
