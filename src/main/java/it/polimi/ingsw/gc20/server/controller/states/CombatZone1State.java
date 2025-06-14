@@ -19,7 +19,7 @@ import org.javatuples.Pair;
 import java.util.*;
 
 @SuppressWarnings("unused") // dynamically created by Cards
-public class    CombatZone1State extends CargoState {
+public class  CombatZone1State extends CargoState {
     private final int lostDays;
     private int lostCargo;
     private final List<Projectile> cannonFires;
@@ -178,7 +178,7 @@ public class    CombatZone1State extends CargoState {
                     .getKey());
 
             //we need to check if the player has cargo to lose
-            Map<CargoColor, Integer> cargo = player.getShip().getCargo();
+            Map<CargoColor, Integer> cargo = getController().getPlayerByID(getCurrentPlayer()).getShip().getCargo();
             boolean allZero = true;
             for (Integer count: cargo.values()){
                 if (count > 0) {
@@ -186,8 +186,7 @@ public class    CombatZone1State extends CargoState {
                     break;
                 }
             }
-            //if all cargos are zero and there is still cargo to remove, go to remove battery phase
-            lostCargo--;
+
             if (allZero && lostCargo > 0) {
                 phase = StatePhase.BATTERY_PHASE;
                 setStandbyMessage(getCurrentPlayer() + " is selecting the batteries to lose energy from.");
@@ -334,7 +333,7 @@ public class    CombatZone1State extends CargoState {
         //remove the cargo from the ship
         super.unloadCargo(player, unloaded, ch);
         //check if the player has more cargo to lose
-        Map<CargoColor, Integer> cargo = player.getShip().getCargo();
+        Map<CargoColor, Integer> cargo = getController().getPlayerByID(getCurrentPlayer()).getShip().getCargo();
         boolean allZero = true;
         for (Integer count: cargo.values()){
             if (count > 0) {
@@ -407,7 +406,7 @@ public class    CombatZone1State extends CargoState {
         }
         //check if the player is in the remove battery phase
         if (phase != StatePhase.BATTERY_PHASE) {
-            throw new InvalidStateException("Not in remove cargo phase.");
+            throw new InvalidStateException("Not in remove battery phase.");
         }
         //remove the energy from the ship
         super.loseEnergy(player, battery);

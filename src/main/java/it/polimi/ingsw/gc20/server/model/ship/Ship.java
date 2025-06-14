@@ -396,18 +396,24 @@ public abstract class Ship {
     public boolean isValid(int startRow, int startCol) {
         int rows = getRows();
         int cols = getCols();
+        // initialize visited array to keep track of visited components
         boolean[][] visited = new boolean[rows][cols];
 
+        // initialize queue for the component search
         Queue<int[]> queue = new LinkedList<>();
+        // start from the coordinates passe as arguments
         queue.add(new int[]{startRow, startCol});
+        // mark the starting component as visited
         visited[startRow][startCol] = true;
 
+        // do while there are components in the queue
         while (!queue.isEmpty()) {
+            // save the coordinates of the component to check
             int[] current = queue.poll();
             int i = current[0];
             int j = current[1];
             Component component = getComponentAt(i, j);
-
+            // se non c'è un componente in quella posizione, salta
             if (component == null) continue;
 
             // Check connections in all four directions
