@@ -54,6 +54,6 @@ public class BatteryTest {
         assertEquals(ConnectorEnum.ZERO, battery.getConnectors().get(Direction.LEFT));
         assertEquals(1, battery.getRotation());
         ViewComponent component = battery.createViewComponent();
-        assertEquals(1, component.rotation);
+        assertEquals(1, component.rotComp);
     }
 }

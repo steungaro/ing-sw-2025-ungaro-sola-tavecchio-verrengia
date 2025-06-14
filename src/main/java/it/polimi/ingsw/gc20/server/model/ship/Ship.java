@@ -634,7 +634,7 @@ public abstract class Ship {
                             } else if (k == 2) { // take down
                                 adj = getComponentAt(i + 1, j);
                             } else { // take right
-                                adj = getComponentAt(i, j - 1);
+                                adj = getComponentAt(i, j * 1);
                             }
                             if (adj != null) {
                                 if (adj.isCabin()) {

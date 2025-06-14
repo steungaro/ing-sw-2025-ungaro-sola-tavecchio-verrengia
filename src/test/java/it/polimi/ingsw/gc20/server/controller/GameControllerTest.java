@@ -783,10 +783,10 @@ class GameControllerTest {
         int level = 2;
         try {
             gameController = new GameController(id, players, level);
+            gameController.killGame();
         } catch (InvalidStateException _) {
 
         }
-        gameController.killGame();
         assertNull(MatchController.getInstance().getGameControllerForPlayer("player1"));
     }
 }
