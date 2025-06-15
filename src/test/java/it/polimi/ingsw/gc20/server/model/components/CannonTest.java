@@ -28,25 +28,17 @@ public class CannonTest {
     }
 
     @Test
-    void testSetAndGetOrientation(){
-        cannon.setOrientation(Direction.DOWN);
-        assertEquals(Direction.DOWN, cannon.getOrientation());
-        cannon.rotateClockwise();
-        assertEquals(Direction.LEFT, cannon.getOrientation());
-    }
-
-    @Test
     void rotate() {
-        cannon.setOrientation(Direction.UP);
+
         cannon.rotateClockwise();
-        assertEquals(Direction.RIGHT, cannon.getOrientation());
+        assertEquals(Direction.RIGHT, cannon.getRotation());
         assertEquals(ConnectorEnum.S, cannon.getConnectors().get(Direction.DOWN));
         assertEquals(ConnectorEnum.D, cannon.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.ZERO, cannon.getConnectors().get(Direction.LEFT));
         assertEquals(ConnectorEnum.U, cannon.getConnectors().get(Direction.RIGHT));
 
         cannon.rotateCounterclockwise();
-        assertEquals(Direction.UP, cannon.getOrientation());
+        assertEquals(Direction.UP, cannon.getRotation());
         assertEquals(ConnectorEnum.ZERO, cannon.getConnectors().get(Direction.DOWN));
         assertEquals(ConnectorEnum.U, cannon.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.D, cannon.getConnectors().get(Direction.LEFT));

@@ -24,11 +24,10 @@ class LearnerShipTest {
         ship = new LearnerShip();
 
         upCannon = new Cannon();
-        upCannon.setOrientation(Direction.UP);
         upCannon.setPower(1);
 
         downCannon = new Cannon();
-        downCannon.setOrientation(Direction.DOWN);
+        downCannon.setRotation(Direction.DOWN);
         downCannon.setPower(2);
 
         singleEngine = new Engine();
@@ -186,7 +185,7 @@ class LearnerShipTest {
     void addComponentDoubleCannon() {
         Cannon newCannon = new Cannon();
         newCannon.setPower(2);
-        newCannon.setOrientation(Direction.RIGHT);
+        newCannon.setRotation(Direction.RIGHT);
         int initialPower = ship.doubleCannonsPower;
         try {
             ship.addComponent(newCannon, 1, 3);
@@ -201,7 +200,7 @@ class LearnerShipTest {
     void addComponentSingleCannon() {
         Cannon newCannon = new Cannon();
         newCannon.setPower(1);
-        newCannon.setOrientation(Direction.RIGHT);
+        newCannon.setRotation(Direction.RIGHT);
         float initialPower = ship.singleCannonsPower;
         try {
             ship.addComponent(newCannon, 1, 3);
@@ -216,7 +215,7 @@ class LearnerShipTest {
     void addComponentSingleEngine() {
         Engine newEngine = new Engine();
         newEngine.setDoublePower(false);
-        newEngine.setOrientation(Direction.RIGHT);
+        newEngine.setRotation(Direction.RIGHT);
         int initialPower = ship.singleEngines;
         try {
             ship.addComponent(newEngine, 1, 3);
@@ -231,7 +230,7 @@ class LearnerShipTest {
     void addComponentDoubleEngine() {
         Engine newEngine = new Engine();
         newEngine.setDoublePower(true);
-        newEngine.setOrientation(Direction.RIGHT);
+        newEngine.setRotation(Direction.RIGHT);
         int initialPower = ship.doubleEngines;
         try {
             ship.addComponent(newEngine, 1, 3);
@@ -311,7 +310,7 @@ class LearnerShipTest {
         cannons.remove(upCannon);
         // Test with multiple cannons
         Cannon extraCannon = new Cannon();
-        extraCannon.setOrientation(Direction.RIGHT);
+        extraCannon.setRotation(Direction.RIGHT);
         extraCannon.setPower(2);
         cannons.add(extraCannon);
 
@@ -401,7 +400,7 @@ class LearnerShipTest {
         assertTrue(cannons.contains(upCannon));
         assertEquals(1, cannons.size());
         Cannon rightCannon = new Cannon();
-        rightCannon.setOrientation(Direction.RIGHT);
+        rightCannon.setRotation(Direction.RIGHT);
         rightCannon.setPower(1);
         HashMap<Direction, ConnectorEnum> connectors = new HashMap<>();
         connectors.put(Direction.RIGHT, ConnectorEnum.S);

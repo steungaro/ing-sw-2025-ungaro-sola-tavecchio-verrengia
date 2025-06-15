@@ -775,6 +775,7 @@ class GameControllerTest {
         String player2 = "Ste";
         String player3 = "Verri";
         String player4 = "Tave";
+        String id = "22";
         List<String> players = new ArrayList<>();
         players.add(player1);
         players.add(player2);
@@ -782,11 +783,11 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
         try {
-            gameController = new GameController(id, players, level);
-            gameController.killGame();
+            GameController controller = new GameController (id, players, level);
+            controller.killGame();
         } catch (InvalidStateException _) {
 
         }
-        assertNull(MatchController.getInstance().getGameControllerForPlayer("player1"));
+        assertNull(MatchController.getInstance().getGameControllerForPlayer("Sola"));
     }
 }

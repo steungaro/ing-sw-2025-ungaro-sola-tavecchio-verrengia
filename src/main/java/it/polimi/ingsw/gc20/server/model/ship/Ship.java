@@ -114,7 +114,7 @@ public abstract class Ship {
             if (cannon.getPower() == 1){
                 throw new InvalidCannonException("cannot select single cannon");
             }
-            if (cannon.getOrientation() == Direction.UP)
+            if (cannon.getRotation() == Direction.UP)
                 power += cannon.getPower();
             else {
                 power += cannon.getPower() / 2;
@@ -239,7 +239,7 @@ public abstract class Ship {
             for(int row = 0; row < rows; row++){
                 Component component = getComponentAt(row, n);
                 if(component != null && component.isCannon()) {
-                    if (((Cannon) component).getOrientation() == d){
+                    if (component.getRotation() == d){
                         cannons.add((Cannon) component);
                     }
                 }
@@ -444,7 +444,7 @@ public abstract class Ship {
 
                 // Skip if there's no connector in this direction
                 if (connector == null || connector == ConnectorEnum.ZERO) {
-                    if(component.isCannon() && ((Cannon) component).getOrientation() == dir) {
+                    if(component.isCannon() && component.getRotation() == dir) {
                         //if it's a cannon we need to check if it has a component in the direction of the cannon
                         if(getComponentAt(adjRow, adjCol) != null) {
                             return false;

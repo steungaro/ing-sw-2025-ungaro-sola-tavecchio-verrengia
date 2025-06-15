@@ -24,15 +24,14 @@ public class EngineTest {
 
     @Test
     void rotate() {
-        engine.setOrientation(Direction.UP);
         engine.rotateClockwise();
-        assertEquals(Direction.RIGHT, engine.getOrientation());
+        assertEquals(Direction.LEFT, engine.getOrientation());
         assertEquals(ConnectorEnum.S, engine.getConnectors().get(Direction.DOWN));
         assertEquals(ConnectorEnum.D, engine.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.ZERO, engine.getConnectors().get(Direction.LEFT));
         assertEquals(ConnectorEnum.U, engine.getConnectors().get(Direction.RIGHT));
         engine.rotateCounterclockwise();
-        assertEquals(Direction.UP, engine.getOrientation());
+        assertEquals(Direction.DOWN, engine.getOrientation());
         assertEquals(ConnectorEnum.ZERO, engine.getConnectors().get(Direction.DOWN));
         assertEquals(ConnectorEnum.U, engine.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.D, engine.getConnectors().get(Direction.LEFT));

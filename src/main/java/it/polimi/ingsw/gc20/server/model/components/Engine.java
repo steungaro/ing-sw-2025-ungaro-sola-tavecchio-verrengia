@@ -7,9 +7,9 @@ import it.polimi.ingsw.gc20.server.model.ship.Ship;
 public class Engine extends Component {
 
     private boolean doublePower;
-    private Direction orientation = Direction.DOWN;
 
-    public Engine() {}
+    public Engine() {
+    }
     /**
      * Function that sets the engine as double.
      * @return true if the engine is double, false otherwise
@@ -27,49 +27,16 @@ public class Engine extends Component {
     }
 
     /**
-     * Function that returns the orientation of the engine.
+     * Function that returns the orientation of the engine. return the opposite direction of the rotation attribute.
      * @return the orientation of the engine
      */
     public Direction getOrientation() {
-        return this.orientation;
-    }
-
-    /**
-     * Function that sets the orientation of the engine.
-     * @param orientation the orientation of the engine
-     */
-    public void setOrientation(Direction orientation) {
-        this.orientation = orientation;
-    }
-
-    /**
-     * This function rotates the component clockwise by 90 degrees
-     * */
-    @Override
-    public void rotateClockwise() {
-        super.rotateClockwise();
-
-        switch (orientation) {
-            case UP: orientation = Direction.RIGHT; break;
-            case RIGHT: orientation = Direction.DOWN; break;
-            case DOWN: orientation = Direction.LEFT; break;
-            case LEFT: orientation = Direction.UP; break;
-        }
-    }
-
-    /**
-     * This function rotates the component counterclockwise by 90 degrees
-     * */
-    @Override
-    public void rotateCounterclockwise() {
-        super.rotateCounterclockwise();
-
-        switch (orientation) {
-            case UP: orientation = Direction.LEFT; break;
-            case RIGHT: orientation = Direction.UP; break;
-            case DOWN: orientation = Direction.RIGHT; break;
-            case LEFT: orientation = Direction.DOWN; break;
-        }
+        return switch (rotation) {
+            case UP -> Direction.DOWN;
+            case RIGHT -> Direction.LEFT;
+            case DOWN -> Direction.UP;
+            case LEFT -> Direction.RIGHT;
+        };
     }
 
     /** Function that update the parameter of the ship.
@@ -93,7 +60,7 @@ public class Engine extends Component {
         if (d!= Direction.DOWN){
             return true;
         }
-        return orientation == d;
+        return getOrientation() == d;
     }
 
     @Override
@@ -101,7 +68,7 @@ public class Engine extends Component {
         if (!hasValidOrientation(d)) {
             return false;
         }
-        if (Direction.DOWN == d && orientation == Direction.DOWN && c!=null) {
+        if (Direction.DOWN == d && getOrientation() == Direction.DOWN && c!=null) {
             return false;
         }
         return super.isValid(c, d);
@@ -111,7 +78,7 @@ public class Engine extends Component {
     public ViewComponent createViewComponent() {
         ViewEngine viewEngine = new ViewEngine();
         viewEngine.power = doublePower ? 2 : 1;
-        viewEngine.rotation = this.orientation.getValue();
+        viewEngine.rotation = getOrientation().getValue();
         initializeViewComponent(viewEngine);
         return viewEngine;
     }
