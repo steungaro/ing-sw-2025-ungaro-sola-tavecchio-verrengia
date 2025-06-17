@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 
 public class ViewSpecialCargoHold extends ViewCargoHold {
+    @Override
     public String toString() {
         String row0;
         String row1;
@@ -19,6 +20,7 @@ public class ViewSpecialCargoHold extends ViewCargoHold {
                         lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         String row0;
         String row1;
@@ -38,19 +40,11 @@ public class ViewSpecialCargoHold extends ViewCargoHold {
         };
     }
 
-    public static void main(String[] args) {
-        ViewSpecialCargoHold specialCargoHold = new ViewSpecialCargoHold();
-        specialCargoHold.red = 0;
-        specialCargoHold.green = 1;
-        specialCargoHold.blue = 1;
-        specialCargoHold.yellow = 0;
-        specialCargoHold.free = 2;
-        System.out.println(specialCargoHold);
-    }
 
     public ViewSpecialCargoHold() {
     }
 
+    @Override
     public boolean isSpecialCargoHold() {
         return true;
     }

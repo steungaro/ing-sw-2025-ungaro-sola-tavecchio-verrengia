@@ -27,6 +27,7 @@ public class ViewCargoHold extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         String row0;
         String row2;
@@ -44,15 +45,6 @@ public class ViewCargoHold extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewCargoHold cargoHold = new ViewCargoHold();
-        cargoHold.red = 1;
-        cargoHold.green = 1;
-        cargoHold.blue = 1;
-        cargoHold.yellow = 0;
-        cargoHold.free = 2;
-        System.out.println(cargoHold);
-    }
 
     public ViewCargoHold() {}
 
@@ -61,6 +53,14 @@ public class ViewCargoHold extends ViewComponent {
         return true;
     }
 
+    /**
+     * Constructs and retrieves the cargo hold as a list of cargo units,
+     * represented by their respective colors. The cargo includes all
+     * red, green, blue, and yellow cargo units based on the corresponding
+     * counts of each color.
+     *
+     * @return a list of CargoColor objects representing the cargo hold
+     */
     public List<CargoColor> getCargo() {
         List<CargoColor> cargo = new java.util.ArrayList<>();
         for (int i = 0; i < red; i++) {
@@ -78,6 +78,12 @@ public class ViewCargoHold extends ViewComponent {
         return cargo;
     }
 
+    /**
+     * Calculates and returns the total size of the cargo hold,
+     * which is the sum of all colored cargo units and free space.
+     *
+     * @return the total size of the cargo hold as an integer
+     */
     public int getSize() {
         return red + green + blue + yellow + free;
     }

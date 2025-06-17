@@ -20,6 +20,7 @@ public class ViewBattery extends ViewComponent {
         return result;
     }
 
+    @Override
     public String toLine(int i) {
         return switch (i) {
             case 0 -> firstRow();
@@ -32,19 +33,9 @@ public class ViewBattery extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewBattery battery = new ViewBattery();
-        battery.upConnectors = 3;
-        battery.downConnectors = 2;
-        battery.leftConnectors = 1;
-        battery.rightConnectors = 0;
-        battery.availableEnergy = 2;
-        battery.totalSlots = 3;
-        System.out.println(battery);
-    }
-
     public ViewBattery() {}
 
+    @Override
     public boolean isBattery() {
         return true;
     }

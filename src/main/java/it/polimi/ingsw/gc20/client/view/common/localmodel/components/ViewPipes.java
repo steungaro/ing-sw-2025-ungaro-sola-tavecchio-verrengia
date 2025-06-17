@@ -11,6 +11,7 @@ public class ViewPipes extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         return switch (i) {
             case 0 -> firstRow();
@@ -22,14 +23,11 @@ public class ViewPipes extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewPipes pipes = new ViewPipes();
-        System.out.println(pipes);
-    }
 
     public ViewPipes() {
     }
 
+    @Override
     public boolean isPipes() {
         return true;
     }

@@ -12,6 +12,7 @@ public class ViewCabin extends ViewComponent {
         return astronauts + (alien ? 1 : 0);
     }
 
+    @Override
     public String toString() {
         String occupants;
 
@@ -24,6 +25,7 @@ public class ViewCabin extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         return switch (i) {
             case 0 -> firstRow();
@@ -36,18 +38,11 @@ public class ViewCabin extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewCabin cabin = new ViewCabin();
-        cabin.astronauts = 0;
-        cabin.alien = true;
-        cabin.alienColor = AlienColor.PURPLE;
-        System.out.println(cabin);
-    }
-
     public ViewCabin() {
         super();
     }
 
+    @Override
     public boolean isCabin() {
         return true;
     }
