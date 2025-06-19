@@ -26,13 +26,9 @@ public class MainMenuController implements LobbyListObserver {
     private Label welcomeLabel;
 
     @FXML
-    private Button viewLobbiesButton;
-
-    @FXML
     private Button createLobbyButton;
 
     private GUIView guiView;
-    private String username;
 
     @FXML
     public void initialize() {
@@ -57,15 +53,13 @@ public class MainMenuController implements LobbyListObserver {
 
         ClientGameModel.getInstance().addLobbyListObserver(this);
 
-        lobbiesListView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            joinLobbyButton.setDisable(newVal == null);
-        });
+        lobbiesListView.getSelectionModel().selectedItemProperty().addListener((_, _, newVal) -> joinLobbyButton.setDisable(newVal == null));
 
-        joinLobbyButton.setOnAction(event -> onJoinLobby());
-        refreshButton.setOnAction(event -> onRefreshLobbies());
+        joinLobbyButton.setOnAction(_ -> onJoinLobby());
+        refreshButton.setOnAction(_ -> onRefreshLobbies());
         loadLobbies();
 
-        createLobbyButton.setOnAction(event -> handleCreateLobby());
+        createLobbyButton.setOnAction(_ -> handleCreateLobby());
     }
 
     @Override
@@ -111,7 +105,6 @@ public class MainMenuController implements LobbyListObserver {
     }
 
     public void setUsername(String username) {
-        this.username = username;
         welcomeLabel.setText("Welcome, " + username + "!");
     }
 

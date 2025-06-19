@@ -3,13 +3,10 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 
 import java.rmi.RemoteException;
@@ -102,7 +99,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         final double imageHeight = backgroundImage.getHeight();
         final double imageRatio = imageWidth / imageHeight;
 
-        rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+        rootPane.layoutBoundsProperty().addListener((_, _, newBounds) -> {
             bgImage.setFitWidth(newBounds.getWidth()*0.7);
             bgImage.setFitHeight(newBounds.getHeight()*0.7);
             double containerWidth = bgImage.getFitWidth();
@@ -139,20 +136,14 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             componentsGrid.setMinSize(gridWidth, gridHeight);
 
             double bookedCellWidth = bookedGridWidth / 2;
-            double bookedCellHeight = bookedGridHeight;
 
             imageBooked_0.setFitWidth(bookedCellWidth);
-            imageBooked_0.setFitHeight(bookedCellHeight);
+            imageBooked_0.setFitHeight(bookedGridHeight);
             imageBooked_1.setFitWidth(bookedCellWidth);
-            imageBooked_1.setFitHeight(bookedCellHeight);
+            imageBooked_1.setFitHeight(bookedGridHeight);
 
             imageBooked_0.setPreserveRatio(false);
             imageBooked_1.setPreserveRatio(false);
-
-            // Debug output
-            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
-            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
 
             // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;
@@ -249,7 +240,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     }
 
     @Override
-    protected void disactivatePlacementMode(){
+    protected void deactivatePlacementMode(){
         disableGridInteraction();
         disableUncoveredComponentsInteraction();
         disableBookedComponentsInteraction();
@@ -259,7 +250,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     protected void updateComponentInHand() {
         super.updateComponentInHand();
         if (ClientGameModel.getInstance().getComponentInHand() == null) {
-            enableBookedtoHandInteraction(this::handleBookedtoHandClick);
+            enableBookedToHandInteraction(this::handleBookedToHandClick);
         }
     }
 
@@ -267,7 +258,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         void onBookedToHandClicked(int index);
     }
 
-    public void enableBookedtoHandInteraction(BookedToHandClickHandler handler) {
+    public void enableBookedToHandInteraction(BookedToHandClickHandler handler) {
         if (bookedGrid != null) {
             System.out.println("booked components interaction enabled.");
 
@@ -313,7 +304,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
     }
 
-    protected void handleBookedtoHandClick(int i) {
+    protected void handleBookedToHandClick(int i) {
         if (i != 0 && i != 1) {
             return;
         }
@@ -390,6 +381,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         GridPane.setMargin(clickArea, new javafx.geometry.Insets(2));
     }
 
+    @Override
     protected void updateBookedComponents() {
         imageBooked_0.setImage(null);
         imageBooked_1.setImage(null);
@@ -397,7 +389,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         ViewShip ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
         if (ship != null && (ship.getBooked(0) != null || ship.getBooked(1) != null)) {
             disableBookedComponentsInteraction();
-            enableBookedtoHandInteraction(this::handleBookedtoHandClick);
+            enableBookedToHandInteraction(this::handleBookedToHandClick);
             for (int i = 0; i < 2; i++) {
                 ViewComponent component = ship.getBooked(i);
                 if (component != null) {
