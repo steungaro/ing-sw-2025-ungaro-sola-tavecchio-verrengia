@@ -252,13 +252,7 @@ public class CombatZone0State extends PlayingState {
 
     @Override
     public String toString() {
-        return "CombatZone0State{" +
-                "lostDays=" + lostDays +
-                ", lostCrew=" + lostCrew +
-                ", cannonFires=" + cannonFires +
-                ", declaredFirepower=" + declaredFirepower +
-                ", declaredEnginePower=" + declaredEnginePower +
-                '}';
+        return "CombatZone0State";
     }
 
     /**

@@ -30,6 +30,7 @@ public class AssemblingStateTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void constructorTest() throws NoSuchFieldException, IllegalAccessException {
         state = new AssemblingState(controller.getModel(), controller);
 
@@ -57,9 +58,10 @@ public class AssemblingStateTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void stateTest() {
         state = new AssemblingState(controller.getModel(), controller);
-        Player player = controller.getModel().getInGamePlayers().get(0);
+        Player player = controller.getModel().getInGamePlayers().getFirst();
 
         try {
             state.takeComponentFromUnviewed(player, 1);

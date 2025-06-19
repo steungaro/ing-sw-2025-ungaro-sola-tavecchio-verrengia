@@ -4,15 +4,12 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

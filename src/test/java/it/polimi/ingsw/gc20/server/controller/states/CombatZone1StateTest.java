@@ -216,6 +216,6 @@ class CombatZone1StateTest {
         state.rollDice(controller.getPlayerByID("player1"));
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
-        state.toString();
+        assertEquals("CombatZone1State", state.toString());
     }
 }

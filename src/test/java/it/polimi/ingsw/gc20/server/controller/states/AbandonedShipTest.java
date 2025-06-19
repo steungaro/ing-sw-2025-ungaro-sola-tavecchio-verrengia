@@ -142,7 +142,7 @@ public class AbandonedShipTest {
     }
 
     @Test
-    void testAbandondedShipState() {
+    void testState() {
         // Test the initial state of the AbandonedShipState
         assert state.getCurrentPlayer().equals("player1");
         try {
@@ -162,6 +162,6 @@ public class AbandonedShipTest {
         } catch (InvalidTurnException | InvalidStateException | EmptyCabinException | ComponentNotFoundException e) {
             fail(e);
         }
-        state.toString();
+        assertEquals("AbandonedShipState", state.toString());
     }
 }

@@ -3,8 +3,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;

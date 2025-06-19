@@ -46,11 +46,7 @@ public class AbandonedShipState extends PlayingState {
 
     @Override
     public String toString() {
-        return "AbandonedShipState{ " +
-                "lostCrew=" + lostCrew +
-                ", credits=" + credits +
-                ", lostDays=" + lostDays +
-                '}';
+        return "AbandonedShipState";
     }
 
     /**

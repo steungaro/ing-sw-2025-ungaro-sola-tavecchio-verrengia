@@ -152,6 +152,6 @@ public class ValidatingShipStateTest {
         state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
         state.endMove(controller.getPlayerByID("player1"));
         assertTrue(state.isConcurrent());
-        state.toString();
+        assertEquals("ValidatingShipState", state.toString());
     }
 }
