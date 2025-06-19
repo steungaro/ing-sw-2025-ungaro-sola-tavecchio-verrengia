@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.Component;
-import it.polimi.ingsw.gc20.server.model.gamesets.Game;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +22,7 @@ public class AssemblingStateTest {
     static void setUp() {
         List<String> players = List.of("player1", "player2", "player3");
         try {
-            controller = new GameController("testGame", players, 2);
+            controller = new GameController("testGame","testGame", players, 2);
         } catch (Exception e) {
             fail();
         }
@@ -31,6 +30,7 @@ public class AssemblingStateTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void constructorTest() throws NoSuchFieldException, IllegalAccessException {
         state = new AssemblingState(controller.getModel(), controller);
 
@@ -58,9 +58,10 @@ public class AssemblingStateTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void stateTest() {
         state = new AssemblingState(controller.getModel(), controller);
-        Player player = controller.getModel().getInGamePlayers().get(0);
+        Player player = controller.getModel().getInGamePlayers().getFirst();
 
         try {
             state.takeComponentFromUnviewed(player, 1);

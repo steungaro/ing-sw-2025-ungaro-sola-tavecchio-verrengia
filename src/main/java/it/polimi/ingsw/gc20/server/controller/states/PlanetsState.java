@@ -39,12 +39,7 @@ public class PlanetsState extends CargoState {
 
     @Override
     public String toString() {
-        return "PlanetsState{" +
-                "planets=" + planets +
-                ", lostDays=" + lostDays +
-                ", landedPlayer='" + landedPlayer + '\'' +
-                ", landedPlanetIndex=" + landedPlanetIndex +
-                '}';
+        return "PlanetsState";
     }
 
 

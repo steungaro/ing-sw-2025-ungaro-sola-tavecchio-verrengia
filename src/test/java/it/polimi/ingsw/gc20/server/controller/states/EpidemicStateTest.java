@@ -4,15 +4,12 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.EmptyCabinException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,18 +25,6 @@ class EpidemicStateTest {
     static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
         card = new AdventureCard();
-        card.setCrew(1);
-        List<Projectile> projectiles = new ArrayList<>();
-        Projectile heavyFire = new Projectile();
-        heavyFire.setDirection(Direction.DOWN);
-        heavyFire.setFireType(FireType.HEAVY_FIRE);
-        projectiles.add(heavyFire);
-        Projectile lightFire = new Projectile();
-        lightFire.setDirection(Direction.DOWN);
-        lightFire.setFireType(FireType.LIGHT_FIRE);
-        projectiles.add(lightFire);
-        card.setProjectiles(projectiles);
-        card.setLostDays(1);
         controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
         // build all the ships of the players one will be invalid

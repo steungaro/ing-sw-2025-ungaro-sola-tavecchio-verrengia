@@ -130,14 +130,7 @@ public class  CombatZone1State extends CargoState {
 
         @Override
     public String toString() {
-        return "CombatZone1State{" +
-                "lostDays=" + lostDays +
-                ", lostCargo=" + lostCargo +
-                ", cannonFires=" + cannonFires +
-                ", declaredFirepower=" + declaredFirepower +
-                ", declaredEnginePower=" + declaredEnginePower +
-                ", removingCargo=" + removingCargo +
-                '}';
+        return "CombatZone1State";
     }
 
     /**

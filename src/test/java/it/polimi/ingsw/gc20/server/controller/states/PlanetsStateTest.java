@@ -3,13 +3,13 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.components.*;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.javatuples.Pair;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -17,33 +17,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class CombatZone0Test {
+class PlanetsStateTest {
     static GameController controller;
-    static CombatZone0State state;
+    static PlanetsState state;
     static AdventureCard card;
 
-    @BeforeAll
-    static void setUp() throws InvalidStateException, EmptyCabinException {
+    @BeforeEach
+    void setUp() throws InvalidStateException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
         card = new AdventureCard();
-        card.setCrew(1);
-        List<Projectile> projectiles = new ArrayList<>();
-        Projectile heavyFire = new Projectile();
-        heavyFire.setDirection(Direction.DOWN);
-        heavyFire.setFireType(FireType.HEAVY_FIRE);
-        projectiles.add(heavyFire);
-        Projectile lightFire = new Projectile();
-        lightFire.setDirection(Direction.DOWN);
-        lightFire.setFireType(FireType.LIGHT_FIRE);
-        projectiles.add(lightFire);
-        card.setProjectiles(projectiles);
         card.setLostDays(1);
-        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
+        List<CargoColor> reward = new ArrayList<>();
+        reward.add(CargoColor.YELLOW);
+        reward.add(CargoColor.BLUE);
+        List<CargoColor> reward2 = new ArrayList<>();
+        reward2.add(CargoColor.GREEN);
+        reward2.add(CargoColor.GREEN);
+        List<Planet> planets = new ArrayList<>();
+        Planet planet1 = new Planet();
+        planet1.setReward(reward);
+        Planet planet2 = new Planet();
+        planet2.setReward(reward2);
+        planets.add(planet1);
+        planets.add(planet2);
+        card.setPlanets(planets);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2"), 2);
+        assertNotNull(controller.getModel());
         controller.getModel().setActiveCard(card);
-        // build all the ships of the players one will be invalid
         StartingCabin start;
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip
@@ -51,7 +53,7 @@ public class CombatZone0Test {
 
             // Create components
             Cannon upCannon = new Cannon();
-            upCannon.setPower(1);
+            upCannon.setPower(2);
 
             Cannon downCannon = new Cannon();
             downCannon.setRotation(Direction.DOWN);
@@ -88,6 +90,8 @@ public class CombatZone0Test {
             } catch (Exception _) {
                 fail("Failed to add components to ship");
             }
+
+            ship.loadCargo(CargoColor.GREEN, cargoHold);
 
             // Setting the connectors
             Map<Direction, ConnectorEnum> connectorsCargoHold = new HashMap<>();
@@ -155,52 +159,29 @@ public class CombatZone0Test {
             start.setConnectors(connectorsStartingCabin);
             ship.initAstronauts();
             player.setShip(ship);
-            if (player.getUsername().equals("player1")) {
-                controller.getPlayerByID("player1").getShip().unloadCrew(start);
-                controller.getPlayerByID("player1").setPosition(5);
-            }
-
         }
-        state = new CombatZone0State(controller.getModel(), controller, card);
+        for (int i = 0; i < controller.getModel().getInGamePlayers().size(); i++) {
+            Player player = controller.getModel().getInGamePlayers().get(i);
+            switch (player.getUsername()) {
+                case "player1" -> player.setPosition(6);
+                case "player2" -> player.setPosition(5);
+            }
+        }
+        state = new PlanetsState(controller.getModel(), controller, card);
     }
 
     @Test
-    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
+    void Test() throws InvalidTurnException, InvalidStateException, ComponentNotFoundException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+        assertEquals("PlanetsState", state.toString());
+        state.landOnPlanet(controller.getPlayerByID("player1"), 0);
+        state.loadCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2));
+        state.moveCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));
+        state.unloadCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 4));
+        state.loadCargo(controller.getPlayerByID("player1"), CargoColor.BLUE, new Pair<>(1, 2));
+        state.endMove(controller.getPlayerByID("player1"));
+        assertEquals("player2", state.getCurrentPlayer());
+        state.endMove(controller.getPlayerByID("player2"));
         assertEquals(4, controller.getPlayerByID("player1").getPosition());
-        List<Pair<Integer, Integer>> engines = new ArrayList<>();
-        List<Pair<Integer, Integer>> battery = new ArrayList<>();
-        for (Player player : controller.getModel().getInGamePlayers()) {
-            if (player.getUsername().equals("player1")) {
-                state.activateEngines(player, engines, battery);
-                engines.add(new Pair<>(3, 4));
-                battery.add(new Pair<>(2, 2));
-            } else {
-                state.activateEngines(player, engines, battery);
-            }
-        }
-        assertEquals("player1", state.getCurrentPlayer());
-        List<Pair<Integer, Integer>> cabins = new ArrayList<>();
-        int crewSize = controller.getPlayerByID("player1").getShip().crew();
-        cabins.add(new Pair<>(2, 4));
-        state.loseCrew(controller.getPlayerByID("player1"), cabins);
-        assertEquals(crewSize - 1, controller.getPlayerByID("player1").getShip().crew());
-
-        assertEquals(4, controller.getPlayerByID("player1").getPosition());
-        List<Pair<Integer, Integer>> cannons = new ArrayList<>();
-        List<Pair<Integer, Integer>> battery2 = new ArrayList<>();
-        for (Player player : controller.getModel().getInGamePlayers()) {
-            if (player.getUsername().equals("player1")) {
-                state.activateCannons(player, cannons, battery2);
-                cannons.add(new Pair<>(3, 3));
-                battery2.add(new Pair<>(2, 2));
-            } else {
-                state.activateCannons(player, cannons, battery2);
-            }
-        }
-        assertEquals("player1", state.getCurrentPlayer());
-        state.rollDice(controller.getPlayerByID("player1"));
-        state.rollDice(controller.getPlayerByID("player1"));
-        state.activateShield(controller.getPlayerByID("player1"), null, null);
-        assertEquals("CombatZone0State", state.toString());
     }
+
 }

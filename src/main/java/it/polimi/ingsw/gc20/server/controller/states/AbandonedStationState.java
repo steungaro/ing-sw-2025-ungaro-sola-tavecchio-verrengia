@@ -44,11 +44,7 @@ public class AbandonedStationState extends CargoState {
 
     @Override
     public String toString() {
-        return "AbandonedStationState{ " +
-                "crewNeeded=" + crewNeeded +
-                ", reward=" + reward +
-                ", lostDays=" + lostDays +
-                '}';
+        return "AbandonedStationState";
     }
 
     /**

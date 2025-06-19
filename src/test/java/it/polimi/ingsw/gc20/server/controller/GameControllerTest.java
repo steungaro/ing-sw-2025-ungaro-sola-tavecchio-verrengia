@@ -42,7 +42,7 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
         try {
-            gameController = new GameController(id, players, level);
+            gameController = new GameController(id, id, players, level);
             adventureCard = new AdventureCard();
             adventureCard.setCrew(2);
             adventureCard.setCredits(3);
@@ -783,7 +783,7 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
         try {
-            GameController controller = new GameController (id, players, level);
+            GameController controller = new GameController (id, id, players, level);
             controller.killGame();
         } catch (InvalidStateException _) {
 

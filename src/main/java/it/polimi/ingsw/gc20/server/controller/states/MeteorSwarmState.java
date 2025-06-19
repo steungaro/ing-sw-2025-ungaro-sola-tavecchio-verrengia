@@ -42,9 +42,7 @@ public class MeteorSwarmState extends PlayingState {
 
     @Override
     public String toString() {
-        return "MeteorSwarmState{" +
-                "meteors=" + meteors +
-                '}';
+        return "MeteorSwarmState";
     }
 
     /**

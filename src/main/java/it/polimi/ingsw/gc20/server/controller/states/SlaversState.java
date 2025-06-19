@@ -41,12 +41,7 @@ public class SlaversState extends PlayingState {
 
     @Override
     public String toString() {
-        return "SlaversState{" +
-                "firePower=" + firePower +
-                ", lostMembers=" + lostMembers +
-                ", reward=" + reward +
-                ", lostDays=" + lostDays +
-                '}';
+        return "SlaversState";
     }
 
     /**

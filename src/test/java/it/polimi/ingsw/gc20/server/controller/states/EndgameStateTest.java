@@ -16,7 +16,7 @@ class EndgameStateTest {
 
     @BeforeEach
     void setUp() throws InvalidStateException {
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         state = new EndgameState(controller);
         controller.setState(state);
     }

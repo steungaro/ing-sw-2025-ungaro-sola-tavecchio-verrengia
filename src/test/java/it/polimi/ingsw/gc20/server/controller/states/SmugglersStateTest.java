@@ -3,14 +3,11 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
-import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.javatuples.Pair;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,9 +34,10 @@ class SmugglersStateTest {
         reward.add(CargoColor.YELLOW);
         reward.add(CargoColor.BLUE);
         card.setReward(reward);
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
+        assertNotNull(controller.getModel());
         controller.getModel().setActiveCard(card);
-        StartingCabin start = null;
+        StartingCabin start;
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip
             NormalShip ship = new NormalShip();
@@ -165,7 +163,7 @@ class SmugglersStateTest {
     }
 
     @Test
-    void testSmugglersState() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, InvalidShipException, DieNotRolledException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
+    void testSmugglersState() throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         assertEquals("SmugglersState{ lostCargo=2, firePower=2, lostDays=1, reward=[YELLOW, BLUE]}", state.toString());
         assertEquals("player1", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
