@@ -37,7 +37,7 @@ class SmugglersStateTest {
         reward.add(CargoColor.YELLOW);
         reward.add(CargoColor.BLUE);
         card.setReward(reward);
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
         StartingCabin start = null;
         for (Player player : controller.getModel().getInGamePlayers()) {

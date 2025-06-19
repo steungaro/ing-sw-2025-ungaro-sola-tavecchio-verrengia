@@ -33,7 +33,7 @@ public class AbandonedShipTest {
         card.setCrew(2);
         card.setCredits(3);
         card.setLostDays(1);
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
 
         state = new AbandonedShipState(controller.getModel(), controller, card);

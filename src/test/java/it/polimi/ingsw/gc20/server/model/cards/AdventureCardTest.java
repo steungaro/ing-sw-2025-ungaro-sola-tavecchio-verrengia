@@ -114,7 +114,7 @@ class AdventureCardTest {
     @Test
     void testSetState() throws InvalidStateException {
         List<String> players = List.of("Player1", "Player2");
-            GameController controller = new GameController("1234", players, 2);
+            GameController controller = new GameController("1234", "1234", players, 2);
         GameModel model = controller.getModel();
 
         adventureCard.setName("Slavers");

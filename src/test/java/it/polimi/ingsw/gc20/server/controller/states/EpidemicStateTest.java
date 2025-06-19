@@ -28,18 +28,6 @@ class EpidemicStateTest {
     static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
         card = new AdventureCard();
-        card.setCrew(1);
-        List<Projectile> projectiles = new ArrayList<>();
-        Projectile heavyFire = new Projectile();
-        heavyFire.setDirection(Direction.DOWN);
-        heavyFire.setFireType(FireType.HEAVY_FIRE);
-        projectiles.add(heavyFire);
-        Projectile lightFire = new Projectile();
-        lightFire.setDirection(Direction.DOWN);
-        lightFire.setFireType(FireType.LIGHT_FIRE);
-        projectiles.add(lightFire);
-        card.setProjectiles(projectiles);
-        card.setLostDays(1);
         controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
         // build all the ships of the players one will be invalid

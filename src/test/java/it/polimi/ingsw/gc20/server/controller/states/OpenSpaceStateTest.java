@@ -1,10 +1,11 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
-import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
+import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
+import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.javatuples.Pair;
@@ -16,29 +17,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class AbandonedStationTest {
+class OpenSpaceStateTest {
     static GameController controller;
-    static AbandonedStationState state;
+    static OpenSpaceState state;
     static AdventureCard card;
 
     @BeforeAll
-    static void setUp() throws InvalidStateException {
+    static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
         card = new AdventureCard();
-        card.setCrew(2);
-        List <CargoColor> reward = new ArrayList<>();
-        reward.add(CargoColor.BLUE);
-        reward.add(CargoColor.GREEN);
-        card.setReward(reward);
-        card.setLostDays(1);
-        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2"), 2);
         controller.getModel().setActiveCard(card);
-
-        state = new AbandonedStationState(controller.getModel(), controller, card);
         // build all the ships of the players one will be invalid
+        StartingCabin start;
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip
             NormalShip ship = new NormalShip();
@@ -145,33 +138,29 @@ public class AbandonedStationTest {
             connectorsStartingCabin.put(Direction.LEFT, ConnectorEnum.U);
             connectorsStartingCabin.put(Direction.UP, ConnectorEnum.U);
             connectorsStartingCabin.put(Direction.DOWN, ConnectorEnum.U);
-            StartingCabin start = (StartingCabin) ship.getComponentAt(2, 3);
+            start = (StartingCabin) ship.getComponentAt(2, 3);
             start.setConnectors(connectorsStartingCabin);
+            player.setPosition(0);
+            if (player.getUsername().equals("player1")) {
+                player.setPosition(5);
+            }
             ship.initAstronauts();
             player.setShip(ship);
+
         }
+        state = new OpenSpaceState(controller.getModel(), controller, card);
     }
 
     @Test
-    void testAbandonedStationState() {
-        try {
-            state.currentQuit(controller.getPlayerByID("player1"));
-            state.acceptCard(controller.getPlayerByID("player2"));
-
-            state.loadCargo(controller.getPlayerByID("player2"), CargoColor.BLUE, new Pair<>(1, 2));
-
-            state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.BLUE, new Pair<>(1, 2));
-
-            state.loadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 4));
-
-            state.moveCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 4), new Pair<>(1, 2));
-            controller.getPlayerByID("player2").setPosition(5);
-            state.endMove(controller.getPlayerByID("player2"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail();
-        }
-        assertEquals(4, controller.getPlayerByID("player2").getPosition(), "Player position should be 4 after accepting the card");
-        state.toString();
+    void testOpenSpaceState() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidEngineException, EnergyException {
+        // Test the initial state of the OpenSpaceState
+        assertEquals("player1", state.getCurrentPlayer());
+        state.activateEngines(controller.getPlayerByID("player1"),
+                List.of(new Pair<>(3, 4)),
+                List.of(new Pair<>(2, 2)));
+        state.activateEngines(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        assertEquals(8, controller.getPlayerByID("player1").getPosition());
+        assertEquals(1, controller.getPlayerByID("player2").getPosition());
+        assertEquals("OpenSpaceState", state.toString());
     }
 }

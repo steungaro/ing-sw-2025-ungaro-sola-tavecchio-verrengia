@@ -24,7 +24,7 @@ public class ValidatingShipStateTest {
 
     @BeforeAll
     static void setUp() throws InvalidStateException, InvalidTileException {
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         // build all the ships of the players
         for (Player player : controller.getModel().getInGamePlayers()) {
             // Create a new NormalShip

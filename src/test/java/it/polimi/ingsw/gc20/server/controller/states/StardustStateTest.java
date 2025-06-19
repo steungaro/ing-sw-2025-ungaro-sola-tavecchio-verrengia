@@ -22,7 +22,7 @@ class StardustStateTest {
         //initialize the AdventureCard
         AdventureCard card = new AdventureCard();
         card.setName( "Stardust" );
-        GameController controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        GameController controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         for (int i = 0; i < 3; i++) {
             controller.getModel().getGame().getPlayers().get(i).setPosition(i + 1);
         }
