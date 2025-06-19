@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -10,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.javatuples.Pair;
@@ -65,8 +63,6 @@ public class PopulateShipMenuController {
     }
 
     private void selectCabinToPopulate(int row, int col) {
-        int x = row - 5;
-        int y = col - (ship.isLearner ? 5 : 4);
         VBox dialogContent = new VBox(10);
         ComboBox<AlienColor> colorComboBox = new ComboBox<>(
                 FXCollections.observableArrayList(AlienColor.PURPLE, AlienColor.BROWN)
@@ -79,7 +75,7 @@ public class PopulateShipMenuController {
 
         javafx.scene.control.Dialog<AlienColor> dialog = new javafx.scene.control.Dialog<>();
         dialog.setTitle("Add alien");
-        dialog.setHeaderText("Choose the alien color for the cabin at position (" + x + ", " + y + ")");
+        dialog.setHeaderText("Choose the alien color for the cabin at position (" + (row + 5) + ", " + (col + (ship.isLearner ? 5 : 4)) + ")");
         dialog.getDialogPane().setContent(dialogContent);
 
         dialog.getDialogPane().getButtonTypes().addAll(javafx.scene.control.ButtonType.OK, javafx.scene.control.ButtonType.CANCEL);
@@ -96,7 +92,7 @@ public class PopulateShipMenuController {
                 ClientGameModel.getInstance().getClient().addAlien(
                         username,
                         alienColor,
-                        new Pair<>(x, y)
+                        new Pair<>(row, col)
                 );
             } catch (RemoteException e) {
                 showError("Error adding alien: " + e.getMessage());

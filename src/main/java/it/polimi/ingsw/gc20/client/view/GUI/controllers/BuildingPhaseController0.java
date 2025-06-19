@@ -71,7 +71,7 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
         final double imageHeight = backgroundImage.getHeight();
         final double imageRatio = imageWidth / imageHeight;
 
-        rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+        rootPane.layoutBoundsProperty().addListener((_, _, newBounds) -> {
             bgImage.setFitWidth(newBounds.getWidth()*0.7);
             bgImage.setFitHeight(newBounds.getHeight()*0.7);
             double containerWidth = bgImage.getFitWidth();
@@ -94,11 +94,6 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
             componentsGrid.setPrefSize(gridWidth, gridHeight);
             componentsGrid.setMaxSize(gridWidth, gridHeight);
             componentsGrid.setMinSize(gridWidth, gridHeight);
-
-            // Debug output
-            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
-            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
 
             // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;
@@ -172,6 +167,11 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
 
     protected int getCols() {
         return COLS;
+    }
+
+    @Override
+    protected void updateBookedComponents() {
+        // No need to update booked components in this controller
     }
 
     @Override

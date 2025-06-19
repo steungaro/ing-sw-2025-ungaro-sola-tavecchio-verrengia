@@ -1,20 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import org.javatuples.Pair;
 
 import java.io.IOException;
@@ -35,14 +28,12 @@ public class ValidationMenuController {
     private Label errorLabel;
 
     private String username;
-    private boolean isLearnerShip;
     private ViewShip ship;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
 
         ship = ClientGameModel.getInstance().getShip(username);
-        isLearnerShip = ship != null && ship.isLearner;
 
         updateValidationStatus();
         loadShipView();
@@ -104,13 +95,8 @@ public class ValidationMenuController {
     @FXML
     private void selectComponentToRemove(int row, int col) {
         try {
-            int x = row - 5;
-            int y = col - (isLearnerShip ? 5 : 4);
-
             Pair<Integer, Integer> coordinates = new Pair<>(row, col);
-
             ClientGameModel.getInstance().getClient().removeComponentFromShip(username, coordinates);
-
             loadShipView();
         } catch (NumberFormatException e) {
             showError("Please enter valid numbers for coordinates");

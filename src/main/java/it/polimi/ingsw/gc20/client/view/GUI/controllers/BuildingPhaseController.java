@@ -2,11 +2,9 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.*;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -72,26 +70,12 @@ public abstract class BuildingPhaseController implements GameModelListener {
     @FXML
     protected GridPane bookedGrid;
 
-    private List<ViewAdventureCard> deck;
     private ViewComponent selectedComponent;
     protected boolean placementModeActive = false;
     protected ViewShip ship;
     protected final Map<String, Integer> gridComponents = new HashMap<>();
     protected ShipController.CellClickHandler cellClickHandler;
     private ViewPlayer currentPlayerBeingViewed;
-
-    /*
-    private final List<double[]> cargoCord3 = List.of(
-            new double[]{0.3, 0.45},
-            new double[]{0.625, 0.285},
-            new double[]{0.625, 0.62}
-    );
-
-    private final List<double[]> cargoCord2 = List.of(
-            new double[]{0.45, 0.285},
-            new double[]{0.45, 0.62}
-    );*/
-
 
     public void initialize() {
         String myUsername = ClientGameModel.getInstance().getUsername();
@@ -105,7 +89,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
             loadShipData(this.currentPlayerBeingViewed);
         }
 
-        loadCoveredDeck();
+        covered();
         loadShip();
         loadUncoveredComponents();
         loadOtherPlayersList();
@@ -128,15 +112,10 @@ public abstract class BuildingPhaseController implements GameModelListener {
             }
         });
         updateComponentInHand();
-
         updateBookedComponents();
     }
 
-    public void initializeWithCards(List<ViewAdventureCard> deck){
-        this.deck = deck;
-    }
-
-    private void loadCoveredDeck(){
+    private void covered(){
         if (coveredDeckPane != null) {
             try {
                 Image deckBackgroundImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/tiles/component.png")));
@@ -153,7 +132,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                     coveredDeckPane.setBackground(new Background(bgImage));
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                showError("Could not load deck background image: " + e.getMessage());
                 coveredDeckPane.setStyle(coveredDeckPane.getStyle() + "; -fx-background-color: lightgrey;");
             }
         }
@@ -284,7 +263,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
             stage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
             showError("Could not load opponent ship view: " + e.getMessage());
         }
     }
@@ -579,59 +557,36 @@ public abstract class BuildingPhaseController implements GameModelListener {
     }
 
     protected void updateComponentInHand() {
-        new Thread(() -> {
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                System.err.println("Thread interrupted: " + e.getMessage());
-                return;
+        ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
+        componentInHandPane.getChildren().clear();
+
+        HBox rotationButtonsContainer = (HBox) rootPane.lookup("#rotationButtonsContainer");
+        if (rotationButtonsContainer != null) {
+            rotationButtonsContainer.setVisible(true);
+            rotationButtonsContainer.setManaged(true);
+        }
+
+        if (componentInHand != null) {
+            Pane componentPane = createComponentPane(componentInHand);
+            componentPane.setTranslateX((componentInHandPane.getWidth() - componentPane.getPrefWidth()) / 2);
+            componentPane.setTranslateY((componentInHandPane.getHeight() - componentPane.getPrefHeight()) / 2);
+
+            componentPane.translateXProperty().bind(
+                    componentInHandPane.widthProperty().subtract(componentPane.prefWidthProperty()).divide(2)
+            );
+            componentPane.translateYProperty().bind(
+                    componentInHandPane.heightProperty().subtract(componentPane.prefHeightProperty()).divide(2)
+            );
+
+            componentInHandPane.getChildren().add(componentPane);
+            selectedComponent = componentInHand;
+        } else {
+            if (rotationButtonsContainer != null) {
+                rotationButtonsContainer.setVisible(false);
+                rotationButtonsContainer.setManaged(false);
             }
-
-            ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
-
-            Platform.runLater(() -> {
-                componentInHandPane.getChildren().clear();
-
-                HBox rotationButtonsContainer = (HBox) rootPane.lookup("#rotationButtonsContainer");
-                if (rotationButtonsContainer != null) {
-                    rotationButtonsContainer.setVisible(true);
-                    rotationButtonsContainer.setManaged(true);
-                }
-
-                if (componentInHand != null) {
-                    Pane componentPane = createComponentPane(componentInHand);
-                    componentPane.setTranslateX((componentInHandPane.getWidth() - componentPane.getPrefWidth()) / 2);
-                    componentPane.setTranslateY((componentInHandPane.getHeight() - componentPane.getPrefHeight()) / 2);
-
-                    componentPane.translateXProperty().bind(
-                            componentInHandPane.widthProperty().subtract(componentPane.prefWidthProperty()).divide(2)
-                    );
-                    componentPane.translateYProperty().bind(
-                            componentInHandPane.heightProperty().subtract(componentPane.prefHeightProperty()).divide(2)
-                    );
-
-                    componentInHandPane.getChildren().add(componentPane);
-                    selectedComponent = componentInHand;
-
-                    String username = ClientGameModel.getInstance().getUsername();
-                    if (username != null) {
-                        ViewShip ship = ClientGameModel.getInstance().getShip(username);
-                        if (ship != null) {
-                            boolean isLearner = ship.isLearner;
-                        } else {
-                        }
-                    } else {
-                    }
-                } else {
-                    if (rotationButtonsContainer != null) {
-                        rotationButtonsContainer.setVisible(false);
-                        rotationButtonsContainer.setManaged(false);
-                    }
-                    selectedComponent = null;
-                }
-            });
-        }).start();
+            selectedComponent = null;
+        }
     }
 
     private Pane createComponentPane(ViewComponent component) {
@@ -670,39 +625,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
     }
 
     /**
-     * Places the selected component on the ship
-     */
-    @FXML
-    private void placeComponent() {
-        if (selectedComponent == null) {
-            showError("No component selected!");
-            return;
-        }
-
-
-        selectedComponent = null;
-        componentInHandPane.getChildren().clear();
-
-        loadUncoveredComponents();
-
-    }
-
-    /**
-     * Discards the selected component
-     */
-    @FXML
-    private void discardComponent() {
-        if (selectedComponent == null) {
-            showError("No component selected!");
-            return;
-        }
-        selectedComponent = null;
-        componentInHandPane.getChildren().clear();
-
-        loadUncoveredComponents();
-    }
-
-    /**
      * Shows an error message in a dialog window
      */
     private void showError(String message) {
@@ -733,7 +655,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                             index
                     );
                 } else {
-                    showError("Invalid board index. Please enter a number between 0 and 4.");
+                    showError("Invalid board index. Please enter a number between 1 and 4.");
                 }
             } catch (NumberFormatException e) {
                 showError("Please enter a valid number.");
@@ -792,17 +714,17 @@ public abstract class BuildingPhaseController implements GameModelListener {
         TextInputDialog dialog = new TextInputDialog("0");
         dialog.setTitle("Peek Deck");
         dialog.setHeaderText("Select a deck to peek");
-        dialog.setContentText("Enter deck index (0-2):");
+        dialog.setContentText("Enter deck index (1, 2, 3):");
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(indexStr -> {
             try {
                 int index = Integer.parseInt(indexStr);
-                if (index >= 0 && index <= 2) {
+                if (index > 0 && index <= 3) {
                     String username = ClientGameModel.getInstance().getUsername();
                     ClientGameModel.getInstance().getClient().peekDeck(username, index);
                 } else {
-                    showError("Invalid index. Please enter a number between 0 and 2.");
+                    showError("Invalid index. Please enter a number between 1 and 3.");
                 }
             } catch (NumberFormatException e) {
                 showError("Please enter a valid number.");
@@ -846,9 +768,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
             showError("Error selecting component: " + e.getMessage());
             return;
         }
-
-        loadUncoveredComponents();
-
         uncoveredComponentsPane.getChildren().forEach(node -> node.setStyle(node.getStyle().replace("-fx-border-width: 3;", "")));
         sourcePane.setStyle(sourcePane.getStyle() + "-fx-border-width: 3;");
     }
@@ -866,7 +785,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    protected void disactivatePlacementMode(){
+    protected void deactivatePlacementMode(){
         disableGridInteraction();
         disableUncoveredComponentsInteraction();
     }
@@ -945,7 +864,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                disactivatePlacementMode();
+                deactivatePlacementMode();
 
                 new Thread(() -> {
                     try {
@@ -955,7 +874,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                                 buildShipComponents(ClientGameModel.getInstance().getShip(username));
                         });
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        showError("Error placing component: " + e.getMessage());
                     }
                 }).start();
             } catch (Exception e) {
@@ -979,7 +898,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
 
-                disactivatePlacementMode();
+                deactivatePlacementMode();
 
                 new Thread(() -> {
                     try {
@@ -997,7 +916,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
             } catch (Exception e) {
                 placementModeActive = false;
                 componentInHandPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
-                disactivatePlacementMode();
+                deactivatePlacementMode();
                 showError("Error adding component to viewed pile: " + e.getMessage());
             }
         } else {
@@ -1050,7 +969,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
     @FXML
     private void navigateToGameBoard() {
-        System.out.println("Navigando al tabellone di gioco");
         try {
             String boardType;
             if (ship != null && ship.isLearner) {
@@ -1063,14 +981,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
             Parent boardViewRoot = loader.load();
 
             Stage stage = new Stage();
-            stage.setTitle("Tabellone di Gioco");
+            stage.setTitle("Game Board");
             stage.setScene(new Scene(boardViewRoot));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.showAndWait();
 
         } catch (IOException e) {
-            e.printStackTrace();
-            showError("Impossibile caricare la vista del tabellone: " + e.getMessage());
+            showError("Unable to load Game Board: " + e.getMessage());
         }
     }
 
@@ -1079,7 +996,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         try {
             ClientGameModel.getInstance().getClient().addComponentToBooked(username);
         } catch (RemoteException e) {
-            System.err.println("Error taking comxponent from booked: " + e.getMessage());
+            System.err.println("Error taking component from booked: " + e.getMessage());
         }
     }
 
@@ -1097,61 +1014,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    public void enableBookedComponentsInteraction(Runnable handler) {
-        if (bookedGrid != null) {
-            uncoveredComponentsPane.setOnMouseClicked(_ -> {
-                if (handler != null) {
-                    handler.run();
-                }
-            });
-            System.out.println("booked components interaction enabled.");
-
-            for(int i = 0; i < 2; i++){
-                Rectangle clickArea = new Rectangle();
-                clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
-                clickArea.setStrokeWidth(2);
-                clickArea.setOpacity(0.7);
-
-                clickArea.widthProperty().bind(
-                        bookedGrid.widthProperty().divide(getCols()).subtract(2)
-                );
-                clickArea.heightProperty().bind(
-                        componentsGrid.heightProperty().divide(getRows()).subtract(1)
-                );
-
-                clickArea.setOnMouseClicked(_ -> {
-                    if (handler != null) {
-                        handler.run();
-                    }
-                });
-
-                clickArea.setOnMouseEntered(_ -> {
-                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
-                    clickArea.setCursor(javafx.scene.Cursor.HAND);
-                });
-
-                clickArea.setOnMouseExited(_ -> {
-                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                    clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
-                });
-
-                bookedGrid.add(clickArea, i, 0);
-                GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
-                GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
-            }
-        } else {
-            System.err.println("bookedComponentsPane is null. Cannot enable interaction.");
-        }
-    }
-
-    protected void updateBookedComponents() {
-        return;
-    }
+    protected abstract void updateBookedComponents();
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        updateBookedComponents();
+        if (this.ship.equals(ship)) {
+            buildShipComponents(this.ship);
+        }
     }
 
     @Override
@@ -1166,12 +1035,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-        // Maybe to implement
+        showError(message);
     }
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         updateComponentInHand();
         loadUncoveredComponents();
+        updateBookedComponents();
     }
 }
