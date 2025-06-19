@@ -121,14 +121,14 @@ class AdventureCardTest {
 
         // Ensure no exceptions are thrown
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
-        assertEquals("SlaversState{firePower=0, lostMembers=0, reward=0, lostDays=0}", controller.getState());
+        assertEquals("SlaversState", controller.getState());
 
 
         adventureCard.setName("Test");
         // Ensure the exception is caught internally and does not propagate
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
 
-        assertEquals("SlaversState{firePower=0, lostMembers=0, reward=0, lostDays=0}", controller.getState());
+        assertEquals("SlaversState", controller.getState());
 
         adventureCard.setName("Pirates");
 
@@ -142,7 +142,7 @@ class AdventureCardTest {
         adventureCard.setCredits(100);
         adventureCard.setLostDays(2);
         adventureCard.setState(controller, model);
-        String s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        String s = controller.getState();
         assertEquals("AbandonedShipState", s);
 
 
@@ -151,13 +151,13 @@ class AdventureCardTest {
         adventureCard.setFirePower(3);
         adventureCard.setCrew(5);
         adventureCard.setState(controller, model);
-        s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        s = controller.getState();
         assertEquals("CombatZone0State", s);
 
         adventureCard.setName("CombatZone");
         adventureCard.setCrew(0);
         adventureCard.setState(controller, model);
-        s = controller.getState().substring(0, controller.getState().indexOf("{"));
+        s = controller.getState();
         assertEquals("CombatZone1State", s);
     }
 }
