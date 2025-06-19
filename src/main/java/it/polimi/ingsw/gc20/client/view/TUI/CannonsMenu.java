@@ -147,7 +147,7 @@ public class CannonsMenu implements MenuState {
                 ClientGameModel.getInstance().getClient().activateCannons(username, cannons, batteries);
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+                ClientGameModel.getInstance().getClient().activateCannons(username, new ArrayList<>(), new ArrayList<>());
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();

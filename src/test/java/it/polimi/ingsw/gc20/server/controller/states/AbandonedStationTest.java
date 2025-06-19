@@ -45,11 +45,10 @@ public class AbandonedStationTest {
 
             // Create components
             Cannon upCannon = new Cannon();
-            upCannon.setOrientation(Direction.UP);
             upCannon.setPower(1);
 
             Cannon downCannon = new Cannon();
-            downCannon.setOrientation(Direction.DOWN);
+            downCannon.setRotation(Direction.DOWN);
             downCannon.setPower(2);
 
             Engine singleEngine = new Engine();

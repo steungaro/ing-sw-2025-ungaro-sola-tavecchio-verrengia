@@ -51,11 +51,10 @@ public class CombatZone0Test {
 
             // Create components
             Cannon upCannon = new Cannon();
-            upCannon.setOrientation(Direction.UP);
             upCannon.setPower(1);
 
             Cannon downCannon = new Cannon();
-            downCannon.setOrientation(Direction.DOWN);
+            downCannon.setRotation(Direction.DOWN);
             downCannon.setPower(2);
 
             Engine singleEngine = new Engine();
@@ -166,7 +165,7 @@ public class CombatZone0Test {
     }
 
     @Test
-    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, ComponentNotFoundException {
+    void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         assertEquals(4, controller.getPlayerByID("player1").getPosition());
         List<Pair<Integer, Integer>> engines = new ArrayList<>();
         List<Pair<Integer, Integer>> battery = new ArrayList<>();

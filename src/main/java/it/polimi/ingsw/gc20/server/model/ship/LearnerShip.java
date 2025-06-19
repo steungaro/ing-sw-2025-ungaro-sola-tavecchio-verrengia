@@ -28,6 +28,7 @@ public class LearnerShip extends Ship {
         cargos.put(CargoColor.BLUE, 0);
         cargos.put(CargoColor.GREEN, 0);
         cargos.put(CargoColor.YELLOW, 0);
+        cargos.put(CargoColor.RED, 0);
 
         table[0][0].setAvailability(false);
         table[0][1].setAvailability(false);

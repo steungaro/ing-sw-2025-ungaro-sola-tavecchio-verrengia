@@ -30,9 +30,11 @@ public abstract class Component {
     protected final Map<Direction, ConnectorEnum> connectors = new HashMap<>();
     protected int ID;
     private Tile tile = null;
-    private int rotComp = 0; // 0 = up, 1 = 90 degrees, 2 = 180 degrees, 3 = 270 degrees
+    protected Direction rotation; // Default rotation direction
 
-    public Component() {}
+    public Component() {
+        rotation = Direction.UP;
+    }
 
     /**
     * This function rotates the component clockwise by 90 degrees
@@ -43,7 +45,20 @@ public abstract class Component {
         connectors.put(Direction.LEFT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.RIGHT));
         connectors.put(Direction.RIGHT, conn);
-        rotComp = (rotComp + 1) % 4;
+        switch (rotation) {
+            case UP:
+                rotation = Direction.RIGHT;
+                break;
+            case RIGHT:
+                rotation = Direction.DOWN;
+                break;
+            case DOWN:
+                rotation = Direction.LEFT;
+                break;
+            case LEFT:
+                rotation = Direction.UP;
+                break;
+        }
     }
 
     /**
@@ -55,7 +70,20 @@ public abstract class Component {
         connectors.put(Direction.RIGHT, connectors.get(Direction.DOWN));
         connectors.put(Direction.DOWN, connectors.get(Direction.LEFT));
         connectors.put(Direction.LEFT, conn);
-        rotComp = (rotComp + 3) % 4;
+        switch (rotation) {
+            case UP:
+                rotation = Direction.LEFT;
+                break;
+            case LEFT:
+                rotation = Direction.DOWN;
+                break;
+            case DOWN:
+                rotation = Direction.RIGHT;
+                break;
+            case RIGHT:
+                rotation = Direction.UP;
+                break;
+        }
     }
 
     /**
@@ -127,13 +155,13 @@ public abstract class Component {
             opposite = Direction.LEFT;
         }
 
-        if(this.connectors.get(d) == c.connectors.get(opposite) && this.connectors.get(d) != ConnectorEnum.ZERO){
+        if(this.connectors.get(d) == c.getConnectors().get(opposite)){
             return true;
         }
-        if(this.connectors.get(d) == ConnectorEnum.U && c.connectors.get(opposite) != ConnectorEnum.ZERO){
+        if (this.connectors.get(d) == ConnectorEnum.U && c.getConnectors().get(opposite) != ConnectorEnum.ZERO) {
             return true;
         }
-        return c.connectors.get(opposite) == ConnectorEnum.U && this.connectors.get(d) != ConnectorEnum.ZERO;
+        return this.connectors.get(d) != ConnectorEnum.ZERO && c.getConnectors().get(opposite) == ConnectorEnum.U;
     }
 
     /**
@@ -143,8 +171,12 @@ public abstract class Component {
      */
     public void updateParameter(Ship s, int sign) {}
 
-    public int getRotation() {
-        return rotComp;
+    public Direction getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(Direction rotation) {
+        this.rotation = rotation;
     }
 
     /** Function that returns true if the component is a shield and cover the direction d
@@ -202,7 +234,7 @@ public abstract class Component {
 
     public void initializeViewComponent(ViewComponent viewComponent) {
         viewComponent.id = ID;
-        viewComponent.rotComp = rotComp;
+        viewComponent.rotComp = rotation.getValue();
         viewComponent.upConnectors = connectors.get(Direction.UP).getValue();
         viewComponent.downConnectors = connectors.get(Direction.DOWN).getValue();
         viewComponent.leftConnectors = connectors.get(Direction.LEFT).getValue();

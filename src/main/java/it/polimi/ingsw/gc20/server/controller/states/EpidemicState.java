@@ -42,6 +42,11 @@ public class EpidemicState extends PlayingState {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(p.getUsername(), p.getShip(), "epidemic"));
         }
 
+        try {
+            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
         //effect ended, draw a new card
         phase = StatePhase.DRAW_CARD_PHASE;
         //notify all the players that the epidemic effect is over, and we wait for a new card
@@ -52,6 +57,6 @@ public class EpidemicState extends PlayingState {
 
     @Override
     public String getAutomaticActionMessage() {
-        return "An epidemic is starting, you will lose 1 crew member for each populated adjacent cabin";
+        return "An epidemic is spreading! You will lose 1 crew member for each populated adjacent cabin.";
     }
 }

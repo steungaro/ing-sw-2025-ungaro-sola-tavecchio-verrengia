@@ -35,7 +35,7 @@ public class SlaversState extends PlayingState {
         this.reward = card.getCredits();
         this.lostDays = card.getLostDays();
         phase = StatePhase.CANNONS_PHASE;
-        setStandbyMessage(getCurrentPlayer() + " is choosing cannons and batteries to shoot the salvers");
+        setStandbyMessage(getCurrentPlayer() + " is choosing cannons to fight the slavers.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -63,10 +63,10 @@ public class SlaversState extends PlayingState {
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.CANNONS_PHASE) {
-            throw new InvalidStateException("You are not in the cannons phase");
+            throw new InvalidStateException("You are not in the cannons phase.");
         }
         // translate the cannons and batteries to the actual components
         Set<Cannon> cannonsComponents = new HashSet<>();
@@ -82,7 +82,7 @@ public class SlaversState extends PlayingState {
             //won, the player can accept the card
             getController().getActiveCard().playCard();
             phase = StatePhase.ACCEPT_PHASE;
-            setStandbyMessage("waiting for " + getCurrentPlayer() + " to accept the card");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to accept or refuse the card.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } else if (firePower == this.firePower) {
             //draw, go to the next player
@@ -95,12 +95,12 @@ public class SlaversState extends PlayingState {
                 getController().setState(new PreDrawState(getController()));
             } else {
                 phase = StatePhase.CANNONS_PHASE;
-                setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+                setStandbyMessage("Waiting for " + getCurrentPlayer() + " to shoot at the enemy.");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else {
             phase = StatePhase.LOSE_CREW_PHASE;
-            setStandbyMessage("waiting for " + getCurrentPlayer() + " to lose crew");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to choose the cabins to lose crew from.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -116,10 +116,10 @@ public class SlaversState extends PlayingState {
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidStateException, InvalidTurnException, EmptyCabinException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.LOSE_CREW_PHASE) {
-            throw new InvalidStateException("You don't have to lose crew");
+            throw new InvalidStateException("You don't have to lose crew.");
         }
         int actualLostMembers;
         //check if the player has enough crew to lose
@@ -129,7 +129,7 @@ public class SlaversState extends PlayingState {
             actualLostMembers = lostMembers;
 
         if (cabins.size() < actualLostMembers) {
-            throw new InvalidStateException("not enough cabins selected");
+            throw new InvalidStateException("Not enough cabins selected. You need to select at least " + actualLostMembers + " cabins.");
         }
 
         getModel().loseCrew(player, Translator.getComponentAt(player, cabins, Cabin.class));
@@ -144,7 +144,7 @@ public class SlaversState extends PlayingState {
             getController().setState(new PreDrawState(getController()));
         } else {
             phase = StatePhase.CANNONS_PHASE;
-            setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to shoot at the enemy.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -158,14 +158,14 @@ public class SlaversState extends PlayingState {
     @Override
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.ACCEPT_PHASE) {
-            throw new InvalidStateException("Card not defeated");
+            throw new InvalidStateException("Card not defeated yet.");
         }
         getModel().movePlayer(player, -lostDays);
         getModel().addCredits(player, reward);
-        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), player.getPosition()%getModel().getGame().getBoard().getSpaces()));
+        getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), reward, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getActiveCard().playCard();
@@ -179,10 +179,10 @@ public class SlaversState extends PlayingState {
      */
     public void endMove(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (phase != StatePhase.ACCEPT_PHASE) {
-            throw new InvalidStateException("Card not defeated");
+            throw new InvalidStateException("Card not defeated yet.");
         }
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         phase = StatePhase.DRAW_CARD_PHASE;
@@ -203,7 +203,7 @@ public class SlaversState extends PlayingState {
                 getController().setState(new PreDrawState(getController()));
             } else {
                 phase = StatePhase.CANNONS_PHASE;
-                setStandbyMessage("waiting for " + getCurrentPlayer() + " to shoot the enemy");
+                setStandbyMessage("Waiting for " + getCurrentPlayer() + " to shoot at the enemy.");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else if (phase == StatePhase.ACCEPT_PHASE){
@@ -217,7 +217,7 @@ public class SlaversState extends PlayingState {
 
     @Override
     public String createsCannonsMessage(){
-        return "You are fighting slavers, enemy firepower is " + firePower + ", select the cannons and batteries to use";
+        return "You are fighting slavers, enemy firepower is " + firePower + ", select the cannons to activate to fight back.";
     }
 
     @Override

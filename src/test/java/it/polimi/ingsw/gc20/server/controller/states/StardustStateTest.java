@@ -1,18 +1,13 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GamePhase;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.*;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +36,10 @@ class StardustStateTest {
 
             // Create components
             Cannon upCannon = new Cannon();
-            upCannon.setOrientation(Direction.UP);
             upCannon.setPower(1);
 
             Cannon downCannon = new Cannon();
-            downCannon.setOrientation(Direction.DOWN);
+            downCannon.setRotation(Direction.DOWN);
             downCannon.setPower(2);
 
             Engine singleEngine = new Engine();

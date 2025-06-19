@@ -23,7 +23,7 @@ public class OpenSpaceState extends PlayingState {
     public OpenSpaceState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         phase = StatePhase.ENGINES_PHASE;
-        setStandbyMessage(getCurrentPlayer() + " is selecting engines and batteries");
+        setStandbyMessage(getCurrentPlayer() + " is selecting engines to activate.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -46,11 +46,11 @@ public class OpenSpaceState extends PlayingState {
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
         if (!getCurrentPlayer().equals(player.getUsername())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player is in the engine phase
         if (phase != StatePhase.ENGINES_PHASE) {
-            throw new InvalidStateException("You are not in the engines phase");
+            throw new InvalidStateException("You are not in the engines phase.");
         }
 
         //translate the engines and batteries from the coordinates
@@ -64,11 +64,11 @@ public class OpenSpaceState extends PlayingState {
         nextPlayer();
         if (getCurrentPlayer() == null) {
             phase = StatePhase.AUTOMATIC_ACTION;
-            getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("All players have selected their engines and batteries, moving players and drawing a new card"));
+            getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("All players have selected their engines and batteries, moving players and then drawing a new card."));
             endTurn();
         } else {
             phase = StatePhase.ENGINES_PHASE;
-            setStandbyMessage(getCurrentPlayer() + " is selecting engines and batteries");
+            setStandbyMessage(getCurrentPlayer() + " is selecting engines and batteries.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
@@ -80,19 +80,24 @@ public class OpenSpaceState extends PlayingState {
     @Override
     public void endTurn() throws InvalidStateException {
         if (phase != StatePhase.AUTOMATIC_ACTION) {
-            throw new InvalidStateException("You are not in the automatic action phase");
+            throw new InvalidStateException("You are not in the automatic action phase.");
         }
         declaredEngines.forEach((key, value) -> {
             getModel().movePlayer(key, value);
             if (value == 0) {
                 getController().getPlayerByID(key.getUsername()).setGameStatus(false);
-                getController().getMessageManager().sendToPlayer(key.getUsername(), new StandbyMessage("You have no engines left, you are out of the game"));
+                getController().getMessageManager().sendToPlayer(key.getUsername(), new StandbyMessage("You have no engines left, you are out of the game!"));
             }
         });
         //notify all players that all the player position has been updated
 
         for (Player player : getModel().getInGamePlayers()) {
-            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+            getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
+        }
+        try {
+            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());

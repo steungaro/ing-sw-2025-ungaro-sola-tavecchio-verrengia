@@ -8,7 +8,7 @@ public record RemoveBatteryMessage(
 ) implements Message {
     @Override
     public String toString() {
-        return "you ended tour cargo, select battery to remove: " + batteryNum;
+        return "You lost all your cargo, you'll now have to lose energy instead, please select " + batteryNum + " batteries";
     }
 
     @Override

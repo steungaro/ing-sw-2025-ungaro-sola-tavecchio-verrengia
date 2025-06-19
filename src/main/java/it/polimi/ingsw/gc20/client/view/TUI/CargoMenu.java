@@ -37,11 +37,10 @@ public class CargoMenu implements MenuState{
         if (losing) {
             System.out.println("You have to lose \u001B[31m" + cargoToLose + "\u001B[0m cargo.");
             System.out.println("1. Lose cargo");
-            System.out.println("2. Move cargo");
-            System.out.println("3. End turn");
+            System.out.println("2. End turn");
         } else {
             System.out.println("You have to gain " +
-                    cargoToGain.entrySet().stream().map(e -> e.getKey().toString() + " " + e.getValue().toString()) +
+                    cargoToGain.entrySet().stream().map(e -> e.getValue().toString() + " " + e.getKey().toString()).reduce((a, b) -> a + ", " + b).orElse("") +
                     " cargo.");
             System.out.println("1. Unload cargo");
             System.out.println("2. Move cargo");
@@ -117,87 +116,90 @@ public class CargoMenu implements MenuState{
                 ClientGameModel.getInstance().getClient().unloadCargo(username, cargoColor, coordinates);
                 break;
             case "2":
-                int moveX;
-                int moveY;
-                ClientGameModel.getInstance().printShip(username);
-                do {
-                    System.out.println("Type the coordinates of the cargo you want to move from (row col) or [b] to go back:");
-                    System.out.print(" > ");
-                    String moveInput = scanner.nextLine().trim();
-                    if (moveInput.equals("b")) {
-                        TUI.clearConsole();
-                        displayMenu();
-                        ClientGameModel.getInstance().setFree();
-                        return;
-                    }
-                    if (moveInput.equals("q")) {
-                        ClientGameModel.getInstance().shutdown();
-                        return;
-                    }
-                    try {
-                        moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
-                        moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
-                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                        moveX = -1;
-                        moveY = -1;
-                    }
-                } while (moveX < 0 || moveX > 4 || moveY < 0 || moveY > 6);
-                Pair<Integer, Integer> moveCoordinates = new Pair<>(moveX, moveY);
-                int moveToX;
-                int moveToY;
-                do {
-                    System.out.println("Type the coordinates of the cargo you want to move to (row col) or [b] to go back:");
-                    System.out.print(" > ");
-                    String moveToInput = scanner.nextLine().trim();
-                    if (moveToInput.equals("b")) {
-                        TUI.clearConsole();
-                        displayMenu();
-                        ClientGameModel.getInstance().setFree();
-                        return;
-                    }
-                    if (moveToInput.equals("q")) {
-                        ClientGameModel.getInstance().shutdown();
-                        return;
-                    }
-                    try {
-                        moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
-                        moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
-                    } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-                        System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
-                        moveToX = -1;
-                        moveToY = -1;
-                    }
-                } while (moveToX < 0 || moveToX > 4 || moveToY < 0 || moveToY > 6);
-                Pair<Integer, Integer> moveToCoordinates = new Pair<>(moveToX, moveToY);
-                CargoColor moveCargoColor;
-                do {
-                    System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m) or [b] to go back:");
-                    System.out.print(" > ");
-                    String moveCargoColorInput = scanner.nextLine().trim();
-                    if (moveCargoColorInput.equals("b")) {
-                        TUI.clearConsole();
-                        displayMenu();
-                        ClientGameModel.getInstance().setFree();
-                        return;
-                    }
-                    if (moveCargoColorInput.equals("q")) {
-                        ClientGameModel.getInstance().shutdown();
-                        return;
-                    }
-                    try {
-                        moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
-                        moveCargoColor = null;
-                    }
-                } while (moveCargoColor == null);
-                ClientGameModel.getInstance().getClient().moveCargo(username, moveCargoColor, moveCoordinates, moveToCoordinates);
-                break;
-            case "3":
                 if (losing) {
                     ClientGameModel.getInstance().getClient().endMove(username);
+                    break;
                 } else {
+                    int moveX;
+                    int moveY;
+                    ClientGameModel.getInstance().printShip(username);
+                    do {
+                        System.out.println("Type the coordinates of the cargo you want to move from (row col) or [b] to go back:");
+                        System.out.print(" > ");
+                        String moveInput = scanner.nextLine().trim();
+                        if (moveInput.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
+                        if (moveInput.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
+                        try {
+                            moveX = Integer.parseInt(moveInput.split(" ")[0]) - 5;
+                            moveY = Integer.parseInt(moveInput.split(" ")[1]) - 4;
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                            moveX = -1;
+                            moveY = -1;
+                        }
+                    } while (moveX < 0 || moveX > 4 || moveY < 0 || moveY > 6);
+                    Pair<Integer, Integer> moveCoordinates = new Pair<>(moveX, moveY);
+                    int moveToX;
+                    int moveToY;
+                    do {
+                        System.out.println("Type the coordinates of the cargo you want to move to (row col) or [b] to go back:");
+                        System.out.print(" > ");
+                        String moveToInput = scanner.nextLine().trim();
+                        if (moveToInput.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
+                        if (moveToInput.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
+                        try {
+                            moveToX = Integer.parseInt(moveToInput.split(" ")[0]) - 5;
+                            moveToY = Integer.parseInt(moveToInput.split(" ")[1]) - 4;
+                        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter valid coordinates.\u001B[0m");
+                            moveToX = -1;
+                            moveToY = -1;
+                        }
+                    } while (moveToX < 0 || moveToX > 4 || moveToY < 0 || moveToY > 6);
+                    Pair<Integer, Integer> moveToCoordinates = new Pair<>(moveToX, moveToY);
+                    CargoColor moveCargoColor;
+                    do {
+                        System.out.println("Type the color of the cargo you want to move (\u001B[31mRED\u001B[0m/\u001B[33mYELLOW\u001B[0m/\u001B[32mGREEN\u001B[0m/\u001B[34mBLUE\u001B[0m) or [b] to go back:");
+                        System.out.print(" > ");
+                        String moveCargoColorInput = scanner.nextLine().trim();
+                        if (moveCargoColorInput.equals("b")) {
+                            TUI.clearConsole();
+                            displayMenu();
+                            ClientGameModel.getInstance().setFree();
+                            return;
+                        }
+                        if (moveCargoColorInput.equals("q")) {
+                            ClientGameModel.getInstance().shutdown();
+                            return;
+                        }
+                        try {
+                            moveCargoColor = CargoColor.valueOf(moveCargoColorInput.toUpperCase());
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("\u001B[31mInvalid input. Please enter a valid cargo color.\u001B[0m");
+                            moveCargoColor = null;
+                        }
+                    } while (moveCargoColor == null);
+                    ClientGameModel.getInstance().getClient().moveCargo(username, moveCargoColor, moveCoordinates, moveToCoordinates);
+                }
+                break;
+            case "3":
+                if (!losing) {
                     int loadX;
                     int loadY;
                     ClientGameModel.getInstance().printShip(username);
@@ -248,6 +250,9 @@ public class CargoMenu implements MenuState{
                         }
                     } while (loadCargoColor == null);
                     ClientGameModel.getInstance().getClient().loadCargo(username, loadCargoColor, loadCoordinates);
+                } else {
+                    System.out.println("\u001B[31mInvalid choice. Please try again.\u001B[0m");
+                    System.out.print(" > ");
                 }
                 break;
             case "q":

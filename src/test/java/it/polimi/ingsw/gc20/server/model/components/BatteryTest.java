@@ -47,13 +47,13 @@ public class BatteryTest {
     @Test
     void testRotateClockwise() {
         battery.rotateClockwise();
-        assertEquals(1, battery.getRotation());
+        assertEquals(Direction.RIGHT, battery.getRotation());
         assertEquals(ConnectorEnum.D, battery.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.U, battery.getConnectors().get(Direction.RIGHT));
         assertEquals(ConnectorEnum.S, battery.getConnectors().get(Direction.DOWN));
         assertEquals(ConnectorEnum.ZERO, battery.getConnectors().get(Direction.LEFT));
-        assertEquals(1, battery.getRotation());
+        assertEquals(Direction.RIGHT, battery.getRotation());
         ViewComponent component = battery.createViewComponent();
-        assertEquals(1, component.rotation);
+        assertEquals(1, component.rotComp);
     }
 }

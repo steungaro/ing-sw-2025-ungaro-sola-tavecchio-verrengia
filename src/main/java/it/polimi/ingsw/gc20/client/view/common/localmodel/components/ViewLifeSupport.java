@@ -15,6 +15,7 @@ public class ViewLifeSupport extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         return switch (i) {
             case 0 -> firstRow();
@@ -26,18 +27,12 @@ public class ViewLifeSupport extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewLifeSupport lifeSupport = new ViewLifeSupport();
-        lifeSupport.color = AlienColor.PURPLE;
-        System.out.println(lifeSupport);
-        lifeSupport.color = AlienColor.BROWN;
-        System.out.println(lifeSupport);
-    }
 
     public ViewLifeSupport() {
         this.color = AlienColor.NONE;
     }
 
+    @Override
     public boolean isLifeSupport() {
         return true;
     }

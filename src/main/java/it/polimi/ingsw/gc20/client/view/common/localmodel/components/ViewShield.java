@@ -6,6 +6,7 @@ public class ViewShield extends ViewComponent {
     public boolean left;
     public boolean right;
 
+    @Override
     public String toString() {
         String sides;
 
@@ -28,6 +29,7 @@ public class ViewShield extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         String sides;
 
@@ -52,23 +54,10 @@ public class ViewShield extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewShield shield = new ViewShield();
-        shield.up = true;
-        shield.down = false;
-        shield.left = true;
-        shield.right = false;
-        System.out.println(shield);
-
-        shield.up = false;
-        shield.down = true;
-        shield.left = false;
-        shield.right = true;
-        System.out.println(shield);
-    }
     public ViewShield() {
     }
 
+    @Override
     public boolean isShield() {
         return true;
     }

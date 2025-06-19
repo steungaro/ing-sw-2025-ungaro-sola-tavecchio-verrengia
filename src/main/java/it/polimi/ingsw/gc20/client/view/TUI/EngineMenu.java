@@ -79,6 +79,8 @@ public class EngineMenu implements MenuState {
                     String engineInput = scanner.nextLine().trim();
                     if (engineInput.equals("b")) {
                         ClientGameModel.getInstance().setFree();
+                        TUI.clearConsole();
+                        displayMenu();
                         return;
                     }
                     if (engineInput.equals("q")) {
@@ -133,7 +135,7 @@ public class EngineMenu implements MenuState {
                 ClientGameModel.getInstance().getClient().activateEngines(username, engines, batteries);
                 break;
             case "2":
-                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, new ArrayList<>(), new ArrayList<>());
                 break;
             case "q":
                 ClientGameModel.getInstance().shutdown();

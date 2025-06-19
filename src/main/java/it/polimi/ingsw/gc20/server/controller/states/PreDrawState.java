@@ -16,7 +16,7 @@ public class PreDrawState extends State{
     /**
      * Constructs a PreDrawState.
      * It initializes a scheduler that will call the {@link #nextRound()} method after a 5-second delay.
-     * It also notifies the controller to let it connect the players that are in queue.
+     * It also notifies the controller to let it connect the players that are in the queue.
      * @param controller The game controller.
      */
     public PreDrawState(GameController controller) {
@@ -41,11 +41,11 @@ public class PreDrawState extends State{
         for (Player p : getModel().getGame().getPlayers()) {
             if (getModel().getGame().getPlayers().getFirst().getPosition()-p.getPosition() >= getModel().getGame().getBoard().getSpaces()){
                 p.setGameStatus(false);
-                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             }
             if (p.getShip().getAstronauts()==0){
                 p.setGameStatus(false);
-                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), p.getPosition() % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
             }
         }
         getController().drawCard();

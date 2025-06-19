@@ -26,11 +26,10 @@ class NormalShipTest {
 
         // Create components
         upCannon = new Cannon();
-        upCannon.setOrientation(Direction.UP);
         upCannon.setPower(1);
 
         downCannon = new Cannon();
-        downCannon.setOrientation(Direction.DOWN);
+        downCannon.setRotation(Direction.DOWN);
         downCannon.setPower(2);
 
         singleEngine = new Engine();

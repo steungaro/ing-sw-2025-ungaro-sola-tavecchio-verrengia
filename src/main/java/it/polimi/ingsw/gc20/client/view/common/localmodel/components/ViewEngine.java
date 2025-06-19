@@ -21,6 +21,7 @@ public class ViewEngine extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         char direction =
         switch (rotation) {
@@ -40,16 +41,11 @@ public class ViewEngine extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewEngine engine = new ViewEngine();
-        engine.power = 2;
-        engine.rotation = 3;
-        System.out.println(engine);
-    }
 
     public ViewEngine() {
     }
 
+    @Override
     public boolean isEngine() {
         return true;
     }

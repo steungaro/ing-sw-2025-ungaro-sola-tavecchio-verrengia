@@ -17,7 +17,7 @@ public record BoardUpdateMessage(
     public static BoardUpdateMessage fromBoard(Board board, List<Player> players, Boolean assemblingState){
         List<ViewPlayer> playerList = new ArrayList<>();
         for (Player player: players ){
-            ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), -1);
+            ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), player.getPosition());
             playerList.add(p);
         }
         ViewBoard viewBoard = new ViewBoard(board.isLearner(), playerList.toArray(new ViewPlayer[0]));

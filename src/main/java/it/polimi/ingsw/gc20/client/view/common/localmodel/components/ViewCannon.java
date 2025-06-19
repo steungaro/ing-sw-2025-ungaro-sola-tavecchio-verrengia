@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel.components;
 public class ViewCannon extends ViewComponent {
     public int power;
 
+    @Override
     public String toString(){
         char direction;
         switch (rotation) {
@@ -20,6 +21,7 @@ public class ViewCannon extends ViewComponent {
                 lastRow();
     }
 
+    @Override
     public String toLine(int i) {
         char direction;
         switch (rotation) {
@@ -39,16 +41,11 @@ public class ViewCannon extends ViewComponent {
         };
     }
 
-    public static void main(String[] args) {
-        ViewCannon cannon = new ViewCannon();
-        cannon.power = 2;
-        cannon.rotation = 3;
-        System.out.println(cannon);
-    }
 
     public ViewCannon() {
     }
 
+    @Override
     public boolean isCannon() {
         return true;
     }

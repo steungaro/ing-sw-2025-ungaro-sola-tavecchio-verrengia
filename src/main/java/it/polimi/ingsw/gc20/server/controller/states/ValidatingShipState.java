@@ -51,7 +51,7 @@ public class ValidatingShipState extends State {
      */
     public boolean isShipValid(Player player) throws InvalidStateException{
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
-            throw new InvalidStateException("Cannot validate ship in this phase");
+            throw new InvalidStateException("Cannot validate ship in this phase.");
         }
         if (getModel().shipValidating(player)) {
             //if the ship is valid, he can add the aliens
@@ -92,7 +92,7 @@ public class ValidatingShipState extends State {
     @Override
     public boolean allShipsValidated() throws InvalidStateException {
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
-            throw new InvalidStateException("Cannot check if all ships are validated in this phase");
+            throw new InvalidStateException("Cannot check if all ships are validated in this phase.");
         }
         //check if all the ships are valid
         return validShips.values().stream().allMatch(Boolean::booleanValue);
@@ -108,9 +108,9 @@ public class ValidatingShipState extends State {
     @Override
     public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException, InvalidTileException {
         if (phase!=StatePhase.VALIDATE_SHIP_PHASE) {
-            throw new InvalidStateException("Cannot remove component from valid ship");
+            throw new InvalidStateException("Cannot remove a component from a valid ship.");
         } else if (player.getShip().getComponentAt(coordinates.getValue0(), coordinates.getValue1()).getIDComponent() == 1000) {
-            throw new InvalidTileException("Cannot remove center cabin from the ship now");
+            throw new InvalidTileException("Cannot remove the starting cabin from the ship now.");
         }
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
@@ -134,11 +134,12 @@ public class ValidatingShipState extends State {
     @Override
     public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException, ComponentNotFoundException {
         if (phase != StatePhase.ADD_ALIEN_PHASE) {
-            throw new InvalidStateException("Cannot add alien in this phase");
+            throw new InvalidStateException("Cannot add an alien in this phase.");
         }
         //add the alien to the ship
         getModel().setAlien(color, Translator.getComponentAt(player, cabin, Cabin.class), player);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "added alien"));
+        getController().getMessageManager().sendToPlayer(player.getUsername(), new AlienPlacementePhaseMessage());
     }
 
     /**
@@ -148,7 +149,7 @@ public class ValidatingShipState extends State {
     @Override
     public void initAllShips() throws InvalidStateException {
         if (!allShipsReadyToFly()) {
-            throw new InvalidStateException("Cannot initialize ships: some ships are not ready to fly");
+            throw new InvalidStateException("Cannot initialize ships: some ships are not ready to fly.");
         }
         for (Player player : getModel().getInGamePlayers()) {
             getModel().addPieces(player);
@@ -163,7 +164,7 @@ public class ValidatingShipState extends State {
     @Override
     public void endMove (Player player) throws InvalidStateException {
         if (phase != StatePhase.ADD_ALIEN_PHASE) {
-            throw new InvalidStateException("Cannot end move in this phase");
+            throw new InvalidStateException("Cannot end move in this phase.");
         }
         readyToFly.put(player, true);
         //check if all the players are ready to fly
@@ -176,7 +177,7 @@ public class ValidatingShipState extends State {
             phase = StatePhase.DRAW_CARD_PHASE;
             getController().setState(new PreDrawState(getController()));
         } else {
-            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
+            getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Your ship is already valid, wait for other players to validate their ships."));
         }
     }
 

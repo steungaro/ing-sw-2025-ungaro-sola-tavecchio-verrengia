@@ -114,7 +114,7 @@ public abstract class Ship {
             if (cannon.getPower() == 1){
                 throw new InvalidCannonException("cannot select single cannon");
             }
-            if (cannon.getOrientation() == Direction.UP)
+            if (cannon.getRotation() == Direction.UP)
                 power += cannon.getPower();
             else {
                 power += cannon.getPower() / 2;
@@ -239,7 +239,7 @@ public abstract class Ship {
             for(int row = 0; row < rows; row++){
                 Component component = getComponentAt(row, n);
                 if(component != null && component.isCannon()) {
-                    if (((Cannon) component).getOrientation() == d){
+                    if (component.getRotation() == d){
                         cannons.add((Cannon) component);
                     }
                 }
@@ -396,18 +396,24 @@ public abstract class Ship {
     public boolean isValid(int startRow, int startCol) {
         int rows = getRows();
         int cols = getCols();
+        // initialize visited array to keep track of visited components
         boolean[][] visited = new boolean[rows][cols];
 
+        // initialize queue for the component search
         Queue<int[]> queue = new LinkedList<>();
+        // start from the coordinates passe as arguments
         queue.add(new int[]{startRow, startCol});
+        // mark the starting component as visited
         visited[startRow][startCol] = true;
 
+        // do while there are components in the queue
         while (!queue.isEmpty()) {
+            // save the coordinates of the component to check
             int[] current = queue.poll();
             int i = current[0];
             int j = current[1];
             Component component = getComponentAt(i, j);
-
+            // se non c'è un componente in quella posizione, salta
             if (component == null) continue;
 
             // Check connections in all four directions
@@ -438,7 +444,7 @@ public abstract class Ship {
 
                 // Skip if there's no connector in this direction
                 if (connector == null || connector == ConnectorEnum.ZERO) {
-                    if(component.isCannon() && ((Cannon) component).getOrientation() == dir) {
+                    if(component.isCannon() && component.getRotation() == dir) {
                         //if it's a cannon we need to check if it has a component in the direction of the cannon
                         if(getComponentAt(adjRow, adjCol) != null) {
                             return false;
@@ -519,7 +525,7 @@ public abstract class Ship {
         if (position == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
-        if (!this.isNormal() || !c.isLifeSupport()) {
+        if (this.isNormal() || !c.isLifeSupport()) {
             c.updateParameter(this, -1);
         }
         try {
@@ -621,14 +627,14 @@ public abstract class Ship {
                 if(c!= null && c.isCabin()){
                     for (int k = 0; k < 4; k++) {
                         if (c.getConnectors().get(Direction.values()[k]) != ConnectorEnum.ZERO) {
-                            if (k == 0) { // take left
-                                adj = getComponentAt(i, j - 1);
-                            } else if (k == 1) { // take up
+                            if (k == 0) { // take up
                                 adj = getComponentAt(i - 1, j);
-                            } else if (k == 2) { // take right
-                                adj = getComponentAt(i, j + 1);
-                            } else { // take down
+                            } else if (k == 1) { // take left
+                                adj = getComponentAt(i , j - 1 );
+                            } else if (k == 2) { // take down
                                 adj = getComponentAt(i + 1, j);
+                            } else { // take right
+                                adj = getComponentAt(i, j * 1);
                             }
                             if (adj != null) {
                                 if (adj.isCabin()) {

@@ -10,6 +10,12 @@ import it.polimi.ingsw.gc20.server.model.ship.Tile;
 
 import java.util.Map;
 
+/**
+ * Represents a cabin in the ship, capable of housing astronauts and aliens.
+ * The cabin can have a specific color and interact with life support systems.
+ * It manages its occupants, specifically astronauts and aliens,
+ * while ensuring compatibility with its constraints.
+ */
 public class Cabin extends Component {
     private int astronauts;
     private boolean alien = false;
@@ -19,33 +25,39 @@ public class Cabin extends Component {
     public Cabin() {}
 
     /**
-     * Function that returns the astronauts in the cabin.
-     * @return the astronauts in the cabin
+     * Retrieves the number of astronauts currently present in the cabin.
+     *
+     * @return the number of astronauts in the cabin
      */
     public int getAstronauts() {
         return astronauts;
     }
 
     /**
-    * Function that sets the astronauts in the cabin.
-    * @param astronauts the astronauts to set
+     * Updates the number of astronauts in the cabin by adding the specified value.
+     *
+     * @param astronauts the number of astronauts to add to the cabin
      */
     public void setAstronauts(int astronauts) {
         this.astronauts += astronauts;
     }
 
     /**
-    * Getter method for alien parameter.
-    * @return the alien color in the cabin
+     * Returns whether an alien is present in the cabin.
+     *
+     * @return true if an alien is present in the cabin, false otherwise
      */
     public boolean getAlien() {
         return alien;
     }
 
     /**
-    * Function that sets the alien in the cabin.
-    * @param color is the color of the alien
-     * @throws InvalidAlienPlacement if the alien is not the same color as the cabin
+     * Sets the alien color for the cabin. Ensures that the alien can only be placed
+     * in a cabin of a compatible color. Throws an exception if the color of the alien
+     * is incompatible with the cabin's color.
+     *
+     * @param color the color of the alien to be set in the cabin
+     * @throws InvalidAlienPlacement if the alien's color is incompatible with the cabin's color
      */
     public void setAlien(AlienColor color) throws InvalidAlienPlacement {
         if (cabinColor != color && cabinColor != AlienColor.BOTH) {
@@ -56,25 +68,29 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that returns the color of the alien in the cabin.
-     * @return the color of the alien
+     * Retrieves the color of the alien associated with the cabin.
+     *
+     * @return the color of the alien, represented as an instance of AlienColor
      */
     public AlienColor getAlienColor() {
         return alienColor;
     }
 
     /**
-     * Function that returns the color of the alien in the cabin.
-     * @return the color of the cabin
+     * Retrieves the current color of the cabin.
+     *
+     * @return the color of the cabin as an instance of AlienColor
      */
     public AlienColor getCabinColor() {
         return cabinColor;
     }
 
     /**
-     * Function that sets the color of the cabin.
-     * @param color is the color to set
-     * @implNote if the cabin already has a different color, it will be set to BOTH
+     * Sets the color of the cabin. If the cabin color is already set to a value other than NONE
+     * and the new color differs from the existing one, the cabin color will be updated to BOTH.
+     * Otherwise, the cabin color will be updated to the specified color.
+     *
+     * @param color the color to set for the cabin
      */
     public void setColor(AlienColor color) {
         if (cabinColor != AlienColor.NONE && cabinColor != color) {
@@ -92,7 +108,10 @@ public class Cabin extends Component {
     }
 
     /**
-    * Function that unloads one alien from the cabin.
+     * Unloads the alien from the cabin by resetting the associated properties.
+     * Specifically, this method sets the alien presence to false and the alien's color to NONE.
+     *
+     * @throws InvalidAlienPlacement if the current operation violates any placement constraints.
      */
     public void unloadAlien() throws InvalidAlienPlacement {
         alien = false;
@@ -100,8 +119,11 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that adds support to the cabin.
-     * @param ls the lifeSupport that's added
+     * Adds the given life support to the cabin. Updates the cabin's color based on the color of the provided life support.
+     * If the cabin's color is not NONE and differs from the life support's color, the cabin's color is set to BOTH.
+     * Otherwise, the cabin's color is updated to match the life support's color.
+     *
+     * @param ls the LifeSupport instance to add to the cabin
      */
     public void addSupport(LifeSupport ls) {
         if (cabinColor != AlienColor.NONE && cabinColor != ls.getColor()) { 
@@ -112,8 +134,11 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that removes support to the cabin.
-     * @param ls the lifeSupport that's removed
+     * Removes the specified life support from the cabin. Updates the cabin's color
+     * and alien-related properties based on the color of the given life support
+     * and the current state of the cabin.
+     *
+     * @param ls the LifeSupport instance to be removed from the cabin
      */
     public void removeSupport(LifeSupport ls){
         if (cabinColor == AlienColor.BOTH) {
@@ -127,16 +152,21 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that returns the number of astronauts and aliens in the cabin.
-     * @return the number of astronauts and aliens in the cabin
+     * Calculates and retrieves the total number of occupants in the cabin.
+     * The occupants include the astronauts and, if present, the alien.
+     *
+     * @return the total number of occupants in the cabin as an integer
      */
     public int getOccupants(){
         return astronauts + (alien ? 1 : 0);
     }
 
     /**
-     * Function that initialize the astronauts in the cabin.
-     * @return the number of astronauts in the cabin
+     * Initializes the number of astronauts in the cabin based on the alien presence.
+     * If no alien is present, sets the number of astronauts to 2 in the cabin.
+     * If an alien is present, no astronauts are added.
+     *
+     * @return the number of astronauts initialized in the cabin. If no alien is present, returns 2; otherwise, returns 0.
      */
     @Override
     public int initializeAstronauts (){
@@ -148,9 +178,11 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that update the parameter of the ship.
-     * @param s ship that is updating his parameter
-     * @param sign integer that indicate if the parameter is increasing or decreasing
+     * Updates the parameters of the cabin based on the provided ship and sign value.
+     *
+     * @param s the ship where the cabin is currently located
+     * @param sign the direction of the update; use a positive value to add support,
+     *             and a negative value to unload crew until the cabin is empty
      */
     @Override
     public void updateParameter (Ship s, int sign){
@@ -205,14 +237,22 @@ public class Cabin extends Component {
     }
 
     /**
-     * Function that returns true if the component is a cabin.
-     * @return true if the component is a cabin, false otherwise
+     * Determines if this component is a cabin.
+     *
+     * @return true if this component is a cabin, false otherwise
      */
     @Override
     public boolean isCabin() {
         return true;
     }
 
+    /**
+     * Creates and initializes a view component for the cabin.
+     * The component is initialized with the current astronauts, alien, alien color, and cabin color values.
+     *
+     * @return the created and initialized view component for the cabin
+     */
+    @Override
     public ViewComponent createViewComponent (){
         ViewCabin viewCabin = new ViewCabin();
         viewCabin.astronauts = astronauts;

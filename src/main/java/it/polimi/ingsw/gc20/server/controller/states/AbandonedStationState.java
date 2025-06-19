@@ -36,7 +36,7 @@ public class AbandonedStationState extends CargoState {
         this.crewNeeded = card.getCrew();
         this.reward = card.getReward();
         this.lostDays = card.getLostDays();
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " turn");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + "'s action.");
         //notify the first player that it's his turn with an acceptPhaseMessage and send the other players a standby message
         this.phase = StatePhase.ACCEPT_PHASE;
         getController().getMessageManager().notifyPhaseChange(phase, this);
@@ -61,15 +61,15 @@ public class AbandonedStationState extends CargoState {
     public void acceptCard(Player player) throws InvalidTurnException, InvalidStateException {
         //check if the player is the current player
         if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the player has enough crew to accept the card
         if(player.getShip().crew() < crewNeeded){
-            throw new InvalidStateException("You don't have enough crew to land on the station");
+            throw new InvalidStateException("You don't have enough crew to land on the station, you need at least " + crewNeeded + " crew members.");
         }
         //set the phase to the next phase
         phase = StatePhase.ADD_CARGO;
-        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo");
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo.");
         //notify the current player of the new phase
         getController().getMessageManager().notifyPhaseChange(phase, this);
         //mark the card as played
@@ -90,18 +90,19 @@ public class AbandonedStationState extends CargoState {
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, CargoException, InvalidTurnException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("cannot load cargo in this state");
+            throw new InvalidStateException("Cannot load cargo in this state.");
         }
         //check if the player is the current player
         if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the cargo the player is trying to load is in the reward
         if(!reward.contains(loaded)){
-            throw new CargoNotLoadable("You can't load this cargo, it's not in the reward");
+            throw new CargoNotLoadable("You can't load this cargo, it's not in the reward.");
         }
         reward.remove(loaded);
         super.loadCargo(player, loaded, chTo);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -117,13 +118,14 @@ public class AbandonedStationState extends CargoState {
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException, ComponentNotFoundException{
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't unload cargo in this state");
+            throw new InvalidStateException("You can't unload cargo in this state.");
         }
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         super.unloadCargo(player, unloaded, ch);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -143,13 +145,14 @@ public class AbandonedStationState extends CargoState {
     public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         //check if we are in the correct phase
         if (phase != StatePhase.ADD_CARGO) {
-            throw new InvalidStateException("You can't move cargo in this state");
+            throw new InvalidStateException("You can't move cargo in this state.");
         }
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         super.moveCargo(player, loaded, chFrom, chTo);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     /**
@@ -162,14 +165,14 @@ public class AbandonedStationState extends CargoState {
     public void endMove(Player player) throws InvalidTurnException{
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         //check if the card has been played
         if (getController().getActiveCard().isPlayed()) {
             //if the card has been played, the player who played it loses days
             getModel().movePlayer(player, -lostDays);
             //notify all the player of the player update
-            PlayerUpdateMessage pum = new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces()));
+            PlayerUpdateMessage pum = new PlayerUpdateMessage(player.getUsername(), 0, true, player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces());
             getController().getMessageManager().broadcastUpdate(pum);
             //change the phase to standby phase
             phase = StatePhase.DRAW_CARD_PHASE;
