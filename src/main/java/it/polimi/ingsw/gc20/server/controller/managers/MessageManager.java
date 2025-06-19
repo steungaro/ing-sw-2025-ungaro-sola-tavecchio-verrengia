@@ -41,9 +41,8 @@ public class MessageManager {
                 } else {
                     NetworkService.getInstance().sendToClient(username, new StandbyMessage(state.getStandbyMessage()));
                 }
-            } catch (InvalidStateException e){
+            } catch (InvalidStateException _){
                 // This should never happen, as the state is always valid when the phase changes
-                e.printStackTrace();
             }
         }
     }
