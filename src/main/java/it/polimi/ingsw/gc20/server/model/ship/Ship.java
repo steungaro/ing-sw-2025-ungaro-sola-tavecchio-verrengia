@@ -14,14 +14,14 @@ public abstract class Ship {
 
 
     protected final Set<Component> waste;
-    protected Integer singleEngines;
-    protected final Integer doubleCannons;
-    protected Integer doubleEngines;
-    protected Integer doubleCannonsPower;
+    protected int singleEngines;
+    protected final int doubleCannons;
+    protected int doubleEngines;
+    protected int doubleCannonsPower;
     protected Float singleCannonsPower;
-    protected Integer totalEnergy;
+    protected int totalEnergy;
     protected final Map<CargoColor, Integer> cargos;
-    protected Integer astronauts;
+    protected int astronauts;
     protected Tile[][] table;
     /**
      * Default constructor. Initializes default ship values.
@@ -43,7 +43,7 @@ public abstract class Ship {
         return singleCannonsPower;
     }
 
-    public Integer getSingleEngines() {
+    public int getSingleEngines() {
         return singleEngines;
     }
 
@@ -69,13 +69,13 @@ public abstract class Ship {
      * Gets the total number of rows in the ship grid
      * @return Number of rows
      */
-    public abstract Integer getRows();
+    public abstract int getRows();
 
     /**
      * Get the number of columns in this ship
      * @return number of columns
      */
-    public abstract Integer getCols();
+    public abstract int getCols();
 
     /**
      * Gets the component at the specified position
@@ -103,7 +103,7 @@ public abstract class Ship {
      * @throws EnergyException if the number of cannons is greater than the total energy of the ship
      * @throws InvalidCannonException if a cannon is a single cannon
      */
-    public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
+    public float firePower(Set<Cannon> cannons, int energies) throws EnergyException, InvalidCannonException {
         if (cannons == null) {
             return singleCannonsPower;
         }
@@ -128,7 +128,7 @@ public abstract class Ship {
      * @return power_of_the_ship
      * @throws IllegalArgumentException if the number of double engines activated is greater than the total number of double engines
      */
-    public Integer enginePower(Integer doubleEnginesActivated) throws InvalidEngineException {
+    public int enginePower(int doubleEnginesActivated) throws InvalidEngineException {
         if (doubleEnginesActivated > doubleEngines) {
             throw new InvalidEngineException("not enough double engines");
         }
@@ -139,7 +139,7 @@ public abstract class Ship {
      * Gets the total energy available from batteries
      * @return Total energy
      */
-    public Integer getTotalEnergy() {
+    public int getTotalEnergy() {
         return totalEnergy;
     }
 
@@ -147,7 +147,7 @@ public abstract class Ship {
      * Gets the total number of astronauts in the ship
      * @return Crew count
      */
-    public Integer crew() {
+    public int crew() {
         return astronauts;
     }
 
@@ -155,17 +155,17 @@ public abstract class Ship {
     /**
      * @return the number of astronauts
      */
-    public Integer getAstronauts() {
+    public int getAstronauts() {
         return astronauts;
     }
 
     /**
      * Function that gets the first component of the ship from a certain direction to determine what component will be hit
      * @param d Direction: the direction from which the component will be hit
-     * @param n Integer: row or column of the component ATTENTION it is the row or colum of the ship
+     * @param n int: row or column of the component ATTENTION it is the row or colum of the ship
      * @return component_hit
      */
-    public Component getFirstComponent(Direction d, Integer n) {
+    public Component getFirstComponent(Direction d, int n) {
         int rows = getRows(), cols = getCols();
         if ((d == Direction.UP || d == Direction.DOWN) && (n < 0 || n >= cols)) {
             return null;
@@ -231,7 +231,7 @@ public abstract class Ship {
      * @param n Row/column index to check
      * @return List of cannons pointing in that direction
      */
-    public List<Cannon> getCannons(Direction d, Integer n) {
+    public List<Cannon> getCannons(Direction d, int n) {
         int cols = getCols();
         int rows = getRows();
         List<Cannon> cannons = new ArrayList<>();
@@ -260,7 +260,7 @@ public abstract class Ship {
      * Counts all connectors that are exposed to space (not connected to another component)
      * @return Number of exposed connectors
      */
-    public Integer getAllExposed() {
+    public int getAllExposed() {
         int rows = getRows();
         int cols = getCols();
         int exposedConnectors = 0;
@@ -634,7 +634,7 @@ public abstract class Ship {
                             } else if (k == 2) { // take down
                                 adj = getComponentAt(i + 1, j);
                             } else { // take right
-                                adj = getComponentAt(i, j * 1);
+                                adj = getComponentAt(i, j + 1);
                             }
                             if (adj != null) {
                                 if (adj.isCabin()) {

@@ -3,14 +3,13 @@ package it.polimi.ingsw.gc20.server.model.ship;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidTileException;
 import it.polimi.ingsw.gc20.server.model.components.Component;
 
-import java.security.*;
-
 /**
- * @author GC20
+ * The Tile class represents a single unit or space in a grid or board-like structure.
+ * It maintains the ability to hold a single component and manages the state of its availability.
  */
 public class Tile {
 
-    private Boolean availability;
+    private boolean availability;
     private Component component;
 
     /**
@@ -22,17 +21,20 @@ public class Tile {
     }
 
     /**
-     * Getter for the component
-     * @return component
+     * Retrieves the component currently associated with this tile.
+     *
+     * @return the component associated with this tile, or null if no component is present
      */
     public Component getComponent() {
         return component;
     }
 
     /**
-     * Add a component to the tile
-     * @param c Component
-     * @throws InvalidTileException if the tile is not available
+     * Adds a component to the tile if it is available. The component's tile is set
+     * to this tile. If the tile is not available, an exception is thrown.
+     *
+     * @param c the component to be added to the tile
+     * @throws InvalidTileException if the tile is not available for a new component
      */
     public void addComponent(Component c) throws InvalidTileException {
         if(availability) {
@@ -45,25 +47,31 @@ public class Tile {
     }
 
     /**
-     * Getter for the availability
-     * @return availability
+     * Retrieves the availability status of the tile.
+     *
+     * @return true if the tile is available for a new component, false otherwise
      */
-    public Boolean getAvailability() {
-
+    public boolean getAvailability() {
         return availability;
     }
 
     /**
-     * Setter for the availability
-     * @param a Boolean
+     * Sets the availability status of the tile.
+     *
+     * @param a the new availability status of the tile, where true indicates the tile is available 
+     *          for a new component and false indicates it is not
      */
-    public void setAvailability(Boolean a) {
+    public void setAvailability(boolean a) {
         availability = a;
     }
 
     /**
-     * Removes the component from the tile
-     * @throws InvalidParameterException Component does not exist
+     * Removes the component currently associated with this tile.
+     * If a component is present, its associated tile is set to null, the component is removed
+     * from the tile, and the tile's availability is set to true.
+     * If no component is present, an exception is thrown.
+     *
+     * @throws InvalidTileException if no component is currently associated with this tile
      */
     public void removeComponent() throws InvalidTileException {
         if(component != null){

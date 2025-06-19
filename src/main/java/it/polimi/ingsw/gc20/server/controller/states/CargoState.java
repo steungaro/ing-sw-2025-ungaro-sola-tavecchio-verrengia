@@ -46,7 +46,7 @@ public abstract class CargoState extends PlayingState {
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException,  InvalidStateException, InvalidCargoException, ComponentNotFoundException{
         try {
-            getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+            getModel().moveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
         } catch (CargoNotLoadable | CargoFullException _) {
             //ignore this exception, we are unloading the cargo
@@ -67,7 +67,7 @@ public abstract class CargoState extends PlayingState {
      */
     @Override
     public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, InvalidStateException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
-        getModel().MoveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
+        getModel().moveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "moved cargo"));
     }
 

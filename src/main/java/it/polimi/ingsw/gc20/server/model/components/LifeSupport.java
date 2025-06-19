@@ -5,6 +5,11 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewLifeSup
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+/**
+ * The LifeSupport class represents a component responsible for maintaining
+ * life support systems within a ship. It extends the Component class and
+ * provides functionality for managing and updating life support parameters.
+ */
 public class LifeSupport extends Component {
 
     private AlienColor color;
@@ -15,25 +20,32 @@ public class LifeSupport extends Component {
     }
 
     /**
-     * This function returns the type of the life support
-     * @return the type of the life support
+     * Retrieves the color of the life support component.
+     *
+     * @return the current color of the life support, represented as an AlienColor enum value.
      */
     public AlienColor getColor() {
         return color;
     }
 
     /**
-     * This function sets the type of the life support
-     * @param color the type of the life support
+     * Sets the color of the life support component.
+     *
+     * @param color the new color to set, represented as an AlienColor enum value.
+     *              Valid values include PURPLE, BROWN, BOTH, and NONE.
      */
     public void setColor(AlienColor color) {
         this.color = color;
     }
 
     /**
-     * Function that update the parameter of the ship
-     * @param ship ship that is updating his parameter
-     * @param sign integer that indicate if the parameter is increasing or decreasing
+     * Updates the life support parameters of the given ship based on the specified sign.
+     * If the sign is negative, it performs operations for removing life support.
+     * If the sign is positive, it performs operations for adding life support.
+     *
+     * @param ship the ship whose life support parameters are to be updated
+     * @param sign an integer indicating the type of update. A negative sign indicates
+     *             removal of life support, while a positive sign indicates addition of life support
      */
     @Override
     public void updateParameter(Ship ship, int sign) {
@@ -45,8 +57,9 @@ public class LifeSupport extends Component {
     }
 
     /**
-     * Function that returns true if the component is a life support
-     * @return true if the component is a life support
+     * Indicates whether the component is a life support component.
+     *
+     * @return true to signify that this component represents life support functionality.
      */
     @Override
     public boolean isLifeSupport() {

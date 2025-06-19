@@ -104,7 +104,7 @@ public class CombatZone0State extends PlayingState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //calculate the firepower that the player declared
         super.activateCannons(player, cannons, batteries);
-        float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firepower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player.getUsername(), firepower);
         //pass the turn to the next player
         nextPlayer();
@@ -282,7 +282,7 @@ public class CombatZone0State extends PlayingState {
             throw new InvalidTurnException("It's not your turn!");
         }
         //translate the coordinates to the components and calculate the engine power
-        int enginePower = getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
+        int enginePower = getModel().enginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //save the engine power in the declaredEnginePower map
         declaredEnginePower.put(player.getUsername(), enginePower);

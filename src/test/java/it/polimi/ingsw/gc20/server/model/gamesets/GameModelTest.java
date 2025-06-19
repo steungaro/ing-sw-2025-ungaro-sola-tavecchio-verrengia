@@ -398,7 +398,7 @@ class GameModelTest {
         cannons.add(cannon);
 
         try {
-            float power = gameModel.FirePower(player, cannons, batteries);
+            float power = gameModel.firePower(player, cannons, batteries);
             assertEquals(ship.firePower(cannons, batteries.size()), power);
             assertEquals(1, ((Battery)ship.getComponentAt(2, 2)).getAvailableEnergy());
         } catch (Exception e) {
@@ -416,7 +416,7 @@ class GameModelTest {
         batteries.add((Battery)ship.getComponentAt(2, 2));
 
         try {
-            int power = gameModel.EnginePower(player, 1, batteries);
+            int power = gameModel.enginePower(player, 1, batteries);
             assertEquals(ship.enginePower(1), power);
             assertEquals(1, ((Battery)ship.getComponentAt(2, 2)).getAvailableEnergy());
         } catch (Exception e) {
@@ -484,10 +484,10 @@ class GameModelTest {
             assertNotNull(ship.getCargo().get(CargoColor.GREEN));
             assertEquals(1, ship.getCargo().get(CargoColor.GREEN));
 
-            gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold1, cargoHold2);
+            gameModel.moveCargo(player, CargoColor.GREEN, cargoHold1, cargoHold2);
             assertEquals(1, ship.getCargo().get(CargoColor.GREEN));
 
-            gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold2, null);
+            gameModel.moveCargo(player, CargoColor.GREEN, cargoHold2, null);
             assertEquals(0, ship.getCargo().getOrDefault(CargoColor.GREEN, 0));
 
         } catch (Exception e) {
@@ -506,8 +506,8 @@ class GameModelTest {
 
         try {
 
-            gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold, null);
-            gameModel.MoveCargo(player, CargoColor.BLUE, cargoHold, null);
+            gameModel.moveCargo(player, CargoColor.GREEN, cargoHold, null);
+            gameModel.moveCargo(player, CargoColor.BLUE, cargoHold, null);
 
 
             gameModel.addCargo(player, CargoColor.YELLOW, cargoHold);
@@ -538,7 +538,7 @@ class GameModelTest {
         CargoHold cargoHold = (CargoHold) ship.getComponentAt(1, 2);
 
 
-        assertThrows(InvalidCargoException.class, () -> gameModel.MoveCargo(player, CargoColor.RED, cargoHold, null));
+        assertThrows(InvalidCargoException.class, () -> gameModel.moveCargo(player, CargoColor.RED, cargoHold, null));
 
         try {
 
@@ -556,7 +556,7 @@ class GameModelTest {
             gameModel.addCargo(player, CargoColor.BLUE, smallCargoHold);
 
 
-            assertThrows(CargoFullException.class, () -> gameModel.MoveCargo(player, CargoColor.GREEN, cargoHold, smallCargoHold));
+            assertThrows(CargoFullException.class, () -> gameModel.moveCargo(player, CargoColor.GREEN, cargoHold, smallCargoHold));
         } catch (Exception e) {
             fail("Exception should not be thrown: " + e.getMessage());
         }
@@ -742,7 +742,7 @@ class GameModelTest {
             heavyProjectile.setFireType(FireType.HEAVY_FIRE);
 
 
-            gameModel.Fire(player, 8, heavyProjectile);
+            gameModel.fire(player, 8, heavyProjectile);
             assertFalse(cabin.getAlien());
 
         } catch (Exception e) {

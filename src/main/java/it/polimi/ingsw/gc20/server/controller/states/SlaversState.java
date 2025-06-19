@@ -76,7 +76,7 @@ public class SlaversState extends PlayingState {
         if (Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //calculate the firepower
-        float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firePower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         if (firePower > this.firePower) {
             //won, the player can accept the card
@@ -121,12 +121,8 @@ public class SlaversState extends PlayingState {
         if (phase != StatePhase.LOSE_CREW_PHASE) {
             throw new InvalidStateException("You don't have to lose crew.");
         }
-        int actualLostMembers;
+        int actualLostMembers = Math.min(player.getShip().crew(), lostMembers);
         //check if the player has enough crew to lose
-        if (player.getShip().crew() < lostMembers) {
-            actualLostMembers = player.getShip().crew();
-        } else
-            actualLostMembers = lostMembers;
 
         if (cabins.size() < actualLostMembers) {
             throw new InvalidStateException("Not enough cabins selected. You need to select at least " + actualLostMembers + " cabins.");

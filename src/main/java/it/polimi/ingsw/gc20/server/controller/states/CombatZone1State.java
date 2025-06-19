@@ -97,7 +97,7 @@ public class  CombatZone1State extends CargoState {
         if(Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //save the declared firepower in the map
-        float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firepower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player.getUsername(), firepower);
         super.activateCannons(player, cannons, batteries);
         //pass the turn to the next player
@@ -161,7 +161,7 @@ public class  CombatZone1State extends CargoState {
         if(Translator.getComponentAt(player, batteries, Battery.class)!=null)
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //save the declared engine power in the map
-        declaredEnginePower.put(player.getUsername(), getModel().EnginePower(player, engines.size(), batteriesComponents));
+        declaredEnginePower.put(player.getUsername(), getModel().enginePower(player, engines.size(), batteriesComponents));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //pass the turn to the next player
         nextPlayer();

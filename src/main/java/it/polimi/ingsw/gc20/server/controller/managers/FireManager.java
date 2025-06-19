@@ -83,7 +83,7 @@ public class FireManager {
             return;
         }
         try {
-            gm.Fire(player, dice, fire);
+            gm.fire(player, dice, fire);
         } catch (InvalidShipException e) {
             validator.setSplit();
             throw e;
@@ -91,8 +91,6 @@ public class FireManager {
     }
 
     public boolean finished() {
-        if(fires == null)
-            return true;
         return fires.isEmpty();
     }
 

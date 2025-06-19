@@ -4,13 +4,20 @@ package it.polimi.ingsw.gc20.server.model.components;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewShield;
 
+/**
+ * Represents a Shield component that can cover specific sides and perform rotational actions.
+ * The Shield maintains a record of covered sides and updates them when rotated.
+ * It also provides functionality to check if a shield is present in a specific direction
+ * and to create a visual representation of the shield.
+ */
 public class Shield extends Component {
 
     private Direction[] coveredSides = new Direction[2];
 
     /**
-     * This function returns the covered sides of the shield
-     * @return the covered sides of the shield
+     * Retrieves the directions covered by the shield.
+     *
+     * @return an array of directions (Direction[]) representing the sides covered by the shield.
      */
     public Direction[] getCoveredSides() {
         return coveredSides;
@@ -21,15 +28,28 @@ public class Shield extends Component {
     }
 
     /**
-        * This function returns the covered sides of the shield
+     * Sets the directions covered by the shield.
+     *
+     * @param coveredSides an array of Direction values representing the sides that are covered
+     *                     by the shield.
      */
     public void setCoveredSides(Direction[] coveredSides) {
         this.coveredSides = coveredSides;
     }
 
     /**
-        * Rotate the shield counterclockwise
-        * The connectors are rotated and the covered sides are updated
+     * Rotates the shield 90 degrees clockwise.
+     * <p>
+     * This method updates the rotation of the shield, ensuring that each direction
+     * in the {@code coveredSides} array transitions to its corresponding clockwise direction:
+     * - UP becomes RIGHT
+     * - RIGHT becomes DOWN
+     * - DOWN becomes LEFT
+     * - LEFT becomes UP
+     * <p>
+     * It overrides the parent class's {@code rotateClockwise} method to handle the
+     * specific behavior of the shield's covered sides, while also maintaining
+     * the parent class rotational behavior.
      */
     @Override
     public void rotateClockwise() {
@@ -49,8 +69,20 @@ public class Shield extends Component {
     }
 
     /**
-        * Rotate the shield clockwise
-        * The connectors are rotated and the covered sides are updated
+     * Rotates the shield 90 degrees counterclockwise.
+     * <p>
+     * This method adjusts the directions covered by the shield, updating the
+     * {@code coveredSides} array to reflect the new orientation. Each direction
+     * in the array transitions as follows:
+     * - UP becomes LEFT
+     * - LEFT becomes DOWN
+     * - DOWN becomes RIGHT
+     * - RIGHT becomes UP
+     * <p>
+     * Additionally, this method overrides the parent class's
+     * {@code rotateCounterclockwise} method to ensure the shield's specific
+     * behavior is handled properly, while maintaining the general rotational
+     * behavior defined in the superclass.
      */
     @Override
     public void rotateCounterclockwise() {
@@ -71,9 +103,10 @@ public class Shield extends Component {
 
 
     /**
-     * Function that return true if the shield is in the direction passed as parameter
-     * @param dir direction ti verify
-     * @return true if the shield is in the direction passed as parameter
+     * Checks if the shield covers the given direction.
+     *
+     * @param dir the direction to check (of type {@code Direction}).
+     * @return {@code true} if the shield covers the specified direction; {@code false} otherwise.
      */
     @Override
     public boolean shieldIn (Direction dir) {

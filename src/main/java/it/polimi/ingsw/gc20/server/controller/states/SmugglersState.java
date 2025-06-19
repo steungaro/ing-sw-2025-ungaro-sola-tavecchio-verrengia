@@ -194,7 +194,7 @@ public class SmugglersState extends CargoState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         currentLostCargo = 0;
         //calculate the firepower
-        float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firePower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         if (firePower > this.firePower) {
             phase = StatePhase.ACCEPT_PHASE;

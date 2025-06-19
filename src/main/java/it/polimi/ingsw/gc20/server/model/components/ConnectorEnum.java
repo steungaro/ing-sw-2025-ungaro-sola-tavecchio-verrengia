@@ -4,10 +4,10 @@ package it.polimi.ingsw.gc20.server.model.components;
  * This enumeration represents the connectors of the cards.
  */
 public enum ConnectorEnum {
-    ZERO,
-    S,
-    D,
-    U;
+    ZERO, // No connector
+    S, // Single connector
+    D, // Double connector
+    U; // Universal connector
 
     /**
      * This function returns the value of the connector.
@@ -15,7 +15,7 @@ public enum ConnectorEnum {
      * 0 = no connector
      * 1 = single connector
      * 2 = double connector
-     * 3 = triple connector
+     * 3 = universal connector
      */
     public int getValue() {
         return switch (this) {
@@ -23,7 +23,6 @@ public enum ConnectorEnum {
             case S -> 1;
             case D -> 2;
             case U -> 3;
-            default -> -1; // This should never happen
         };
     }
 }

@@ -58,7 +58,7 @@ public class OpenSpaceState extends PlayingState {
         if (Translator.getComponentAt(player, batteries, Battery.class) != null)
             energy.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //save the declared engine power in the map
-        declaredEngines.put(player, getModel().EnginePower(player, engines.size(), energy));
+        declaredEngines.put(player, getModel().enginePower(player, engines.size(), energy));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //go to the next player
         nextPlayer();

@@ -114,7 +114,7 @@ public class PiratesState extends PlayingState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
 
         //calculate the firepower
-        float firePower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firePower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
         //fight with the pirates
         if (firePower > this.firePower) {

@@ -8,15 +8,20 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * @author GC20
+ * Represents an abstract game board that contains a deck of adventure cards, a stall box for players,
+ * and game spaces. It provides the foundation for creating specific board types in subclasses
+ * by defining common functionalities such as managing the deck, spaces, and stall box.
  */
 public abstract class Board {
     protected List<AdventureCard> deck;
     protected Integer spaces;
     protected final List<Player> stallBox;
     protected final Logger logger = Logger.getLogger(Board.class.getName());
+
     /**
-     * Default constructor
+     * Default constructor for the Board class.
+     * Initializes an empty deck of adventure cards, sets the number of spaces to zero,
+     * and creates an empty stall box for players.
      */
     public Board() {
         this.deck = new ArrayList<>();
@@ -24,72 +29,104 @@ public abstract class Board {
         this.stallBox = new ArrayList<>();
     }
 
-    /** function that draw the first card from the deck
-     * @exception  NoSuchElementException if the deck is empty
-     * @return AdventureCard
+    /**
+     * Draws the top card from the deck of adventure cards. If the deck is empty,
+     * an EmptyDeckException is thrown.
+     *
+     * @return the top AdventureCard from the deck
+     * @throws EmptyDeckException if the deck is empty
      */
     public AdventureCard drawCard() throws EmptyDeckException {
         if (!this.deck.isEmpty()) {
             return this.deck.removeFirst();
-        } else { // deck is empty
+        } else { // the deck is empty
             throw new EmptyDeckException("Deck is empty");
         }
     }
 
-    /** set function for spaces
-     * @param spaces number of spaces
+    /**
+     * Sets the number of spaces on the board.
+     *
+     * @param spaces the number of spaces to set on the board
      */
     public void setSpaces(Integer spaces) {
         this.spaces = spaces;
     }
 
-    /** function that creates the deck
+    /**
+     * Abstract method to create and initialize the deck of adventure cards on the board.
+     * This method must be implemented by subclasses of the Board class to define their
+     * specific logic for generating or preparing the deck of cards to be used in the game.
      */
     public abstract void createDeck();
 
-    /** get function for spaces
-     * @return Integer
+    /**
+     * Retrieves the number of spaces on the board.
+     *
+     * @return the number of spaces as an Integer
      */
     public Integer getSpaces() {
         return this.spaces;
     }
 
-    /** set function for deck
-     * @param deck list of AdventureCard
+    /**
+     * Sets the deck of adventure cards for the board.
+     *
+     * @param deck the list of AdventureCard objects to set as the deck
      */
     public void setDeck(List<AdventureCard> deck) {
         this.deck = deck;
     }
 
-    /** get function for deck
-     * @return List<AdventureCard>
+    /**
+     * Retrieves the current deck of adventure cards for the board.
+     *
+     * @return a List of AdventureCard objects representing the deck
      */
     public List<AdventureCard> getDeck() {
         return this.deck;
     }
-    /** add function for the stall box
-     * @param p player to add
+    /**
+     * Adds a player to the stall box on the board.
+     *
+     * @param p the player to be added to the stall box
      */
     public void addPlayer (Player p){
         stallBox.add(p);
     }
-    /** remove function for the stall box
-     * @param p player to remove
+    /**
+     * Removes a player from the stall box on the board.
+     *
+     * @param p the player to be removed from the stall box
      */
     public void removePlayer (Player p){
         stallBox.remove(p);
     }
-    /** get function for the stall box
-     * @return List<Player>
+    /**
+     * Retrieves the current list of players in the stall box.
+     *
+     * @return a List of Player objects representing the players currently in the stall box
      */
     public List<Player> getStallBox() {
         return stallBox;
     }
 
+    /**
+     * Merges multiple decks of adventure cards into a single deck on the board.
+     * This method consolidates cards from different sources, ensuring they are all
+     * included in a unified deck ready for use during gameplay. The specific behavior
+     * of this method, including how duplicate or shuffled cards are handled, is determined
+     * by the implementation in the subclass. The default implementation does nothing.
+     */
     public void mergeDecks(){
         //default implementation
     }
 
+    /**
+     * Determines if the board is learner level.
+     *
+     * @return true if the board is at learner level, false otherwise
+     */
     public boolean isLearner(){
         //default implementation
         return false;
