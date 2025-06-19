@@ -103,7 +103,7 @@ public class Lobby {
      * @see GameController
      */
     public GameController createGameController() throws InvalidStateException {
-        return new GameController(id, users, level);
+        return new GameController(name, id, users, level);
     }
 
     public void kill() {

@@ -39,7 +39,7 @@ public class GameController implements GameControllerInterface {
      * @param level     game difficulty level
      * @throws IllegalArgumentException if the number of players is not between 2 and 4
      */
-    public GameController(String id, List<String> usernames, int level) throws InvalidStateException{
+    public GameController(String name, String id, List<String> usernames, int level) throws InvalidStateException{
         this.messageManager = new MessageManager(this);
         if(usernames.size() > 4 || usernames.size() < 2) {
             this.gameID = null;
@@ -53,7 +53,9 @@ public class GameController implements GameControllerInterface {
             try {
                 model.startGame(level, usernames, gameID);
                 connectedPlayers.addAll(usernames);
-                //TODO: notify players of game start
+                if (name.equals("demo")){
+                    //TODO: model.createDemoShips();
+                }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error starting game", e);
                 //notify all players of the er
