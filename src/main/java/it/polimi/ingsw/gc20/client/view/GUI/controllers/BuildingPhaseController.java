@@ -1018,7 +1018,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        updateBookedComponents();
+        if (this.ship.equals(ship)) {
+            buildShipComponents(this.ship);
+        }
     }
 
     @Override
