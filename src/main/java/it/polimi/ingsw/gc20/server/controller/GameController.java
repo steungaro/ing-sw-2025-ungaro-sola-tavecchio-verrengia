@@ -54,7 +54,7 @@ public class GameController implements GameControllerInterface {
                 model.startGame(level, usernames, gameID);
                 connectedPlayers.addAll(usernames);
                 if (name.equals("demo")){
-                    //TODO: model.createDemoShips();
+                    model.createDemoShips();
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Error starting game", e);
