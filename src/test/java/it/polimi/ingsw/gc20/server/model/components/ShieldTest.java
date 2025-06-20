@@ -1,9 +1,13 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class ShieldTest {
@@ -34,5 +38,17 @@ public class ShieldTest {
         shield.rotateCounterclockwise();
         assertSame(Direction.UP, shield.getCoveredSides()[0]);
         assertSame(Direction.RIGHT, shield.getCoveredSides()[1]);
+    }
+
+    @Test
+    void createViewComponent() {
+        Map<Direction, ConnectorEnum> connectors = shield.getConnectors();
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.D);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        shield.setConnectors(connectors);
+        ViewComponent viewComponent = shield.createViewComponent();
+        assertNotNull(viewComponent);
     }
 }

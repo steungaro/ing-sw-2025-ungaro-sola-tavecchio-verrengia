@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,6 +46,16 @@ public class CannonTest {
         assertEquals(ConnectorEnum.S, cannon.getConnectors().get(Direction.RIGHT));
 
     }
-
+    @Test
+    void testCreateViewComponent(){
+        Map<Direction, ConnectorEnum> connectors = cannon.getConnectors();
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.D);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        cannon.setConnectors(connectors);
+        ViewComponent viewComponent = cannon.createViewComponent();
+        assertNotNull(viewComponent);
+    }
 
 }

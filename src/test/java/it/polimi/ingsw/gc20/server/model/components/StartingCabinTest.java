@@ -1,11 +1,13 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidAlienPlacement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StartingCabinTest {
     StartingCabin cabin;
@@ -40,5 +42,16 @@ public class StartingCabinTest {
         assertEquals(AlienColor.NONE, cabin.getCabinColor());
     }
 
+    @Test
+    void testCreateViewComponent() {
+        Map<Direction, ConnectorEnum> connectors = cabin.getConnectors();
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.D);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        cabin.setConnectors(connectors);
+        ViewComponent viewComponent = cabin.createViewComponent();
+        assertNotNull(viewComponent);
+    }
 
 }

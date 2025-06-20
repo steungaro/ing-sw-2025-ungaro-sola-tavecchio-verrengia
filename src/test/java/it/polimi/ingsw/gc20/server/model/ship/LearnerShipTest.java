@@ -170,6 +170,14 @@ class LearnerShipTest {
     }
 
     @Test
+    void getSingleEngineAndCannonPower() {
+        assertEquals(1.0f, ship.singleCannonsPower);
+        assertEquals(1, ship.singleEngines);
+        assertEquals(AlienColor.NONE, ship.getAliens());
+        assertNotNull(Ship.messageFromShip("hai letto davvero fino a qui?", ship, "Message from ship should not be null"));
+    }
+
+    @Test
     void setComponentAtValid() {
         Cannon newCannon = new Cannon();
         try {
