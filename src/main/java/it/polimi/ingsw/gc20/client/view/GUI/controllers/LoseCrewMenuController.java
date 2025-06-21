@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,17 +24,16 @@ public class LoseCrewMenuController {
     @FXML
     private Pane shipPane;
 
-    private int crewToLose;
     private String username;
     private ViewShip ship;
-    private List<Pair<Integer, Integer>> cabins = new ArrayList<>();
+    private final List<Pair<Integer, Integer>> cabins = new ArrayList<>();
+    private ShipController shipController;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
     }
 
     public void initializeWithCrewToLose(int crewToLose) {
-        this.crewToLose = crewToLose;
         crewToLoseLabel.setText("You need to lose " + crewToLose + " crew members!");
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
@@ -60,11 +58,8 @@ public class LoseCrewMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController shipController) {
-                shipController.enableCellClickHandler(this::selectCabin);
-            } else {
-                showError("Unable to get the ship controller");
-            }
+            shipController.enableCellClickHandler(this::selectCabin);
+
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
@@ -75,7 +70,19 @@ public class LoseCrewMenuController {
         int cabinRow = row - 5;
         int cabinCol = col - (ship.isLearner ? 5 : 4);
         cabins.add(new Pair<>(cabinRow, cabinCol));
+        if (shipController != null) {
+            shipController.highlightSelectedCabins(cabins);
+        }
+    }
 
+    @FXML
+    private void handleUndo() {
+        if (!cabins.isEmpty()) {
+            cabins.removeLast();
+            if (shipController != null) {
+                shipController.highlightSelectedCabins(cabins);
+            }
+        }
     }
 
     @FXML
