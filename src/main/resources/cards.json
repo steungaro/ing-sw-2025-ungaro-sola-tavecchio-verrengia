@@ -22,15 +22,15 @@
       "firePower": "5",
       "projectiles": [
         {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "LIGHT_FIRE"
         },
         {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "HEAVY_FIRE"
         },
         {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "LIGHT_FIRE"
         }
       ],
@@ -256,11 +256,11 @@
       "lostDays": "3",
       "lostCargo": "0",
       "projectiles": [{
-          "Direction": "DOWN",
+          "direction": "DOWN",
           "fireType": "LIGHT_FIRE"
         },
         {
-          "Direction": "DOWN",
+          "direction": "DOWN",
           "fireType": "HEAVY_FIRE"
       }],
         "crew": "2",
@@ -332,18 +332,16 @@
       "firePower": "6",
       "projectiles": [
         {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "HEAVY_FIRE"
         },
         {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "LIGHT_FIRE"
         },
         {
-          "Projectile": {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "HEAVY_FIRE"
-          }
         }
       ],
       "credits": "7",
@@ -586,19 +584,19 @@
         "lostCargo": "3",
         "projectiles": [
           {
-            "Direction": "UP",
+            "direction": "UP",
             "fireType": "LIGHT_FIRE"
           },
           {
-              "Direction": "LEFT",
+              "direction": "LEFT",
               "fireType": "LIGHT_FIRE"
           },
           {
-              "Direction": "RIGHT",
+              "direction": "RIGHT",
               "fireType": "LIGHT_FIRE"
           },
           {
-              "Direction": "DOWN",
+              "direction": "DOWN",
               "fireType": "HEAVY_FIRE"
           }
         ],
