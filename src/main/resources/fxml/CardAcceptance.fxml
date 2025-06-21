@@ -39,7 +39,7 @@
         </Label>
         <HBox alignment="CENTER" spacing="25.0">
             <children>
-                <Button fx:id="acceptButton" mnemonicParsing="false" onAction="#handleAccept" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #43a047, #2e7d32); -fx-text-fill: white; -fx-background-radius: 5;" text="Accetta">
+                <Button fx:id="acceptButton" mnemonicParsing="false" onAction="#handleAccept" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #43a047, #2e7d32); -fx-text-fill: white; -fx-background-radius: 5;" text="Accept">
                     <font>
                         <Font name="System Bold" size="15.0" />
                     </font>
@@ -47,7 +47,7 @@
                         <DropShadow color="#00000080" height="8.0" radius="3.5" width="8.0" />
                     </effect>
                 </Button>
-                <Button fx:id="rejectButton" mnemonicParsing="false" onAction="#handleReject" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #e53935, #c62828); -fx-text-fill: white; -fx-background-radius: 5;" text="Rifiuta">
+                <Button fx:id="rejectButton" mnemonicParsing="false" onAction="#handleReject" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #e53935, #c62828); -fx-text-fill: white; -fx-background-radius: 5;" text="Reject">
                     <font>
                         <Font name="System Bold" size="15.0" />
                     </font>
