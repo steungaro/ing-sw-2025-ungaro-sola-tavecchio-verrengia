@@ -347,6 +347,9 @@ public abstract class BuildingPhaseController implements GameModelListener, GUIC
                 imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
             }
 
+            imageView.setFitWidth(layeredPane.getWidth());
+            imageView.setFitHeight(layeredPane.getHeight());
+
             layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
             setComponentProp(layeredPane, comp);
 
@@ -426,7 +429,7 @@ public abstract class BuildingPhaseController implements GameModelListener, GUIC
 
                 layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
             } catch (Exception e) {
-                System.err.println("IUnable to load astronaut: " + e.getMessage());
+                System.err.println("Unable to load astronaut: " + e.getMessage());
                 layeredPane.getChildren().add(astronautsLabel);
             }
         }
@@ -448,41 +451,6 @@ public abstract class BuildingPhaseController implements GameModelListener, GUIC
                 layeredPane.getChildren().add(colorIndicator);
             }
         }
-    }
-
-    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
-        Rectangle box = new Rectangle();
-
-        // Bind size to parent for scaling
-        box.widthProperty().bind(parent.widthProperty().multiply(0.15));
-        box.heightProperty().bind(parent.heightProperty().multiply(0.15));
-
-        // Set color based on type
-        switch (type) {
-            case "red" -> box.setFill(javafx.scene.paint.Color.RED);
-            case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
-            case "blue" -> box.setFill(javafx.scene.paint.Color.BLUE);
-            case "yellow" -> box.setFill(javafx.scene.paint.Color.YELLOW);
-            case "empty" -> {
-                box.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                box.setStroke(javafx.scene.paint.Color.WHITE);
-                box.setStrokeWidth(1);
-                box.getStrokeDashArray().addAll(5.0, 5.0);
-            }
-        }
-
-        box.setStroke(javafx.scene.paint.Color.BLACK);
-        box.setStrokeWidth(1);
-
-        // Position using binding for responsive layout
-        box.translateXProperty().bind(
-                parent.widthProperty().multiply(relativePos[0] - 0.5)
-        );
-        box.translateYProperty().bind(
-                parent.heightProperty().multiply(relativePos[1] - 0.5)
-        );
-
-        parent.getChildren().add(box);
     }
 
     public void updateStatisticBoard(ViewPlayer player) {

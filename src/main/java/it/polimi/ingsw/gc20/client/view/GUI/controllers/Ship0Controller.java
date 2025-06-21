@@ -1,13 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 
 import java.util.Objects;
 
@@ -54,7 +54,7 @@ public class Ship0Controller extends ShipController{
         final double imageHeight = backgroundImage.getHeight();
         final double imageRatio = imageWidth / imageHeight;
 
-        rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+        rootPane.layoutBoundsProperty().addListener((_, _, newBounds) -> {
             bgImage.setFitWidth(newBounds.getWidth()*0.7);
             bgImage.setFitHeight(newBounds.getHeight()*0.7);
             double containerWidth = bgImage.getFitWidth();
@@ -77,11 +77,6 @@ public class Ship0Controller extends ShipController{
             componentsGrid.setPrefSize(gridWidth, gridHeight);
             componentsGrid.setMaxSize(gridWidth, gridHeight);
             componentsGrid.setMinSize(gridWidth, gridHeight);
-
-            // Debug output
-            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            // System.out.println("Effective image: " + actualWidth + "x" + actualHeight);
-            // System.out.println("Grill: " + gridWidth + "x" + gridHeight);
 
             // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;
@@ -155,5 +150,37 @@ public class Ship0Controller extends ShipController{
 
     protected int getCols() {
         return COLS;
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        if (this.ship.equals(ship)) {
+            buildShipComponents(ship);
+        }
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onCardUpdated(ViewAdventureCard card) {
+        // Not used in this controller
     }
 }
