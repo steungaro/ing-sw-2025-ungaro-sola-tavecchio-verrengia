@@ -13,12 +13,32 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Implements a Remote Method Invocation (RMI) service for managing game operations,
+ * allowing remote clients to perform various actions in a distributed game environment.
+ * This class communicates with a backend queue handler to enqueue game-related messages
+ * that will be processed by the system.
+ * <p>
+ * This service is intended to act as a bridge between the client and server, ensuring
+ * all game actions are handled in a thread-safe manner through enqueuing and message processing.
+ * It extends UnicastRemoteObject to support remote communication.
+ */
 public class RMIGameControllerService extends UnicastRemoteObject implements GameControllerInterface {
     private static final Logger LOGGER = Logger.getLogger(RMIGameControllerService.class.getName());
     private final QueueHandler queueHandler;
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructs an instance of the RMIGameControllerService class.
+     * <p>
+     * This constructor initializes the RMIGameControllerService by invoking the superclass
+     * constructor from UnicastRemoteObject and retrieves the singleton instance of the
+     * QueueHandler. The instance of QueueHandler will be used to manage and process
+     * messages related to the game controller's operations.
+     *
+     * @throws RemoteException if an error occurs while exporting the remote object.
+     */
     public RMIGameControllerService() throws RemoteException {
         super();
         this.queueHandler = QueueHandler.getInstance();

@@ -13,12 +13,26 @@ import org.javatuples.Pair;
 
 import java.util.*;
 
+/**
+ * Represents the OpenSpaceState in the game, which is a specific playing state where
+ * players navigate through open space. This state focuses on player actions related to
+ * selecting and activating engines and batteries, transitioning phases, and ending turns.
+ * It is dynamically created during the game and integrates with the game model, controller,
+ * and adventure card mechanics.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class OpenSpaceState extends PlayingState {
     private final Map<Player, Integer> declaredEngines = new HashMap<>();
 
     /**
-     * Default constructor
+     * Constructs an OpenSpaceState object. This initializes the state with the provided
+     * game model, controller, and adventure card and sets the initial phase to ENGINES_PHASE.
+     * It also configures the standby message for the current player and notifies the
+     * message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public OpenSpaceState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -32,16 +46,6 @@ public class OpenSpaceState extends PlayingState {
         return "OpenSpaceState";
     }
 
-    /**
-     * this method is called when the player has selected the engines and batteries to use
-     * @param player player who is selecting the engines
-     * @param engines list of engines selected by the player
-     * @param batteries list of batteries selected by the player
-     * @throws InvalidStateException if the player is not in the engine phase
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidEngineException if the player has selected an invalid engine
-     * @throws EnergyException if the player has not enough energy to activate the engines
-     */
     @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
@@ -74,11 +78,15 @@ public class OpenSpaceState extends PlayingState {
     }
 
     /**
-     * this method is called when all the players have selected their engines and batteries
-     * @throws InvalidStateException if the player is not in the automatic action phase
+     * Ends card and initiates the transition to the next phase of the game.
+     * This method performs the necessary updates to player statuses, broadcasts messages about player
+     * positions, and transitions the game phase to the draw card phase. It also interacts with
+     * multiple components such as the game model, controller, and message manager to ensure
+     * the state of the game is updated appropriately.
+     *
+     * @throws InvalidStateException if the current phase is not {@code StatePhase.AUTOMATIC_ACTION}.
      */
-    @Override
-    public void endTurn() throws InvalidStateException {
+    private void endTurn() throws InvalidStateException {
         if (phase != StatePhase.AUTOMATIC_ACTION) {
             throw new InvalidStateException("You are not in the automatic action phase.");
         }
@@ -105,10 +113,6 @@ public class OpenSpaceState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
-    /** this method is called when a player quit
-     *
-     * @param player the player who quit
-     */
     @Override
     public void currentQuit(Player player) {
         try {

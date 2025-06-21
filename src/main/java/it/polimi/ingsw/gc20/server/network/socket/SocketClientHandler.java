@@ -32,7 +32,6 @@ public class SocketClientHandler implements ClientHandler {
      * Function to handle incoming requests from the client.
      * This method runs in a separate thread looping to handle incoming messages.
      */
-    @Override
     public void handleRequests() {
         try {
             // Loop to handle incoming messages
@@ -59,7 +58,7 @@ public class SocketClientHandler implements ClientHandler {
      * @return True if the client is connected, false otherwise.
      */
     @Override
-    public Boolean isConnected() {
+    public boolean isConnected() {
         return connected;
     }
 
