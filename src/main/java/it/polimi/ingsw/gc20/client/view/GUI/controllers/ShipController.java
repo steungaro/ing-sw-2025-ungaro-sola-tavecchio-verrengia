@@ -16,11 +16,14 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.javatuples.Pair;
 
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class ShipController {
     // TODO: Display battery, cabin, cargo hold, aliens (look at buildingPhaese for first implementation)
@@ -36,6 +39,8 @@ public abstract class ShipController {
     @FXML protected Label creditsLabel;
     @FXML protected Label inGameLabel;
     @FXML protected StackPane rootPane;
+
+    private final Map<String, Rectangle> cellClickAreas = new HashMap<>();
 
     private final List<double[]> cargoCord3 = List.of(
             new double[]{0.3, 0.45},
@@ -315,11 +320,64 @@ public abstract class ShipController {
         }
     }
 
+    public void highlightSelectedCabins(List<org.javatuples.Pair<Integer, Integer>> selectedCabins) {
+        Map<org.javatuples.Pair<Integer, Integer>, Long> counts = selectedCabins.stream()
+                .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
+
+        // Reset all highlights
+        for (Rectangle rect : cellClickAreas.values()) {
+            rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        }
+
+        // Apply new highlights
+        for (Map.Entry<org.javatuples.Pair<Integer, Integer>, Long> entry : counts.entrySet()) {
+            org.javatuples.Pair<Integer, Integer> cabinCoords = entry.getKey();
+            Long count = entry.getValue();
+
+            int gridRow = cabinCoords.getValue0() + 5;
+            int gridCol = cabinCoords.getValue1() + (ship.isLearner ? 5 : 4);
+
+            String cellId = gridRow + "_" + gridCol;
+            Rectangle clickArea = cellClickAreas.get(cellId);
+
+            if (clickArea != null) {
+                if (count == 1) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.3)); // Green for 1 selection
+                } else if (count >= 2) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.4)); // Orange for 2+ selections
+                }
+            }
+        }
+    }
+
+    public void highlightCells(Map<Pair<Integer, Integer>, Color> highlights) {
+
+        // Reset all highlights
+        for (Rectangle rect : cellClickAreas.values()) {
+            rect.setFill(Color.TRANSPARENT);
+        }
+
+        // Apply new highlights
+        for (Map.Entry<Pair<Integer, Integer>, Color> entry : highlights.entrySet()) {
+            Pair<Integer, Integer> coords = entry.getKey();
+            Color color = entry.getValue();
+
+            String cellId = coords.getValue0() + "_" + coords.getValue1();
+            Rectangle clickArea = cellClickAreas.get(cellId);
+
+            if (clickArea != null) {
+                // Apply a transparent version of the color
+                clickArea.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.4));
+            }
+        }
+    }
+
     public interface CellClickHandler {
         void onCellClicked(int row, int col);
     }
 
     public void enableCellClickHandler(CellClickHandler handler) {
+        cellClickAreas.clear();
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
                 ImageView cell = getImageViewAt(row, col);
@@ -415,6 +473,9 @@ public abstract class ShipController {
                     componentsGrid.add(clickArea, col, row);
                     GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
                     GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+
+                    String cellId = getRows() + "_" + getCols();
+                    cellClickAreas.put(cellId, clickArea);
                 }
             }
         }
@@ -436,3 +497,4 @@ public abstract class ShipController {
         return null;
     }
 }
+

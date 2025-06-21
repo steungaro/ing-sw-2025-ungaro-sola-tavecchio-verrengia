@@ -53,6 +53,16 @@
             </style>
         </Button>
 
+        <Button fx:id="undoButton" prefHeight="50" prefWidth="200" text="Undo" onAction="#handleUndo">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <style>
+                -fx-background-color: #ff6b6b;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
         <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="200" text="View Options" onAction="#handleViewOptions">
             <font>
                 <Font size="16.0" />
