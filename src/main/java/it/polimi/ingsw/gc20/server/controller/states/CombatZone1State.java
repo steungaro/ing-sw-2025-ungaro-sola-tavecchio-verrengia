@@ -18,6 +18,12 @@ import org.javatuples.Pair;
 
 import java.util.*;
 
+/**
+ * Represents the CombatZone0 in the game, where players engage in combat
+ * by activating cannons and engines, rolling dice, and managing cargo. This state is
+ * dynamically created during the game and integrates with the game model, controller,
+ * and adventure card mechanics.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class  CombatZone1State extends CargoState {
     private final int lostDays;
@@ -28,10 +34,18 @@ public class  CombatZone1State extends CargoState {
     private boolean removingCargo;
     private FireManager manager;
     int result;
+
     /**
-     * Default constructor
+     * Constructs a CombatZone1State object. This initializes the state with the provided
+     * game model, controller, and adventure card. It sets the initial phase to CANNONS_PHASE,
+     * initializes the lost days and cargo, and prepares the declared firepower and engine power maps.
+     * It also configures the standby message for the current player and notifies the
+     * message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
-    @SuppressWarnings("unused") // dynamically created by Cards
     public CombatZone1State(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.lostDays = card.getLostDays();
@@ -51,9 +65,6 @@ public class  CombatZone1State extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this method is used to find the player with the minimum crew and set it as the current player to play
-     */
     @Override
     public void automaticAction() {
         //find the player with the minimum crew
@@ -72,13 +83,6 @@ public class  CombatZone1State extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-
-    /**
-     * this method is used to activate the cannons selected from the player using the batteries
-     * @param player the player who is activating the cannons
-     * @param cannons the cannons selected by the player
-     * @param batteries the batteries selected by the player
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         // check if the player is the current player
@@ -128,17 +132,6 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
-        @Override
-    public String toString() {
-        return "CombatZone1State";
-    }
-
-    /**
-     * this method is used to activate the engines selected from the player using the batteries
-     * @param player the player who is activating the engines
-     * @param engines the engines selected by the player
-     * @param batteries the batteries selected by the player
-     */
     @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
@@ -198,11 +191,6 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
-    /**
-     * this method is used to roll the dice
-     * @param player the player who is rolling the dice
-     * @return the value of the dice rolled
-     */
     @Override
     public int rollDice(Player player) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
@@ -240,17 +228,6 @@ public class  CombatZone1State extends CargoState {
         return result;
     }
 
-
-
-    /**
-     * this method is used to activate the shield selected from the player using the batteries
-     * @param player the player who is activating the shield
-     * @param shield the shield selected by the player
-     * @param battery the battery selected by the player
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException{
         //check if the player is the current player
@@ -277,6 +254,13 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
+    /**
+     * This method is used to fire the projectile and check if the manager has finished shooting.
+     * If the manager has finished shooting, it will set the phase to standby phase.
+     * If the manager has not finished shooting, it will set the phase to roll dice phase.
+     *
+     * @param player the player who is firing the projectile
+     */
     private void fireProjectile(Player player) {
         try {
             manager.fire();
@@ -293,6 +277,11 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
+    /**
+     * This method is used to finish the fire manager and check if it has finished shooting.
+     * If it has finished shooting, it will set the phase to standby phase and draw a new card.
+     * If it has not finished shooting, it will set the phase to roll dice phase.
+     */
     private void finishManager() {
         if (manager.finished()) {
             //if we finished shooting, set the phase to standby phase
@@ -307,12 +296,6 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
-    /**
-     * this method is used to unload cargo from the player's ship
-     * @param player the player who is unloading the cargo
-     * @param unloaded the color of the cargo to be unloaded
-     * @param ch the cargo hold from which the cargo is unloaded
-     */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, InvalidStateException, InvalidCargoException, ComponentNotFoundException  {
         //check if the player is the current player
@@ -348,13 +331,6 @@ public class  CombatZone1State extends CargoState {
         }
     }
 
-
-    /**
-     * this method is used to end the move of the player
-     * @param player the player who is ending the move
-     * @throws InvalidStateException if the player is not in the correct phase, or if he didn't lose the cargo necessary
-     * @throws InvalidTurnException if the player it's not the current player
-     */
     @Override
     public void endMove(Player player) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
@@ -383,14 +359,6 @@ public class  CombatZone1State extends CargoState {
         automaticAction();
     }
 
-    /**
-     * this method is used to remove the selected energy from the ship
-     * @param player the player who is losing energy
-     * @param battery the battery to be lost
-     * @throws IllegalStateException if the player is not in the correct phase
-     * @throws InvalidTurnException if the player it's not the current player
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException{
         //check if the player it's the current player
@@ -410,13 +378,6 @@ public class  CombatZone1State extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this metho is used to choose the branch of the ship
-     * @param player the player who is choosing the branch
-     * @param coordinates the coordinates of the branch
-     * @throws InvalidTurnException if the player it's not the current player
-     * @throws InvalidStateException if the player is not in the correct phase
-     */
     @Override
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
@@ -434,10 +395,7 @@ public class  CombatZone1State extends CargoState {
         finishManager();
     }
 
-    /**
-     * this method is used when a player quits the game
-     * @param player who quits
-     */
+    @Override
     public void currentQuit(Player player){
         //first, we check if we are in a penality phase:
         // REMOVE_CARGO or ROLL_DICE_PHASE, ACTIVATE_SHIELD or VALIDATE SHIP

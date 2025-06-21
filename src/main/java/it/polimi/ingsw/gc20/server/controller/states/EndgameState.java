@@ -10,10 +10,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Represents the endgame state of the game, which is reached when the game concludes.
+ * This state is responsible for calculating and broadcasting the final scores of players,
+ * and it schedules a task to end the game after a specified timeout.
+ */
 public class EndgameState extends State {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
     /**
-     * Default constructor
+     * Constructs an EndgameState instance, which is the final state of the game.
+     * This state is reached when the game ends, either due to all players disconnecting
+     * or when the game is manually ended. It schedules a task to end the game after a timeout.
+     *
+     * @param controller the game controller responsible for managing game logic and transitions
      */
     public EndgameState(GameController controller) {
         super(controller);
@@ -21,9 +31,6 @@ public class EndgameState extends State {
         scheduler.schedule(this::killGame, 30, TimeUnit.SECONDS);
     }
 
-    /**
-     * this method will kill the game after 30 seconds the endgame state is reached
-     */
     @Override
     public void killGame() {
         MatchController.getInstance().endGame(getController().getGameID());
@@ -35,9 +42,7 @@ public class EndgameState extends State {
         return "EndgameState";
     }
 
-    /** this method returns the score of the game to the player via a leaderboard message
-     *
-     */
+
     @Override
     public void getScore() {
         Map<String, Integer> score = getModel().calculateScore()

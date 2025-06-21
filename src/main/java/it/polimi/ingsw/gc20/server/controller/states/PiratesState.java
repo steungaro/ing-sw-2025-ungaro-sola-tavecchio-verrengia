@@ -22,7 +22,6 @@ import java.util.Set;
 
 
 /**
- * @author GC20
  * During the PiratesState, the player can shoot the enemy declaring the firepower, if the result is 1, the player has defeated the enemy, if it is 0, the player has to pass the turn, if it is -1, the player has lost
  * In case of winning:
  * - the player can accept the card or endMove
@@ -38,8 +37,16 @@ public class PiratesState extends PlayingState {
     private final int lostDays;
     private FireManager manager;
     private int result;
+
     /**
-     * Default constructor
+     * Constructs a PiratesState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the initial phase to CANNONS_PHASE.
+     * It also configures the standby message for the current player and notifies the
+     * message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public PiratesState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -52,17 +59,6 @@ public class PiratesState extends PlayingState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    @Override
-    public String toString() {
-        return "PiratesState";
-    }
-
-    /**
-     * this method is called when the player has won against the pirates and can accept the card
-     * @param player the player that is accepting the card
-     * @throws InvalidStateException if the player is not in the right phase
-     * @throws InvalidTurnException if the player is not the current player
-     */
     @Override
     public void acceptCard(Player player) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
@@ -85,16 +81,6 @@ public class PiratesState extends PlayingState {
 
     }
 
-    /**
-     * this method is called when the player has lost against the pirates and has to shoot the enemy
-     * @param player the player that is shooting the enemy
-     * @param cannons the cannons that the player is using
-     * @param batteries the batteries that the player is using
-     * @throws InvalidStateException if the player is not in the right phase
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidCannonException if the player is using an invalid cannon
-     * @throws EnergyException if the player doesn't have enough energy to shoot
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         //check if the player is the current player
@@ -146,14 +132,6 @@ public class PiratesState extends PlayingState {
         }
     }
 
-
-    /**
-     * this method is called when the player has lost against the pirates and has to roll the dice
-     * @param player the player that is rolling the dice
-     * @return the result of the dice
-     * @throws InvalidStateException if the player is not in the right phase
-     * @throws InvalidTurnException if the player is not the current player
-     */
     @Override
     public int rollDice(Player player) throws InvalidTurnException, InvalidStateException {
         //check if the player is the current player
@@ -228,13 +206,6 @@ public class PiratesState extends PlayingState {
         return result;
     }
 
-    /**
-     * this method is called when the player has to choose a branch
-     * @param player the player that is choosing the branch
-     * @param coordinates the coordinates of the branch
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidStateException if the player is not in the right phase
-     */
     @Override
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         //check if the player is the current player
@@ -252,15 +223,6 @@ public class PiratesState extends PlayingState {
         finishManager();
     }
 
-    /**
-     * this method is called when the player has to activate a shield
-     * @param player the player that is activating the shield
-     * @param shield the shield that the player is activating
-     * @param battery the battery that the player is using
-     * @throws InvalidStateException if the player is not in the right phase
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws EnergyException if the player doesn't have enough energy to activate the shield
-     */
     @Override
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException{
         //check if the player is the current player
@@ -286,6 +248,10 @@ public class PiratesState extends PlayingState {
         }
     }
 
+    /**
+     * This method is called to finish the fire manager and check if we can go to the next player or not.
+     * If the manager is finished, we go to the next player, otherwise we stay in the roll dice phase.
+     */
     private void finishManager() {
         if (manager.finished()) {
             toNextPlayer();
@@ -296,13 +262,6 @@ public class PiratesState extends PlayingState {
         }
     }
 
-    /**
-     * this method is called when the player has to end the move
-     * @param player the player that is ending the move
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidShipException if the ship is not valid
-     * @throws IllegalStateException if the game is not in the right state
-     */
     @Override
     public void endMove(Player player) throws InvalidTurnException, InvalidShipException, InvalidStateException {
         //check if the player is the current player
@@ -356,6 +315,10 @@ public class PiratesState extends PlayingState {
         }
     }
 
+    /**
+     * This method is called to go to the next player.
+     * If we finished shooting, we can go to the next player, otherwise we stay in the roll dice phase.
+     */
     private void toNextPlayer () {
         nextPlayer();
         //if we finished shooting, we can go to the next player
@@ -372,7 +335,12 @@ public class PiratesState extends PlayingState {
         }
     }
 
-
+    /**
+     * This method is called to notify the player that the ship is invalid.
+     * It broadcasts an update message and changes the phase to VALIDATE_SHIP_PHASE.
+     *
+     * @param player the player whose ship is invalid
+     */
     private void notifyInvalidShip(Player player) {
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "hit by heavy fire"));
         phase = StatePhase.VALIDATE_SHIP_PHASE;

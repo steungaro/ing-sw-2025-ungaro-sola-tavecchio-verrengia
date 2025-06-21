@@ -19,18 +19,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Represents the MeteorSwarmState in the game, which is a specific playing state where
+ * players must navigate through a meteor swarm. This state focuses on player actions related to
+ * rolling dice, activating cannons, and shields, and validating their ship after receiving meteors.
+ * It is dynamically created during the game and integrates with the game model, controller,
+ * and adventure card mechanics.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class MeteorSwarmState extends PlayingState {
-    private final List<Projectile> meteors;
     private final Map<Player, FireManager> fireManagerMap = new HashMap<>();
     private int result;
     private StatePhase phaseSave; // used to save the previous phase of the player
+
     /**
-     * Default constructor
+     * Constructs a MeteorSwarmState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting up the fire managers for each player.
+     * The initial phase is set to ROLL_DICE_PHASE, and a standby message is configured for the
+     * current player. The message manager is notified of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public MeteorSwarmState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
-        this.meteors = card.getProjectiles();
+        List<Projectile> meteors = card.getProjectiles();
         //init the map
         for (String username : getController().getInGameConnectedPlayers()) {
             fireManagerMap.put(getController().getPlayerByID(username), new FireManager(model, meteors, getController().getPlayerByID(username)));
@@ -40,20 +54,6 @@ public class MeteorSwarmState extends PlayingState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    @Override
-    public String toString() {
-        return "MeteorSwarmState";
-    }
-
-    /**
-     * This method is called to activate the cannons that the player has selected
-     * @param player the player who is activating the cannons
-     * @param cannons the cannons that the player has selected
-     * @param batteries the batteries that the player has selected
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidStateException if the player is not in the correct state
-     * @throws EnergyException if the player does not have enough energy to activate the cannons
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -94,12 +94,18 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
+    /**
+     * This method is called to notify the player that they need to activate cannons
+     */
     private void NotifyDefensiveCannon() {
         phase = StatePhase.CANNONS_PHASE;
         setStandbyMessage("Waiting for " + getCurrentPlayer() + " to activate the cannons.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
+    /**
+     * This method is called to activate a round of the meteor swarm.
+     */
     private void RestartTurn() {
         setCurrentPlayer(getController().getFirstOnlinePlayer());
         if (fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).finished()) {
@@ -115,19 +121,16 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
+    /**
+     * This method is called to notify the player that they need to roll the dice.
+     * It sets the phase to ROLL_DICE_PHASE and notifies the message manager of the phase change.
+     */
     private void NotifyRollDice() {
         phase = StatePhase.ROLL_DICE_PHASE;
         setStandbyMessage("Waiting for " + getCurrentPlayer() + " to roll the dice.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * This method is called to roll the dice
-     * @param player the player who is rolling the dice
-     * @return the value of the dice rolled
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidStateException if the player is not in the correct state
-     */
     @Override
     public int rollDice(Player player) throws InvalidTurnException, InvalidStateException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -154,15 +157,6 @@ public class MeteorSwarmState extends PlayingState {
         return result;
     }
 
-    /**
-     * this method activates the shield of the player
-     * @param player the player who is activating the shield
-     * @param shield the shield that the player has selected
-     * @param battery the battery that the player has selected
-     * @throws InvalidStateException if the player is not in the correct state
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws EnergyException if the player does not have enough energy to activate the shield
-     */
     @Override
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is the current player
@@ -198,19 +192,15 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
+    /**
+     * This method is called to notify the player that they need to activate the shields
+     */
     private void notifyDefensiveShield() {
         phase = StatePhase.SELECT_SHIELD;
         setStandbyMessage("Waiting for " + getCurrentPlayer() + " to activate the shields.");
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this method is called when the player chooses a branch
-     * @param player the player who is choosing the branch
-     * @param coordinates the coordinates of the branch
-     * @throws InvalidTurnException if the player is not the current player
-     * @throws InvalidStateException if the player is not in the correct state
-     */
     @Override
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException{
         //check if the player is the current player
@@ -240,10 +230,6 @@ public class MeteorSwarmState extends PlayingState {
         }
     }
 
-    /**
-     * this method is called when the player quits the game
-     * @param player the player who is quitting the game
-     */
     @Override
     public void currentQuit(Player player) {
         //if we are in the rolling dice phase, we need to auto roll the dice for the others player

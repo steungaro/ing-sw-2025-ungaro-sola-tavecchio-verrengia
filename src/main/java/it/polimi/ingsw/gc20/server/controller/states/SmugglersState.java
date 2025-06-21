@@ -32,8 +32,16 @@ public class SmugglersState extends CargoState {
     private boolean defeated;
     private boolean accepted;
     private int currentLostCargo;
+
     /**
-     * Default constructor
+     * Constructs a SmugglersState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the initial phase to CANNONS_PHASE.
+     * It also configures the standby message for the current player and notifies the
+     * message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public SmugglersState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -48,12 +56,6 @@ public class SmugglersState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * This method is used to accept the card
-     * @param player the player who is accepting the card
-     * @throws InvalidStateException if the game is not in the accept phase
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -68,14 +70,6 @@ public class SmugglersState extends CargoState {
         accepted = true;
     }
 
-    /**
-     * This method is used to lose energy
-     * @param player the player who is losing energy
-     * @param battery the battery from which the energy is lost
-     * @throws InvalidStateException if the game is not in the battery phase
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -91,17 +85,6 @@ public class SmugglersState extends CargoState {
         }
     }
 
-    /**
-     * This method is used to load a cargo from a cargo hold to the player's cargo hold
-     * @param player the player who is loading the cargo
-     * @param loaded the color of the cargo to be loaded
-     * @param chTo the cargo hold to which the cargo is loaded
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the add cargo phase
-     * @throws CargoException if the cargo is not in the card reward list
-     * @throws CargoNotLoadable if the cargo is not loadable
-     * @throws CargoFullException if the cargo hold is full
-     */
     @Override
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidStateException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         if(!player.getUsername().equals(getCurrentPlayer())){
@@ -118,15 +101,6 @@ public class SmugglersState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * This method is used to unload a cargo from the player's cargo hold
-     * @param player the player who is unloading the cargo
-     * @param unloaded the color of the cargo to be unloaded
-     * @param ch the cargo hold from which the cargo is unloaded
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the remove cargo phase
-     * @throws InvalidCargoException if the cargo is not valid
-     */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidStateException, InvalidTurnException, InvalidCargoException, ComponentNotFoundException {
         if(!player.getUsername().equals(getCurrentPlayer())){
@@ -157,26 +131,6 @@ public class SmugglersState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    @Override
-    public String toString() {
-        return "SmugglersState{ " +
-                "lostCargo=" + lostCargo +
-                ", firePower=" + firePower +
-                ", lostDays=" + lostDays +
-                ", reward=" + reward +
-                '}';
-    }
-
-    /**
-     * This method is used to shoot the enemy
-     * @param player the player who is shooting
-     * @param cannons the cannons selected by the player
-     * @param batteries the batteries selected by the player
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws IllegalStateException if the game is not in the cannon phase
-     * @throws InvalidCannonException if the cannon is not valid
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -239,12 +193,6 @@ public class SmugglersState extends CargoState {
         }
     }
 
-    /**
-     * This method is used to end the move
-     * @param player the player who is ending the move
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the correct phase
-     */
     @Override
     public void endMove(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
