@@ -17,17 +17,19 @@ public class Hourglass {
         this.turned = 0;
     }
 
-    /** Getter function for the period of the hourglass
+    /**
+     * Retrieves the period of the hourglass.
      *
-     * @return period of teh hourglass
+     * @return the period of the hourglass, representing the duration it measures in seconds
      */
     public int getPeriod() {
         return period;
     }
 
-    /** Getter function for the number of times the hourglass has been turned
+    /**
+     * Returns the number of times the hourglass has been turned.
      *
-     * @return number of times the hourglass has been turned
+     * @return the count of turns performed on the hourglass
      */
     public int getTurned() {
         return turned;
@@ -40,40 +42,52 @@ public class Hourglass {
         this.period = period;
     }
 
-    /** Function to turn the hourglass
-     *
+    /**
+     * Turns the hourglass, effectively resetting its timing mechanism.
+     * Increments the count of turns performed on the hourglass and
+     * initiates the countdown process by recording the current timestamp.
      */
     public void turn() {
         this.turned++;
         this.initCountdown();
     }
 
-    /** Function to get the remaining time of the hourglass
+    /**
+     * Calculates and returns the remaining time for the hourglass in seconds.
+     * The remaining time is determined by subtracting the elapsed time since the last turn
+     * from the total period of the hourglass. If the calculated remaining time is less than
+     * or equal to zero, zero is returned.
      *
-     * @return remaining time of the hourglass
+     * @return the remaining time in seconds until the hourglass runs out,
+     *         or 0 if the time has already expired
      */
     public int getRemainingTime() {
         return period - ((System.currentTimeMillis() - timestamp)/1000) > 0 ? (int) (period - (System.currentTimeMillis() - timestamp) / 1000) : 0;
     }
 
-    /** Function to get the total elapsed time of the hourglass
+    /**
+     * Calculates and returns the total time elapsed since the initialization of the hourglass.
+     * The total elapsed time is computed by considering the total period of the hourglass,
+     * the number of times it has been turned, and the remaining time.
      *
-     * @return total elapsed time of the hourglass
+     * @return the total elapsed time in seconds since the hourglass was initialized or last reset
      */
     public int getTotalElapsed() {
         return period * (turned + 1) - getRemainingTime();
     }
 
-    /** Function to start the countdown of the hourglass
-     *
+    /**
+     * Initializes the countdown by recording the current system timestamp.
+     * This method sets the starting point for measuring elapsed time.
      */
     public void initCountdown() {
         timestamp = System.currentTimeMillis();
     }
 
-    /** Getter function for the timestamp of the hourglass
+    /**
+     * Retrieves the timestamp recorded for the hourglass.
      *
-     * @return timestamp of the hourglass
+     * @return the timestamp indicating the start of the most recent countdown process
      */
     public long getTimestamp() {
         return timestamp;

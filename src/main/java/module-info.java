@@ -9,8 +9,6 @@ module it.polimi.ingsw.gc20 {
     requires java.rmi;
     requires java.logging;
     requires java.desktop;
-    opens it.polimi.ingsw.gc20 to javafx.fxml;
-    exports it.polimi.ingsw.gc20;
     exports it.polimi.ingsw.gc20.server.model.gamesets;
     exports it.polimi.ingsw.gc20.server.model.components;
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.components;
@@ -30,6 +28,7 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20.common.message_protocol.toserver;
     exports it.polimi.ingsw.gc20.client.view.TUI;
     exports it.polimi.ingsw.gc20.client.view.GUI.controllers;
+    exports it.polimi.ingsw.gc20.server.model.lobby;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.ship to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;

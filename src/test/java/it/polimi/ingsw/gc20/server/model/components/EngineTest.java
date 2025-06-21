@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.model.components;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class EngineTest {
     Engine engine;
@@ -36,6 +38,17 @@ public class EngineTest {
         assertEquals(ConnectorEnum.U, engine.getConnectors().get(Direction.UP));
         assertEquals(ConnectorEnum.D, engine.getConnectors().get(Direction.LEFT));
         assertEquals(ConnectorEnum.S, engine.getConnectors().get(Direction.RIGHT));
+    }
 
+    @Test
+    void createViewComponent() {
+        Map<Direction, ConnectorEnum> connectors = engine.getConnectors();
+        connectors.put(Direction.RIGHT, ConnectorEnum.S);
+        connectors.put(Direction.LEFT, ConnectorEnum.D);
+        connectors.put(Direction.DOWN, ConnectorEnum.ZERO);
+        connectors.put(Direction.UP, ConnectorEnum.U);
+        engine.setConnectors(connectors);
+        ViewComponent viewComponent = engine.createViewComponent();
+        assertNotNull(viewComponent);
     }
 }

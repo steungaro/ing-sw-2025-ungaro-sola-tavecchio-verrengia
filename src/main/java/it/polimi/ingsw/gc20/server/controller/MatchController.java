@@ -29,7 +29,8 @@ public class MatchController implements MatchControllerInterface {
     private final Logger logger = Logger.getLogger(MatchController.class.getName());
 
     /**
-     * Default constructor
+     * Private constructor to enforce a singleton pattern.
+     * Initializes the lists and maps used to manage games and lobbies.
      */
     private MatchController() {
         this.games = new ArrayList<>();
@@ -39,6 +40,8 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
+     * Retrieves the game controller for a given game id.
+     *
      * @return the game controller for the given id, null if not found
      */
     public GameController getGameController(String id) {
@@ -51,7 +54,9 @@ public class MatchController implements MatchControllerInterface {
     }
     
     /**
-     * @return this
+     * Returns the singleton instance of MatchController.
+     *
+     * @return the singleton instance of MatchController
      */
     public static MatchController getInstance() {
         if(instance == null) {
@@ -61,6 +66,8 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
+     * Returns a list of players currently in lobbies.
+     *
      * @return the list of players in lobbies
      */
     public List<String> getPlayersInLobbies() {
@@ -68,6 +75,8 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
+     * Returns the singleton instance of MatchController with specified limits.
+     *
      * @param maxMatches is the max number of matches
      * @param maxLobbies is the max number of lobbies
      * @return this instance
@@ -82,6 +91,8 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
+     * Sets the maximum number of lobbies and matches.
+     *
      * @param m is the max number of lobbies
      */
     public void setMaxLobbies(int m) {
@@ -89,15 +100,15 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
+     * Sets the maximum number of matches.
+     *
      * @param m is the max number of matches
      */
     public void setMaxMatches(int m) {
         this.maxMatches = m;
     }
 
-    /**
-     *
-     */
+    @Override
     public void getLobbies(String username) {
         List<LobbyListMessage.LobbyInfo> lobbies = new ArrayList<>();
         for (Lobby l : this.lobbies) {
@@ -119,10 +130,7 @@ public class MatchController implements MatchControllerInterface {
         return null;
     }
 
-    /**
-     * @param id is the id of the lobby
-     * @param user is the user that wants to join
-     */
+    @Override
     public void joinLobby(String id, String user) {
         Lobby lobby = null;
         boolean start = false;
@@ -132,7 +140,7 @@ public class MatchController implements MatchControllerInterface {
             }
         }
         if (lobby == null) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby not found"));
             logger.log(Level.WARNING, "Lobby not found: " + id);
             return;
@@ -151,7 +159,7 @@ public class MatchController implements MatchControllerInterface {
                 start = true;
             }
         } catch (FullLobbyException e) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby is full"));
             logger.log(Level.WARNING, "Lobby is full", e);
         }
@@ -160,16 +168,11 @@ public class MatchController implements MatchControllerInterface {
         }
     }
 
-    /**
-     * @param name is the name of the lobby
-     * @param maxPlayers is the max number of players
-     * @param user is the owner of the lobby that joins automatically
-     * @throws IllegalArgumentException if the max number of lobbies is reached
-     */
+    @Override
     public void createLobby(String name, String user, int maxPlayers, int level) {
         String id = UUID.randomUUID().toString();
         if (lobbies.size() >= maxLobbies) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Max lobbies reached"));
             logger.log(Level.WARNING, "Max lobbies reached");
         } else {
@@ -181,15 +184,13 @@ public class MatchController implements MatchControllerInterface {
         }
     }
 
-    /**
-     * @param userid is the id of the lobby to leave, if the lobby is empty it is removed
-     */
+    @Override
     public void leaveLobby(String userid) {
         if (playersInLobbies.containsKey(userid)) {
 
             Lobby lobby = playersInLobbies.get(userid);
             if (lobby == null){
-                //notify the player with a error message
+                //notify the player with an error message
                 NetworkService.getInstance().sendToClient(userid, new ErrorMessage("User not found in lobbies"));
                 logger.log(Level.WARNING, "User not found in lobbies");
                 return;
@@ -215,12 +216,12 @@ public class MatchController implements MatchControllerInterface {
                     NetworkService.getInstance().sendToClient(userid, new LobbyListMessage(lobbies));
                 }
             } catch (LobbyException e) {
-                //notify the player with a error message
+                //notify the player with an error message
                 NetworkService.getInstance().sendToClient(userid, new ErrorMessage("Owner of the lobby can't leave the lobby"));
                 logger.log(Level.WARNING, "Owner of the lobby can't leave the lobby", e);
             }
         }else {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(userid, new ErrorMessage("User not found in lobbies"));
             logger.log(Level.WARNING, "User not found in lobbies");
         }
@@ -228,7 +229,9 @@ public class MatchController implements MatchControllerInterface {
     }
 
     /**
-     * @param id is the id of the game to end
+     * Ends the game with the given id.
+     *
+     * @param id the id of the game to end
      */
     public void endGame(String id) {
         games.removeIf(g -> g.getGameID().equals(id));
@@ -239,9 +242,7 @@ public class MatchController implements MatchControllerInterface {
         }
     }
 
-    /**
-     * @param username is the user that wants to start the lobby they're into
-     */
+    @Override
     public void startLobby(String username) {
         if (lobbies.isEmpty()) {
             logger.log(Level.WARNING, "No lobbies available");
@@ -288,7 +289,8 @@ public class MatchController implements MatchControllerInterface {
                 lobby.getUsers().forEach(playersInLobbies::remove);
                 lobby.kill();
                 lobbies.remove(lobby);
-                //notify the players in the lobby with a errore message
+                //notify the players in the lobby with
+                // an error message
                 for (String user : players) {
                     getLobbies(user);
                 }
@@ -301,6 +303,11 @@ public class MatchController implements MatchControllerInterface {
         }
     }
 
+    /**
+     * Retrieves a list of all users currently in games or lobbies.
+     *
+     * @return a list of usernames
+     */
     public List<String> getAllUsers() {
         List<String> allUsers = new ArrayList<>();
         allUsers.addAll(playersInGames.keySet());
@@ -308,10 +315,22 @@ public class MatchController implements MatchControllerInterface {
         return allUsers;
     }
 
+    /**
+     * Checks if a username is available for use.
+     *
+     * @param username the username to check
+     * @return true if the username is available, false otherwise
+     */
     public boolean isUsernameAvailable(String username) {
         return !playersInGames.containsKey(username) && !playersInLobbies.containsKey(username);
     }
 
+    /**
+     * Retrieves the GameController associated with a specific player.
+     *
+     * @param username the username of the player
+     * @return the GameController for the player, or null if not found
+     */
     public GameController getGameControllerForPlayer(String username) {
         return playersInGames.getOrDefault(username, null);
     }

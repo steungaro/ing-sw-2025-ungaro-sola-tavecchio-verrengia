@@ -1,11 +1,15 @@
 package it.polimi.ingsw.gc20.server.model.components;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCargoHold;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewSpecialCargoHold;
 import it.polimi.ingsw.gc20.server.exceptions.CargoFullException;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 
+/**
+ * The SpecialCargoHold class extends the functionality of the CargoHold class,
+ * allowing for modifications to standard cargo management behavior. It provides
+ * methods to handle cargo operations specific to a special type of cargo hold.
+ */
 public class SpecialCargoHold extends CargoHold {
 
     public SpecialCargoHold() {
@@ -14,9 +18,11 @@ public class SpecialCargoHold extends CargoHold {
 
 
     /**
-     * This method is used to load a cargo in the cargo hold
-     * @param g the cargo to be loaded
-     * @throws CargoFullException if the cargo hold cannot hold red cargo
+     * Loads cargo of the specified color into the cargo hold. If the cargo hold
+     * is full, an exception is thrown.
+     *
+     * @param g The color of the cargo to be loaded, represented by the {@code CargoColor} enum.
+     * @throws CargoFullException If there are no available slots in the cargo hold.
      */
     @Override
     public void loadCargo(CargoColor g) throws CargoFullException {

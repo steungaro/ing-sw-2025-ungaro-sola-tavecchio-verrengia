@@ -8,10 +8,25 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+/**
+ * Represents the EpidemicState in the game, which is a specific playing state where
+ * an epidemic occurs, affecting all players' ships. This state handles the automatic
+ * action of infecting players and managing the consequences of the epidemic.
+ * It is dynamically created during the game and integrates with the game model, controller,
+ * and adventure card mechanics.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class EpidemicState extends PlayingState {
+
     /**
-     * Default constructor
+     * Constructs an EpidemicState object, which represents a state in the game where an epidemic occurs.
+     * This constructor initializes the state with the provided game model, controller, and adventure card
+     * and sets the phase to AUTOMATIC_ACTION. It also notifies players about the epidemic and performs
+     * the automatic action associated with this state.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public EpidemicState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -20,17 +35,6 @@ public class EpidemicState extends PlayingState {
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
     }
-
-    @Override
-    public String toString() {
-        return "EpidemicState";
-    }
-
-
-    /**
-     * This method is called when the player has to perform an automatic action.
-     * In this case, the action is to infect all players in the game and if necessary, to remove crew members
-     */
     @Override
     public void automaticAction() {
         //apply the epidemic effect to all players in the game

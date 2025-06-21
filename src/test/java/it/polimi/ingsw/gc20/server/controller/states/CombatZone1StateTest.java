@@ -42,7 +42,7 @@ class CombatZone1StateTest {
         projectiles.add(lightFire);
         card.setProjectiles(projectiles);
         card.setLostDays(1);
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
         // build all the ships of the players one will be invalid
         StartingCabin start = null;
@@ -216,6 +216,6 @@ class CombatZone1StateTest {
         state.rollDice(controller.getPlayerByID("player1"));
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
-        state.toString();
+        assertEquals("CombatZone1State", state.toString());
     }
 }

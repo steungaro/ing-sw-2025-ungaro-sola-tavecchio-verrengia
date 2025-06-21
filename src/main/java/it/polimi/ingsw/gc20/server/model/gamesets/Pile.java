@@ -7,7 +7,10 @@ import it.polimi.ingsw.gc20.server.model.components.Component;
 import java.util.*;
 
 /**
- * @author GC20
+ * The Pile class represents a collection of components, separated into two categories:
+ * viewed and unviewed. It provides functionality to manage, add, and remove components
+ * in each category, ensuring certain constraints such as uniqueness and presence when
+ * performing operations.
  */
 public class Pile {
 
@@ -21,64 +24,80 @@ public class Pile {
         this.unviewed = new ArrayList<>();
     }
 
-    /** get function for viewed components
-     * @return List<Component>
+    /**
+     * Retrieves the list of components that have been marked as viewed.
+     *
+     * @return a list of components that have been viewed.
      */
     public List<Component> getViewed() {
         return this.viewed;
     }
 
-    /** get function for unviewed components
-     * @return List<Component>
+    /**
+     * Retrieves the list of components that have not been viewed.
+     *
+     * @return a list of components that are classified as unviewed.
      */
     public List<Component> getUnviewed() {
         return this.unviewed;
     }
 
-    /** function that remove a component from the viewed list, if not present throws exception
-     * @param c component to remove
-     * @throws ComponentNotFoundException if the component is not present in the viewed list
+    /**
+     * Removes a specified component from the viewed list.
+     * If the component is not present in the viewed list, a {@code ComponentNotFoundException} is thrown.
+     *
+     * @param c the component to be removed from the viewed list
+     * @throws ComponentNotFoundException if the component is not found in the viewed list
      */
     public void removeViewed(Component c) throws ComponentNotFoundException {
-        // check if element is present in the viewed list
+        // check if an element is present in the viewed list
         if (this.viewed.contains(c)) {
-            // if present remove it
+            // if present, remove it
             this.viewed.remove(c);
-        }else { //if not present throw exception
+        }else { //if not present, throw exception
             throw new ComponentNotFoundException("Component not found in viewed list");
         }
     }
-    /** function that remove a component from the unviewed list, if not present throws exception
-     * @param c component to remove
-     * @throws ComponentNotFoundException if the component is not present in the unviewed list
+    /**
+     * Removes a specified component from the unviewed list.
+     * If the component is not present in the unviewed list, a {@code ComponentNotFoundException} is thrown.
+     *
+     * @param c the component to be removed from the unviewed list
+     * @throws ComponentNotFoundException if the component is not found in the unviewed list
      */
     public void removeUnviewed(Component c) throws ComponentNotFoundException {
-        // check if element is present in the unviewed list
+        // check if an element is present in the unviewed list
         if (this.unviewed.contains(c)) {
-            //if present remove it
+            //if present, remove it
             this.unviewed.remove(c);
-        }else { //if not present throw exception
+        }else { //if not present, throw exception
             throw new ComponentNotFoundException("Component not found in unviewed list");
         }
     }
 
-    /** function that add a component to the viewed list, if already present throws exception
-     * @param c component to add
+    /**
+     * Adds the specified component to the viewed list. If the component is already present in the viewed list,
+     * a {@code DuplicateComponentException} is thrown.
+     *
+     * @param c the component to be added to the viewed list
      * @throws DuplicateComponentException if the component is already present in the viewed list
      */
     public void addViewed(Component c) throws DuplicateComponentException {
-        // check if element is already present in the viewed list
+        // check if an element is already present in the viewed list
         if (this.viewed.contains(c)) {
-            //if present throw exception
+            //if present, throw exception
             throw new DuplicateComponentException("Component already present in viewed list");
         } else {
-            //if not present add it
+            //if not present, add it
             this.viewed.add(c);
         }
     }
 
-    /** function that create the unviewed list
-     * @param c list of components to add
+    /**
+     * Adds a list of components to the unviewed list. The components in the given list
+     * are randomized before being added.
+     *
+     * @param c the list of components to be added to the unviewed list
      */
     public void addUnviewed(List<Component> c) {
         //add all the components to the unviewed list

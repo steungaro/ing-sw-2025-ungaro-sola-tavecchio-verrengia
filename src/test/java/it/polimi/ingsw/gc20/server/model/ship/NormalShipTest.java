@@ -492,11 +492,16 @@ class NormalShipTest {
         try {
             assertEquals(4, ship.crew());
             ship.unloadCrew(Cabin1);
+            assertEquals(AlienColor.NONE, ship.getAliens());
             assertEquals(3, ship.crew());
             ship.brownAlien = true;
+            assertEquals(AlienColor.BROWN, ship.getAliens());
             assertEquals(4, ship.crew());
             ship.purpleAlien = true;
+            assertEquals(AlienColor.BOTH, ship.getAliens());
             assertEquals(5, ship.crew());
+            ship.brownAlien = false;
+            assertEquals(AlienColor.PURPLE, ship.getAliens());
         } catch (EmptyCabinException _){
             fail("Failed to unload crew");
         }

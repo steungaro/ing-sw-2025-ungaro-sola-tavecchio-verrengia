@@ -4,6 +4,11 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewEngine;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+/**
+ * Represents an Engine, which is a type of Component that can update ship parameters,
+ * maintain orientation, and handle specific functionality like double power mode.
+ * This class provides methods to configure and check the engine's state and behavior.
+ */
 public class Engine extends Component {
 
     private boolean doublePower;
@@ -11,24 +16,28 @@ public class Engine extends Component {
     public Engine() {
     }
     /**
-     * Function that sets the engine as double.
-     * @return true if the engine is double, false otherwise
+     * Retrieves the doublePower status of the engine.
+     *
+     * @return true if the engine has double power enabled, false otherwise
      */
     public boolean getDoublePower() {
         return doublePower;
     }
 
     /**
-     * Function that sets the engine as double.
-     * @param isDouble the boolean value to set the engine as double
+     * Sets the double power status of the engine.
+     *
+     * @param isDouble true to enable double power mode, false to disable it
      */
     public void setDoublePower(boolean isDouble) {
         this.doublePower = isDouble;
     }
 
     /**
-     * Function that returns the orientation of the engine. return the opposite direction of the rotation attribute.
-     * @return the orientation of the engine
+     * Determines the orientation of this engine based on its current rotation.
+     *
+     * @return the corresponding opposite direction based on the current rotation:
+     *         DOWN for UP, LEFT for RIGHT, UP for DOWN, and RIGHT for LEFT.
      */
     public Direction getOrientation() {
         return switch (rotation) {
@@ -39,9 +48,13 @@ public class Engine extends Component {
         };
     }
 
-    /** Function that update the parameter of the ship.
-     * @param s ship that is updating his parameter
-     * @param sign integer that indicate if the parameter is increasing or decreasing
+    /**
+     * Updates the engine parameters of the given ship based on the engine's power mode.
+     * If the engine has double power enabled, it adds double engines. Otherwise, it adds single engines.
+     *
+     * @param s the ship whose engine parameters will be updated
+     * @param sign the value indicating the modification to be applied to the engines;
+     *             typically, a positive or negative value to increment or decrement the engines
      */
     @Override
     public void updateParameter (Ship s, int sign){
@@ -52,8 +65,11 @@ public class Engine extends Component {
     }
 
     /**
-     * Function that returns true if the component has valid orientation
-     * @return true if the component has valid orientation, false otherwise
+     * Verifies if the provided direction is a valid orientation for the engine.
+     * A direction is considered valid if it is not DOWN, or if it matches the engine's current orientation.
+     *
+     * @param d the direction to be evaluated
+     * @return true if the direction is valid, false otherwise
      */
     @Override
     public boolean hasValidOrientation(Direction d){

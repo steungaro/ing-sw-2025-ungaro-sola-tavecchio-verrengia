@@ -13,7 +13,10 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * @author GC20
+ * Represents a learner-level game board that extends the general functionality
+ * of the Board class. A LearnerBoard is specifically tailored for beginner-level
+ * gameplay by providing a simplified deck of adventure cards and a fixed number
+ * of spaces.
  */
 public class LearnerBoard extends Board {
 
@@ -25,6 +28,19 @@ public class LearnerBoard extends Board {
         this.setSpaces(18);
     }
 
+    /**
+     * Creates a shuffled deck of learner-level adventure cards by loading data from a JSON file.
+     * The method reads a JSON file named "cards.json" containing adventure card definitions, filters
+     * the cards to include only those with a level of 0, shuffles the filtered cards, and sets the
+     * resulting shuffled list as the current deck of this LearnerBoard instance.
+     * <p>
+     * The method uses the Jackson library to deserialize the JSON file into a list of AdventureCard objects.
+     * It ensures case-insensitive property matching and ignores unknown properties during deserialization.
+     * If an error occurs while reading or parsing the file, it is logged as a severe issue.
+     * <p>
+     * Filters the cards based on their level to ensure only learner-level relevant cards are included.
+     */
+    @Override
     public void createDeck() {
         List<AdventureCard> learnerCards = new ArrayList<>();
         List<AdventureCard> cards = new ArrayList<>();

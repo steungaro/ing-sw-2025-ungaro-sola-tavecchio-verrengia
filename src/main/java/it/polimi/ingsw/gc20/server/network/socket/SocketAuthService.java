@@ -14,21 +14,33 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+/**
+ * The SocketAuthService class is responsible for handling client authentication
+ * and connection management in a socket-based server environment. It manages
+ * new client connections, checks for existing clients, and handles reconnections.
+ * It also provides methods to log out users.
+ */
 public class SocketAuthService {
     private final SocketServer socketServer;
     private final Logger LOGGER = Logger.getLogger(SocketAuthService.class.getName());
 
     /**
      * Constructor for the SocketAuthService class.
-     * @param socketServer The socket server instance.
+     * Initializes the service with a reference to the SocketServer.
+     *
+     * @param socketServer The SocketServer instance that this service will use
+     *                     to manage client connections and registrations.
      */
     public SocketAuthService(SocketServer socketServer) {
         this.socketServer = socketServer;
     }
 
     /**
-     * Function to handle a new client connection.
-     * @param clientSocket The socket of the client.
+     * Handles a new client connection by processing the login request.
+     * It checks if the client is already connected, creates a new client handler,
+     * or reconnects an existing client if necessary.
+     *
+     * @param clientSocket The socket connection for the new client.
      */
     public void handleNewClient(Socket clientSocket) {
         SocketClientHandler newClient = null;
@@ -39,7 +51,7 @@ public class SocketAuthService {
             ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
 
             do {
-                // First message is the login request
+                // The first message is the login request
                 loginRequest = (LoginRequest) in.readObject();
 
                 // Check if the username is associated with an existing client
@@ -57,16 +69,16 @@ public class SocketAuthService {
                     out.flush();
 
                     MatchController.getInstance().getLobbies(loginRequest.username());
-                // If the client is already registered check if it is connected (reconnection)
+                // If the client is already registered, check if it is connected (reconnection)
                 } else {
                     // If the client is connected, refuse this connection and wait for a new username
                     if (existingClient.isConnected()) {
                         LOGGER.warning("Client " + loginRequest + " is already connected.");
                         out.writeObject(new LoginFailedMessage(loginRequest.username()));
                         out.flush();
-                        // newClient is still null, so the loop continues
+                        // the newClient is still null, so the loop continues
                     } else {
-                        // Reconnect the client (maybe it was RMI before or connection crashed)
+                        // Reconnect the client (maybe it was RMI before, or connection crashed)
                         newClient = new SocketClientHandler(loginRequest.username(), clientSocket, in, out);
                         socketServer.updateClient(loginRequest.username(), newClient);
 
@@ -94,9 +106,12 @@ public class SocketAuthService {
     }
 
     /**
-     * Function to log out a user (should be called when the client disconnects voluntarily).
-     * @param username The username of the user.
-     * @return True if the user was logged out successfully, false otherwise.
+     * Logs out a user by disconnecting the associated client handler.
+     * This method is deprecated and should be replaced with a more robust logout mechanism.
+     *
+     * @param username The username of the client to log out.
+     * @return true if the logout was successful, false if the user was not found.
+     * @deprecated This method is deprecated and should not be used in new code.
      */
     @Deprecated
     public boolean logout(String username) {

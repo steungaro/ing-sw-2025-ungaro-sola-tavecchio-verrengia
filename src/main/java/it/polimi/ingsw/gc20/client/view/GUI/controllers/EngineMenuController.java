@@ -24,6 +24,7 @@ public class EngineMenuController {
     private String username;
     private int engineRow;
     private int engineCol;
+    private List<Pair<Integer, Integer>> batteryCoordinates = new ArrayList<>();
 
     @FXML
     public void initialize() {
@@ -74,22 +75,23 @@ public class EngineMenuController {
 
     @FXML
     private void selectBatteryToActivate(int row, int col) {
-        int battetyRow = row - 5;
+        int batteryRow = row - 5;
         int batteryCol = col - (ship.isLearner ? 5 : 4);
-        /*
+        batteryCoordinates.add(new Pair<>(batteryRow, batteryCol));
+    }
+
+    @FXML
+    private void handleActivateEngines() {
         try {
-            List<Pair<Integer, Integer>> engines = parseCoordinates(enginesField.getText());
-            List<Pair<Integer, Integer>> batteries = parseCoordinates(batteriesField.getText());
-
-            if (engines == null || batteries == null) {
-                return; // Error message already shown by parseCoordinates
-            }
-
-            ClientGameModel.getInstance().getClient().activateEngines(username, engines, batteries);
+            ClientGameModel.getInstance().setBusy();
+            List<Pair<Integer, Integer>> engineCoords = new ArrayList<>();
+            engineCoords.add(new Pair<>(engineRow, engineCol));
+            ClientGameModel.getInstance().getClient().activateEngines(username, engineCoords, batteryCoordinates);
+            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
-        }*/
+        }
     }
 
     @FXML

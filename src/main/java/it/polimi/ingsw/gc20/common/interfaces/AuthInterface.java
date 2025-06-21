@@ -2,9 +2,8 @@ package it.polimi.ingsw.gc20.common.interfaces;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 
-public interface RMIAuthInterface extends Remote {
+public interface AuthInterface extends Remote {
     boolean login (String username, ViewInterface view) throws RemoteException;
     @Deprecated
     boolean logout (String username) throws RemoteException;

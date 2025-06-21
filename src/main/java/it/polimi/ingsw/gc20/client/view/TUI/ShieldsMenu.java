@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
@@ -12,7 +16,7 @@ import java.util.Scanner;
  * Implements the {@link MenuState} interface to provide behavior for menu rendering, input handling,
  * and menu state retrieval.
  */
-public class ShieldsMenu implements MenuState {
+public class ShieldsMenu implements MenuState, GameModelListener {
     private final Scanner scanner = new Scanner(System.in);
     private final String message;
     private final String username = ClientGameModel.getInstance().getUsername();
@@ -29,6 +33,7 @@ public class ShieldsMenu implements MenuState {
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().addListener(this);
         ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mShields Menu\u001B[22m");
         System.out.println(message);
@@ -62,6 +67,7 @@ public class ShieldsMenu implements MenuState {
      */
     @Override
     public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         // Handle user input from the engine menu
         switch (choice) {
@@ -138,5 +144,25 @@ public class ShieldsMenu implements MenuState {
     @Override
     public String getStateName() {
         return "Shields Menu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }

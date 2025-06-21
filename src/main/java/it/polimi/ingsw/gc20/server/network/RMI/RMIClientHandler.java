@@ -10,6 +10,12 @@ import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
+/**
+ * The {@code RMIClientHandler} class is responsible for managing the communication and state
+ * for a specific client in an RMI-based system. This implementation of {@code ClientHandler}
+ * handles sending messages to the client and managing client connections.
+ * It also interacts with the game and connection controllers to manage disconnection events.
+ */
 public class RMIClientHandler implements ClientHandler {
     private final Logger LOGGER = Logger.getLogger(RMIClientHandler.class.getName());
     private final String username;
@@ -17,8 +23,11 @@ public class RMIClientHandler implements ClientHandler {
     private ViewInterface view;
 
     /**
-     * Constructor for the RMIClientHandler class.
-     * @param username The username of the client.
+     * Constructor for the RMIClientHandler class that initializes the client handler
+     * for a given username and sets the initial status as connected.
+     * A corresponding log message is also generated during instantiation.
+     *
+     * @param username the username of the client associated with this handler
      */
     public RMIClientHandler(String username) {
         this.username = username;
@@ -27,18 +36,19 @@ public class RMIClientHandler implements ClientHandler {
     }
 
     /**
-     * Function to set the view interface for the client.
-     * @param view The view interface.
+     * Sets the view associated with this client handler.
+     * The view is responsible for handling client-side updates
+     * and interactions in the application. Additionally, this method
+     * logs the creation of the view for the user.
+     *
+     * @param view the ViewInterface implementation to be associated
+     *             with this client handler
      */
     public void setView (ViewInterface view) {
         this.view = view;
         LOGGER.info("View created for user: " + username);
     }
 
-    /**
-     * Function to send a message to the client.
-     * @param message The message to send.
-     */
     @Override
     public void sendToClient(Message message) {
         if (!connected || view == null) return;
@@ -55,9 +65,7 @@ public class RMIClientHandler implements ClientHandler {
         }
     }
 
-    /**
-     * Function to disconnect the client (voluntary or involuntary).
-     */
+    @Override
     public void disconnect() {
         if (connected) {
             if (view != null) {
@@ -82,26 +90,13 @@ public class RMIClientHandler implements ClientHandler {
         LOGGER.info("Client disconnected: " + username);
     }
 
-    /**
-     * Function to get the username of the client.
-     * @return The username of the client.
-     */
+    @Override
     public String getClientUsername() {
         return username;
     }
 
-    /**
-     * Function to check if the client is connected.
-     *
-     * @return True if the client is connected, false otherwise.
-     */
-    public Boolean isConnected() {
-        return connected;
-    }
-
-
     @Override
-    public void handleRequests() {
-        // Not implemented for RMI
+    public boolean isConnected() {
+        return connected;
     }
 }

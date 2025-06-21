@@ -9,9 +9,15 @@ import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 
 
 public class StardustState extends PlayingState {
-
     /**
-     * Default constructor
+     * Constructs a StardustState object, which represents a state in the game where players encounter stardust.
+     * This constructor initializes the state with the provided game model, controller, and adventure card
+     * and sets the phase to AUTOMATIC_ACTION. It also notifies players about the stardust encounter and performs
+     * the automatic action associated with this state.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public StardustState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -19,11 +25,6 @@ public class StardustState extends PlayingState {
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
         card.playCard();
-    }
-
-    @Override
-    public String toString() {
-        return "StardustState";
     }
 
     /**

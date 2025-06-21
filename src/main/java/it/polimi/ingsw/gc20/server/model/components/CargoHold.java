@@ -10,6 +10,14 @@ import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 import java.util.*;
 
+/**
+ * The CargoHold class represents a storage compartment for handling different types of cargo
+ * in a ship. It is responsible for managing cargo load/unload operations as well as tracking
+ * the current capacity and available slots.
+ * <p>
+ * This class extends the Component class and maintains a map to track the amount of different
+ * types of cargo being held.
+ */
 public class CargoHold extends Component {
     protected final Map<CargoColor, Integer> cargoHeld = new HashMap<>();
     protected int slots;
@@ -18,40 +26,47 @@ public class CargoHold extends Component {
     public CargoHold() {}
 
     /**
-     * Function that returns the cargo in the cargo hold.
-     * @return the cargo in the cargo hold
+     * Retrieves the cargo currently held in the cargo hold.
+     *
+     * @return a map where the keys represent the colors of the cargo (CargoColor)
+     *         and the values represent the quantities of each corresponding cargo.
      */
     public Map<CargoColor, Integer> getCargoHeld() {
         return cargoHeld;
     }
 
     /**
-     * Function that returns the cargo in the cargo hold.
-     * @return the cargo in the cargo hold
+     * Retrieves the quantity of cargo held for a specific color in the cargo hold.
+     *
+     * @param color the color of the cargo (CargoColor) to retrieve the quantity for
+     * @return the quantity of cargo held for the specified color
      */
     public int getCargoHeld(CargoColor color) {
         return cargoHeld.get(color);
     }
 
     /**
-     * Function that returns the space of the cargo hold.
-     * @return the space of the cargo hold
+     * Retrieves the total slots in the cargo hold.
+     *
+     * @return the total number of slots in the cargo hold
      */
     public int getSlots() {
         return slots;
     }
 
     /**
-     * Function that returns the available slots in the cargo hold.
-     * @return the available slots in the cargo hold
+     * Retrieves the number of available slots in the cargo hold.
+     *
+     * @return the number of available slots
      */
     public int getAvailableSlots() {
         return availableSlots;
     }
 
     /**
-     * Function that sets the space of the cargo hold.
-     * @param slots the space of the cargo hold
+     * Sets the total number of slots for the cargo hold and updates the available slots to match.
+     *
+     * @param slots the total number of slots to set in the cargo hold
      */
     public void setSlots(int slots) {
         this.slots = slots;
@@ -60,10 +75,12 @@ public class CargoHold extends Component {
 
 
     /**
-     * This method is used to load a cargo in the cargo hold
-     * @param g the cargo to be loaded
-     * @throws CargoNotLoadable if the cargo hold cannot hold red cargo
+     * Loads a cargo into the cargo hold. The method adds the cargo of the specified color to the cargo hold
+     * if there are available slots and the color is not restricted.
+     *
+     * @param g the color of the cargo to be loaded
      * @throws CargoFullException if the cargo hold is full
+     * @throws CargoNotLoadable if the cargo color is not allowed to be loaded
      */
     public void loadCargo(CargoColor g) throws CargoFullException, CargoNotLoadable {
         if (g == CargoColor.RED) {
@@ -77,9 +94,13 @@ public class CargoHold extends Component {
     }
 
     /**
-     * This method is used to unload a cargo from the cargo hold
-     * @param c the cargo to be unloaded
-     * @throws InvalidCargoException if the cargo is not in the cargo hold
+     * Unloads a cargo of the specified color from the cargo hold. The method reduces the quantity
+     * of the specified cargo in the cargo hold and increases the available slots. If the specified
+     * cargo is not present or its quantity is zero, an exception is thrown.
+     *
+     * @param c the color of the cargo to be unloaded
+     * @throws InvalidCargoException if the specified cargo is not present in the cargo hold
+     *                               or its quantity is zero
      */
     public void unloadCargo(CargoColor c) throws InvalidCargoException {
         if (!cargoHeld.containsKey(c) || cargoHeld.get(c) == 0) {
@@ -90,9 +111,12 @@ public class CargoHold extends Component {
     }
 
     /**
-     * Function to update the parameter of the ship
-     * @param ship ship that is updating his parameter
-     * @param sign integer that indicate if the parameter is increasing or decreasing
+     * Updates the cargo hold state based on the provided sign.
+     * If the sign is negative, it attempts to unload all types of cargo currently held in the cargo hold.
+     * Each type of cargo is unloaded into the specified ship.
+     *
+     * @param ship the ship to transfer the unloaded cargo to
+     * @param sign the operation indicator; a negative value signifies the unloading of cargo
      */
     @Override
     public void updateParameter (Ship ship, int sign) {

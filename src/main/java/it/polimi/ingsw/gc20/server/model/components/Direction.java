@@ -26,6 +26,12 @@ public enum Direction {
         };
     }
 
+    /**
+     * Returns the descriptive string representation of the direction.
+     *
+     * @return a string representing the direction: "upper" for UP, "right-hand" for RIGHT,
+     *         "lower" for DOWN, and "left-hand" for LEFT.
+     */
     public String getDirection() {
         return switch (this) {
             case UP -> "upper";

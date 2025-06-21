@@ -30,7 +30,7 @@ class GameControllerTest {
     @BeforeEach
     void setUp() {
         // Initialize the GameController object before each test
-        // This is a placeholder, replace with actual initialization code
+        // This is a placeholder, replace it with actual initialization code
         String player1 = "player1";
         String player2 = "player2";
         String player3 = "player3";
@@ -40,9 +40,12 @@ class GameControllerTest {
         players.add(player2);
         players.add(player3);
         players.add(player4);
+        List<String> players2 = new ArrayList<>();
+        players2.add(player1);
         int level = 2;
         try {
-            gameController = new GameController(id, players, level);
+            assertThrows(InvalidStateException.class, () -> new GameController(id, id, players2, level));
+            gameController = new GameController(id, id, players, level);
             adventureCard = new AdventureCard();
             adventureCard.setCrew(2);
             adventureCard.setCredits(3);
@@ -75,6 +78,13 @@ class GameControllerTest {
         gameController.drawCard();
         AdventureCard drawnCard = gameController.getModel().getActiveCard();
         assertNotNull(drawnCard);
+        while (drawnCard!= null){
+                gameController.drawCard();
+                if (gameController.getState().equals("EndgameState")) {
+                    break;
+                }
+                drawnCard = gameController.getModel().getActiveCard();
+        }
     }
 
     @Test
@@ -102,6 +112,7 @@ class GameControllerTest {
         gameController.setState(planetsState);
 
         gameController.landOnPlanet("player1", 0);
+        gameController.landOnPlanet("player2", 0);
     }
 
     @Test
@@ -125,31 +136,41 @@ class GameControllerTest {
     }
 
     @Test
-    void unloadCargo() throws InvalidTileException, CargoNotLoadable, CargoFullException {
+    void unloadCargo() throws InvalidTileException {
         AdventureCard abandonedStationCard = new AdventureCard();
         List<CargoColor> reward = new ArrayList<>();
         reward.add(CargoColor.BLUE);
         reward.add(CargoColor.YELLOW);
         abandonedStationCard.setReward(reward);
         AbandonedStationState abandonedStationState = new AbandonedStationState(gameController.getModel(), gameController, abandonedStationCard);
-
-        CargoColor loaded = CargoColor.BLUE;
+        gameController.getModel().setActiveCard(abandonedStationCard);
         gameController.setState(abandonedStationState);
-
+        gameController.acceptCard("player1");
         CargoHold CargoHold = new CargoHold();
         CargoHold.setSlots(3);
-        List<CargoColor> cargoHeld = new ArrayList<>();
-        cargoHeld.add(loaded);
         gameController.getPlayerByID("player1").getShip().addComponent(CargoHold, 2, 2);
 
-        for (CargoColor cargoColor : cargoHeld) {
-            CargoHold.loadCargo(cargoColor);
-        }
+        Battery battery = new Battery();
+        battery.setSlots(3);
+        battery.setAvailableEnergy(3);
+        gameController.getPlayerByID("player1").getShip().addComponent(battery, 1, 1);
 
         Pair<Integer, Integer> position = new Pair<>(2, 2);
         gameController.getModel().setActiveCard(abandonedStationCard);
-        gameController.loadCargo("player1", loaded, position);
-        gameController.unloadCargo("player1", loaded, position);
+        gameController.loadCargo("player1", CargoColor.BLUE, position);
+        gameController.unloadCargo("player1", CargoColor.BLUE, position);
+
+        AdventureCard card = new AdventureCard();
+        List<CargoColor> rewardSmugglers = new ArrayList<>();
+        card.setReward(rewardSmugglers);
+        card.setFirePower(1000);
+        card.setCredits(1000);
+        card.setLostCargo(2);
+        SmugglersState smugglersState = new SmugglersState(gameController.getModel(), gameController, card);
+        gameController.setState(smugglersState);
+        gameController.getModel().setActiveCard(card);
+        gameController.activateCannons("player1", new ArrayList<>(), new ArrayList<>());
+        gameController.loseEnergy("player1", new Pair<>(1, 1));
     }
 
     @Test
@@ -208,9 +229,8 @@ class GameControllerTest {
 
         CargoHold CargoHoldTo = new CargoHold();
         CargoHoldTo.setSlots(3);
-        List<CargoColor> cargoHeldTo = new ArrayList<>();
         gameController.getModel().setActiveCard(abandonedStationCard);
-
+        gameController.acceptCard("player2");
         gameController.acceptCard("player1");
     }
 
@@ -246,18 +266,18 @@ class GameControllerTest {
         // Aggiungo un cannone alla nave del giocatore
         Cannon cannon = new Cannon();
         gameController.getPlayerByID("player1").getShip().addComponent(cannon, 1, 1);
-        Pair<Integer, Integer> cannonCoord = new Pair<>(1, 1);
+        Pair<Integer, Integer> cannonCord = new Pair<>(1, 1);
         List<Pair<Integer, Integer>> cannons = new ArrayList<>();
-        cannons.add(cannonCoord);
+        cannons.add(cannonCord);
 
         // Aggiungo una batteria carica alla nave
         Battery battery = new Battery();
         battery.setSlots(3);
         battery.setAvailableEnergy(3);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
-        Pair<Integer, Integer> batteryCoord = new Pair<>(2, 2);
+        Pair<Integer, Integer> batteryCord = new Pair<>(2, 2);
         List<Pair<Integer, Integer>> batteries = new ArrayList<>();
-        batteries.add(batteryCoord);
+        batteries.add(batteryCord);
 
         //tiro il dado
         gameController.rollDice("player1");
@@ -286,7 +306,6 @@ class GameControllerTest {
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard1);
         gameController.setState(abandonedShipState1);
         gameController.getModel().setActiveCard(adventureCard);
-
         Map<Direction, ConnectorEnum> connectors = new HashMap<>();
 
 
@@ -311,12 +330,13 @@ class GameControllerTest {
         positions.add(position);
         positions.add(position2);
         gameController.acceptCard("player1");
+        gameController.loseCrew("player2", positions);
         gameController.loseCrew("player1", positions);
         assertEquals(2, cabin1.getAstronauts() + cabin2.getAstronauts());
     }
 
     @Test
-    void activateShield() throws InvalidTileException, InterruptedException {
+    void activateShield() throws InvalidTileException {
         AdventureCard adventureCard1 = new AdventureCard();
         List<Projectile> projectiles = new ArrayList<>();
         Projectile projectile1 = new Projectile();
@@ -338,20 +358,20 @@ class GameControllerTest {
         shield.setCoveredSides(directions);
         shield.setConnectors(connectors);
         gameController.getPlayerByID("player1").getShip().addComponent(shield, 1, 1);
-        Pair<Integer, Integer> shieldCoord = new Pair<>(1, 1);
+        Pair<Integer, Integer> shieldCord = new Pair<>(1, 1);
 
         Battery battery = new Battery();
         battery.setSlots(3);
         battery.setAvailableEnergy(3);
         battery.setConnectors(connectors);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 2);
-        Pair<Integer, Integer> batteryCoord = new Pair<>(2, 2);
+        Pair<Integer, Integer> batteryCord = new Pair<>(2, 2);
 
         gameController.getModel().setActiveCard(adventureCard1);
         gameController.setState(meteorSwarmState);
         gameController.rollDice("player1");
-
-        gameController.activateShield("player1", shieldCoord, batteryCoord);
+        gameController.activateShield("player2", shieldCord, batteryCord);
+        gameController.activateShield("player1", shieldCord, batteryCord);
 
         assertEquals(2, battery.getAvailableEnergy());
     }
@@ -366,7 +386,15 @@ class GameControllerTest {
     void endMove(){
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
+        gameController.endMove("player2");
         gameController.endMove("player1");
+    }
+
+    @Test
+    void chooseBranchFailure(){
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.chooseBranch("player1", new Pair<>(1, 1));
     }
 
     @Test
@@ -385,12 +413,12 @@ class GameControllerTest {
 
         gameController.getPlayerByID("player1").getShip().addComponent(engine1, 1, 2);
         gameController.getPlayerByID("player1").getShip().addComponent(battery, 2, 1);
-        Pair<Integer, Integer> engineCoord1 = new Pair<>(1, 2);
-        Pair<Integer, Integer> batteryCoord2 = new Pair<>(2, 1);
+        Pair<Integer, Integer> engineCord1 = new Pair<>(1, 2);
+        Pair<Integer, Integer> batteryCord2 = new Pair<>(2, 1);
         List<Pair<Integer, Integer>> engineCoords = new ArrayList<>();
-        engineCoords.add(engineCoord1);
+        engineCoords.add(engineCord1);
         List<Pair<Integer, Integer>> batteryCoords = new ArrayList<>();
-        batteryCoords.add(batteryCoord2);
+        batteryCoords.add(batteryCord2);
 
         gameController.activateEngines("player1", engineCoords, batteryCoords);
     }
@@ -417,7 +445,17 @@ class GameControllerTest {
     }
 
     @Test
+    void getPlayerScoresFailure(){
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.getScore();
+    }
+
+    @Test
     void giveUp() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.giveUp("player1");
         PreDrawState preDrawState = new PreDrawState(gameController);
         gameController.setState(preDrawState);
         gameController.giveUp("player1");
@@ -428,6 +466,7 @@ class GameControllerTest {
     void disconnectPlayer() {
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
+        gameController.disconnectPlayer("+1 voto se leggi questo");
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
         assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
@@ -439,6 +478,8 @@ class GameControllerTest {
 
     @Test
     void reconnectPlayer() {
+        gameController.reconnectPlayer("ci sei cascato di nuovo +2");
+        gameController.reconnectPlayer("player2");
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
         gameController.disconnectPlayer("player1");
@@ -487,6 +528,9 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromUnviewed() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.takeComponentFromUnviewed("player1", 0);
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Component comp = gameController.getModel().getGame().getPile().getUnviewed().getFirst();
@@ -500,6 +544,9 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromViewed() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.takeComponentFromViewed("player1", 0);
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
@@ -515,6 +562,9 @@ class GameControllerTest {
 
     @Test
     void takeComponentFromBooked() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.takeComponentFromBooked("player1", 0);
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
@@ -530,6 +580,10 @@ class GameControllerTest {
 
     @Test
     void addComponentToBooked() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.addComponentToBooked("player1");
+
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
@@ -544,6 +598,9 @@ class GameControllerTest {
 
     @Test
     void addComponentToViewed() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.addComponentToViewed("player1");
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
@@ -559,6 +616,7 @@ class GameControllerTest {
 
     @Test
     void placeComponent() {
+
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         Component comp = assemblingState.getModel().getGame().getPile().getUnviewed().getFirst();
@@ -567,6 +625,10 @@ class GameControllerTest {
         Pair<Integer, Integer> coordinates = new Pair<>(2, 2);
         gameController.placeComponent("player1", coordinates);
         assertEquals(comp, gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2));
+
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.placeComponent("player1", coordinates);
     }
 
     @Test
@@ -588,6 +650,10 @@ class GameControllerTest {
         assertEquals(connectors.get(Direction.RIGHT), comp.getConnectors().get(Direction.DOWN));
         assertEquals(connectors.get(Direction.DOWN), comp.getConnectors().get(Direction.LEFT));
         assertEquals(connectors.get(Direction.LEFT), comp.getConnectors().get(Direction.UP));
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.rotateComponentClockwise("player1");
+        gameController.rotateComponentCounterclockwise("player1");
     }
 
     @Test
@@ -625,6 +691,10 @@ class GameControllerTest {
         gameController.removeComponentFromShip("player1", coordinates);
 
         assertNull(gameController.getPlayerByID("player1").getShip().getComponentAt(3,4));
+
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.removeComponentFromShip("player1", coordinates);
     }
 
 
@@ -633,10 +703,18 @@ class GameControllerTest {
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
         gameController.stopAssembling("player1", 1);
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.stopAssembling("player1", 1);
     }
 
    @Test
     void turnHourglass() throws InterruptedException {
+       OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+       gameController.setState(openSpaceState);
+       gameController.turnHourglass("player1");
+       gameController.disconnectPlayer("player2");
+       gameController.turnHourglass("player2");
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
 
@@ -659,8 +737,15 @@ class GameControllerTest {
 
     @Test
     void peekDeck() {
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.peekDeck("player1", 1);
+
+
         AssemblingState assemblingState = new AssemblingState(gameController.getModel(), gameController);
         gameController.setState(assemblingState);
+        gameController.disconnectPlayer("player2");
+        gameController.peekDeck("player2", 2);
         gameController.peekDeck("player1", 3);
     }
 
@@ -680,12 +765,13 @@ class GameControllerTest {
         connectors.put(Direction.LEFT, ConnectorEnum.U);
         cabin.setConnectors(connectors);
 
+
         try {
             gameController.getPlayerByID("player1").getShip().addComponent(cabin, 2, 2);
 
 
-            Pair<Integer, Integer> cabinCoord = new Pair<>(2, 2);
-            gameController.addAlien("player1", alienColor, cabinCoord);
+            Pair<Integer, Integer> cabinCord = new Pair<>(2, 2);
+            gameController.addAlien("player1", alienColor, cabinCord);
             gameController.endMove("player1");
             gameController.endMove("player2");
             gameController.endMove("player3");
@@ -694,6 +780,9 @@ class GameControllerTest {
         } catch (InvalidTileException e) {
             fail("Invalid tile exception: " + e.getMessage());
         }
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.addAlien("player1", alienColor, new Pair<>(2, 2));
     }
 
     @Test
@@ -712,6 +801,9 @@ class GameControllerTest {
     void rollDice() throws DieNotRolledException {
         SlaversState slaversState = new SlaversState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(slaversState);
+        OpenSpaceState openSpaceState = new OpenSpaceState(gameController.getModel(), gameController, adventureCard);
+        gameController.setState(openSpaceState);
+        gameController.rollDice("player1");
 
         gameController.rollDice("player1");
         gameController.getModel().getGame().lastRolled();
@@ -774,7 +866,7 @@ class GameControllerTest {
         String player1 = "Sola";
         String player2 = "Ste";
         String player3 = "Verri";
-        String player4 = "Tave";
+        String player4 = "taverna";
         String id = "22";
         List<String> players = new ArrayList<>();
         players.add(player1);
@@ -783,7 +875,7 @@ class GameControllerTest {
         players.add(player4);
         int level = 2;
         try {
-            GameController controller = new GameController (id, players, level);
+            GameController controller = new GameController (id, id, players, level);
             controller.killGame();
         } catch (InvalidStateException _) {
 

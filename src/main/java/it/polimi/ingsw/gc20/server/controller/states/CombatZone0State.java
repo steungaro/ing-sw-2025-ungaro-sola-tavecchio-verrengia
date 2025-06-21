@@ -18,6 +18,12 @@ import org.javatuples.Pair;
 
 import java.util.*;
 
+/**
+ * Represents the CombatZone0State in the game, which is a specific playing state where
+ * players engage in combat actions such as activating cannons, engines, and shields,
+ * rolling dice, and managing crew losses. This state is dynamically created during the game
+ * and integrates with the game model, controller, and adventure card mechanics.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class CombatZone0State extends PlayingState {
     private final int lostDays;
@@ -27,10 +33,17 @@ public class CombatZone0State extends PlayingState {
     private final Map<String, Integer> declaredEnginePower;
     private FireManager manager;
     private int result;
+
     /**
-     * Default constructor
+     * Constructs a CombatZone0State object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the initial phase to AUTOMATIC_ACTION.
+     * It also configures the standby message for the current player and notifies the message manager
+     * of the phase change. The method waits for 5 seconds before proceeding to the automatic action.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
-    @SuppressWarnings("unused") // dynamically created by Cards
     public CombatZone0State(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.lostDays = card.getLostDays();
@@ -54,8 +67,6 @@ public class CombatZone0State extends PlayingState {
         this.automaticAction();
     }
 
-    /** this method is used to check the player with the minimum crew and make him lose the days
-     */
     @Override
     public void automaticAction() {
         //find the player with the minimum crew
@@ -74,16 +85,6 @@ public class CombatZone0State extends PlayingState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * This method activates the cannons that the player declared
-     * @param player who selected the cannons
-     * @param cannons that the player wants to activate
-     * @param batteries that the player wants to use to activate the double cannon
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidCannonException if a cannon is not valid
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         //check if the player is in the right phase
@@ -104,7 +105,7 @@ public class CombatZone0State extends PlayingState {
             batteriesComponents.addAll(Translator.getComponentAt(player, batteries, Battery.class));
         //calculate the firepower that the player declared
         super.activateCannons(player, cannons, batteries);
-        float firepower = getModel().FirePower(player, cannonsComponents, batteriesComponents);
+        float firepower = getModel().firePower(player, cannonsComponents, batteriesComponents);
         declaredFirepower.put(player.getUsername(), firepower);
         //pass the turn to the next player
         nextPlayer();
@@ -134,13 +135,6 @@ public class CombatZone0State extends PlayingState {
 
     }
 
-    /**
-     * this method is used to roll the dice
-     * @param player who needs to roll the dice
-     * @return the result of the roll
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
     public int rollDice(Player player) throws InvalidStateException, InvalidTurnException{
         //check if the player is in the right turn
@@ -196,6 +190,10 @@ public class CombatZone0State extends PlayingState {
         return result;
     }
 
+    /**
+     * This method is used to finish the fire manager and check if the player finished shooting.
+     * If the player finished shooting, we can draw a new card, otherwise we have to roll the dice again.
+     */
     private void finishManager() {
         if (manager.finished()){
             //if we finished shooting, we can draw a new card
@@ -214,14 +212,6 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
-    /**
-     * this method is used to lose the crew of the player
-     * @param player who needs to lose the crew
-     * @param cabins that the player wants to lose
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws EmptyCabinException if the cabin is empty
-     * @throws InvalidStateException if the player is not in the correct phase
-     */
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, EmptyCabinException, InvalidStateException, ComponentNotFoundException {
         //check if we are in the right phase
@@ -251,27 +241,6 @@ public class CombatZone0State extends PlayingState {
     }
 
     @Override
-    public String toString() {
-        return "CombatZone0State{" +
-                "lostDays=" + lostDays +
-                ", lostCrew=" + lostCrew +
-                ", cannonFires=" + cannonFires +
-                ", declaredFirepower=" + declaredFirepower +
-                ", declaredEnginePower=" + declaredEnginePower +
-                '}';
-    }
-
-    /**
-     * this method is used to activate the engines of the player
-     * @param player who selected the engines
-     * @param engines that the player wants to activate
-     * @param batteries that the player wants to use to activate the double engine
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidEngineException if an engine is not valid
-     * @throws EnergyException if the player doesn't have enough energy
-     */
-    @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, EnergyException, InvalidEngineException, ComponentNotFoundException{
         //check if the player is in the right phase
         if(phase != StatePhase.ENGINES_PHASE) {
@@ -282,7 +251,7 @@ public class CombatZone0State extends PlayingState {
             throw new InvalidTurnException("It's not your turn!");
         }
         //translate the coordinates to the components and calculate the engine power
-        int enginePower = getModel().EnginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
+        int enginePower = getModel().enginePower(player, engines.size(), Translator.getComponentAt(player, batteries, Battery.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated engines"));
         //save the engine power in the declaredEnginePower map
         declaredEnginePower.put(player.getUsername(), enginePower);
@@ -315,15 +284,6 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
-    /**
-     * This method is used to activate the shield of the player
-     * @param player who selected the shield
-     * @param shield that the player wants to activate
-     * @param battery that the player wants to use to activate the shield
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws EnergyException if the player doesn't have enough energy
-     * @throws InvalidStateException if the player is not in the correct phase
-     */
     @Override
     public void activateShield(Player player, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, EnergyException {
         //check if the player is in the right turn
@@ -365,13 +325,6 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
-    /**
-     * This method is used to choose the branch of the ship
-     * @param player who selected the branch
-     * @param coordinates of the branch that the player wants to select
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the player is not in the correct phase
-     */
     @Override
     public void chooseBranch(Player player, Pair<Integer, Integer> coordinates) throws InvalidTurnException, InvalidStateException {
         //check if the player is in the right turn
@@ -389,10 +342,6 @@ public class CombatZone0State extends PlayingState {
         finishManager();
     }
 
-    /**
-     * This method is used when a player quits the game
-     * @param player who quits
-     */
     @Override
     public void currentQuit(Player player){
         //first, we check if we are in a penality phase:
@@ -451,6 +400,12 @@ public class CombatZone0State extends PlayingState {
         }
     }
 
+    /**
+     * Sets the phase to CANNONS_PHASE, updates the standby message, and notifies the message manager
+     * that the current player is activating cannons.
+     * This method is called when all players have declared their firepower and the game is ready for
+     * cannon activation.
+     */
     private void setCannonPhase(){
         phase = StatePhase.CANNONS_PHASE;
         setStandbyMessage(getCurrentPlayer() + " is activating cannons.");

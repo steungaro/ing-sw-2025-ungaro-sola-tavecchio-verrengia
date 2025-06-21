@@ -3,16 +3,17 @@ package it.polimi.ingsw.gc20.server.model.player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 /**
- * @author GC20
+ * Represents a player in the game with attributes such as color, username, ship,
+ * credits, leadership status, position on the board, and in-game status.
  */
 public class Player {
 
     private PlayerColor color;
     private String username;
     private Ship ship;
-    private Integer credits;
+    private int credits;
     private boolean leader;
-    private Integer posInBoard;
+    private int posInBoard;
     private boolean inGame;
 
     /**
@@ -29,8 +30,11 @@ public class Player {
     }
 
     /**
-     * Returns a copy of the player with only public data
-     * @return Player p
+     * Creates a new Player instance populated with a subset of the current Player's data for public access.
+     * Sensitive fields such as credits are reset to default values, ensuring only non-critical information is shared.
+     *
+     * @return a Player instance containing publicly accessible fields such as color, username, ship, 
+     *         leader status, position on the board, and game status, while credits are set to 0.
      */
     public Player getPublicData() {
         Player p = new Player();
@@ -44,74 +48,96 @@ public class Player {
         return p;
     }
 
-    /** Function that return true if the player is the leader
-     * @return Boolean leader
+    /**
+     * Determines whether the player is the leader.
+     *
+     * @return {@code true} if the player is the leader; {@code false} otherwise.
      */
-    public Boolean isLeader () {
+    public boolean isLeader () {
         return this.leader;
     }
 
-    /** set function for the color of the player
-     * @param c  color of the player
+    /**
+     * Sets the color of the player.
+     *
+     * @param c the color to be assigned to the player
      */
     public void setColor(PlayerColor c) {
         this.color = c;
     }
 
-    /** get function for the color of the player
-     * @return PlayerColor color
+    /**
+     * Retrieves the color associated with the player.
+     *
+     * @return the player's color as a {@code PlayerColor}
      */
     public PlayerColor getColor() {
         return this.color;
     }
 
-    /** get function for the ship of the player
-     * @return ship of the player
+    /**
+     * Retrieves the ship associated with the player.
+     *
+     * @return the player's ship as a {@code Ship} object
      */
     public Ship getShip() {
         return this.ship;
     }
 
-    /** set function for the ship of the player
-     * @param s ship of the player
+    /**
+     * Assigns a {@code Ship} object to the player.
+     *
+     * @param s the {@code Ship} to be assigned to the player
      */
     public void setShip(Ship s) {
        this.ship = s;
     }
 
-    /**get function for the username of the player
-     * @return String username
+    /**
+     * Retrieves the username associated with the player.
+     *
+     * @return the player's username as a String
      */
     public String getUsername() {
         return this.username;
     }
 
-    /** set function for the username of the player
-     * @param s username
-    */
+    /**
+     * Sets the username for the player.
+     *
+     * @param s the username to be assigned to the player
+     */
     public void setUsername(String s) {
         this.username = s;
     }
 
-    /** set function if player is the leader
+    /**
+     * Sets the player's leader status to {@code true}.
+     * Indicates that the player is designated as the leader.
      */
     public void setLeader() {
         this.leader = true;
     }
 
 
-    /** function to add credits to the player
-     * @param c number of credits to add
+    /**
+     * Adds the specified number of credits to the player's account.
+     *
+     * @param c the number of credits to be added to the player's account
      */
-    public void addCredits(Integer c) {
+    public void addCredits(int c) {
         this.credits += c;
     }
 
-    /** function to remove credits to the player
-     * @param c number of credits to remove
-     * @return Integer debit (the difference between the credits to remove and the credits of the player)
+    /**
+     * Removes the specified number of credits from the player. If the amount to be removed exceeds 
+     * the player's current credits, the player's credits are set to 0 and the excess amount 
+     * (the deficit) is returned.
+     *
+     * @param c the number of credits to remove from the player
+     * @return the deficit amount if the player's credits go below 0, or 0 if the player had sufficient credits
      */
-    public Integer removeCredits(Integer c){
+    public int removeCredits(int c){
         int debit = 0;
         this.credits -= c;
 
@@ -123,39 +149,51 @@ public class Player {
         return debit;
     }
 
-    /** get function for the credits of the player
-     * @return Integer credits
+    /**
+     * Retrieves the number of credits currently available to the player.
+     *
+     * @return the player's current credits as an integer
      */
-    public Integer getCredits() {
+    public int getCredits() {
         return this.credits;
     }
 
 
-    /** getfunction for the position of the player in the board
-     * @return Integer position
+    /**
+     * Retrieves the player's current position on the board.
+     *
+     * @return the position of the player on the board as an integer
      */
-    public Integer getPosition() {
+    public int getPosition() {
         return this.posInBoard;
     }
 
-    /** set function for the position of the player in the board
-     * @param p position
+    /**
+     * Sets the position of the player on the board.
+     *
+     * @param p the position to be assigned to the player on the board
      */
-    public void setPosition(Integer p) {
+    public void setPosition(int p) {
         this.posInBoard = p;
     }
 
-    /** function to determine if the player is in the game
-     * @return Boolean inGame
+    /**
+     * Determines whether the player is currently in the game.
+     *
+     * @return {@code true} if the player is in the game; {@code false} otherwise.
      */
-    public Boolean isInGame() {
+    public boolean isInGame() {
         return this.inGame;
     }
 
-    /** function to set if the player is in the game
-     * @param b game status
+    /**
+     * Sets the game status of the player.
+     *
+     * @param b a {@code boolean} value indicating the player's game status. 
+     *          {@code true} if the player is currently in the game, 
+     *          {@code false} otherwise.
      */
-    public void setGameStatus(Boolean b) {
+    public void setGameStatus(boolean b) {
         this.inGame = b;
     }
 }

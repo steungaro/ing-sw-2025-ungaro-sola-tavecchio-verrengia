@@ -31,7 +31,6 @@ public abstract class ShipController {
     public String playerUsername;;
     protected ViewShip ship;
 
-    @FXML protected GridPane compoentsGrid;
     @FXML protected Label playerColorLabel;
     @FXML protected Label usernameLabel;
     @FXML protected Label creditsLabel;
@@ -68,20 +67,9 @@ public abstract class ShipController {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
-        loadObjects();
     }
 
-    public void loadObjects() {
-        for (int i=0; i<ROWS; i++) {
-            for (int j=0; j<COLS; j++) {
-                ImageView imageView = getImageViewAt(i, j);
-                ViewComponent comp = ship.getComponent(i, j);
-                if (imageView != null && comp != null) {
-                    setComponentProp((StackPane) imageView.getParent(), comp);
-                }
-            }
-        }
-    }
+
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
@@ -98,7 +86,7 @@ public abstract class ShipController {
 
         GridPane parent = (GridPane) targetCell.getParent();
         parent.getChildren().remove(targetCell);
-        StackPane layeredPane = new StackPane();
+        StackPane layeredPane = new StackPane(); // This pane will be the cell in the grid
 
         if (componentId >= 1000 && componentId <= 1003) {
             ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
@@ -118,11 +106,29 @@ public abstract class ShipController {
 
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
-            Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
+            Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
             targetCell.setImage(componentImage);
 
-            layeredPane.getChildren().add(targetCell);
-            setComponentProp(layeredPane, comp);
+            // Create a new pane to hold the image and overlays.
+            StackPane contentPane = new StackPane();
+            contentPane.getChildren().add(targetCell);
+
+            // Add overlays to the contentPane
+            if (comp.isBattery()) {
+                setComponentProp(contentPane, (ViewBattery) comp);
+            } else if (comp.isCabin()) {
+                setComponentProp(contentPane, (ViewCabin) comp);
+            } else if (comp.isCargoHold()) {
+                setComponentProp(contentPane, (ViewCargoHold) comp);
+            }
+
+            // Rotate the contentPane if needed
+            if (comp.rotComp != 0) {
+                contentPane.setRotate(comp.rotComp * 90);
+            }
+
+            // Add the rotated content to the main layeredPane
+            layeredPane.getChildren().add(contentPane);
 
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
@@ -140,16 +146,19 @@ public abstract class ShipController {
         }
     }
 
-    public void setComponentProp(StackPane layeredPane, ViewComponent comp) {
-        return;
-    }
-
+    /**
+     * Sets the properties of the component in the layered pane.
+     * This method is used to display additional information like battery level, alien presence, or cargo hold contents.
+     *
+     * @param layeredPane The StackPane where the component will be displayed.
+     * @param comp        The ViewComponent to set properties for.
+     */
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
         batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
         try {
-            ImageView batteryIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/battery.png")));
+            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/battery.png"))));
             batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
@@ -159,7 +168,7 @@ public abstract class ShipController {
 
             layeredPane.getChildren().addAll(batteryLabel, batteryIcon);
         } catch (Exception e) {
-            System.err.println("Impossibile caricare l'immagine della batteria: " + e.getMessage());
+            System.err.println("Unable to load battery image: " + e.getMessage());
             layeredPane.getChildren().add(batteryLabel);
         }
     }
@@ -170,7 +179,7 @@ public abstract class ShipController {
                     "/images/icons/purple_alien.png" : "/images/icons/brown_alien.png";
 
             try {
-                ImageView alienIcon = new ImageView(new Image(getClass().getResourceAsStream(alienImagePath)));
+                ImageView alienIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(alienImagePath))));
                 alienIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.4));
                 alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
                 alienIcon.setPreserveRatio(true);
@@ -178,14 +187,14 @@ public abstract class ShipController {
                 StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
                 layeredPane.getChildren().add(alienIcon);
             } catch (Exception e) {
-                System.err.println("Impossibile caricare l'immagine dell'alieno: " + e.getMessage());
+                System.err.println("Unable to load alien image: " + e.getMessage());
             }
         } else if (comp.astronauts > 0) {
             Label astronautsLabel = new Label(Integer.toString(comp.astronauts));
             astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
             try {
-                ImageView astronautIcon = new ImageView(new Image(getClass().getResourceAsStream("/images/icons/astr.png")));
+                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/astr.png"))));
                 astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
@@ -195,7 +204,7 @@ public abstract class ShipController {
 
                 layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
             } catch (Exception e) {
-                System.err.println("Impossibile caricare l'immagine dell'astronauta: " + e.getMessage());
+                System.err.println("Unable to load astronaut image: " + e.getMessage());
                 layeredPane.getChildren().add(astronautsLabel);
             }
         }

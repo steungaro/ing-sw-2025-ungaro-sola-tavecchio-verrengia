@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.RMI;
 
-import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
+import it.polimi.ingsw.gc20.common.interfaces.AuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginFailedMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LoginSuccessfulMessage;
@@ -16,23 +16,45 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.logging.Logger;
 
-public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterface {
+/**
+ * The RMIAuthService class provides implementation for authenticating users
+ * via Remote Method Invocation (RMI). It manages user login, logout, and
+ * RMI-specific interactions. This class facilitates user authentication
+ * and communication management between clients and the server.
+ *<p>
+ * This class extends UnicastRemoteObject to enable remote method calls and
+ * implements AuthInterface, defining the required methods for RMI-based
+ * authentication.
+ */
+public class RMIAuthService extends UnicastRemoteObject implements AuthInterface {
     private static final Logger LOGGER = Logger.getLogger(RMIAuthService.class.getName());
     private final RMIServer server;
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constructor for the RMIAuthService class.
-     * @param server The RMIServer instance.
+     * Constructs an instance of the RMIAuthService class.
+     * This constructor initializes the RMI authentication service
+     * with a reference to the provided RMIServer instance.
+     *
+     * @param server The RMIServer instance that the authentication service will use
+     *               to manage interactions and connections through RMI.
+     * @throws RemoteException If an error occurs during the creation of the RMI service.
      */
     public RMIAuthService(RMIServer server) throws RemoteException {
         this.server = server;
     }
 
-    /**Function to log in a user
-     * @param username The username of the user.
-     * @return True if the user was logged in successfully, false otherwise.
+    /**
+     * Handles the login process for a client attempting to connect to the server via RMI (Remote Method Invocation).
+     * This method manages three scenarios for the client: new user login, reconnection of an existing but disconnected user,
+     * and handling of attempts to log in with an already connected username.
+     *
+     * @param username The username of the client attempting to log in.
+     * @param view     The {@code ViewInterface} implementation provided by the client for communication and updates.
+     * @return {@code true} if the login process was successful, or {@code false} if login failed (e.g., due to the username
+     *         already being in use and connected).
+     * @throws RemoteException If a remote invocation error occurs during the login process.
      */
     @Override
     public boolean login(String username, ViewInterface view) throws RemoteException {
@@ -86,11 +108,14 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
     }
 
     /**
-     * Function to log out a user.
+     * Handles the logout process for a client identified by their username.
+     * This method attempts to disconnect the client if they are found in the system.
+     * If the client is successfully disconnected, it returns true; otherwise, false.
      *
-     * @param username The username of the user.
-     * @return True if the user was logged out successfully, false otherwise.
-     * @throws RemoteException if the token is invalid.
+     * @param username the unique identifier of the client attempting to log out
+     * @return {@code true} if the logout was successful, or {@code false} if the client was not found
+     * @throws RemoteException if a remote invocation error occurs during the logout process
+     * @deprecated This method is not required for this project, please do not use it.
      */
     @Override
     @Deprecated
@@ -106,6 +131,17 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
         }
     }
 
+    /**
+     * Sets the view interface for a specified user in the system.
+     * This method retrieves the corresponding client handler for the given username,
+     * assigns the provided view interface to it, and performs additional post-setup operations
+     * such as sending login success notifications and fetching lobby information.
+     *
+     * @param username The username of the client whose view is being set.
+     * @param view     The {@code ViewInterface} implementation to be set for the client.
+     * @return {@code false} if the operation completes successfully, or {@code true} if an error occurs during the process.
+     * @throws RemoteException If a remote invocation error occurs during the operation.
+     */
     private boolean setView(String username, ViewInterface view) throws RemoteException {
         try {
             RMIClientHandler clientHandler = (RMIClientHandler) NetworkService.getInstance().getClient(username);
@@ -120,6 +156,16 @@ public class RMIAuthService extends UnicastRemoteObject implements RMIAuthInterf
         }
     }
 
+    /**
+     * Handles the "pong" response from a client to indicate activity.
+     * This method enqueues a {@code Pong} message for processing
+     * and logs that a pong signal has been received from the specified client.
+     *
+     * @param username The username of the client sending the pong.
+     *                 Must not be {@code null}.
+     * @throws RemoteException If a remote invocation error occurs during execution.
+     */
+    @Override
     public void pong(String username) throws RemoteException {
         QueueHandler.getInstance().enqueue(new Pong(username));
         LOGGER.info("Pong received from client");

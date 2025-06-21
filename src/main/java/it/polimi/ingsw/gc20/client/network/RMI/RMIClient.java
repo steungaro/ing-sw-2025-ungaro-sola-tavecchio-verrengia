@@ -2,9 +2,9 @@ package it.polimi.ingsw.gc20.client.network.RMI;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.common.interfaces.AuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
@@ -20,7 +20,7 @@ public class RMIClient implements Client {
     private final String serverAddress;
     private final int port;
 
-    private RMIAuthInterface authService;
+    private AuthInterface authService;
     private GameControllerInterface gameService;
     private MatchControllerInterface matchService;
 
@@ -49,7 +49,7 @@ public class RMIClient implements Client {
             Registry registry = LocateRegistry.getRegistry(serverAddress, port);
 
             // Look up the remote services
-            authService = (RMIAuthInterface) registry.lookup("AuthService");
+            authService = (AuthInterface) registry.lookup("AuthService");
             gameService = (GameControllerInterface) registry.lookup("GameService");
             matchService = (MatchControllerInterface) registry.lookup("MatchService");
 

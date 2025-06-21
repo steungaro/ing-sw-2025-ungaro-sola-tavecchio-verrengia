@@ -1015,10 +1015,6 @@ public abstract class BuildingPhaseController implements GameModelListener, GUIC
         // Not needed for this controller
     }
 
-    @Override
-    public void onPlayerListUpdated(List<ViewPlayer> players) {
-        // Not needed for this controller
-    }
 
     @Override
     public void onErrorMessageReceived(String message) {

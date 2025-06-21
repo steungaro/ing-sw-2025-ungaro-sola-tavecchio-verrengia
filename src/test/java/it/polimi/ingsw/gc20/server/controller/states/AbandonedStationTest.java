@@ -34,7 +34,7 @@ public class AbandonedStationTest {
         reward.add(CargoColor.GREEN);
         card.setReward(reward);
         card.setLostDays(1);
-        controller = new GameController("testGame", List.of("player1", "player2", "player3"), 2);
+        controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
         controller.getModel().setActiveCard(card);
 
         state = new AbandonedStationState(controller.getModel(), controller, card);
@@ -172,6 +172,6 @@ public class AbandonedStationTest {
             fail();
         }
         assertEquals(4, controller.getPlayerByID("player2").getPosition(), "Player position should be 4 after accepting the card");
-        state.toString();
+        assertEquals("AbandonedStationState", state.toString());
     }
 }
