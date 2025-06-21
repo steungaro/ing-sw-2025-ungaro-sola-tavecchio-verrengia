@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
@@ -12,7 +16,7 @@ import java.util.Scanner;
  * to choose one branch to keep.
  * It implements the {@link MenuState} interface to define the behavior of the branch menu.
  */
-public class BranchMenu implements MenuState {
+public class BranchMenu implements MenuState, GameModelListener{
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
 
@@ -26,6 +30,7 @@ public class BranchMenu implements MenuState {
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().addListener(this);
         System.out.println("\u001B[1mBranch Menu\u001B[22m");
         System.out.println("Your ship has split into two branches.");
         System.out.println("Press [enter] to continue.");
@@ -58,6 +63,7 @@ public class BranchMenu implements MenuState {
     public void handleInput(String choice) throws RemoteException {
         int row;
         int col;
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         ClientGameModel.getInstance().printShip(username);
         do {
@@ -78,6 +84,7 @@ public class BranchMenu implements MenuState {
             }
         } while (row < 0 || row > 4 || col < 0 || col > 6);
         ClientGameModel.getInstance().getClient().chooseBranch(username, new Pair<>(row, col));
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setFree();
     }
 
@@ -90,4 +97,19 @@ public class BranchMenu implements MenuState {
     public String getStateName() {
         return "BranchMenu";
     }
+
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) { }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) { }
+
+    @Override
+    public void onErrorMessageReceived(String message) { }
 }

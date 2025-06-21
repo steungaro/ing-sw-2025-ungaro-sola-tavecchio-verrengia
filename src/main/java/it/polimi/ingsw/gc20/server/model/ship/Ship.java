@@ -447,12 +447,14 @@ public abstract class Ship {
                     if(component.isCannon() && component.getRotation() == dir) {
                         //if it's a cannon we need to check if it has a component in the direction of the cannon
                         if(getComponentAt(adjRow, adjCol) != null) {
+                            System.out.println("Cannon has a component in the direction of the cannon at the coordinates " + adjRow + ", " + adjCol);
                             return false;
                         }
 
                     } else if (component.isEngine() && ((Engine) component).getOrientation() == dir) {
                         //if it's an engine we need to check if it has a component in the direction of the engine
                         if(getComponentAt(adjRow, adjCol) != null) {
+                            System.out.println("Engine has a component in the direction of the engine at the coordinates " + adjRow + ", " + adjCol);
                             return false;
                         }
                     } else {
@@ -470,6 +472,7 @@ public abstract class Ship {
                             queue.add(new int[]{adjRow, adjCol});
                             visited[adjRow][adjCol] = true;
                         }else{
+                            System.out.println("Invalid connection found at coordinates: " + adjRow + ", " + adjCol);
                             return false;
                         }
                     }
@@ -480,6 +483,7 @@ public abstract class Ship {
             for (int j = 0; j < cols; j++) {
                 Component component = getComponentAt(i, j);
                 if (component != null && !visited[i][j]) {
+                    System.out.println("Unconnected component found at coordinates: " + i + ", " + j);
                     return false; // Found an unconnected component
                 }
             }

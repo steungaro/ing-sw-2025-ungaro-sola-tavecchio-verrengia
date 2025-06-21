@@ -1,19 +1,22 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Scanner;
-
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 /**
  * Represents the menu state where the player is required to lose crew members.
  * This class is responsible for displaying the menu, handling user input,
  * and managing the actions related to losing crew.
  * It implements the {@link MenuState} interface to define the behavior of the Lose Crew menu.
  */
-public class LoseCrewMenu implements MenuState {
+public class LoseCrewMenu implements MenuState, GameModelListener{
     private final Scanner scanner;
     private final int crewToLose;
     private final String username = ClientGameModel.getInstance().getUsername();
@@ -29,6 +32,7 @@ public class LoseCrewMenu implements MenuState {
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().addListener(this);
         ClientGameModel.getInstance().printShip(username);
         System.out.println("\u001B[1mLose Crew Menu\u001B[22m");
         System.out.println("You have to lose \u001B[31m" + crewToLose + "\u001B[0m crew members!");
@@ -61,6 +65,7 @@ public class LoseCrewMenu implements MenuState {
      */
     @Override
     public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         if (choice.equals("1")) {
             ClientGameModel.getInstance().printShip(username);
@@ -108,5 +113,25 @@ public class LoseCrewMenu implements MenuState {
     @Override
     public String getStateName() {
         return "LoseEnergyMenu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }

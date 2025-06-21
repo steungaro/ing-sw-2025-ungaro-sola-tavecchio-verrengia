@@ -60,14 +60,6 @@
                 <Insets bottom="15.0" top="10.0" />
             </padding>
         </HBox>
-        <Button mnemonicParsing="false" onAction="#handleBackToMenu" style="-fx-background-color: linear-gradient(to bottom, #455a64, #37474f); -fx-text-fill: white; -fx-background-radius: 5;" text="Torna al menu">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <effect>
-                <DropShadow color="#00000080" height="5.0" radius="2.0" width="5.0" />
-            </effect>
-        </Button>
     </children>
     <padding>
         <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />

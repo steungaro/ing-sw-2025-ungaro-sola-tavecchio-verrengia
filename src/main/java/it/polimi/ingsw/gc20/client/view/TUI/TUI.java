@@ -17,7 +17,7 @@ public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
     private static final Scanner scanner = new Scanner(System.in);
 
-    public TUI() throws RemoteException{
+    public TUI() throws RemoteException {
         super();
         LOGGER.info("TUI created");
     }
@@ -44,7 +44,7 @@ public class TUI extends ClientGameModel {
     private void printLogo() {
         System.out.println(" ██████╗  █████╗ ██╗      █████╗ ██╗  ██╗██╗   ██╗    ████████╗██████╗ ██╗   ██╗ ██████╗██╗  ██╗███████╗██████╗ ");
         System.out.println("██╔════╝ ██╔══██╗██║     ██╔══██╗╚██╗██╔╝╚██╗ ██╔╝    ╚══██╔══╝██╔══██╗██║   ██║██╔════╝██║ ██╔╝██╔════╝██╔══██╗");
-        System.out.println("██║  ███╗███████║██║     ███████║ ╚███╔╝  ╚████╔╝        ██║   ██████╔╝██║   ██║██║     █████╔╝ █████╗  ██████╔╝");
+        System.out.println("██║  ███╗███████║██║     ███████║ ╚███╔╝  ╚████��╝        ██║   ██████╔╝██║   ██║██║     █████╔╝ █████╗  ██████╔╝");
         System.out.println("██║   ██║██╔══██║██║     ██╔══██║ ██╔██╗   ╚██╔╝         ██║   ██╔══██╗██║   ██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗");
         System.out.println("╚██████╔╝██║  ██║███████╗██║  ██║██╔╝ ██╗   ██║          ██║   ██║  ██║╚██████╔╝╚██████╗██║  ██╗███████╗██║  ██║");
         System.out.println(" ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝");
@@ -139,10 +139,10 @@ public class TUI extends ClientGameModel {
                 }
             } while (client == null || !client.isConnected());
 
-                // Connection established
+            // Connection established
 
-                System.out.println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
-                System.out.println("Use [q] to quit the application at any time (works in every menu).");
+            System.out.println("\033[32mConnection established with server at " + client.getAddress() + ":" + client.getPort() + "\033[0m");
+            System.out.println("Use [q] to quit the application at any time (works in every menu).");
 
         } catch (Exception e) {
             System.out.println("\033[31mAn error occurred: " + e.getMessage() + "\033[0m");
@@ -200,84 +200,84 @@ public class TUI extends ClientGameModel {
         }
     }
 
-    public void branchMenu(){
+    public void branchMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new BranchMenu());
     }
 
-    public void buildingMenu(List<ViewAdventureCard> adventureCards){
+    public void buildingMenu(List<ViewAdventureCard> adventureCards) {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(adventureCards));
     }
 
-    public void inLobbyMenu(){
+    public void inLobbyMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new InLobbyMenu());
     }
 
-    public void cannonsMenu(String message){
+    public void cannonsMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new CannonsMenu(message));
     }
 
-    public void cardAcceptanceMenu(String message){
+    public void cardAcceptanceMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new CardAcceptanceMenu(message));
     }
 
-    public void engineMenu(String message){
+    public void engineMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new EngineMenu(message));
     }
 
-    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing){
+    public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
         //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
         ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(message, cargoToLose, cargoMap, losing));
     }
 
-    public void planetMenu(List<Planet> planets){
+    public void planetMenu(List<Planet> planets) {
         ClientGameModel.getInstance().setCurrentMenuState(new PlanetMenu(planets));
     }
 
-    public void populateShipMenu(){
+    public void populateShipMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new PopulateShipMenu());
     }
 
-    public void validationMenu(){
+    public void validationMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new ValidationMenu());
     }
 
-    public void automaticAction(String message){
+    public void automaticAction(String message) {
         clearConsole();
         ClientGameModel.getInstance().printBoard();
         System.out.println(message);
     }
 
-    public void mainMenuState(){
+    public void mainMenuState() {
         ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
-    public void AssemblingStateMenu(){
+    public void AssemblingStateMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
-    public void shieldsMenu(String message){
+    public void shieldsMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(message));
     }
 
-    public void rollDiceMenu(String message){
+    public void rollDiceMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(message));
     }
 
-    public void cargoMenu(int cargoNum){
+    public void cargoMenu(int cargoNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(null, cargoNum, new HashMap<>(), true));
     }
 
-    public void loseCrewMenu(int crewNum){
+    public void loseCrewMenu(int crewNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new LoseCrewMenu(crewNum));
     }
 
-    public void removeBatteryMenu(int batteryNum){
+    public void removeBatteryMenu(int batteryNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new LoseEnergyMenu(batteryNum));
     }
 
-    public void leaderBoardMenu(Map<String, Integer> leaderBoard){
+    public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
         ClientGameModel.getInstance().setCurrentMenuState(new EndGameMenu(leaderBoard));
     }
 
@@ -290,7 +290,7 @@ public class TUI extends ClientGameModel {
         ClientGameModel.getInstance().getCurrentMenuState().displayMenu(errorMessage);
     }
 
-    public void keepPlayingMenu(){
+    public void keepPlayingMenu() {
         ClientGameModel.getInstance().setCurrentMenuStateNoClear(new KeepPlayingMenu());
     }
 

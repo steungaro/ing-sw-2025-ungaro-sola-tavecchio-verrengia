@@ -77,9 +77,4 @@ public class CardAcceptanceController {
             }
         }
     }
-
-    @FXML
-    private void handleBackToMenu() {
-        ClientGameModel.getInstance().mainMenuState();
-    }
 }
