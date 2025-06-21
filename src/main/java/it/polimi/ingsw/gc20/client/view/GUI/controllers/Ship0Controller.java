@@ -80,8 +80,8 @@ public class Ship0Controller extends ShipController{
 
             // Debug output
             // System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
-            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+            // System.out.println("Effective image: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Grill: " + gridWidth + "x" + gridHeight);
 
             // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;

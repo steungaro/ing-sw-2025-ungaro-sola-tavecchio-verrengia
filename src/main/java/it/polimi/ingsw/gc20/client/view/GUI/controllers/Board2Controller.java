@@ -44,9 +44,9 @@ public class Board2Controller extends BoardController {
     // @FXML private Label creditsLabel;
     // @FXML private Label inGameLabel;
 
-    // Dimensioni originali del contenuto come definito nell'FXML
-    private final double originalContentWidth = 800.0; // Larghezza originale del Pane
-    private final double originalContentHeight = 330.0; // Altezza originale del Pane
+    // Original content dimensions as defined in FXML
+    private final double originalContentWidth = 800.0; // original width
+    private final double originalContentHeight = 330.0; // original height
 
     @FXML
     public void initialize() {
@@ -83,12 +83,12 @@ public class Board2Controller extends BoardController {
             label.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
 
             label.layoutXProperty().bind(circle.layoutXProperty().subtract(label.widthProperty().divide(2)).add(circle.getRadius() / 2 - 8));
-            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 10)); // Leggermente aggiustato per font 16 e raggio 17
+            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 10));
 
             circleLabels.add(label);
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
-                if (newParent instanceof Group) { // Assicurati che sia il Group scalabile
+                if (newParent instanceof Group) {
                     ((Group) newParent).getChildren().add(label);
                 }
             });

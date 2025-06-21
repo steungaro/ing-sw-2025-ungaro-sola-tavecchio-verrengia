@@ -391,12 +391,18 @@ public class GUIView extends ClientGameModel {
     public void loginFailed(String username) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.LOGIN) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Login attempt for user '" + username + "' failed.");
-                alert.setContentText("Please check your username and try again.");
-                if (primaryStage != null) alert.initOwner(primaryStage);
-                alert.showAndWait();
+                if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                    Object controller = primaryStage.getScene().getRoot().getUserData();
+                    if (controller instanceof LoginController) {
+                        LoginController loginController = (LoginController) controller;
+                        loginController.getErrorLabel().setText("Login attempt for user '" + username + "' failed. Please check your username and try again.");
+                        loginController.getErrorLabel().setVisible(true);
+                    } else {
+                        System.err.println("Controller is not of type LoginController or is null.");
+                    }
+                } else {
+                    System.err.println("Cannot update errorLabel: primaryStage, scene, or root is null.");
+                }
             } else {
                 displayErrorMessage("Login failed for user: " + username + " (unexpected state: " + getCurrentGuiState() + ")");
             }

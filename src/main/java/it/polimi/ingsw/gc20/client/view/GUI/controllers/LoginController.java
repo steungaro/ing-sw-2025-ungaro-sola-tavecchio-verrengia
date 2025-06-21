@@ -5,6 +5,8 @@ import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 
 public class LoginController {
@@ -14,6 +16,9 @@ public class LoginController {
 
     @FXML
     private Button loginButton;
+
+    @FXML
+    private Label errorLabel;
 
     private GUIView guiView;
 
@@ -34,6 +39,9 @@ public class LoginController {
 
         ClientGameModel.getInstance().setUsername(username);
         ClientGameModel.getInstance().login();
-        guiView.showScene("mainMenu");
+    }
+
+    public Labeled getErrorLabel() {
+        return errorLabel;
     }
 }
