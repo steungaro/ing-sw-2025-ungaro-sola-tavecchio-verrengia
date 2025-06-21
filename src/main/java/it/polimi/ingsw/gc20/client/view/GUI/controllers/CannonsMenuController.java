@@ -211,7 +211,7 @@ public class CannonsMenuController {
             );
             ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            errorLabel.setText("Errore di connessione: " + e.getMessage());
+            errorLabel.setText("Connection error: " + e.getMessage());
             errorLabel.setVisible(true);
             ClientGameModel.getInstance().setFree();
         }
@@ -228,7 +228,7 @@ public class CannonsMenuController {
             );
             ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
-            errorLabel.setText("Errore di connessione: " + e.getMessage());
+            errorLabel.setText("Connection error: " + e.getMessage());
             errorLabel.setVisible(true);
             ClientGameModel.getInstance().setFree();
         }

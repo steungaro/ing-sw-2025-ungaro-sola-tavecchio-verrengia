@@ -91,24 +91,24 @@ public class CreateLobbyController {
                     boolean finalSuccess = success;
                     javafx.application.Platform.runLater(() -> {
                         if (finalSuccess) {
-                            errorLabel.setText("Lobby creata con successo!");
+                            errorLabel.setText("LLobby successfully created!");
                             errorLabel.setStyle("-fx-text-fill: green;");
                         } else {
-                            errorLabel.setText("Timeout: la lobby potrebbe non essere stata creata");
+                            errorLabel.setText("Timeout: Lobby may not have been created");
                         }
                         errorLabel.setVisible(true);
                         createButton.setDisable(false);
                     });
                 } catch (Exception e) {
                     javafx.application.Platform.runLater(() -> {
-                        errorLabel.setText("Operazione interrotta");
+                        errorLabel.setText("Operation aborted");
                         errorLabel.setVisible(true);
                         createButton.setDisable(false);
                     });
                 }
             } catch (Exception e) {
                 javafx.application.Platform.runLater(() -> {
-                    errorLabel.setText("Errore nella creazione della lobby: " + e.getMessage());
+                    errorLabel.setText("Error creating lobby: " + e.getMessage());
                     errorLabel.setVisible(true);
                     createButton.setDisable(false);
                 });

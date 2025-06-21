@@ -38,7 +38,7 @@ public class GameController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        messageLabel.setText("Benvenuto nella partita");
+        messageLabel.setText("Welcome to the game!");
         changeBoardView();
     }
 
@@ -54,13 +54,12 @@ public class GameController implements Initializable {
             return loader.getController();
         } catch (IOException e) {
             e.printStackTrace();
-            displayMessage("Errore nel caricamento della vista: " + e.getMessage());
+            displayMessage("Error loading view: " + e.getMessage());
             return null;
         }
     }
 
     public void changeShipView(int giocatoreId) {
-        // TODO: Carica la vista della nave del giocatore
     }
 
     public void changeBoardView() {
@@ -73,7 +72,7 @@ public class GameController implements Initializable {
 
     public void setPlayerInfo(String username) {
         this.currentPlayer = username;
-        playerInfoLabel.setText("Giocatore: " + username);
+        playerInfoLabel.setText("Player: " + username);
     }
 
     public void addPlayerShips(List<String> playerNames) {
@@ -101,7 +100,7 @@ public class GameController implements Initializable {
 
         highlightCurrentShip(playerName);
 
-        displayMessage("Visualizzazione nave di " + playerName);
+        displayMessage("Show " + playerName + "'s ship");
     }
 
     private void highlightCurrentShip(String playerName) {
