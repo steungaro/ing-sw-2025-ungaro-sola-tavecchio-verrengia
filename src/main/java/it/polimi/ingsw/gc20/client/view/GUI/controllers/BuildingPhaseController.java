@@ -347,8 +347,8 @@ public abstract class BuildingPhaseController implements GameModelListener, GUIC
                 imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
             }
 
-            imageView.setFitWidth(targetCell.getFitWidth());
-            imageView.setFitHeight(targetCell.getFitHeight());
+            imageView.setFitWidth(targetCell.getFitWidth() - 5);
+            imageView.setFitHeight(targetCell.getFitHeight() - 5);
 
             layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
             setComponentProp(layeredPane, comp);
