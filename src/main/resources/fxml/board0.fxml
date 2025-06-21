@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 
 <Pane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: linear-gradient(to bottom, #1a1a2e, #222233, #16213e);" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Board0Controller">
    <Group fx:id="scalableContent">
@@ -107,47 +104,5 @@
             <DropShadow color="aqua" radius="5" spread="0.1" />
          </effect>
       </Circle>
-
-      <VBox layoutX="620.0" layoutY="20.0" prefHeight="221.0" prefWidth="183.0" spacing="12.0" style="-fx-background-color: rgba(10,10,35,0.8); -fx-background-radius: 15; -fx-padding: 15;">
-         <effect>
-            <DropShadow color="#000066" spread="0.2" />
-         </effect>
-
-         <Label style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: linear-gradient(to bottom, #e0e0ff, #ffffff);" text="BOARD INFO">
-            <effect>
-               <DropShadow color="#6666ff" radius="3" />
-            </effect>
-         </Label>
-
-         <Separator style="-fx-background-color: #4040a0;" />
-
-         <Label fx:id="playersInfoLabel" style="-fx-text-fill: #e0e0ff; -fx-font-size: 13;" wrapText="true">
-            <font>
-               <Font name="System Bold" size="13.0" />
-            </font>
-         </Label>
-
-         <Label fx:id="gameStateLabel" style="-fx-text-fill: #e0e0ff; -fx-font-size: 13;">
-            <graphic>
-               <ImageView fitHeight="16" fitWidth="16">
-                  <!-- <Image url="@icons/game-state.png"/> -->
-               </ImageView>
-            </graphic>
-         </Label>
-
-         <Separator prefWidth="251.0" style="-fx-background-color: #4040a0;" />
-
-         <Label fx:id="remainingTimeLabel" style="-fx-text-fill: #e0e0ff; -fx-font-size: 13;">
-            <graphic>
-               <ImageView fitHeight="16" fitWidth="16">
-                  <!-- <Image url="@icons/timer.png"/> -->
-               </ImageView>
-            </graphic>
-         </Label>
-
-         <padding>
-            <Insets bottom="10" left="10" right="10" top="10" />
-         </padding>
-      </VBox>
    </Group>
 </Pane>

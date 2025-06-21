@@ -39,12 +39,6 @@ public class Board2Controller extends BoardController {
     @FXML private Circle circle22;
     @FXML private Circle circle23;
 
-    // @FXML private Label playerColorLabel;
-    // @FXML private Label usernameLabel;
-    // @FXML private Label creditsLabel;
-    // @FXML private Label inGameLabel;
-
-    // Original content dimensions as defined in FXML
     private final double originalContentWidth = 800.0; // original width
     private final double originalContentHeight = 330.0; // original height
 
