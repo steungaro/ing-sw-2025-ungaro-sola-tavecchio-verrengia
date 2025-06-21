@@ -457,13 +457,11 @@ public class GUIView extends ClientGameModel {
     @Override
     public void cannonsMenu(String message) {
         setCurrentGuiState(GuiState.CANNONS_MENU);
-        // TODO: Check button handler
     }
 
     @Override
     public void cardAcceptanceMenu(String message) {
         setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
-        // TODO: Check button handler
     }
 
     @Override
@@ -486,7 +484,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void engineMenu(String message) {
-        currentGuiState = GuiState.ENGINE_MENU;
+        setCurrentGuiState(GuiState.ENGINE_MENU);
         // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
     }
 
@@ -497,7 +495,6 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
-        currentGuiState = GuiState.LOGIN;
         client.login(username);
         this.username = username;
     }

@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc20.client.view.TUI;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
@@ -152,11 +154,21 @@ public class ValidationMenu implements MenuState, GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-
+        // Display the error message in red
     }
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onCardUpdated(ViewAdventureCard card) {
 
     }
 }
