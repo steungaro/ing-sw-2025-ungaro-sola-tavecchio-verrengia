@@ -26,7 +26,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class BuildingPhaseController implements GameModelListener {
+public abstract class BuildingPhaseController implements GameModelListener, GUIController {
 
     @FXML
     protected StackPane shipContainer;
@@ -338,34 +338,16 @@ public abstract class BuildingPhaseController implements GameModelListener {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
-        // If componentID = 1000 -> blue = 1000, red = 1001, green = 1002, yellow = 1003
-
-        if (componentId >= 1000 && componentId <= 1003) {
-            String username = ClientGameModel.getInstance().getUsername();
-            ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
-            ViewPlayer currentPlayer = Arrays.stream(players)
-                    .filter(p -> p != null && username.equals(p.username))
-                    .findFirst()
-                    .orElse(null);
-            if (currentPlayer != null && currentPlayer.playerColor != null) {
-                switch (currentPlayer.playerColor) {
-                    case BLUE -> componentId = 1000;
-                    case RED -> componentId = 1001;
-                    case GREEN -> componentId = 1002;
-                    case YELLOW -> componentId = 1003;
-                }
-            }
-        }
-
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            targetCell.setImage(componentImage);
+            ImageView imageView = new ImageView(componentImage); // Create a new ImageView
+
             if (comp.rotComp >= 0 && comp.rotComp <= 3) {
-                targetCell.setRotate(comp.rotComp * 90);
+                imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
             }
 
-            layeredPane.getChildren().add(targetCell);
+            layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
             setComponentProp(layeredPane, comp);
 
             // Make sure the layered pane fills the cell
@@ -380,12 +362,17 @@ public abstract class BuildingPhaseController implements GameModelListener {
             gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
-            System.err.println("Unable to load image: " + e.getMessage());
+            showError("Could not load component image: " + e.getMessage());
             return false;
         }
     }
 
-    public void setComponentProp(StackPane ignoredLayeredPane, ViewComponent ignoredComp) {
+    public void setComponentProp(StackPane layeredPane, ViewComponent comp) {
+        if (comp.isCabin()) {
+            setComponentProp(layeredPane, (ViewCabin) comp);
+        } else if (comp.isBattery()) {
+            setComponentProp(layeredPane, (ViewBattery) comp);
+        }
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
@@ -627,7 +614,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     /**
      * Shows an error message in a dialog window
      */
-    private void showError(String message) {
+    public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);

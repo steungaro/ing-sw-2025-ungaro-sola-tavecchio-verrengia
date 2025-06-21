@@ -42,7 +42,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private MenuState currentMenuState;
     public boolean busy;
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
-    private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
+    private final List<LobbyListListener> lobbyListListeners = new ArrayList<>();
 
     public ClientGameModel() throws RemoteException {
         super();
@@ -202,9 +202,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-    public void addLobbyListObserver(LobbyListObserver observer) {
-        if (!lobbyListObservers.contains(observer)) {
-            lobbyListObservers.add(observer);
+    public void addLobbyListObserver(LobbyListListener observer) {
+        if (!lobbyListListeners.contains(observer)) {
+            lobbyListListeners.add(observer);
         }
     }
 
@@ -213,7 +213,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     protected void notifyLobbyListObservers() {
-        for (LobbyListObserver observer : lobbyListObservers) {
+        for (LobbyListListener observer : lobbyListListeners) {
             observer.onLobbyListChanged();
         }
     }

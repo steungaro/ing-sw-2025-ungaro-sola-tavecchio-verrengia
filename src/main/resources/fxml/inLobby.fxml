@@ -19,6 +19,7 @@
             <Font name="System Bold" size="24.0" />
         </font>
     </Label>
+   <Label fx:id="errorLabel" text="Error" textFill="RED" />
 
     <Label fx:id="waitingMessageLabel" prefHeight="17.0" prefWidth="246.0" text="Waiting for the owner to start the game" textFill="#aaaaaa">
         <font>
