@@ -3,7 +3,8 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
@@ -15,7 +16,6 @@ import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.List;
 
 public class ValidationMenuController implements GUIController, GameModelListener {
 
@@ -119,17 +119,22 @@ public class ValidationMenuController implements GUIController, GameModelListene
     }
 
     @Override
-    public void onPlayerListUpdated(List<ViewPlayer> players) {
-        // Not used in this controller
-    }
-
-    @Override
     public void onErrorMessageReceived(String message) {
         showError(message);
     }
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onCardUpdated(ViewAdventureCard card) {
         // Not used in this controller
     }
 }

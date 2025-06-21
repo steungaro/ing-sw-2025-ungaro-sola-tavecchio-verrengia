@@ -3,7 +3,8 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
@@ -11,8 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
-
-import java.util.List;
 
 public class InLobbyController implements GUIController, GameModelListener {
 
@@ -115,17 +114,22 @@ public class InLobbyController implements GUIController, GameModelListener {
     }
 
     @Override
-    public void onPlayerListUpdated(List<ViewPlayer> players) {
-        // This method is not used in this controller, as player list updates are handled through the lobby update
-    }
-
-    @Override
     public void onErrorMessageReceived(String message) {
         showError(message);
     }
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onCardUpdated(ViewAdventureCard card) {
         // Not used in this controller
     }
 

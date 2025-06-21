@@ -33,11 +33,6 @@ public class Board0Controller extends BoardController {
     @FXML private Circle circle16;
     @FXML private Circle circle17;
 
-    // @FXML private Label playerColorLabel;
-    // @FXML private Label usernameLabel;
-    // @FXML private Label creditsLabel;
-    // @FXML private Label inGameLabel;
-
     @FXML
     public void initialize() {
         super.initialize();
