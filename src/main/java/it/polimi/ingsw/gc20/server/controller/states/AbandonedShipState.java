@@ -30,7 +30,14 @@ public class AbandonedShipState extends PlayingState {
     private final int lostDays;
 
     /**
-     * Default constructor
+     * Constructs an AbandonedShipState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the initial phase to ACCEPT_PHASE.
+     * It also configures the standby message for the current player and notifies the
+     * message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
     public AbandonedShipState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
@@ -45,16 +52,6 @@ public class AbandonedShipState extends PlayingState {
     }
 
     @Override
-    public String toString() {
-        return "AbandonedShipState";
-    }
-
-    /**
-     * This method is used to accept the card and take the player to the next phase
-     * @param player the player who is losing crew
-     * @throws InvalidStateException if the player doesn't have enough crew to lose
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         //check if the player is the current player
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -81,13 +78,7 @@ public class AbandonedShipState extends PlayingState {
         //notify the current player about the change of phase with a LoseCrewMessage
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
-    /**
-     * method to remove the crew from the ship of the player whose turn it is
-     * @param player the player who is losing crew
-     * @param cabins the cabins to get the crew from
-     * @throws InvalidStateException if the player doesn't have enough crew to lose
-     * @throws InvalidTurnException if it's not the player's turn
-     */
+
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidTurnException, InvalidStateException, EmptyCabinException, ComponentNotFoundException {
         //check if the player is the current player
@@ -114,11 +105,6 @@ public class AbandonedShipState extends PlayingState {
         getController().setState(new PreDrawState(getController()));
     }
 
-    /**
-     * This method is used to end the move and discard the card
-     * @param player the player who is ending the move
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
     public void endMove(Player player) throws InvalidTurnException{
         //check if the player is the current player
@@ -128,10 +114,6 @@ public class AbandonedShipState extends PlayingState {
         abandonedEndMove();
     }
 
-    /**
-     * This method is called if the current player quits the game
-     * @param player player who quits
-     */
     @Override
     public void currentQuit(Player player) {
         try {
@@ -141,10 +123,6 @@ public class AbandonedShipState extends PlayingState {
         }
     }
 
-    /**
-     * this method is called to get the crew that the player needs to lose
-     * @return the number of crew that the player needs to lose
-     */
     @Override
     public int getCrew(){
         return lostCrew;

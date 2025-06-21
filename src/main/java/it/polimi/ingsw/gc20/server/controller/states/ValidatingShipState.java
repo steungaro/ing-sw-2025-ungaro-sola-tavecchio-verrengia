@@ -14,12 +14,23 @@ import org.javatuples.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class represents the state of the game when players are validating their ships.
+ * Players can validate their ships, add aliens, and remove components from their ships.
+ * If all ships are valid, the game transitions to the next phase.
+ */
 public class ValidatingShipState extends State {
     private final Map<Player, Boolean> validShips = new HashMap<>();
     private final Map<Player, Boolean> readyToFly = new HashMap<>();
     private StatePhase phase;
+
     /**
-     * Default constructor
+     * Constructs a ValidatingShipState object. This initializes the state with the provided
+     * game model and controller, setting the initial phase to VALIDATE_SHIP_PHASE.
+     * It also broadcasts the current board state to all players and checks if each player's ship is valid.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
      */
     public ValidatingShipState(GameModel model, GameController controller) {
         super(model, controller);
@@ -39,16 +50,6 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public String toString() {
-        return "ValidatingShipState";
-    }
-
-    /**
-     * this method is called to validate the ship of the player
-     * @param player the player that is validating the ship
-     * @return true if the ship is valid, false otherwise
-     * @throws InvalidStateException if the game is not in the validate ship phase
-     */
     public boolean isShipValid(Player player) throws InvalidStateException{
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot validate ship in this phase.");
@@ -84,11 +85,6 @@ public class ValidatingShipState extends State {
         return false;
     }
 
-    /**
-     * this method is called to check if all the ships are valid
-     * @return true if all the ships are valid, false otherwise
-     * @throws InvalidStateException if the game is not in the validate ship phase
-     */
     @Override
     public boolean allShipsValidated() throws InvalidStateException {
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
@@ -98,13 +94,6 @@ public class ValidatingShipState extends State {
         return validShips.values().stream().allMatch(Boolean::booleanValue);
     }
 
-    /**
-     * this method is called to remove a component from the ship of the player
-     * @param player the player that is removing the component
-     * @param coordinates the coordinates of the component to remove
-     * @throws ComponentNotFoundException if the component is not found
-     * @throws InvalidStateException if the game is not in the validate ship phase
-     */
     @Override
     public void removeComp(Player player, Pair<Integer, Integer> coordinates) throws ComponentNotFoundException, InvalidStateException, InvalidTileException {
         if (phase!=StatePhase.VALIDATE_SHIP_PHASE) {
@@ -123,14 +112,7 @@ public class ValidatingShipState extends State {
     public boolean allShipsReadyToFly() {
         return validShips.values().stream().allMatch(Boolean::booleanValue) && readyToFly.values().stream().allMatch(Boolean::booleanValue);
     }
-    /**
-     * this method is used to add an alien to the ship of the player
-     * @param player the player that is adding the alien
-     * @param color the color of the alien
-     * @param cabin the cabin where the alien is added
-     * @throws InvalidAlienPlacement if the alien cannot be placed in the cabin
-     * @throws InvalidStateException if the game is not in the add alien phase
-     */
+
     @Override
     public void addAlien(Player player, AlienColor color, Pair<Integer, Integer> cabin) throws InvalidAlienPlacement, InvalidStateException, ComponentNotFoundException {
         if (phase != StatePhase.ADD_ALIEN_PHASE) {
@@ -142,10 +124,6 @@ public class ValidatingShipState extends State {
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AlienPlacementePhaseMessage());
     }
 
-    /**
-     * this method is called if all the ships are ready to fly
-     * @throws InvalidStateException if some ships are not ready to fly
-     */
     @Override
     public void initAllShips() throws InvalidStateException {
         if (!allShipsReadyToFly()) {
@@ -156,11 +134,6 @@ public class ValidatingShipState extends State {
         }
     }
 
-    /**
-     * this method is called to end the placing alien phase
-     * @param player the player that is ending the placing alien phase
-     * @throws InvalidStateException if the game is not in the add alien phase
-     */
     @Override
     public void endMove (Player player) throws InvalidStateException {
         if (phase != StatePhase.ADD_ALIEN_PHASE) {
@@ -181,11 +154,12 @@ public class ValidatingShipState extends State {
         }
     }
 
-
+    @Override
     public boolean isConcurrent(){
         return true;
     }
 
+    @Override
     public void rejoin(String username){
         getController().getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
         if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 2 && !readyToFly.get(getController().getPlayerByID(username))) {
@@ -197,6 +171,7 @@ public class ValidatingShipState extends State {
         }
     }
 
+    @Override
     public void resume(String reconnected){
         if (phase == StatePhase.VALIDATE_SHIP_PHASE) {
             for (String username : getController().getInGameConnectedPlayers()) {

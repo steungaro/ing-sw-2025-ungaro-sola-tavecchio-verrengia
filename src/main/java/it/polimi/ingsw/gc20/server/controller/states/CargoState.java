@@ -16,33 +16,23 @@ import java.util.List;
 
 public abstract class CargoState extends PlayingState {
 
+    /**
+     * Constructs a CargoState object, which is a specific state in the game where players can
+     * load and unload cargo. This state is initialized with the provided game model and controller.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     */
     public CargoState(GameModel model, GameController controller) {
         super(model, controller);
     }
 
-    /**
-     * This method is used to load a cargo from a cargo hold to the player's cargo hold
-     * @param player the player who is loading the cargo
-     * @param loaded the color of the cargo to be loaded
-     * @param chTo the cargo hold to which the cargo is loaded
-     * @throws CargoException if the cargo is not loadable
-     * @throws CargoFullException if the cargo hold is full
-     */
     @Override
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws CargoNotLoadable, CargoFullException, InvalidStateException, CargoException, InvalidTurnException, ComponentNotFoundException {
         getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
     }
 
-    /**
-     * This method is used to unload a cargo from the player's cargo hold
-     * @param player the player who is unloading the cargo
-     * @param unloaded the color of the cargo to be unloaded
-     * @param ch the cargo hold from which the cargo is unloaded
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidCargoException if the cargo is not in the player's cargo hold
-     */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException,  InvalidStateException, InvalidCargoException, ComponentNotFoundException{
         try {
@@ -53,31 +43,12 @@ public abstract class CargoState extends PlayingState {
         }
     }
 
-    /**
-     * This method is used to move a cargo from one cargo hold to another
-     * @param player the player who is moving the cargo
-     * @param loaded the color of the cargo to be moved
-     * @param chFrom the cargo hold from which the cargo is moved
-     * @param chTo the cargo hold to which the cargo is moved
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the player is not in the correct phase
-     * @throws InvalidCargoException if the cargo is not in the player's cargo hold
-     * @throws CargoNotLoadable if the cargo cannot be loaded
-     * @throws CargoFullException if the cargo hold is full
-     */
     @Override
     public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, InvalidStateException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         getModel().moveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "moved cargo"));
     }
 
-    /**
-     * This method is used to lose energy from the player's ship when not having cargo
-     * @param player the player who is losing energy
-     * @param battery the battery to be lost
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws IllegalStateException if the player has cargo available
-     */
     @Override
     public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {

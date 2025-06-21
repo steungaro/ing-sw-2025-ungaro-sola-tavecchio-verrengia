@@ -31,13 +31,17 @@ public class GameController implements GameControllerInterface {
     private final List<String> pendingPlayers = new ArrayList<>();
     private final Logger logger = Logger.getLogger(GameController.class.getName());
     private final MessageManager messageManager;
+
     /**
-     * Default constructor
+     * Constructor for the GameController class.
+     * Initializes the game with the provided name, id, usernames, and level.
+     * Validates the number of players and starts the game if valid.
      *
-     * @param id        unique identifier for this game
-     * @param usernames list of player usernames
-     * @param level     game difficulty level
-     * @throws IllegalArgumentException if the number of players is not between 2 and 4
+     * @param name       the name of the game
+     * @param id         the unique identifier for the game
+     * @param usernames  a list of usernames of players in the game
+     * @param level      the difficulty level of the game
+     * @throws InvalidStateException if the number of players is not between 2 and 4
      */
     public GameController(String name, String id, List<String> usernames, int level) throws InvalidStateException{
         this.messageManager = new MessageManager(this);
@@ -66,20 +70,29 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    /**
+     * Starts the game by initializing the game state to AssemblingState.
+     */
     public void startGame() {
         state = new AssemblingState(model, this);
         setState(state);
     }
     /**
-     * Changes the game state and notifies players of the change
+     * Changes the new state of the game
      * @param state is the new state of the game
      */
     public void setState(State state) {
         this.state = state;
     }
+
+    /**
+     * Getter method for the message manager
+     * @return the message manager instance
+     */
     public MessageManager getMessageManager() {
         return messageManager;
     }
+
     /** Getter method for the gameID
      * @return game id
      */
@@ -98,9 +111,10 @@ public class GameController implements GameControllerInterface {
                     .orElse(null);
     }
 
-
     /**
-     * Handles the card drawing phase of the game
+     * Handles the event of a player drawing a card.
+     * This method attempts to draw a card from the game model.
+     * If the deck is empty, it transitions the game to an EndgameState.
      */
     public void drawCard() {
         try {
@@ -121,11 +135,6 @@ public class GameController implements GameControllerInterface {
         return state.toString();
     }
 
-    /**
-     * Accepts a planet card and lands on the planet
-     * @param username is the username of the player that wants to land on the planet
-     * @param planetIndex is the index of the planet card in the player's hand
-     */
     @Override
     public void landOnPlanet(String username, int planetIndex) {
         try{
@@ -139,13 +148,6 @@ public class GameController implements GameControllerInterface {
 
     }
 
-    /**
-     * Loads cargo onto the player's ship
-     * @param username is the username of the player that wants to load the cargo
-     * @param loaded the cargo that the player wants to load
-     * @param ch are the coordinates of the cargo hold where the player wants to load the cargo
-     * @apiNote To be used after accepting a planet, accepting a smuggler, accepting an abandoned station
-     */
     @Override
     public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) {
         try {
@@ -158,15 +160,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Unloads cargo from the player's ship
-     * @param username is the username of the player that wants to unload the cargo
-     * @param lost the cargo that the player wants to unload
-     * @param ch are the coordinates of the cargo hold where the player wants to unload the cargo
-     * @apiNote To be used after accepting a planet, accepting a smuggler,
-     * accepting an abandoned station (to unload without limits) or after smugglers, combat zone
-     * (to remove the most valuable one)
-     */
     @Override
     public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) {
         try{
@@ -178,14 +171,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Moves cargo from one cargo hold to another
-     * @param username is the username of the player that wants to move the cargo
-     * @param cargo is the cargo that the player wants to move?
-     * @param from are the coordinates of the cargo hold where the player wants to move the cargo from
-     * @param to are the coordinates of the cargo hold where the player wants to move the cargo to
-     * @apiNote To be used in losing/gaining cargo
-     */
     @Override
     public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
         try{
@@ -212,16 +197,14 @@ public class GameController implements GameControllerInterface {
         }
     }
 
+    /**
+     * Returns the number of online players in the game
+     * @return the number of online players
+     */
     public int getOnlinePlayers() {
             return connectedPlayers.size();
     }
 
-    /**
-     * To be called when a player wants to activate their cannons
-     * @param username is the username of the player that wants to activate their cannons
-     * @param cannons the list of coordinates of the cannons that the player wants to activate
-     * @param batteries the list of coordinates of the batteries that the player wants to use to activate the cannons
-     */
     @Override
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try{
@@ -247,11 +230,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * To be called when a player wants to lose crew
-     * @param username is the username of the player that wants to lose crew
-     * @param cabins the list of coordinates of the cabins that the player wants to lose crew from
-     */
     @Override
     public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) {
         try{
@@ -263,13 +241,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * To be called when a light_fire/meteor is firing the player
-     * @param username is the username of the player that wants to activate the shield
-     * @param shieldComp are the coordinates of the shield component that the player wants to activate
-     * @param batteryComp are the coordinates of the energy component that the player wants to use to activate the shield
-     * @apiNote Ship may need to be validated
-     */
     @Override
     public void activateShield(String username, Pair<Integer, Integer> shieldComp, Pair<Integer, Integer> batteryComp) {
         try{
@@ -289,10 +260,6 @@ public class GameController implements GameControllerInterface {
             return model.getActiveCard();
     }
 
-    /**
-     * To be called when a player terminates their turn. Based on the type of card, the game will move to the next player or the next phase
-     * @param username is the username of the player that wants to terminate their turn
-     */
     @Override
     public void endMove(String username) {
         try{
@@ -304,12 +271,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * To be called when a player activates their engines
-     * @param username is the username of the player that wants to activate their engines
-     * @param engines the list of coordinates of the engines that the player wants to activate
-     * @param batteries the list of coordinates of the batteries that the player wants to use to activate the engines
-     */
     @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
         try{
@@ -321,11 +282,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * To be called when a player needs to choose one of the two branches, a ship is divided into after a fire.
-     * @param username is the username of the player that wants to choose a branch
-     * @param coordinates are the coordinates of the branch that the player wants to choose
-     */
     @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
         try{
@@ -337,10 +293,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Handles the event of a player giving up
-     * @param username is the username of the player that wants to give up
-     */
     @Override
     public void giveUp(String username) {
         if(!Objects.equals(state.toString(), "PreDrawState")){
@@ -479,14 +431,8 @@ public class GameController implements GameControllerInterface {
         return disconnectedPlayers.contains(username);
     }
 
-    /**
-     * Takes a component from the unviewed pile and adds it to the player's hand
-     *
-     * @param username Username of the player taking the component
-     * @param index Index of the component in the unviewed pile
-     */
     @Override
-    public synchronized void takeComponentFromUnviewed(String username, int index) {
+    public void takeComponentFromUnviewed(String username, int index) {
         try{
             state.takeComponentFromUnviewed(getPlayerByID(username), index);
         } catch (Exception e) {
@@ -496,17 +442,8 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Takes a component from the viewed pile and adds it to the player's hand
-     *
-     * @param username Username of the player taking the component
-     * @param index Index of the component in the viewed pile
-     * @throws IllegalStateException if the game is not in ASSEMBLING state
-     * @throws NoSuchElementException if the component is not in the viewed pile
-     * @throws IllegalArgumentException if the player already has a component in the hand
-     */
     @Override
-    public synchronized void takeComponentFromViewed(String username, int index) {
+    public void takeComponentFromViewed(String username, int index) {
         try{
             state.takeComponentFromViewed(getPlayerByID(username), index);
         } catch (Exception e) {
@@ -516,12 +453,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Takes a component that was previously booked by a player (Level 2 only) and adds it to the player's hand
-     *
-     * @param username Username of the player taking the component
-     * @param index Index of the component in the booked list
-     */
     @Override
     public void takeComponentFromBooked(String username, int index) {
         try{
@@ -536,11 +467,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Adds the component in the hand to the player's booked list (Level 2 only)
-     *
-     * @param username Username of the player booking the component
-     */
     @Override
     public void addComponentToBooked(String username) {
         try{
@@ -555,11 +481,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Adds the component in the hand to the viewed pile so other players can see it
-     *
-     * @param username Username of the player adding the component
-     */
     @Override
     public synchronized void addComponentToViewed(String username) {
         try{
@@ -571,12 +492,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Places the component in the hand on the player's ship at specified coordinates
-     *
-     * @param username Username of the player placing the component
-     * @param coordinates Coordinates where the component will be placed
-     */
     @Override
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
         try{
@@ -588,11 +503,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Rotates the component in the hand clockwise
-     *
-     * @param username Username of the player rotating the component
-     */
     @Override
     public void rotateComponentClockwise(String username) {
         try{
@@ -604,11 +514,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Rotates the component in the hand counterclockwise
-     *
-     * @param username Username of the player rotating the component
-     */
     @Override
     public void rotateComponentCounterclockwise(String username) {
         try{
@@ -620,13 +525,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Removes a component from the player's ship (only during the validating phase and if the ship is not valid)
-     *
-     * @param username Username of the player removing the component
-     * @param coordinates Coordinates of the component to be removed
-     * @apiNote view must call this function until the ship is valid
-     */
     @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try{
@@ -638,12 +536,7 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Stops the assembling phase for a player
-     * @param username is the username of the player that wants to stop assembling
-     * @param position is the relative position on board where the player wants to put their rocket
-     * @implNote performs state change to VALIDATING when all players have completed assembling
-     */
+    @Override
     public void stopAssembling(String username, int position) {
         try{
             state.stopAssembling(getPlayerByID(username), position);
@@ -657,11 +550,7 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Turns the hourglass for a player
-     *
-     * @param username Username of the player turning the hourglass
-     */
+    @Override
     public void turnHourglass(String username) {
         try{
             if (isPlayerDisconnected(username)) {
@@ -678,12 +567,7 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Peeks at the selected deck
-     *
-     * @param username Username of the player peeking at the deck
-     * @param num number of the deck to peek at
-     */
+    @Override
     public void peekDeck(String username, int num) {
         try{
             if (model.getLevel() != 2) {
@@ -701,13 +585,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * Adds an alien to the player's ship
-     *
-     * @param username Username of the player adding the alien
-     * @param color Color of the alien
-     * @param cabin Cabin where the alien will be placed (coordinates)
-     */
     @Override
     public void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) {
         try{
@@ -722,10 +599,6 @@ public class GameController implements GameControllerInterface {
         }
     }
 
-    /**
-     * method to roll the dice for a player
-     * @param username is the username of the player that wants to roll the dice
-     */
     @Override
     public void rollDice(String username) {
         try{
@@ -764,11 +637,6 @@ public class GameController implements GameControllerInterface {
         MatchController.getInstance().endGame(this.getGameID());
     }
 
-    /**
-     * This method is called when a player loses energy
-     * @param username is the username of the player that wants to lose energy
-     * @param coordinates are the coordinates of the component where the player wants to lose energy
-     */
     @Override
     public void loseEnergy(String username, Pair<Integer, Integer> coordinates) {
         try {

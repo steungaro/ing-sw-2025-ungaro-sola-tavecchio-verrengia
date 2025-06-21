@@ -3,6 +3,11 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
+/**
+ * Enum representing the different phases of the game state.
+ * Each phase corresponds to a specific action or decision point in the game.
+ * The enum provides a method to create the appropriate message for each phase.
+ */
 public enum StatePhase {
         CANNONS_PHASE {
             @Override
@@ -104,13 +109,12 @@ public enum StatePhase {
             }
         };
 
-
-        /**
-         * Function that creates the corresponding message for the phase
-         *
-         * @param state that the game is in
-         * @return the message
-         */
-        public abstract Message createMessage(State state);
+    /**
+     * Creates a message corresponding to the current state phase.
+     *
+     * @param state the current game state
+     * @return a message that represents the current phase of the game
+     */
+    public abstract Message createMessage(State state);
 }
 

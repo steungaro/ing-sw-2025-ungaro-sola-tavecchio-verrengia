@@ -51,11 +51,4 @@ public class PreDrawState extends State{
         getController().drawCard();
 
     }
-
-
-    @Override
-    public String toString() {
-        return "PreDrawState";
-    }
-
 }

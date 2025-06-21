@@ -18,8 +18,14 @@ public class AssemblingState extends State {
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
     boolean fromBooked = false;
+
     /**
-     * Default constructor
+     * Constructs an AssemblingState object, initializing the state for the assembling phase of the game.
+     * It sets up the initial conditions for all players, including their ships, boards, hourglass, and component piles.
+     * The phase is set to ASSEMBLING_PHASE, and it broadcasts the initial state to all players.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
      */
     public AssemblingState(GameModel model, GameController controller) {
         super(model, controller);
@@ -50,21 +56,6 @@ public class AssemblingState extends State {
     }
 
     @Override
-    public String toString() {
-        return "AssemblingState{ " +
-                "assembled=" + assembled +
-                " }";
-    }
-
-    /**
-     * This method is used to take a component from the unviewed pile.
-     * @param player the player who is taking the component
-     * @param index the index of the component in the unviewed pile
-     * @throws InvalidStateException if the player is not in the TAKE_COMPONENT phase
-     * @throws ComponentNotFoundException if the component is not found in the unviewed pile
-     */
-
-    @Override
     public void takeComponentFromUnviewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
         if (componentsInHand.get(player) != null) {
@@ -85,13 +76,6 @@ public class AssemblingState extends State {
         fromBooked = false;
     }
 
-    /**
-     * This method is used to take a component from the viewed pile.
-     * @param player the player who is taking the component
-     * @param index the index of the component in the viewed pile
-     * @throws InvalidStateException if the player is not in the TAKE_COMPONENT phase
-     * @throws ComponentNotFoundException if the component is not found in the viewed pile
-     */
     @Override
     public void takeComponentFromViewed(Player player, int index) throws InvalidStateException, ComponentNotFoundException{
         //check if the player is in the TAKE_COMPONENT phase
@@ -113,13 +97,7 @@ public class AssemblingState extends State {
         fromBooked = false;
 
     }
-    /**
-     * This method is used to take a component from the booked pile.
-     * @param player the player who is taking the component
-     * @param index the index of the component in the booked pile
-     * @throws InvalidStateException if the player is not in the TAKE_COMPONENT phase
-     * @throws ComponentNotFoundException if the component is not found in the booked pile
-     */
+
     @Override
     public void takeComponentFromBooked(Player player, int index) throws InvalidStateException, ComponentNotFoundException {
         // check if the player is in the TAKE_COMPONENT phase
@@ -141,12 +119,7 @@ public class AssemblingState extends State {
         fromBooked = true;
     }
 
-    /**
-     * This method is used to add a component to the booked pile.
-     * @param player the player who is adding the component
-     * @throws InvalidStateException if the player is not in the PLACE_COMPONENT phase
-     * @throws NoSpaceException if there is no space in the booked pile
-     */
+
     @Override
     public void addComponentToBooked(Player player) throws InvalidStateException, NoSpaceException {
         if (componentsInHand.get(player) == null) {
@@ -161,12 +134,6 @@ public class AssemblingState extends State {
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
 
-    /**
-     * This method is used to add a component to the viewed pile.
-     * @param player the player who is adding the component
-     * @throws InvalidStateException if the player is not in the PLACE_COMPONENT phase
-     * @throws DuplicateComponentException if the component is already in the viewed pile
-     */
     @Override
     public void addComponentToViewed(Player player) throws InvalidStateException, DuplicateComponentException {
         // check if the player is in the PLACE_COMPONENT phase
@@ -183,11 +150,7 @@ public class AssemblingState extends State {
         componentsInHand.put(player, null);
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
-    /**
-     * This method is used to place a component on the ship.
-     * @param player the player who is placing the component
-     * @param coordinates the coordinates of the component on the ship
-     */
+
     @Override
     public void placeComponent(Player player, Pair<Integer, Integer> coordinates) throws InvalidStateException, InvalidTileException {
         //check if the player is in the PLACE_COMPONENT phase
@@ -203,11 +166,7 @@ public class AssemblingState extends State {
         //notify the player that they go to the TAKE_COMPONENT phase
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(null));
     }
-    /**
-     * This method is used to rotate a component clockwise.
-     * @param player the player who is rotating the component
-     * @throws InvalidStateException if the player is not in the PLACE_COMPONENT phase
-     */
+
     @Override
     public void rotateComponentClockwise(Player player) throws InvalidStateException{
         //check if the player has a component in the hand
@@ -219,11 +178,7 @@ public class AssemblingState extends State {
         //notify the player that they go to the PLACE_COMPONENT phase and update their components in the hand
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
-    /**
-     * This method is used to rotate a component counterclockwise.
-     * @param player the player who is rotating the component
-     * @throws InvalidStateException if the player is not in the PLACE_COMPONENT phase
-     */
+
     @Override
     public void rotateComponentCounterclockwise(Player player) throws InvalidStateException {
         if (componentsInHand.get(player) == null) {
@@ -235,11 +190,6 @@ public class AssemblingState extends State {
         getController().getMessageManager().sendToPlayer(player.getUsername(), new AssemblingMessage(componentsInHand.get(player).createViewComponent()));
     }
 
-    /** this method is used to stop assembling the ship
-     * @param player the player who is stopping assembling
-     * @param position the position of the player in the game (1-4), then the player will be placed in the correct position
-     *                 (based on the level of the game)
-     */
     @Override
     public void stopAssembling(Player player, int position) throws InvalidIndexException, InvalidStateException {
         //check if the player is in the PLACE_COMPONENT phase
@@ -256,22 +206,11 @@ public class AssemblingState extends State {
         getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("Waiting for other players to finish assembling."));
     }
 
-    /**
-     * This method is used to check if all players have assembled their ship
-     * @return true if all players have assembled their ship, false otherwise
-     */
     @Override
     public boolean allAssembled() {
         return assembled.values().stream().allMatch(Boolean::booleanValue);
     }
 
-    /**
-     * This method is used to peek a deck of cards
-     * @param player the player who is peeking the deck
-     * @param num the number of the deck to peek (1-3)
-     * @implNote note that the phase does not change, so the player can still take a component,
-     *          and when it does, the deck will not be peeked anymore
-     */
     @Override
     public void peekDeck(Player player, int num) throws InvalidIndexException, InvalidStateException {
         if (componentsInHand.get(player) != null) {

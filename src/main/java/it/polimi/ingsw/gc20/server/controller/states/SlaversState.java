@@ -18,16 +18,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Represents the SlaversState in the game, which is a specific playing state where players
+ * must fight against slavers using their cannons and batteries. This state handles the
+ * mechanics of selecting cannons, losing crew, accepting or refusing the card, and managing
+ * player turns.
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class SlaversState extends PlayingState {
     private final int firePower;
     private final int lostMembers;
     private final int reward;
     private final int lostDays;
+
     /**
-     * Default constructor
+     * Constructs a SlaversState object. This initializes the state with the provided game model,
+     * controller, and adventure card, setting the firepower, lost crew members, reward credits,
+     * and lost days. It also sets the initial phase to CANNONS_PHASE and configures the standby
+     * message for the current player, notifying the message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
-    @SuppressWarnings("unused") // dynamically created by Cards
     public SlaversState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.firePower = card.getFirePower();
@@ -39,22 +52,6 @@ public class SlaversState extends PlayingState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    @Override
-    public String toString() {
-        return "SlaversState";
-    }
-
-    /**
-     * this method is called when the player selects cannons and batteries to shoot the enemy
-     * @param player the player that is shooting
-     * @param cannons the cannons selected by the player
-     * @param batteries the batteries selected by the player
-     *
-     * @throws InvalidStateException if the game is not in the cannon phase
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidCannonException if the cannon is not valid
-     * @throws EnergyException if the player doesn't have enough energy
-     */
     @Override
     public void activateCannons(Player player, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws InvalidStateException, InvalidTurnException, InvalidCannonException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -100,14 +97,6 @@ public class SlaversState extends PlayingState {
         }
     }
 
-    /**
-     * this method is called when the player loses against the slavers
-     * @param player the player that is losing
-     * @param cabins the cabins selected by the player
-     * @throws InvalidStateException if the game is not in the lose_crew_phase
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws EmptyCabinException if the cabin is empty
-     */
     @Override
     public void loseCrew(Player player, List<Pair<Integer, Integer>> cabins) throws InvalidStateException, InvalidTurnException, EmptyCabinException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -140,12 +129,6 @@ public class SlaversState extends PlayingState {
         }
     }
 
-    /**
-     * this method is called when the player accepts the card
-     * @param player the player that is accepting the card
-     * @throws InvalidStateException if the game is not in the accept phase
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
     public void acceptCard(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
@@ -162,12 +145,8 @@ public class SlaversState extends PlayingState {
         getController().getActiveCard().playCard();
         getController().setState(new PreDrawState(getController()));
     }
-    /**
-     * this method is called when the player refuses the card
-     * @param player the player that is refusing the card
-     * @throws InvalidStateException if the game is not in the accept phase
-     * @throws InvalidTurnException if it's not the player's turn
-     */
+
+    @Override
     public void endMove(Player player) throws InvalidStateException, InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
             throw new InvalidTurnException("It's not your turn!");

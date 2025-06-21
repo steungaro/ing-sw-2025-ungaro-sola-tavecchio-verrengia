@@ -13,6 +13,17 @@ import org.javatuples.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the state of the game when a Planets card is played.
+ * The player can:
+ * - land on a planet
+ *      + load cargo from the planet to the player's cargo hold
+ *      + unload cargo from the player's cargo hold
+ *      + move cargo from one cargo hold to another
+ *      + end the move
+ * - discard the card (end the move)
+ * if any player does not accept the card, or if the card has been played, a new card is drawn
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class PlanetsState extends CargoState {
     private final List<Planet> planets;
@@ -21,10 +32,17 @@ public class PlanetsState extends CargoState {
     private int landedPlanetIndex;
     private final List<Player> playersToMove;
     private List<CargoColor> reward;
+
     /**
-     * Default constructor
+     * Constructs a PlanetsState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the planets, lost days,
+     * and initial phase to LAND_ON_PLANET. It also configures the standby message
+     * for the current player and notifies the message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
-    @SuppressWarnings("unused") // dynamically created by Cards
     public PlanetsState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.planets = card.getPlanets();
@@ -37,20 +55,6 @@ public class PlanetsState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    @Override
-    public String toString() {
-        return "PlanetsState";
-    }
-
-
-
-    /**
-     * Accepts a planet card and lands on the planet
-     * @param player player that wants to land on a planet
-     * @param planetIndex is the index of the planet card in the player's hand
-     * @throws InvalidStateException if the game is not in the planet phase, or if the planet is not available
-     * @throws InvalidTurnException if it is not the player's turn
-     */
     @Override
     public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException, InvalidStateException {
         if (!getCurrentPlayer().equals(player.getUsername())) {
@@ -73,17 +77,6 @@ public class PlanetsState extends CargoState {
         }
     }
 
-    /**
-     * this method is used to load the cargo on the ship
-     * @param player the player who is loading the cargo
-     * @param loaded the color of the cargo to be loaded
-     * @param chTo the cargo hold to which the cargo is loaded
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the planet phase
-     * @throws CargoException if the cargo is incorrect
-     * @throws CargoNotLoadable if the cargo is not loadable
-     * @throws CargoFullException if the cargo hold is full
-     */
     @Override
     public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws ComponentNotFoundException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
         //check if the player is on the planet
@@ -103,15 +96,6 @@ public class PlanetsState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this method is used to unload the cargo from the ship
-     * @param player the player who is unloading the cargo
-     * @param unloaded the color of the cargo to be unloaded
-     * @param ch the cargo hold from which the cargo is unloaded
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the planet phase
-     * @throws InvalidCargoException if the cargo is incorrect
-     */
     @Override
     public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws ComponentNotFoundException, InvalidTurnException, InvalidCargoException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
@@ -124,17 +108,6 @@ public class PlanetsState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this method is used to move the cargo from one cargo hold to another
-     * @param player the player who is moving the cargo
-     * @param cargo the color of the cargo to be moved
-     * @param from the cargo hold from which the cargo is moved
-     * @param to the cargo hold to which the cargo is moved
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws InvalidStateException if the game is not in the planet phase
-     * @throws CargoNotLoadable if the cargo is not loadable
-     * @throws CargoFullException if the cargo hold is full
-     */
     @Override
     public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
@@ -147,11 +120,6 @@ public class PlanetsState extends CargoState {
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
-    /**
-     * this method is used to end the move of the player
-     * @param player the player who is ending the move
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
     public void endMove(Player player) throws InvalidTurnException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
