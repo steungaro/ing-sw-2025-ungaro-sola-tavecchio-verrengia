@@ -160,7 +160,6 @@ public class GUIView extends ClientGameModel {
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
-            root.setUserData(loader.getController());
             root.setId(fileName);
 
             Scene currentScene = primaryStage.getScene();
@@ -220,7 +219,7 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client != null) {
-            setCurrentGuiState(GuiState.LOGIN);
+            currentGuiState = GuiState.LOGIN;
             return true;
         }
         return false;
@@ -391,18 +390,12 @@ public class GUIView extends ClientGameModel {
     public void loginFailed(String username) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.LOGIN) {
-                if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                    Object controller = primaryStage.getScene().getRoot().getUserData();
-                    if (controller instanceof LoginController) {
-                        LoginController loginController = (LoginController) controller;
-                        loginController.getErrorLabel().setText("Login attempt for user '" + username + "' failed. Please check your username and try again.");
-                        loginController.getErrorLabel().setVisible(true);
-                    } else {
-                        System.err.println("Controller is not of type LoginController or is null.");
-                    }
-                } else {
-                    System.err.println("Cannot update errorLabel: primaryStage, scene, or root is null.");
-                }
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Login Failed");
+                alert.setHeaderText("Login attempt for user '" + username + "' failed.");
+                alert.setContentText("Please check your username and try again.");
+                if (primaryStage != null) alert.initOwner(primaryStage);
+                alert.showAndWait();
             } else {
                 displayErrorMessage("Login failed for user: " + username + " (unexpected state: " + getCurrentGuiState() + ")");
             }
@@ -412,14 +405,6 @@ public class GUIView extends ClientGameModel {
     @Override
     public void idleMenu(String message) {
         setCurrentGuiState(GuiState.IDLE_MENU);
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                ((IdleMenuController) controller).initializeWithMessage(message);
-                }else {
-                System.err.println("Cannot setup idle menu: primaryStage, scene, or root is null.");
-            }
-        });
     }
 
     @Override
@@ -480,7 +465,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cannonsMenu(String message) {
-        setCurrentGuiState(GuiState.CANNONS_MENU);
+        currentGuiState = GuiState.CANNONS_MENU;
         // TODO: Check button handler
     }
 
@@ -492,7 +477,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        setCurrentGuiState(GuiState.CARGO_MENU);
+        currentGuiState = GuiState.CARGO_MENU;
         Platform.runLater(() -> {
             if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
                 Object controller = primaryStage.getScene().getRoot().getUserData();
@@ -510,7 +495,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void engineMenu(String message) {
-        setCurrentGuiState(GuiState.ENGINE_MENU);
+        currentGuiState = GuiState.ENGINE_MENU;
         // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
     }
 
@@ -521,9 +506,8 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
-        setCurrentGuiState(GuiState.LOGIN);
+        currentGuiState = GuiState.LOGIN;
         client.login(username);
         this.username = username;
     }
 }
-
