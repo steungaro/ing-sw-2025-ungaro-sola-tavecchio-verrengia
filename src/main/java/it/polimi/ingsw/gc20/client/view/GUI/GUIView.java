@@ -221,14 +221,12 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void updateView(Message message) {
-        Platform.runLater(() -> {
-            try {
-                message.handleMessage();
-            } catch (Exception e) {
-                System.out.println("Error while handling message: " + e.getMessage());
-                displayErrorMessage("Error processing server message: " + e.getMessage());
-            }
-        });
+        try {
+            message.handleMessage();
+        } catch (Exception e) {
+            System.out.println("Error while handling message: " + e.getMessage());
+            displayErrorMessage("Error processing server message: " + e.getMessage());
+        }
     }
 
     @Override
