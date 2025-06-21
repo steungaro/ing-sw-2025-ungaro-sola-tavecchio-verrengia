@@ -1,16 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
-import it.polimi.ingsw.gc20.client.view.TUI.LoseEnergyMenu;
-import it.polimi.ingsw.gc20.client.view.TUI.MenuState;
-import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.model.cards.FireType;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.beans.property.ObjectProperty;
@@ -147,7 +144,7 @@ public class GUIView extends ClientGameModel {
         });
     }
 
-    public FXMLLoader showScene(String fileName) {
+    public void showScene(String fileName) {
         try {
             String path = "/fxml/" + fileName + ".fxml";
             URL resourceUrl = getClass().getResource(path);
@@ -155,7 +152,7 @@ public class GUIView extends ClientGameModel {
             if (resourceUrl == null) {
                 System.err.println("ERROR: FXML file not found: " + path);
                 displayErrorMessage("Internal error: UI file not found (" + fileName + ")");
-                return null;
+                return;
             }
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
@@ -176,12 +173,9 @@ public class GUIView extends ClientGameModel {
 
             primaryStage.setTitle("Galaxy Trucker");
             root.setId(fileName);
-            return loader;
         } catch (IOException e) {
-            e.printStackTrace();
             displayErrorMessage("Error loading UI: " + e.getMessage());
         }
-        return null;
     }
 
     private void notifyCurrentBoardController(ViewBoard newBoard) {
@@ -232,7 +226,6 @@ public class GUIView extends ClientGameModel {
                 message.handleMessage();
             } catch (Exception e) {
                 System.out.println("Error while handling message: " + e.getMessage());
-                e.printStackTrace();
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
@@ -264,7 +257,7 @@ public class GUIView extends ClientGameModel {
                 System.err.println("Cannot setup planet menu: primaryStage, scene, or root is null.");
             }
         });
-        // TODO: to test, no handler needed
+        // TODO: sistemare dio cane
     }
 
     @Override
@@ -324,7 +317,6 @@ public class GUIView extends ClientGameModel {
                 dialogStage.show();
             } catch (IOException e) {
                 System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
-                e.printStackTrace();
                 displayErrorMessage("Error opening roll dice window: " + e.getMessage());
             }
         });
@@ -457,7 +449,6 @@ public class GUIView extends ClientGameModel {
 
                 peekDecksController.initializeWithCards(cards);
             } catch (IOException e) {
-                e.printStackTrace();
                 displayErrorMessage("Error opening peek decks window: " + e.getMessage());
             }
         });
