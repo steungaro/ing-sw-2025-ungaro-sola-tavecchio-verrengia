@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
@@ -12,7 +16,7 @@ import java.util.Scanner;
  * It implements the {@link MenuState} interface and provides methods to display the menu,
  * handle user input, and get the name of the current state.
  */
-public class ValidationMenu implements MenuState{
+public class ValidationMenu implements MenuState, GameModelListener {
     public final Scanner scanner = new Scanner(System.in);
     public String username = ClientGameModel.getInstance().getUsername();
 
@@ -27,6 +31,7 @@ public class ValidationMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().addListener(this);
         if(!ClientGameModel.getInstance().getShip(username).isValid()){
             ClientGameModel.getInstance().printShip(username);
         }
@@ -65,6 +70,7 @@ public class ValidationMenu implements MenuState{
      */
     @Override
     public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         if (ClientGameModel.getInstance().getShip(username).isValid()){
             if (choice.equalsIgnoreCase("v")) {
@@ -132,5 +138,25 @@ public class ValidationMenu implements MenuState{
     @Override
     public String getStateName(){
         return "Validation Menu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }

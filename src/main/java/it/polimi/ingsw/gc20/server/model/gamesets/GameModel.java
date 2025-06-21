@@ -811,7 +811,7 @@ public class GameModel {
         p.getShip().findValid(row, column);
     }
 
-    public void createDemoShips() throws InvalidTileException {
+    public void createDemoShips(){
         //load components.json into hashmap of all components where the key is the idcomponent of the component
         Map<Integer, Component> components = new HashMap<>();
         ObjectMapper mapper = JsonMapper.builder()
@@ -827,13 +827,17 @@ public class GameModel {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "error while trying to read Component.json", e);
         }
         if(getLevel() == 2){
-            buildDemoNormalShipInvalid1(getInGamePlayers().getFirst(), components);
-            buildDemoNormalShipValid1(getInGamePlayers().get(1), components);
-            if(getInGamePlayers().size() > 2) {
-                buildDemoNormalShipInvalid2(getInGamePlayers().get(2), components);
-            }
-            if(getInGamePlayers().size() > 3) {
-                buildDemoNormalShipValid1(getInGamePlayers().get(3), components);
+            try {
+                buildDemoNormalShipInvalid1(getInGamePlayers().getFirst(), components);
+                buildDemoNormalShipValid1(getInGamePlayers().get(1), components);
+                if (getInGamePlayers().size() > 2) {
+                    buildDemoNormalShipInvalid2(getInGamePlayers().get(2), components);
+                }
+                if (getInGamePlayers().size() > 3) {
+                    buildDemoNormalShipValid1(getInGamePlayers().get(3), components);
+                }
+            }catch (Exception e){
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "error while trying to build demo ships", e);
             }
 
         }
@@ -958,7 +962,7 @@ public class GameModel {
         c.rotateClockwise();
         s.addComponent( c, 1, 4);
 
-        c = components.get(19);
+        c = components.get(109);
         s.addComponent(c, 1, 5);
 
         c = components.get(115);
@@ -996,6 +1000,7 @@ public class GameModel {
         s.addComponent( c, 3, 2);
 
         c = components.get(10);
+        c.rotateClockwise();
         s.addComponent( c, 3, 3);
 
         c = components.get(41);
@@ -1020,7 +1025,6 @@ public class GameModel {
         s.addComponent( c, 4, 2);
 
         c = components.get(88);
-        c.rotateClockwise();
         s.addComponent( c, 4, 4);
 
         c = components.get(83);
@@ -1034,7 +1038,7 @@ public class GameModel {
     public void buildDemoNormalShipValid1(Player p, Map<Integer, Component> components) throws InvalidTileException {
         Component c;
         Ship s = p.getShip();
-        c = components.get(98);
+        c = components.get(96);
         s.addComponent(c, 0, 2);
 
         c = components.get(121);
@@ -1044,24 +1048,32 @@ public class GameModel {
         s.addComponent(c, 1, 1);
 
         c = components.get(0);
+        c.rotateCounterclockwise();
         s.addComponent(c, 1, 2);
 
         c = components.get(117);
         s.addComponent( c, 1, 3);
 
         c = components.get(18);
+        c.rotateCounterclockwise();
+        c.rotateCounterclockwise();
         s.addComponent( c, 1, 4);
 
         c = components.get(104);
+        c.rotateClockwise();
         s.addComponent(c, 1, 5);
 
         c = components.get(114);
+        c.rotateCounterclockwise();
         s.addComponent(c, 2, 0);
 
         c = components.get(34);
+        c.rotateCounterclockwise();
         s.addComponent( c, 2, 1);
 
         c = components.get(138);
+        c.rotateCounterclockwise();
+        c.rotateCounterclockwise();
         s.addComponent( c, 2, 2);
 
         c = components.get(60);
@@ -1071,12 +1083,14 @@ public class GameModel {
         s.addComponent( c, 2, 5);
 
         c = components.get(10);
+        c.rotateCounterclockwise();
         s.addComponent(c, 2, 6);
 
         c = components.get(2);
         s.addComponent(c, 3, 0);
 
         c = components.get(3);
+        c.rotateCounterclockwise();
         s.addComponent(c, 3, 1);
 
         c = components.get(149);
@@ -1085,6 +1099,8 @@ public class GameModel {
         s.addComponent( c, 3, 2);
 
         c = components.get(129);
+        c.rotateCounterclockwise();
+        c.rotateCounterclockwise();
         s.addComponent( c, 3, 3);
 
         c = components.get(43);
@@ -1094,6 +1110,7 @@ public class GameModel {
         s.addComponent( c, 3, 5);
 
         c = components.get(57);
+        c.rotateClockwise();
         s.addComponent( c, 3, 6);
 
         c = components.get(90);
@@ -1106,6 +1123,7 @@ public class GameModel {
         s.addComponent( c, 4, 2);
 
         c = components.get(4);
+        c.rotateClockwise();
         s.addComponent( c, 4, 4);
 
         c = components.get(82);

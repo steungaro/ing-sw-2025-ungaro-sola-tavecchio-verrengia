@@ -68,20 +68,9 @@ public abstract class ShipController {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
-        loadObjects();
     }
 
-    public void loadObjects() {
-        for (int i=0; i<ROWS; i++) {
-            for (int j=0; j<COLS; j++) {
-                ImageView imageView = getImageViewAt(i, j);
-                ViewComponent comp = ship.getComponent(i, j);
-                if (imageView != null && comp != null) {
-                    setComponentProp((StackPane) imageView.getParent(), comp);
-                }
-            }
-        }
-    }
+
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
@@ -98,7 +87,7 @@ public abstract class ShipController {
 
         GridPane parent = (GridPane) targetCell.getParent();
         parent.getChildren().remove(targetCell);
-        StackPane layeredPane = new StackPane();
+        StackPane layeredPane = new StackPane(); // This pane will be the cell in the grid
 
         if (componentId >= 1000 && componentId <= 1003) {
             ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
@@ -121,8 +110,26 @@ public abstract class ShipController {
             Image componentImage = new Image(getClass().getResourceAsStream(imagePath));
             targetCell.setImage(componentImage);
 
-            layeredPane.getChildren().add(targetCell);
-            setComponentProp(layeredPane, comp);
+            // Create a new pane to hold the image and overlays.
+            StackPane contentPane = new StackPane();
+            contentPane.getChildren().add(targetCell);
+
+            // Add overlays to the contentPane
+            if (comp.isBattery()) {
+                setComponentProp(contentPane, (ViewBattery) comp);
+            } else if (comp.isCabin()) {
+                setComponentProp(contentPane, (ViewCabin) comp);
+            } else if (comp.isCargoHold()) {
+                setComponentProp(contentPane, (ViewCargoHold) comp);
+            }
+
+            // Rotate the contentPane if needed
+            if (comp.rotComp != 0) {
+                contentPane.setRotate(comp.rotComp * 90);
+            }
+
+            // Add the rotated content to the main layeredPane
+            layeredPane.getChildren().add(contentPane);
 
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
@@ -140,10 +147,13 @@ public abstract class ShipController {
         }
     }
 
-    public void setComponentProp(StackPane layeredPane, ViewComponent comp) {
-        return;
-    }
-
+    /**
+     * Sets the properties of the component in the layered pane.
+     * This method is used to display additional information like battery level, alien presence, or cargo hold contents.
+     *
+     * @param layeredPane The StackPane where the component will be displayed.
+     * @param comp        The ViewComponent to set properties for.
+     */
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
         batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");

@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
@@ -12,7 +16,7 @@ import java.util.Scanner;
  * handling energy loss and interacting with the relevant game elements.
  * Implements the {@link MenuState} interface to define the behavior of the Lose-Energy menu.
  */
-public class LoseEnergyMenu implements MenuState {
+public class LoseEnergyMenu implements MenuState, GameModelListener {
     private final Scanner scanner;
     private final int energyToLose;
     private final String username = ClientGameModel.getInstance().getUsername();
@@ -29,6 +33,7 @@ public class LoseEnergyMenu implements MenuState {
      */
     @Override
     public void displayMenu() {
+        ClientGameModel.getInstance().addListener(this);
         ClientGameModel.getInstance().printShip(username);
         System.out.println("\u001B[1mLose Energy Menu\u001B[22m");
         System.out.println("You have to lose \u001B[31m" + energyToLose + "\u001B[0m energy because you are short on cargo!");
@@ -62,6 +67,7 @@ public class LoseEnergyMenu implements MenuState {
      */
     @Override
     public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         if (choice.equals("1")) {
             int x;
@@ -103,5 +109,25 @@ public class LoseEnergyMenu implements MenuState {
     @Override
     public String getStateName() {
         return "LoseEnergyMenu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }

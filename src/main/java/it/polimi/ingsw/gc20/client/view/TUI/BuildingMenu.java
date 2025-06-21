@@ -1,7 +1,11 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
@@ -17,7 +21,7 @@ import java.util.Scanner;
  * <p>
  * This class implements the {@link MenuState} interface, which defines the methods.
  */
-public class BuildingMenu implements MenuState{
+public class BuildingMenu implements MenuState, GameModelListener {
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
     private List<ViewAdventureCard> adventureCards;
@@ -41,6 +45,7 @@ public class BuildingMenu implements MenuState{
      */
     @Override
     public void displayMenu(){
+        ClientGameModel.getInstance().addListener(this);
         if(adventureCards!=null){
             ClientGameModel.getInstance().printCardsInLine(adventureCards);
         }
@@ -107,6 +112,7 @@ public class BuildingMenu implements MenuState{
     @Override
     public void handleInput(String choice) throws RemoteException {
         adventureCards = null;
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         // Handle user input from the building menu
         if(ClientGameModel.getInstance().getComponentInHand() == null) {
@@ -305,5 +311,25 @@ public class BuildingMenu implements MenuState{
     @Override
     public String getStateName(){
         return "Building Ship Menu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }

@@ -10,7 +10,6 @@ import java.util.List;
 public interface GameModelListener {
     void onShipUpdated(ViewShip ship);
     void onLobbyUpdated(ViewLobby lobby);
-    void onPlayerListUpdated(List<ViewPlayer> players);
     void onErrorMessageReceived(String message);
     void onComponentInHandUpdated(ViewComponent component);
 }

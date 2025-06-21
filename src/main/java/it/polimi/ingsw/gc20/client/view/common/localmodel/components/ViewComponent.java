@@ -190,6 +190,7 @@ public class ViewComponent implements Serializable {
         };
     }
 
+
     public boolean isCabin() {
         return false;
     }

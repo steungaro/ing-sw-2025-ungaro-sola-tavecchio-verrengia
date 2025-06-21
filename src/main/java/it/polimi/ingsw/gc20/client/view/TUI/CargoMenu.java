@@ -1,6 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
 
@@ -14,7 +18,7 @@ import java.util.Scanner;
  * game state, such as losing, gaining, moving, or loading cargo.
  * Implements the {@link MenuState} interface to represent a specific menu state.
  */
-public class CargoMenu implements MenuState{
+public class CargoMenu implements MenuState, GameModelListener {
     private final Scanner scanner = new Scanner(System.in);
     private final String username = ClientGameModel.getInstance().getUsername();
     private final String message;
@@ -53,12 +57,14 @@ public class CargoMenu implements MenuState{
 
     @Override
     public void displayMenu(String errorMessage) {
+        ClientGameModel.getInstance().addListener(this);
         System.out.println("\u001B[31m" + errorMessage + "\u001B[0m");
         displayMenu();
     }
 
 
     public void handleInput(String choice) throws RemoteException {
+        ClientGameModel.getInstance().removeListener(this);
         ClientGameModel.getInstance().setBusy();
         // Handle user input from the cargo menu
         switch (choice) {
@@ -277,5 +283,25 @@ public class CargoMenu implements MenuState{
     @Override
     public String getStateName() {
         return "Cargo Menu";
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
     }
 }
