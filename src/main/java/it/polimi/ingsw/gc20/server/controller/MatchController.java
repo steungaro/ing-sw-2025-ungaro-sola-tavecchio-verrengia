@@ -29,7 +29,7 @@ public class MatchController implements MatchControllerInterface {
     private final Logger logger = Logger.getLogger(MatchController.class.getName());
 
     /**
-     * Private constructor to enforce singleton pattern.
+     * Private constructor to enforce a singleton pattern.
      * Initializes the lists and maps used to manage games and lobbies.
      */
     private MatchController() {
@@ -140,7 +140,7 @@ public class MatchController implements MatchControllerInterface {
             }
         }
         if (lobby == null) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby not found"));
             logger.log(Level.WARNING, "Lobby not found: " + id);
             return;
@@ -159,7 +159,7 @@ public class MatchController implements MatchControllerInterface {
                 start = true;
             }
         } catch (FullLobbyException e) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Lobby is full"));
             logger.log(Level.WARNING, "Lobby is full", e);
         }
@@ -172,7 +172,7 @@ public class MatchController implements MatchControllerInterface {
     public void createLobby(String name, String user, int maxPlayers, int level) {
         String id = UUID.randomUUID().toString();
         if (lobbies.size() >= maxLobbies) {
-            //notify the player with a error message
+            //notify the player with an error message
             NetworkService.getInstance().sendToClient(user, new ErrorMessage("Max lobbies reached"));
             logger.log(Level.WARNING, "Max lobbies reached");
         } else {
@@ -190,7 +190,7 @@ public class MatchController implements MatchControllerInterface {
 
             Lobby lobby = playersInLobbies.get(userid);
             if (lobby == null){
-                //notify the player with a error message
+                //notify the player with an error message
                 NetworkService.getInstance().sendToClient(userid, new ErrorMessage("User not found in lobbies"));
                 logger.log(Level.WARNING, "User not found in lobbies");
                 return;
@@ -289,7 +289,8 @@ public class MatchController implements MatchControllerInterface {
                 lobby.getUsers().forEach(playersInLobbies::remove);
                 lobby.kill();
                 lobbies.remove(lobby);
-                //notify the players in the lobby with a errore message
+                //notify the players in the lobby with
+                // an error message
                 for (String user : players) {
                     getLobbies(user);
                 }
