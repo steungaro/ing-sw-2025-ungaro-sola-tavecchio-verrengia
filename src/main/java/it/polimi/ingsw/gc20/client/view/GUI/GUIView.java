@@ -221,12 +221,14 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void updateView(Message message) {
-        try {
-            message.handleMessage();
-        } catch (Exception e) {
-            System.out.println("Error while handling message: " + e.getMessage());
-            displayErrorMessage("Error processing server message: " + e.getMessage());
-        }
+        Platform.runLater(() -> {
+            try {
+                message.handleMessage();
+            } catch (Exception e) {
+                System.out.println("Error while handling message: " + e.getMessage());
+                displayErrorMessage("Error processing server message: " + e.getMessage());
+            }
+        });
     }
 
     @Override
@@ -454,7 +456,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cannonsMenu(String message) {
-        currentGuiState = GuiState.CANNONS_MENU;
+        setCurrentGuiState(GuiState.CANNONS_MENU);
         // TODO: Check button handler
     }
 
