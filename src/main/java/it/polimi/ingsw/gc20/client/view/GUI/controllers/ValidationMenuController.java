@@ -89,8 +89,6 @@ public class ValidationMenuController implements GUIController, GameModelListene
         try {
             Pair<Integer, Integer> coordinates = new Pair<>(row, col);
             ClientGameModel.getInstance().getClient().removeComponentFromShip(username, coordinates);
-        } catch (NumberFormatException e) {
-            showError("Please enter valid numbers for coordinates");
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }

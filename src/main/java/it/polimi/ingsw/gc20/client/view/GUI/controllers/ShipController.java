@@ -94,8 +94,8 @@ public abstract class ShipController implements GameModelListener {
                 imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
             }
 
-            imageView.setFitWidth(layeredPane.getWidth());
-            imageView.setFitHeight(layeredPane.getHeight());
+            imageView.setFitWidth(targetCell.getFitWidth());
+            imageView.setFitHeight(targetCell.getFitHeight());
 
             layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
             if (comp.isBattery()) {
@@ -395,7 +395,7 @@ public abstract class ShipController implements GameModelListener {
 
     public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
         Set<int[]> selectedCells = new HashSet<>();
-        Map<Rectangle, int[]> rectToCoord = new HashMap<>();
+        Map<Rectangle, int[]> rectToCoordinates = new HashMap<>();
 
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
@@ -415,7 +415,7 @@ public abstract class ShipController implements GameModelListener {
                     );
 
                     int[] coordinates = new int[]{row, col};
-                    rectToCoord.put(clickArea, coordinates);
+                    rectToCoordinates.put(clickArea, coordinates);
 
                     clickArea.setOnMouseClicked(_ -> {
                         if (selectedCells.contains(coordinates)) {
