@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,7 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Priority;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -18,8 +18,6 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
-import javafx.scene.layout.StackPane;
-import javafx.scene.image.ImageView;
 
 public class MenuController implements Initializable {
 
@@ -62,16 +60,16 @@ public class MenuController implements Initializable {
     }
 
     private void setupEventHandlers() {
-        acceptButton.setOnAction(event -> handleAcceptCard());
-        discardButton.setOnAction(event -> handleDiscardCard());
+        acceptButton.setOnAction(_ -> handleAcceptCard());
+        discardButton.setOnAction(_ -> handleDiscardCard());
 
-        activateComponentButton.setOnAction(event -> handleActivateComponent());
-        endTurnButtonLeft.setOnAction(event -> handleEndTurn());
+        activateComponentButton.setOnAction(_ -> handleActivateComponent());
+        endTurnButtonLeft.setOnAction(_ -> handleEndTurn());
 
-        button1.setOnAction(event -> handleButton1());
-        button2.setOnAction(event -> handleButton2());
-        button3.setOnAction(event -> handleButton3());
-        button4.setOnAction(event -> handleButton4());
+        button1.setOnAction(_ -> handleButton1());
+        button2.setOnAction(_ -> handleButton2());
+        button3.setOnAction(_ -> handleButton3());
+        button4.setOnAction(_ -> handleButton4());
     }
 
     private void setupVisibility() {
@@ -140,13 +138,13 @@ public class MenuController implements Initializable {
     }
 
     private void optimizeShipFitting(StackPane container, StackPane shipNode) {
-        container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        container.widthProperty().addListener((_, _, newWidth) -> {
             if (newWidth.doubleValue() > 0) {
                 updateShipSize(container, shipNode);
             }
         });
 
-        container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+        container.heightProperty().addListener((_, _, newHeight) -> {
             if (newHeight.doubleValue() > 0) {
                 updateShipSize(container, shipNode);
             }
@@ -211,7 +209,7 @@ public class MenuController implements Initializable {
                 .findFirst().orElse(null));
     }
 
-    public void updateServerMessages(String message) {
+    public void updateServerMessages(String ignoredMessage) {
 
     }
 
