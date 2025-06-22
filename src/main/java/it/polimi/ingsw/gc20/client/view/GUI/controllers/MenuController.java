@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ public class MenuController {
     private static final DisplayConfig BOARD_MAIN_VIEW = new DisplayConfig(1.8, 1200, 800, 300, 200, 15, 0.98, 0.98);
     private static final DisplayConfig BOARD_DIALOG = new DisplayConfig(1.8, 600, 450, 200, 150, 12, 0.92, 0.92);
 
+    @FXML public VBox drawnCard;
     @FXML private StackPane currentFrame;
     @FXML private StackPane gameBoard;
     @FXML private StackPane player1Ship;
@@ -59,6 +62,34 @@ public class MenuController {
         loadPlayerNames();
         initializeCurrentFrame();
         initializeGameBoard();
+        setVisibility();
+    }
+
+    /**
+     * Sets visibility of player ship containers based on the number of players
+     */
+    private void setVisibility() {
+        String currentUsername = gameModel.getUsername();
+        StackPane[] shipPanes = {player1Ship, player2Ship, player3Ship, player4Ship};
+
+        for (int i = 0; i < shipPanes.length; i++) {
+            boolean isPlayerInGame = i < players.length && players[i] != null;
+
+            boolean shouldBeVisible = isPlayerInGame && !players[i].username.equals(currentUsername);
+
+            Node parentContainer = shipPanes[i].getParent();
+            if (parentContainer != null) {
+                parentContainer.setVisible(shouldBeVisible);
+            }
+        }
+
+        ViewAdventureCard currentCard = gameModel.getCurrentCard();
+        boolean isCardDrawn = currentCard != null && currentCard.id!=0;
+        drawnCard.setVisible(isCardDrawn);
+        Node parentDrawnCard = drawnCard.getParent();
+        if (parentDrawnCard != null) {
+            parentDrawnCard.setVisible(isCardDrawn);
+        }
     }
 
     /**
