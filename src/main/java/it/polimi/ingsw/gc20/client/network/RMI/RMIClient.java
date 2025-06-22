@@ -76,6 +76,7 @@ public class RMIClient implements Client {
     public void stop() {
         connected = false;
         LOGGER.info("Disconnected from RMI server.");
+        ClientGameModel.getInstance().shutdown();
     }
 
     @Override

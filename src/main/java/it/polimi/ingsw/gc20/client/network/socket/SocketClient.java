@@ -57,6 +57,7 @@ public class SocketClient implements Client {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
+            ClientGameModel.getInstance().shutdown();
         } catch (Exception e) {
             LOGGER.warning("Error while stopping socket client: " + e.getMessage());
         }
