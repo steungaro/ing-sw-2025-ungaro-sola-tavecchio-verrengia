@@ -55,49 +55,35 @@ public class Ship0Controller extends ShipController{
         final double imageRatio = imageWidth / imageHeight;
 
         rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            double containerWidth = newBounds.getWidth();
-            double containerHeight = newBounds.getHeight();
-            
-            double scaleFactor = Math.min(containerWidth / 300.0, containerHeight / 300.0);
-            scaleFactor = Math.max(0.3, Math.min(1.0, scaleFactor));
-            
-            double targetWidth = containerWidth * 0.9 * scaleFactor;
-            double targetHeight = containerHeight * 0.9 * scaleFactor;
-            
-            bgImage.setFitWidth(targetWidth);
-            bgImage.setFitHeight(targetHeight);
-            
-            double containerRatio = targetWidth / targetHeight;
+            bgImage.setFitWidth(newBounds.getWidth()*0.7);
+            bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            double containerWidth = bgImage.getFitWidth();
+            double containerHeight = bgImage.getFitHeight();
+            double containerRatio = containerWidth / containerHeight;
+
             double actualWidth, actualHeight;
 
             if (imageRatio > containerRatio) {
-                actualWidth = targetWidth;
-                actualHeight = targetWidth / imageRatio;
+                actualWidth = containerWidth;
+                actualHeight = containerWidth / imageRatio;
             } else {
-                actualHeight = targetHeight;
-                actualWidth = targetHeight * imageRatio;
+                actualHeight = containerHeight;
+                actualWidth = containerHeight * imageRatio;
             }
 
             double gridWidth = actualWidth * (1 - 0.167 - 0.167);
             double gridHeight = actualHeight * (1 - 0.04 - 0.04);
-            
-            if (containerWidth < 150 || containerHeight < 150) {
-                gridWidth = Math.max(gridWidth, 80);
-                gridHeight = Math.max(gridHeight, 80);
-                
-                componentsGrid.setHgap(0.5);
-                componentsGrid.setVgap(0.5);
-                componentsGrid.setStyle("-fx-border-color: white; -fx-border-width: 0.5px; -fx-background-color: rgba(255,255,255,0.1);");
-            } else {
-                componentsGrid.setHgap(2);
-                componentsGrid.setVgap(2);
-                componentsGrid.setStyle("-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true");
-            }
 
             componentsGrid.setPrefSize(gridWidth, gridHeight);
             componentsGrid.setMaxSize(gridWidth, gridHeight);
             componentsGrid.setMinSize(gridWidth, gridHeight);
 
+            // Debug output
+            // System.out.println("Container: " + containerWidth + "x" + containerHeight);
+            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
+
+            // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;
             double cellHeight = gridHeight / ROWS;
             for (int row = 0; row < ROWS; row++) {
