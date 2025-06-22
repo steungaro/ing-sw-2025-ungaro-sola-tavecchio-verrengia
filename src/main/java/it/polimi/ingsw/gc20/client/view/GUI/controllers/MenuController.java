@@ -6,9 +6,11 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -16,14 +18,16 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import javafx.scene.layout.StackPane;
+import javafx.scene.image.ImageView;
 
 public class MenuController implements Initializable {
 
-    @FXML public VBox currentFrame;
-    @FXML private VBox player1Ship;
-    @FXML private VBox player2Ship;
-    @FXML private VBox player3Ship;
-    @FXML private VBox player4Ship;
+    @FXML public StackPane currentFrame;
+    @FXML private StackPane player1Ship;
+    @FXML private StackPane player2Ship;
+    @FXML private StackPane player3Ship;
+    @FXML private StackPane player4Ship;
     @FXML private Label player1Name;
     @FXML private Label player2Name;
     @FXML private Label player3Name;
@@ -40,7 +44,7 @@ public class MenuController implements Initializable {
     @FXML private Button button3;
     @FXML private Button button4;
 
-    @FXML private VBox gameBoard;
+    @FXML private StackPane gameBoard;
     @FXML private ScrollPane messageScrollPane;
     @FXML private Label serverMessages;
 
@@ -78,6 +82,38 @@ public class MenuController implements Initializable {
         loadPlayerShips();
     }
 
+    private void loadShipFXML(StackPane container, ViewPlayer player) {
+        try {
+            FXMLLoader loader;
+            if(gameModel.getShip(ClientGameModel.getInstance().getUsername()).isLearner) {
+                loader = new FXMLLoader(getClass().getResource("/fxml/ship0.fxml"));
+            }
+            else {
+                loader = new FXMLLoader(getClass().getResource("/fxml/ship.fxml"));
+            }
+
+            container.getChildren().clear();
+            Node shipNode = loader.load();
+
+            container.getChildren().removeIf(node -> node instanceof ImageView);
+
+            if (shipNode instanceof StackPane shipStackPane) {
+                optimizeShipFitting(container, shipStackPane);
+            }
+
+            container.getChildren().add(shipNode);
+
+            Object controller = loader.getController();
+            if (controller instanceof ShipController c) {
+                c.buildShipComponents(ClientGameModel.getInstance().getShip(player.username));
+                c.updateStatisticBoard(player);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void loadPlayerUsername() {
         players = gameModel.getPlayers();
         for (int i = 0; i < players.length; i++) {
@@ -103,37 +139,64 @@ public class MenuController implements Initializable {
         }
     }
 
-    private void loadShipFXML(VBox container, ViewPlayer player) {
-        try {
-            FXMLLoader loader;
-            if(gameModel.getShip(ClientGameModel.getInstance().getUsername()).isLearner) {
-                loader = new FXMLLoader(getClass().getResource("/it/polimi/ingsw/gc20/client/view/GUI/fxml/ship0.fxml"));
+    private void optimizeShipFitting(StackPane container, StackPane shipNode) {
+        container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            if (newWidth.doubleValue() > 0) {
+                updateShipSize(container, shipNode);
             }
-            else {
-                loader = new FXMLLoader(getClass().getResource("/it/polimi/ingsw/gc20/client/view/GUI/fxml/ship.fxml"));
-            }
-            container.getChildren().clear();
-            container.getChildren().add(loader.load());
+        });
 
-            Object controller = loader.getController();
-            if (controller instanceof ShipController c) {
-                c.buildShipComponents(ClientGameModel.getInstance().getShip(player.username));
-                c.updateStatisticBoard(player);
+        container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            if (newHeight.doubleValue() > 0) {
+                updateShipSize(container, shipNode);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        });
+
+        if (container.getWidth() > 0 && container.getHeight() > 0) {
+            updateShipSize(container, shipNode);
         }
     }
 
+    private void updateShipSize(StackPane container, StackPane shipNode) {
+        double containerWidth = container.getWidth();
+        double containerHeight = container.getHeight();
+
+        if (containerWidth <= 0 || containerHeight <= 0) return;
+
+        double padding = 10;
+        double availableWidth = containerWidth - padding;
+        double availableHeight = containerHeight - padding;
+
+        double shipAspectRatio = 1.3;
+
+        double targetWidth, targetHeight;
+
+        if (availableWidth / availableHeight > shipAspectRatio) {
+            targetHeight = availableHeight;
+            targetWidth = targetHeight * shipAspectRatio;
+        } else {
+            targetWidth = availableWidth;
+            targetHeight = targetWidth / shipAspectRatio;
+        }
+
+        targetWidth = Math.max(60, Math.min(targetWidth, 300));
+        targetHeight = Math.max(40, Math.min(targetHeight, 200));
+
+        shipNode.setPrefWidth(targetWidth);
+        shipNode.setPrefHeight(targetHeight);
+        shipNode.setMaxWidth(targetWidth);
+        shipNode.setMaxHeight(targetHeight);
+    }
+
     private void initializeGameBoard() {
-        VBox container = gameBoard;
+        StackPane container = gameBoard;
         try {
             FXMLLoader loader;
             if(gameModel.getShip(ClientGameModel.getInstance().getUsername()).isLearner) {
-                loader = new FXMLLoader(getClass().getResource("/it/polimi/ingsw/gc20/client/view/GUI/fxml/board0.fxml"));
+                loader = new FXMLLoader(getClass().getResource("/fxml/board0.fxml"));
             }
             else {
-                loader = new FXMLLoader(getClass().getResource("/it/polimi/ingsw/gc20/client/view/GUI/fxml/board2.fxml"));
+                loader = new FXMLLoader(getClass().getResource("/fxml/board2.fxml"));
             }
             container.getChildren().clear();
             container.getChildren().add(loader.load());
@@ -189,18 +252,5 @@ public class MenuController implements Initializable {
 
     private void handleButton4() {
 
-    }
-
-    public void setControlsEnabled(boolean enabled) {
-        Platform.runLater(() -> {
-            acceptButton.setDisable(!enabled);
-            discardButton.setDisable(!enabled);
-            activateComponentButton.setDisable(!enabled);
-            endTurnButtonLeft.setDisable(!enabled);
-            button1.setDisable(!enabled);
-            button2.setDisable(!enabled);
-            button3.setDisable(!enabled);
-            button4.setDisable(!enabled);
-        });
     }
 }
