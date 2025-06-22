@@ -113,10 +113,6 @@ public class BranchMenu implements MenuState, GameModelListener{
     public void onComponentInHandUpdated(ViewComponent component) { }
 
     @Override
-    public void onErrorMessageReceived(String message) { }
-
-
-    @Override
     public void onBoardUpdated(ViewBoard board) {
 
     }
@@ -125,4 +121,7 @@ public class BranchMenu implements MenuState, GameModelListener{
     public void onCardUpdated(ViewAdventureCard card) {
 
     }
+
+    @Override
+    public void onErrorMessageReceived(String message) { }
 }

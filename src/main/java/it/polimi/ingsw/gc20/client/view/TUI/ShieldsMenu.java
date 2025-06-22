@@ -168,7 +168,6 @@ public class ShieldsMenu implements MenuState, GameModelListener {
 
     }
 
-
     @Override
     public void onBoardUpdated(ViewBoard board) {
 

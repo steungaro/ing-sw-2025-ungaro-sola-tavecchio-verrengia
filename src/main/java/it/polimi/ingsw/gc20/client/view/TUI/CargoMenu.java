@@ -307,7 +307,6 @@ public class CargoMenu implements MenuState, GameModelListener {
 
     }
 
-
     @Override
     public void onBoardUpdated(ViewBoard board) {
 

@@ -137,7 +137,6 @@ public class LoseCrewMenu implements MenuState, GameModelListener{
 
     }
 
-
     @Override
     public void onBoardUpdated(ViewBoard board) {
 

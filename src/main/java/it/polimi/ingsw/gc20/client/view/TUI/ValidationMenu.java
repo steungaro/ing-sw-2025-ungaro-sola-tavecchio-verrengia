@@ -154,17 +154,17 @@ public class ValidationMenu implements MenuState, GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-        // Display the error message in red
+
     }
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
-        // Not used in this controller
+
     }
 
     @Override
     public void onBoardUpdated(ViewBoard board) {
-        // Not used in this controller
+
     }
 
     @Override

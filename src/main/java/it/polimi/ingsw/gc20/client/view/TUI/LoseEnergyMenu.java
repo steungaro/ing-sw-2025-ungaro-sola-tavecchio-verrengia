@@ -133,7 +133,6 @@ public class LoseEnergyMenu implements MenuState, GameModelListener {
 
     }
 
-
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
