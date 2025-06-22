@@ -159,18 +159,21 @@
     </right>
 
     <center>
-        <StackPane fx:id="gameBoard" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </StackPane>
-        <StackPane fx:id="currentFrame" alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </StackPane>
-
-
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints percentHeight="70.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <StackPane fx:id="currentFrame" GridPane.rowIndex="1">
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            </StackPane>
+            <StackPane fx:id="gameBoard" GridPane.rowIndex="0">
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+            </StackPane>
+        </GridPane>
     </center>
    <top>
          <VBox prefHeight="50.0" style="-fx-background-color: #222233; -fx-background-radius: 8;" BorderPane.alignment="CENTER">

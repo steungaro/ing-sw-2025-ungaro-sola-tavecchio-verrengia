@@ -109,9 +109,9 @@ public class Board0Controller extends BoardController {
             return;
         }
 
-        double originalContentWidth = 800.0;
-        double scaleX = newPaneWidth / originalContentWidth;
+        double originalContentWidth = 600.0;
         double originalContentHeight = 330.0;
+        double scaleX = newPaneWidth / originalContentWidth;
         double scaleY = newPaneHeight / originalContentHeight;
         double scaleFactor = Math.min(scaleX, scaleY);
 
