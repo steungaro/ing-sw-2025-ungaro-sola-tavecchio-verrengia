@@ -160,7 +160,6 @@ class SlaversStateTest {
 
     @Test
     void testSlaversState() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException, EmptyCabinException {
-        assertEquals("SlaversState", state.toString());
         state.activateCannons(controller.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         state.loseCrew(controller.getPlayerByID("player1"), List.of(new Pair<>(2,4)));
         assertEquals("player2", state.getCurrentPlayer());
@@ -171,7 +170,6 @@ class SlaversStateTest {
     }
     @Test
     void testSlaversState2() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException, EmptyCabinException {
-        assertEquals("SlaversState", state.toString());
         state.activateCannons(controller.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
         state.loseCrew(controller.getPlayerByID("player1"), List.of(new Pair<>(2,4)));
         assertEquals("player2", state.getCurrentPlayer());

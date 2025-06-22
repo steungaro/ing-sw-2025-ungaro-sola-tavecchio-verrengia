@@ -181,7 +181,6 @@ class PiratesStateTest {
         state.acceptCard(controller.getPlayerByID("player2"));
         assertEquals(4, controller.getPlayerByID("player2").getPosition());
         assertEquals(1, controller.getPlayerByID("player2").getCredits());
-        assertEquals("PiratesState", state.toString());
 
     }
 

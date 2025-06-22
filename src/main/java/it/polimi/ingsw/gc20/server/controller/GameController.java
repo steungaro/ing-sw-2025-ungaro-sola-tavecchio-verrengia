@@ -131,8 +131,8 @@ public class GameController implements GameControllerInterface {
      * Returns the current game state
      * @return the current game state
      */
-    public String getState() {
-        return state.toString();
+    public State getState() {
+        return state;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.cards;
 
 import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.controller.states.State;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
@@ -121,20 +122,20 @@ class AdventureCardTest {
 
         // Ensure no exceptions are thrown
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
-        assertEquals("SlaversState", controller.getState());
+        assertEquals("SlaversState", controller.getState().getClass().getSimpleName());
 
 
         adventureCard.setName("Test");
         // Ensure the exception is caught internally and does not propagate
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
 
-        assertEquals("SlaversState", controller.getState());
+        assertEquals("SlaversState", controller.getState().getClass().getSimpleName());
 
         adventureCard.setName("Pirates");
 
         // Ensure no exceptions are thrown
         assertDoesNotThrow(() -> adventureCard.setState(controller, model));
-        assertEquals("PiratesState", controller.getState());
+        assertEquals("PiratesState", controller.getState().getClass().getSimpleName());
 
 
         adventureCard.setName("AbandonedShip");
@@ -142,8 +143,8 @@ class AdventureCardTest {
         adventureCard.setCredits(100);
         adventureCard.setLostDays(2);
         adventureCard.setState(controller, model);
-        String s = controller.getState();
-        assertEquals("AbandonedShipState", s);
+        State s = controller.getState();
+        assertEquals("AbandonedShipState", s.getClass().getSimpleName());
 
 
         adventureCard.setName("CombatZone");
@@ -152,12 +153,12 @@ class AdventureCardTest {
         adventureCard.setCrew(5);
         adventureCard.setState(controller, model);
         s = controller.getState();
-        assertEquals("CombatZone0State", s);
+        assertEquals("CombatZone0State", s.getClass().getSimpleName());
 
         adventureCard.setName("CombatZone");
         adventureCard.setCrew(0);
         adventureCard.setState(controller, model);
         s = controller.getState();
-        assertEquals("CombatZone1State", s);
+        assertEquals("CombatZone1State", s.getClass().getSimpleName());
     }
 }

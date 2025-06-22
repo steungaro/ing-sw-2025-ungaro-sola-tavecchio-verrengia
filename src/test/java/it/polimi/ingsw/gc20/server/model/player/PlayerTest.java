@@ -106,4 +106,13 @@ public class PlayerTest {
         player.setGameStatus(true);
         assertTrue (player.isInGame());
     }
+
+    @Test
+    public void testColors() {
+        assertNotNull(PlayerColor.values());
+        assertEquals("\u001B[34m" + "P1" + "\u001B[0m", PlayerColor.BLUE.TUIPrint());
+        assertEquals("\u001B[31m" + "P2" + "\u001B[0m", PlayerColor.RED.TUIPrint());
+        assertEquals("\u001B[32m" + "P3" + "\u001B[0m", PlayerColor.GREEN.TUIPrint());
+        assertEquals("\u001B[33m" + "P4" + "\u001B[0m", PlayerColor.YELLOW.TUIPrint());
+    }
 }

@@ -172,7 +172,6 @@ class PlanetsStateTest {
 
     @Test
     void Test() throws InvalidTurnException, InvalidStateException, ComponentNotFoundException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        assertEquals("PlanetsState", state.toString());
         state.landOnPlanet(controller.getPlayerByID("player1"), 0);
         state.loadCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2));
         state.moveCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));

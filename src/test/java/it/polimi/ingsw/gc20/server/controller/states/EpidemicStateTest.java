@@ -153,7 +153,6 @@ class EpidemicStateTest {
                 assertEquals(2, player.getShip().crew());
             }
         }
-        assertEquals("EpidemicState", state.toString());
         assertEquals("An epidemic is spreading! You will lose 1 crew member for each populated adjacent cabin.", state.getAutomaticActionMessage());
     }
 

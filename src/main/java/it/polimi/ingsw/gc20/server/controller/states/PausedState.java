@@ -61,9 +61,7 @@ public class PausedState extends State {
      * @param reconnected the username of the player who reconnected
      */
     public void resume(String reconnected) {
-        if (future != null && !future.isDone()) {
-            future.cancel(false);
-        }
+        shutdown();
         getController().setState(previousState);
         if (previousState.isConcurrent()){
             try {
@@ -83,13 +81,7 @@ public class PausedState extends State {
     }
 
     @Override
-    public String toString() {
-        return "PausedState";
-    }
-
-    @Override
     public boolean isConcurrent(){
         return previousState.isConcurrent();
     }
-
 }
