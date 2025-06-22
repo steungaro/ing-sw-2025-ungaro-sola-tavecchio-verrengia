@@ -87,12 +87,9 @@ public class ActivationMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController) {
-                this.shipController = (ShipController) controller;
-                shipController.enableCellClickHandler(this::selectComponent);
-            } else {
-                showError("Unable to get the ship controller");
-            }
+            this.shipController = (ShipController) controller;
+            shipController.enableCellClickHandler(this::selectComponent);
+
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());

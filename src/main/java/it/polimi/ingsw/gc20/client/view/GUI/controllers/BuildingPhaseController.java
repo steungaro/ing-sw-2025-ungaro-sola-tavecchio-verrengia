@@ -26,7 +26,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class BuildingPhaseController implements GameModelListener {
+public abstract class BuildingPhaseController implements GameModelListener, GUIController {
 
     @FXML
     protected StackPane shipContainer;
@@ -338,34 +338,19 @@ public abstract class BuildingPhaseController implements GameModelListener {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
-        // If componentID = 1000 -> blue = 1000, red = 1001, green = 1002, yellow = 1003
-
-        if (componentId >= 1000 && componentId <= 1003) {
-            String username = ClientGameModel.getInstance().getUsername();
-            ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
-            ViewPlayer currentPlayer = Arrays.stream(players)
-                    .filter(p -> p != null && username.equals(p.username))
-                    .findFirst()
-                    .orElse(null);
-            if (currentPlayer != null && currentPlayer.playerColor != null) {
-                switch (currentPlayer.playerColor) {
-                    case BLUE -> componentId = 1000;
-                    case RED -> componentId = 1001;
-                    case GREEN -> componentId = 1002;
-                    case YELLOW -> componentId = 1003;
-                }
-            }
-        }
-
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            targetCell.setImage(componentImage);
+            ImageView imageView = new ImageView(componentImage); // Create a new ImageView
+
             if (comp.rotComp >= 0 && comp.rotComp <= 3) {
-                targetCell.setRotate(comp.rotComp * 90);
+                imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
             }
 
-            layeredPane.getChildren().add(targetCell);
+            imageView.setFitWidth(targetCell.getFitWidth() - 5);
+            imageView.setFitHeight(targetCell.getFitHeight() - 5);
+
+            layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
             setComponentProp(layeredPane, comp);
 
             // Make sure the layered pane fills the cell
@@ -380,12 +365,17 @@ public abstract class BuildingPhaseController implements GameModelListener {
             gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
-            System.err.println("Unable to load image: " + e.getMessage());
+            showError("Could not load component image: " + e.getMessage());
             return false;
         }
     }
 
-    public void setComponentProp(StackPane ignoredLayeredPane, ViewComponent ignoredComp) {
+    public void setComponentProp(StackPane layeredPane, ViewComponent comp) {
+        if (comp.isCabin()) {
+            setComponentProp(layeredPane, (ViewCabin) comp);
+        } else if (comp.isBattery()) {
+            setComponentProp(layeredPane, (ViewBattery) comp);
+        }
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
@@ -439,7 +429,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
                 layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
             } catch (Exception e) {
-                System.err.println("IUnable to load astronaut: " + e.getMessage());
+                System.err.println("Unable to load astronaut: " + e.getMessage());
                 layeredPane.getChildren().add(astronautsLabel);
             }
         }
@@ -461,41 +451,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 layeredPane.getChildren().add(colorIndicator);
             }
         }
-    }
-
-    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
-        Rectangle box = new Rectangle();
-
-        // Bind size to parent for scaling
-        box.widthProperty().bind(parent.widthProperty().multiply(0.15));
-        box.heightProperty().bind(parent.heightProperty().multiply(0.15));
-
-        // Set color based on type
-        switch (type) {
-            case "red" -> box.setFill(javafx.scene.paint.Color.RED);
-            case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
-            case "blue" -> box.setFill(javafx.scene.paint.Color.BLUE);
-            case "yellow" -> box.setFill(javafx.scene.paint.Color.YELLOW);
-            case "empty" -> {
-                box.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                box.setStroke(javafx.scene.paint.Color.WHITE);
-                box.setStrokeWidth(1);
-                box.getStrokeDashArray().addAll(5.0, 5.0);
-            }
-        }
-
-        box.setStroke(javafx.scene.paint.Color.BLACK);
-        box.setStrokeWidth(1);
-
-        // Position using binding for responsive layout
-        box.translateXProperty().bind(
-                parent.widthProperty().multiply(relativePos[0] - 0.5)
-        );
-        box.translateYProperty().bind(
-                parent.heightProperty().multiply(relativePos[1] - 0.5)
-        );
-
-        parent.getChildren().add(box);
     }
 
     public void updateStatisticBoard(ViewPlayer player) {
@@ -627,7 +582,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     /**
      * Shows an error message in a dialog window
      */
-    private void showError(String message) {
+    public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
         alert.setHeaderText(null);

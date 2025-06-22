@@ -15,7 +15,7 @@ public class WelcomeController {
     @FXML
     public void initialize() {
         guiView = (GUIView) ClientGameModel.getInstance();
-        playButton.setOnAction(event -> handlePlay());
+        playButton.setOnAction(_ -> handlePlay());
     }
 
     private void handlePlay() {
