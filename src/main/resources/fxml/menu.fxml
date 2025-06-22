@@ -155,9 +155,9 @@
                 <RowConstraints percentHeight="30.0" vgrow="SOMETIMES"/>
                 <RowConstraints percentHeight="70.0" vgrow="SOMETIMES"/>
             </rowConstraints>
-            <StackPane fx:id="currentFrame" GridPane.rowIndex="1">
+            <StackPane fx:id="currentFrame" GridPane.rowIndex="1" alignment="TOP_CENTER">
             </StackPane>
-            <StackPane fx:id="gameBoard" GridPane.rowIndex="0">
+            <StackPane fx:id="gameBoard" GridPane.rowIndex="0" alignment="BOTTOM_CENTER">
             </StackPane>
         </GridPane>
     </center>

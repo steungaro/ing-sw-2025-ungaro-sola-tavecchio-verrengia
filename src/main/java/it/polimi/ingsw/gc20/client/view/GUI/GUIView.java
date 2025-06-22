@@ -5,6 +5,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -33,7 +34,7 @@ public class GUIView extends ClientGameModel {
         MAIN_MENU("mainMenu"),
         IN_LOBBY("inLobby"),
         BUILDING_PHASE("buildingPhase"),
-        BUILDING_PHASE0("menu"),
+        BUILDING_PHASE0("buildingPhase0"),
         BUILDING_PHASE2("buildingPhase2"),
         BRANCH_MENU("branchMenu"),
         VALIDATION_MENU("validationMenu"),
@@ -248,7 +249,7 @@ public class GUIView extends ClientGameModel {
     public void planetMenu(List<Planet> planets) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("planetMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.PLANET_MENU.getFxmlFileName(), this);
                 // Configure planet list
                 Platform.runLater(() -> {
                     MenuController currentController = MenuController.getCurrentInstance();
@@ -259,7 +260,7 @@ public class GUIView extends ClientGameModel {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
                 Platform.runLater(() -> {
-                    MenuController.loadContentInCurrentFrame("planetMenu", this);
+                    MenuController.loadContentInCurrentFrame(GuiState.PLANET_MENU.getFxmlFileName(), this);
                 });
             }
         });
@@ -269,11 +270,11 @@ public class GUIView extends ClientGameModel {
     public void populateShipMenu() {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("populateShipMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.POPULATE_SHIP_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("populateShipMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.POPULATE_SHIP_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -282,11 +283,11 @@ public class GUIView extends ClientGameModel {
     public void validationMenu() {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("validationMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.VALIDATION_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("validationMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.VALIDATION_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -300,11 +301,11 @@ public class GUIView extends ClientGameModel {
     public void shieldsMenu(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("shieldsMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.SHIELDS_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("shieldsMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.SHIELDS_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -345,11 +346,11 @@ public class GUIView extends ClientGameModel {
     public void cargoMenu(int cargoNum) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("cargoMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("cargoMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -358,7 +359,7 @@ public class GUIView extends ClientGameModel {
     public void loseCrewMenu(int crewNum) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("loseCrewMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.LOSE_CREW_MENU.getFxmlFileName(), this);
                 Platform.runLater(() -> {
                     MenuController currentController = MenuController.getCurrentInstance();
                 });
@@ -366,7 +367,7 @@ public class GUIView extends ClientGameModel {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
                 Platform.runLater(() -> {
-                    MenuController.loadContentInCurrentFrame("loseCrewMenu", this);
+                    MenuController.loadContentInCurrentFrame(GuiState.LOSE_CREW_MENU.getFxmlFileName(), this);
                 });
             }
         });
@@ -376,11 +377,11 @@ public class GUIView extends ClientGameModel {
     public void removeBatteryMenu(int batteryNum) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("loseEnergyMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.LOSE_ENERGY_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("loseEnergyMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.LOSE_ENERGY_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -390,6 +391,16 @@ public class GUIView extends ClientGameModel {
         Platform.runLater(() -> {
             setCurrentGuiState(GuiState.MENU);
             showScene(getCurrentGuiState().getFxmlFileName());
+            ViewShip playerShip = null;
+            if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
+                playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+            }
+
+            if (playerShip != null && playerShip.isLearner) {
+                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE0.getFxmlFileName(), this);
+            } else {
+                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE2.getFxmlFileName(), this);
+            }
         });
     }
 
@@ -397,11 +408,11 @@ public class GUIView extends ClientGameModel {
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("leaderBoardMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.LEADER_BOARD_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("leaderBoardMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.LEADER_BOARD_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -438,11 +449,11 @@ public class GUIView extends ClientGameModel {
     public void idleMenu(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("idleMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.IDLE_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("idleMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.IDLE_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -451,11 +462,11 @@ public class GUIView extends ClientGameModel {
     public void keepPlayingMenu() {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("KeepPlayingMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.KEEP_PLAYING_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("KeepPlayingMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.KEEP_PLAYING_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -487,11 +498,11 @@ public class GUIView extends ClientGameModel {
     public void branchMenu() {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("branchMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.BRANCH_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("branchMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.BRANCH_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -522,11 +533,11 @@ public class GUIView extends ClientGameModel {
     public void cannonsMenu(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("cannonsMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.CANNONS_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("cannonsMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CANNONS_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -535,11 +546,11 @@ public class GUIView extends ClientGameModel {
     public void cardAcceptanceMenu(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("cardAcceptance", this);
+                MenuController.loadContentInCurrentFrame(GuiState.CARD_ACCEPTANCE_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("cardAcceptance", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CARD_ACCEPTANCE_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -548,7 +559,7 @@ public class GUIView extends ClientGameModel {
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("cargoMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
                 Platform.runLater(() -> {
                     MenuController currentController = MenuController.getCurrentInstance();
                 });
@@ -556,7 +567,7 @@ public class GUIView extends ClientGameModel {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
                 Platform.runLater(() -> {
-                    MenuController.loadContentInCurrentFrame("cargoMenu", this);
+                    MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
                 });
             }
         });
@@ -566,11 +577,11 @@ public class GUIView extends ClientGameModel {
     public void engineMenu(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("engineMenu", this);
+                MenuController.loadContentInCurrentFrame(GuiState.ENGINE_MENU.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("engineMenu", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.ENGINE_MENU.getFxmlFileName(), this));
             }
         });
     }
@@ -579,11 +590,11 @@ public class GUIView extends ClientGameModel {
     public void automaticAction(String message) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame("automaticAction", this);
+                MenuController.loadContentInCurrentFrame(GuiState.AUTOMATIC_ACTION.getFxmlFileName(), this);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 showScene(getCurrentGuiState().getFxmlFileName());
-                Platform.runLater(() -> MenuController.loadContentInCurrentFrame("automaticAction", this));
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.AUTOMATIC_ACTION.getFxmlFileName(), this));
             }
         });
     }

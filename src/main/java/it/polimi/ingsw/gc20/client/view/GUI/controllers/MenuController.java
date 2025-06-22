@@ -8,8 +8,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -174,16 +176,27 @@ public class MenuController {
      */
     public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + fxmlPath + ".fxml"));
-            Node content = loader.load();
+            if (!fxmlPath.startsWith("/")) {
+                fxmlPath = "/fxml/" + fxmlPath + ".fxml";
+            }
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+
+            if (fxmlUrl == null) {
+                System.err.println("fxml file not found: " + fxmlPath);
+                return;
+            }
+
+            Parent content = FXMLLoader.load(fxmlUrl);
+            if (content instanceof Region region) {
+                region.prefWidthProperty().bind(currentFrame.widthProperty());
+                region.prefHeightProperty().bind(currentFrame.heightProperty());
+                region.setMaxWidth(Region.USE_PREF_SIZE);
+                region.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+
 
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(content);
-
-            Object controller = loader.getController();
-            if (controller != null) {
-                configureMenuController(controller, fxmlPath, parameters);
-            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,7 +259,7 @@ public class MenuController {
                                    ViewPlayer player) {
         try {
             if (!fxmlPath.startsWith("/")) {
-                fxmlPath = "/" + fxmlPath;
+                fxmlPath = "/" + fxmlPath + ".fxml";
             }
             URL fxmlUrl = getClass().getResource(fxmlPath);
 
