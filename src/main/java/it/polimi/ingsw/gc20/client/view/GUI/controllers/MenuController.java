@@ -91,10 +91,7 @@ public class MenuController {
                                    ViewPlayer player, Object... additionalParams) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            container.getChildren().clear();
             Node content = loader.load();
-
-            container.getChildren().removeIf(node -> node instanceof ImageView);
 
             if (content instanceof StackPane contentPane) {
                 configureGenericSizing(container, contentPane, context, contentType);
