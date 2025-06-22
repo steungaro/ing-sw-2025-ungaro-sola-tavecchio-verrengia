@@ -42,7 +42,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private MenuState currentMenuState;
     public boolean busy;
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
-    private final List<LobbyListListener> lobbyListListeners = new ArrayList<>();
+    private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
 
     public ClientGameModel() throws RemoteException {
         super();
@@ -79,9 +79,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
-        for (GameModelListener listener : listeners) {
-            listener.onCardUpdated(this.currentCard);
-        }
     }
 
     public MenuState getCurrentMenuState() {
@@ -174,9 +171,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setBoard(ViewBoard board) {
         this.board = board;
-        for (GameModelListener listener : listeners) {
-            listener.onBoardUpdated(this.board);
-        }
     }
 
     public Map<String, ViewShip> getShips() {
@@ -185,11 +179,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setShips(Map<String, ViewShip> ships) {
         this.ships = ships;
-        for (GameModelListener listener : listeners) {
-            for (ViewShip ship : ships.values()) {
-                listener.onShipUpdated(ship);
-            }
-        }
     }
 
     public ViewShip getShip (String username) {
@@ -213,9 +202,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
-    public void addLobbyListObserver(LobbyListListener observer) {
-        if (!lobbyListListeners.contains(observer)) {
-            lobbyListListeners.add(observer);
+    public void addLobbyListObserver(LobbyListObserver observer) {
+        if (!lobbyListObservers.contains(observer)) {
+            lobbyListObservers.add(observer);
         }
     }
 
@@ -224,7 +213,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     protected void notifyLobbyListObservers() {
-        for (LobbyListListener observer : lobbyListListeners) {
+        for (LobbyListObserver observer : lobbyListObservers) {
             observer.onLobbyListChanged();
         }
     }
@@ -339,6 +328,14 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
                 LOGGER.warning("Error while handling message: " + e.getMessage());
             }
         });
+    }
+
+    public void updatePlayerShip(ViewShip ship) {
+        this.playerShip = ship;
+        LOGGER.fine("Player ship updated in model.");
+        for (GameModelListener listener : listeners) {
+            listener.onShipUpdated(this.playerShip);
+        }
     }
 
     public void updateLobby(ViewLobby lobby) {

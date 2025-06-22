@@ -2,13 +2,12 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
 <BorderPane minHeight="700" minWidth="900" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.MenuController">
     <left>
-        <VBox fx:id="sidebarPane" prefWidth="200.0" spacing="20.0" style="-fx-background-color: #333344; -fx-background-radius: 10;">
+        <VBox prefWidth="200.0" spacing="20.0" style="-fx-background-color: #333344; -fx-background-radius: 10;">
             <padding>
                 <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
             </padding>
@@ -23,9 +22,6 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
                 <StackPane fx:id="player1Ship" maxWidth="300.0">
-                    <ImageView fitHeight="60.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@cardboard/cardboard-1.jpg" />
-                    </ImageView>
                 </StackPane>
                 <Label fx:id="player1Name" alignment="CENTER" prefWidth="160.0" style="-fx-text-fill: #3498db; -fx-font-weight: bold;" text="Player 1">
                     <font>
@@ -39,9 +35,6 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
                 <StackPane fx:id="player2Ship" maxWidth="300.0">
-                    <ImageView fitHeight="60.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@cardboard/cardboard-1.jpg" />
-                    </ImageView>
                 </StackPane>
                 <Label fx:id="player2Name" alignment="CENTER" prefWidth="160.0" style="-fx-text-fill: #e74c3c; -fx-font-weight: bold;" text="Player 2">
                     <font>
@@ -55,10 +48,8 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
                 <StackPane fx:id="player3Ship" maxWidth="300.0">
-                    <ImageView fitHeight="60.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@cardboard/cardboard-1.jpg" />
-                    </ImageView>
                 </StackPane>
+
                 <Label fx:id="player3Name" alignment="CENTER" prefWidth="160.0" style="-fx-text-fill: #2ecc71; -fx-font-weight: bold;" text="Player 3">
                     <font>
                         <Font size="12.0" />
@@ -71,9 +62,6 @@
                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                 </padding>
                 <StackPane fx:id="player4Ship" maxWidth="300.0">
-                    <ImageView fitHeight="60.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@cardboard/cardboard-1.jpg" />
-                    </ImageView>
                 </StackPane>
                 <Label fx:id="player4Name" alignment="CENTER" prefWidth="160.0" style="-fx-text-fill: #f39c12; -fx-font-weight: bold;" text="Player 4">
                     <font>
@@ -134,7 +122,10 @@
             <Region VBox.vgrow="ALWAYS" />
 
             <VBox spacing="10.0">
-                <Button fx:id="button1" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="BUTTON 1">
+                <Button fx:id="backButton" mnemonicParsing="false" onAction="#returnToPreviousView"
+                        prefHeight="35.0" prefWidth="180.0" 
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" 
+                        text="BACK">
                     <font>
                         <Font size="10.0" />
                     </font>
@@ -159,18 +150,19 @@
     </right>
 
     <center>
-        <StackPane fx:id="gameBoard" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </StackPane>
-        <StackPane fx:id="currentFrame" alignment="BOTTOM_CENTER" VBox.vgrow="ALWAYS">
-            <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-            </padding>
-        </StackPane>
-
-
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints percentHeight="70.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <StackPane fx:id="currentFrame" alignment="TOP_CENTER" GridPane.rowIndex="1">
+            </StackPane>
+            <StackPane fx:id="gameBoard" alignment="BOTTOM_CENTER" GridPane.rowIndex="0">
+            </StackPane>
+        </GridPane>
     </center>
    <top>
          <VBox prefHeight="50.0" style="-fx-background-color: #222233; -fx-background-radius: 8;" BorderPane.alignment="CENTER">

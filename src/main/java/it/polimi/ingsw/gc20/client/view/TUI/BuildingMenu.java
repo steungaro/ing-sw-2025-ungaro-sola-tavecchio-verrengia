@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
@@ -331,16 +330,6 @@ public class BuildingMenu implements MenuState, GameModelListener {
 
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
-
-    }
-
-    @Override
-    public void onBoardUpdated(ViewBoard board) {
-
-    }
-
-    @Override
-    public void onCardUpdated(ViewAdventureCard card) {
 
     }
 }

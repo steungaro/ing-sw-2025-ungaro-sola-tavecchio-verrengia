@@ -1,29 +1,37 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.javatuples.Pair;
 
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ShipController implements GameModelListener {
-    public String playerUsername;
+public abstract class ShipController {
+    // TODO: Display battery, cabin, cargo hold, aliens (look at buildingPhaese for first implementation)
+    // TODO: Clickacle section for ship components, so that the user can click on a component and do thinks (custom for menu)
+
+    protected int ROWS = 0;
+    protected int COLS = 0;
+    public String playerUsername;;
     protected ViewShip ship;
 
     @FXML protected Label playerColorLabel;
@@ -70,7 +78,7 @@ public abstract class ShipController implements GameModelListener {
     protected void initialize() {
         playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
-        ClientGameModel.getInstance().addListener(this);
+        // TODO: add shipChangeListener to update ship components when ship changes
         buildShipComponents(ship);
     }
 
@@ -112,23 +120,28 @@ public abstract class ShipController implements GameModelListener {
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            ImageView imageView = new ImageView(componentImage); // Create a new ImageView
+            targetCell.setImage(componentImage);
 
-            if (comp.rotComp >= 0 && comp.rotComp <= 3) {
-                imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
-            }
+            // Create a new pane to hold the image and overlays.
+            StackPane contentPane = new StackPane();
+            contentPane.getChildren().add(targetCell);
 
-            imageView.setFitWidth(targetCell.getFitWidth());
-            imageView.setFitHeight(targetCell.getFitHeight());
-
-            layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
+            // Add overlays to the contentPane
             if (comp.isBattery()) {
-                setComponentProp(layeredPane, (ViewBattery) comp);
+                setComponentProp(contentPane, (ViewBattery) comp);
             } else if (comp.isCabin()) {
-                setComponentProp(layeredPane, (ViewCabin) comp);
+                setComponentProp(contentPane, (ViewCabin) comp);
             } else if (comp.isCargoHold()) {
-                setComponentProp(layeredPane, (ViewCargoHold) comp);
+                setComponentProp(contentPane, (ViewCargoHold) comp);
             }
+
+            // Rotate the contentPane if needed
+            if (comp.rotComp != 0) {
+                contentPane.setRotate(comp.rotComp * 90);
+            }
+
+            // Add the rotated content to the main layeredPane
+            layeredPane.getChildren().add(contentPane);
 
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
@@ -403,7 +416,7 @@ public abstract class ShipController implements GameModelListener {
                         clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
                     });
 
-                    clickArea.setOnMouseClicked(_ -> {
+                    clickArea.setOnMouseClicked(event -> {
                         if (handler != null) {
                             handler.onCellClicked(finalRow, finalCol);
                         }
@@ -419,7 +432,7 @@ public abstract class ShipController implements GameModelListener {
 
     public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
         Set<int[]> selectedCells = new HashSet<>();
-        Map<Rectangle, int[]> rectToCoordinates = new HashMap<>();
+        Map<Rectangle, int[]> rectToCoord = new HashMap<>();
 
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
@@ -438,28 +451,28 @@ public abstract class ShipController implements GameModelListener {
                             componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
                     );
 
-                    int[] coordinates = new int[]{row, col};
-                    rectToCoordinates.put(clickArea, coordinates);
+                    int[] coord = new int[]{row, col};
+                    rectToCoord.put(clickArea, coord);
 
-                    clickArea.setOnMouseClicked(_ -> {
-                        if (selectedCells.contains(coordinates)) {
-                            selectedCells.remove(coordinates);
+                    clickArea.setOnMouseClicked(event -> {
+                        if (selectedCells.contains(coord)) {
+                            selectedCells.remove(coord);
                             clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                         } else {
-                            selectedCells.add(coordinates);
+                            selectedCells.add(coord);
                             clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
                         }
                     });
 
                     clickArea.setOnMouseEntered(_ -> {
-                        if (!selectedCells.contains(coordinates)) {
+                        if (!selectedCells.contains(coord)) {
                             clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.1));
                         }
                         clickArea.setCursor(javafx.scene.Cursor.HAND);
                     });
 
                     clickArea.setOnMouseExited(_ -> {
-                        if (!selectedCells.contains(coordinates)) {
+                        if (!selectedCells.contains(coord)) {
                             clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                         }
                         clickArea.setCursor(javafx.scene.Cursor.DEFAULT);

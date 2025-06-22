@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
-
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
@@ -28,6 +27,7 @@ import java.util.Map;
 public class GUIView extends ClientGameModel {
 
     public enum GuiState {
+        MENU("menu"),
         WELCOME("welcome"),
         LOGIN("login"),
         NETWORK("network"),
@@ -157,6 +157,7 @@ public class GUIView extends ClientGameModel {
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
+            root.setUserData(loader.getController());
             root.setId(fileName);
 
             Scene currentScene = primaryStage.getScene();
@@ -174,6 +175,7 @@ public class GUIView extends ClientGameModel {
             primaryStage.setTitle("Galaxy Trucker");
             root.setId(fileName);
         } catch (IOException e) {
+            e.printStackTrace();
             displayErrorMessage("Error loading UI: " + e.getMessage());
         }
     }
@@ -213,7 +215,7 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client != null) {
-            currentGuiState = GuiState.LOGIN;
+            setCurrentGuiState(GuiState.LOGIN);
             return true;
         }
         return false;
@@ -226,6 +228,7 @@ public class GUIView extends ClientGameModel {
                 message.handleMessage();
             } catch (Exception e) {
                 System.out.println("Error while handling message: " + e.getMessage());
+                e.printStackTrace();
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
@@ -244,38 +247,49 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void planetMenu(List<Planet> planets) {
-        setCurrentGuiState(GuiState.PLANET_MENU);
         Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof LoseCrewMenuController) {
-                    ((PlanetMenuController) controller).initializeWithPlanets(planets);
-                } else {
-                    System.err.println("Controller for PLANET_MENU_CONTROLLER is not of type planetMenu or is null.");
-                }
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.PLANET_MENU.getFxmlFileName(), this);
+                // Configure planet list
+                Platform.runLater(() -> {
+                    MenuController currentController = MenuController.getCurrentInstance();
+                    if (currentController != null) {
+                    }
+                });
             } else {
-                System.err.println("Cannot setup planet menu: primaryStage, scene, or root is null.");
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> {
+                    MenuController.loadContentInCurrentFrame(GuiState.PLANET_MENU.getFxmlFileName(), this);
+                });
             }
         });
-        // TODO: sistemare dio cane
     }
 
     @Override
     public void populateShipMenu() {
-        setCurrentGuiState(GuiState.POPULATE_SHIP_MENU);
-        // TODO: to test, no other handler needed
-    }
-
-    @Override
-    public void automaticAction(String message) {
-        // ignore this method for now
-        // currentGuiState = GuiState.AUTOMATIC_ACTION;
-        // TODO: DECIDE WHATO TO DO
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.POPULATE_SHIP_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.POPULATE_SHIP_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void validationMenu() {
-        setCurrentGuiState(GuiState.VALIDATION_MENU);
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.VALIDATION_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.VALIDATION_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
@@ -285,14 +299,19 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void shieldsMenu(String message) {
-        setCurrentGuiState(GuiState.SHIELDS_MENU);
-        // TODO : Check if message is needed to be passed to the controller (maybe to indicate the side)
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.SHIELDS_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.SHIELDS_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void rollDiceMenu(String message) {
-        // setCurrentGuiState(GuiState.ROLL_DICE_MENU);
-
         Platform.runLater(() -> {
             try {
                 Stage dialogStage = new Stage();
@@ -317,6 +336,7 @@ public class GUIView extends ClientGameModel {
                 dialogStage.show();
             } catch (IOException e) {
                 System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
+                e.printStackTrace();
                 displayErrorMessage("Error opening roll dice window: " + e.getMessage());
             }
         });
@@ -324,51 +344,77 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cargoMenu(int cargoNum) {
-        currentGuiState = GuiState.CARGO_MENU;
-        // Necessary?
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void loseCrewMenu(int crewNum) {
-        setCurrentGuiState(GuiState.LOSE_CREW_MENU);
         Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof LoseCrewMenuController) {
-                    ((LoseCrewMenuController) controller).initializeWithCrewToLose(crewNum);
-                } else {
-                    System.err.println("Controller for LOSE_CREW_MENU is not of type LoseCreeMenu or is null.");
-                }
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.LOSE_CREW_MENU.getFxmlFileName(), this);
+                Platform.runLater(() -> {
+                    MenuController currentController = MenuController.getCurrentInstance();
+                });
             } else {
-                System.err.println("Cannot setup lose crew menu: primaryStage, scene, or root is null.");
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> {
+                    MenuController.loadContentInCurrentFrame(GuiState.LOSE_CREW_MENU.getFxmlFileName(), this);
+                });
             }
         });
     }
 
     @Override
     public void removeBatteryMenu(int batteryNum) {
-        setCurrentGuiState(GuiState.LOSE_ENERGY_MENU);
-        // Necessary?
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.LOSE_ENERGY_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.LOSE_ENERGY_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void AssemblingStateMenu() {
-        ViewShip playerShip = null;
-        if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
-            playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-        }
+        Platform.runLater(() -> {
+            setCurrentGuiState(GuiState.MENU);
+            showScene(getCurrentGuiState().getFxmlFileName());
+            ViewShip playerShip = null;
+            if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
+                playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+            }
 
-        if (playerShip != null && playerShip.isLearner) {
-            setCurrentGuiState(GuiState.BUILDING_PHASE0);
-        } else {
-            setCurrentGuiState(GuiState.BUILDING_PHASE2);
-        }
+            if (playerShip != null && playerShip.isLearner) {
+                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE0.getFxmlFileName(), this);
+            } else {
+                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE2.getFxmlFileName(), this);
+            }
+        });
     }
 
     @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-        currentGuiState = GuiState.LEADER_BOARD_MENU;
-        // Necessary?
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.LEADER_BOARD_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.LEADER_BOARD_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
@@ -382,12 +428,15 @@ public class GUIView extends ClientGameModel {
     public void loginFailed(String username) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.LOGIN) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Login attempt for user '" + username + "' failed.");
-                alert.setContentText("Please check your username and try again.");
-                if (primaryStage != null) alert.initOwner(primaryStage);
-                alert.showAndWait();
+                if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                    Object controller = primaryStage.getScene().getRoot().getUserData();
+                    if (controller instanceof LoginController loginController) {
+                    } else {
+                        System.err.println("Controller is not of type LoginController or is null.");
+                    }
+                } else {
+                    System.err.println("Cannot update errorLabel: primaryStage, scene, or root is null.");
+                }
             } else {
                 displayErrorMessage("Login failed for user: " + username + " (unexpected state: " + getCurrentGuiState() + ")");
             }
@@ -396,12 +445,28 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void idleMenu(String message) {
-        setCurrentGuiState(GuiState.IDLE_MENU);
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.IDLE_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.IDLE_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void keepPlayingMenu() {
-        setCurrentGuiState(GuiState.KEEP_PLAYING_MENU);
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.KEEP_PLAYING_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.KEEP_PLAYING_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
@@ -429,8 +494,15 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void branchMenu() {
-        setCurrentGuiState(GuiState.BRANCH_MENU);
-        // TODO: Improvment (
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.BRANCH_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.BRANCH_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
@@ -449,6 +521,7 @@ public class GUIView extends ClientGameModel {
 
                 peekDecksController.initializeWithCards(cards);
             } catch (IOException e) {
+                e.printStackTrace();
                 displayErrorMessage("Error opening peek decks window: " + e.getMessage());
             }
         });
@@ -456,36 +529,72 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cannonsMenu(String message) {
-        setCurrentGuiState(GuiState.CANNONS_MENU);
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.CANNONS_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CANNONS_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void cardAcceptanceMenu(String message) {
-        setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.CARD_ACCEPTANCE_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.CARD_ACCEPTANCE_MENU.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        currentGuiState = GuiState.CARGO_MENU;
         Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof CargoMenuController) {
-                    ((CargoMenuController) controller).initializeWithParameters(message, cargoToLose, cargoToGain, losing);
-                } else {
-                    System.err.println("Controller for CARGO_MENU is not of type CargoMenuController or is null.");
-                }
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
+                Platform.runLater(() -> {
+                    MenuController currentController = MenuController.getCurrentInstance();
+                });
             } else {
-                System.err.println("Cannot setup cargo menu: primaryStage, scene, or root is null.");
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> {
+                    MenuController.loadContentInCurrentFrame(GuiState.CARGO_MENU.getFxmlFileName(), this);
+                });
             }
         });
-        // TODO: Check button handler
     }
 
     @Override
     public void engineMenu(String message) {
-        setCurrentGuiState(GuiState.ENGINE_MENU);
-        // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.ENGINE_MENU.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.ENGINE_MENU.getFxmlFileName(), this));
+            }
+        });
+    }
+
+    @Override
+    public void automaticAction(String message) {
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(GuiState.AUTOMATIC_ACTION.getFxmlFileName(), this);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                showScene(getCurrentGuiState().getFxmlFileName());
+                Platform.runLater(() -> MenuController.loadContentInCurrentFrame(GuiState.AUTOMATIC_ACTION.getFxmlFileName(), this));
+            }
+        });
     }
 
     @Override
@@ -495,6 +604,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
+        setCurrentGuiState(GuiState.LOGIN);
         client.login(username);
         this.username = username;
     }

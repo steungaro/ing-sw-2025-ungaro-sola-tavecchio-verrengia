@@ -1,20 +1,21 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
+import javafx.application.Platform;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class InLobbyController implements GUIController, GameModelListener {
+public class InLobbyController {
 
+    private ScheduledExecutorService scheduler;
 
     @FXML
     private Label lobbyTitleLabel;
@@ -40,28 +41,15 @@ public class InLobbyController implements GUIController, GameModelListener {
     @FXML
     private Button killLobbyButton;
 
-    @FXML
-    private Label errorLabel;
-
     private ViewLobby currentLobby;
     private boolean isOwner = false;
     private String currentUsername;
     private final ClientGameModel clientController = ClientGameModel.getInstance();
 
-    @Override
-    public void showError(String errorMessage) {
-        errorLabel.setText(errorMessage);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
-    }
-
     @FXML
     public void initialize() {
         initLobbyData(clientController.getCurrentLobby(), clientController.getUsername());
-        clientController.addListener(this);
-
-        errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
+        startPeriodicUpdates();
     }
 
     public void initLobbyData(ViewLobby lobby, String username) {
@@ -92,45 +80,32 @@ public class InLobbyController implements GUIController, GameModelListener {
         }
     }
 
-    @Override
-    public void onShipUpdated(ViewShip ship) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onLobbyUpdated(ViewLobby updatedLobby) {
-        if (updatedLobby != null) {
-            updatePlayerList(updatedLobby, currentUsername);
-
-            playerCountLabel.setText(String.format("%d/%d",
-                    updatedLobby.getPlayersList().size(),
-                    updatedLobby.getMaxPlayers()));
-            currentLobby = updatedLobby;
-            updateStartButtonState();
-
-        } else {
-            lobbyTitleLabel.setText("Error: Lobby data not available");
+    private void startPeriodicUpdates() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
         }
+
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> Platform.runLater(() -> {
+            if (currentLobby != null) {
+                ViewLobby updatedLobby = clientController.getCurrentLobby();
+                if (updatedLobby != null) {
+                    updatePlayerList(updatedLobby, currentUsername);
+
+                    playerCountLabel.setText(String.format("%d/%d",
+                            updatedLobby.getPlayersList().size(),
+                            updatedLobby.getMaxPlayers()));
+                    currentLobby = updatedLobby;
+                    updateStartButtonState();
+                }
+            }
+        }), 0, 3, TimeUnit.SECONDS);
     }
 
-    @Override
-    public void onErrorMessageReceived(String message) {
-        showError(message);
-    }
-
-    @Override
-    public void onComponentInHandUpdated(ViewComponent component) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onBoardUpdated(ViewBoard board) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onCardUpdated(ViewAdventureCard card) {
-        // Not used in this controller
+    private void stopPeriodicUpdates() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            scheduler.shutdown();
+        }
     }
 
     private void updatePlayerList(ViewLobby lobby, String username) {
@@ -163,29 +138,36 @@ public class InLobbyController implements GUIController, GameModelListener {
     @FXML
     public void onStartGame() {
         if (!isOwner) return;
+
         try {
             ClientGameModel.getInstance().getClient().startLobby(currentUsername);
+            ((GUIView)ClientGameModel.getInstance()).showScene("game");
         } catch (Exception e) {
-            showError("Error starting game: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @FXML
     public void onLeaveLobby() {
         try {
+            stopPeriodicUpdates();
             ClientGameModel.getInstance().getClient().leaveLobby(currentUsername);
+            ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
-            showError("Error leaving lobby: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @FXML
     public void onKillLobby() {
         if (!isOwner) return;
+
         try {
+            stopPeriodicUpdates();
             ClientGameModel.getInstance().getClient().killLobby(currentUsername);
+            ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
-            showError("Error killing lobby: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
