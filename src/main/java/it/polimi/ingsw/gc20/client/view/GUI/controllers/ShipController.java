@@ -51,10 +51,18 @@ public abstract class ShipController implements GameModelListener {
 
     public void updateStatisticBoard(ViewPlayer player) {
         if (player != null) {
-            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            usernameLabel.setText("Username: " + player.username);
-            creditsLabel.setText("Credits: " + player.credits);
-            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
+            if(playerColorLabel!=null) {
+                playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
+            }
+            if(usernameLabel!=null) {
+                usernameLabel.setText("Username: " + player.username);
+            }
+            if(creditsLabel!=null) {
+                creditsLabel.setText("Credits: " + player.credits);
+            }
+            if(inGameLabel!=null) {
+                inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
+            }
         }
     }
 

@@ -55,7 +55,7 @@ public abstract class BoardController {
         if (circleIndex >= 0 && circleIndex < circles.size()) {
             Circle circle = circles.get(circleIndex);
             if (circle != null) {
-                circle.setFill(Color.TRANSPARENT); // Usa TRANSPARENT invece di WHITE con opacità 0
+                circle.setFill(Color.TRANSPARENT);
             }
         }
         if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
