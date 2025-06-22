@@ -1,11 +1,15 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import org.javatuples.Pair;
@@ -13,16 +17,13 @@ import org.javatuples.Pair;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class ValidationMenuController {
+public class ValidationMenuController implements GUIController, GameModelListener {
 
     @FXML
     private Label validationStatusLabel;
 
     @FXML
     private Pane shipPane;
-
-    @FXML
-    private Button validateButton;
 
     @FXML
     private Label errorLabel;
@@ -37,6 +38,8 @@ public class ValidationMenuController {
 
         updateValidationStatus();
         loadShipView();
+
+        ClientGameModel.getInstance().addListener(this);
     }
 
     private void updateValidationStatus() {
@@ -45,11 +48,9 @@ public class ValidationMenuController {
         if (isValid) {
             validationStatusLabel.setText("Ship is already valid! Wait for other players before going to the next phase.");
             validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;");
-            validateButton.setDisable(true);
         } else {
-            validationStatusLabel.setText("Ship is not valid");
+            validationStatusLabel.setText("Ship is not valid, please fix the issues before proceeding.");
             validationStatusLabel.setStyle("-fx-text-fill: #ff6b6b;"); // Red text
-            validateButton.setDisable(false);
         }
     }
 
@@ -84,22 +85,10 @@ public class ValidationMenuController {
     }
 
     @FXML
-    private void handleValidateShip() {
-        try {
-            updateValidationStatus();
-        } catch (Exception e) {
-            showError("Connection error: " + e.getMessage());
-        }
-    }
-
-    @FXML
     private void selectComponentToRemove(int row, int col) {
         try {
             Pair<Integer, Integer> coordinates = new Pair<>(row, col);
             ClientGameModel.getInstance().getClient().removeComponentFromShip(username, coordinates);
-            loadShipView();
-        } catch (NumberFormatException e) {
-            showError("Please enter valid numbers for coordinates");
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
@@ -110,8 +99,40 @@ public class ValidationMenuController {
         // TODO
     }
 
-    private void showError(String message) {
+    public void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        this.ship = ship;
+        updateValidationStatus();
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        showError(message);
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // Not used in this controller
+    }
+
+    @Override
+    public void onCardUpdated(ViewAdventureCard card) {
+        // Not used in this controller
     }
 }

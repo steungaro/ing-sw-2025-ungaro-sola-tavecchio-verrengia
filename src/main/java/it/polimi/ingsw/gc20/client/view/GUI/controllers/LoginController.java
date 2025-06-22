@@ -1,16 +1,15 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
-import it.polimi.ingsw.gc20.client.view.GUI.GUIApplication;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 
-public class LoginController {
+public class LoginController implements GUIController {
 
+    @FXML
+    public Label errorLabel;
     @FXML
     private TextField usernameField;
 
@@ -18,22 +17,19 @@ public class LoginController {
     private Button loginButton;
 
     @FXML
-    private Label errorLabel;
-
-    private GUIView guiView;
-
-    @FXML
     public void initialize() {
-        guiView = (GUIView) ClientGameModel.getInstance();
-
-        loginButton.setOnAction(event -> handleLogin());
+        loginButton.setOnAction(_ -> handleLogin());
+        errorLabel.setVisible(false);
+        errorLabel.setManaged(false);
     }
 
     private void handleLogin() {
         String username = usernameField.getText().trim();
 
         if (username.isEmpty()) {
-            System.out.println("Username cannot be empty");
+            errorLabel.setText("Username cannot be empty.");
+            errorLabel.setVisible(true);
+            errorLabel.setManaged(true);
             return;
         }
 
@@ -41,7 +37,10 @@ public class LoginController {
         ClientGameModel.getInstance().login();
     }
 
-    public Labeled getErrorLabel() {
-        return errorLabel;
+    @Override
+    public void showError(String errorMessage) {
+        errorLabel.setText(errorMessage);
+        errorLabel.setVisible(true);
+        errorLabel.setManaged(true);
     }
 }
