@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,7 +14,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 public class MenuController {
 
@@ -48,6 +51,7 @@ public class MenuController {
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
+    private static MenuController currentInstance;
 
     public enum ContentType {
         SHIP, BOARD
@@ -63,7 +67,17 @@ public class MenuController {
         initializeCurrentFrame();
         initializeGameBoard();
         setVisibility();
+
+        currentInstance = this;
     }
+
+    /**
+     * Static method to get the current MenuController instance
+     */
+    public static MenuController getCurrentInstance() {
+        return currentInstance;
+    }
+
 
     /**
      * Sets visibility of player ship containers based on the number of players
@@ -153,6 +167,75 @@ public class MenuController {
     }
 
 
+
+
+    /**
+     * Enhanced method to load menu with controller configuration
+     */
+    public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + fxmlPath + ".fxml"));
+            Node content = loader.load();
+
+            currentFrame.getChildren().clear();
+            currentFrame.getChildren().add(content);
+
+            Object controller = loader.getController();
+            if (controller != null) {
+                configureMenuController(controller, fxmlPath, parameters);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error load menu: " + fxmlPath);
+        }
+    }
+
+    /**
+     * Configures the loaded menu controller with specific parameters
+     */
+    private void configureMenuController(Object controller, String menuType, Object... parameters) {
+        // TODO: check
+        switch (menuType) {
+            case "loseCrewMenu" -> {
+                if (controller instanceof LoseCrewMenuController && parameters.length > 0) {
+                    ((LoseCrewMenuController) controller).initializeWithCrewToLose((Integer) parameters[0]);
+                }
+            }
+            case "cargoMenu" -> {
+                if (controller instanceof CargoMenuController && parameters.length >= 4) {
+                    ((CargoMenuController) controller).initializeWithParameters(
+                            (String) parameters[0],
+                            (Integer) parameters[1],
+                            (List<CargoColor>) parameters[2],
+                            (Boolean) parameters[3]
+                    );
+                }
+            }
+            case "idleMenu" -> {
+                if (controller instanceof IdleMenuController && parameters.length > 0) {
+                    ((IdleMenuController) controller).initializeWithMessage((String) parameters[0]);
+                }
+            }
+            default -> {
+            }
+        }
+    }
+
+    /**
+     * Static method with parameters support
+     */
+    public static void loadContentInCurrentFrame(String fxmlPath, ClientGameModel gameModel, Object... parameters) {
+        if (currentInstance != null) {
+            Platform.runLater(() -> {
+                currentInstance.loadMenuInCurrentFrame(fxmlPath, parameters);
+            });
+        } else {
+            System.err.println("No active MenuController instance to load: " + fxmlPath);
+        }
+    }
+
+
     // GRAPHICAL METHODS
 
     /**
@@ -162,7 +245,17 @@ public class MenuController {
                                    DisplayContext context, ContentType contentType, 
                                    ViewPlayer player) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            if (!fxmlPath.startsWith("/")) {
+                fxmlPath = "/" + fxmlPath;
+            }
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+
+            if (fxmlUrl == null) {
+                System.err.println("No fxml file founded: " + fxmlPath);
+                return;
+            }
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(fxmlUrl);
             Node content = loader.load();
 
             if (content instanceof StackPane contentPane) {
@@ -354,7 +447,7 @@ public class MenuController {
     private String getFXMLPath(ContentType contentType) {
         return switch (contentType) {
             case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
-                        "/fxml/ship0.fxml" : "/fxml/ship.fxml";
+                        "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
             case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
                          "/fxml/board0.fxml" : "/fxml/board2.fxml";
         };
