@@ -122,7 +122,10 @@
             <Region VBox.vgrow="ALWAYS" />
 
             <VBox spacing="10.0">
-                <Button fx:id="button1" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="BUTTON 1">
+                <Button fx:id="backButton" mnemonicParsing="false" onAction="#returnToPreviousView"
+                        prefHeight="35.0" prefWidth="180.0" 
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" 
+                        text="BACK">
                     <font>
                         <Font size="10.0" />
                     </font>
@@ -149,15 +152,15 @@
     <center>
         <GridPane>
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints percentHeight="30.0" vgrow="SOMETIMES"/>
-                <RowConstraints percentHeight="70.0" vgrow="SOMETIMES"/>
+                <RowConstraints percentHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints percentHeight="70.0" vgrow="SOMETIMES" />
             </rowConstraints>
-            <StackPane fx:id="currentFrame" GridPane.rowIndex="1" alignment="TOP_CENTER">
+            <StackPane fx:id="currentFrame" alignment="TOP_CENTER" GridPane.rowIndex="1">
             </StackPane>
-            <StackPane fx:id="gameBoard" GridPane.rowIndex="0" alignment="BOTTOM_CENTER">
+            <StackPane fx:id="gameBoard" alignment="BOTTOM_CENTER" GridPane.rowIndex="0">
             </StackPane>
         </GridPane>
     </center>

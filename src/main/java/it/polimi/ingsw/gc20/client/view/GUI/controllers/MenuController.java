@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 public class MenuController {
 
@@ -50,10 +52,15 @@ public class MenuController {
     @FXML private Label player2Name;
     @FXML private Label player3Name;
     @FXML private Label player4Name;
+    @FXML public Button backButton;
+    @FXML public Button button2;
+    @FXML public Button button3;
+    @FXML public Button button4;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
     private static MenuController currentInstance;
+    private final Stack<Node> viewStack = new Stack<>();
 
     public enum ContentType {
         SHIP, BOARD
@@ -80,27 +87,28 @@ public class MenuController {
         return currentInstance;
     }
 
-
     /**
      * Sets visibility of player ship containers based on the number of players
      */
     private void setVisibility() {
-        String currentUsername = gameModel.getUsername();
         StackPane[] shipPanes = {player1Ship, player2Ship, player3Ship, player4Ship};
 
         for (int i = 0; i < shipPanes.length; i++) {
             boolean isPlayerInGame = i < players.length && players[i] != null;
 
-            boolean shouldBeVisible = isPlayerInGame && !players[i].username.equals(currentUsername);
-
             Node parentContainer = shipPanes[i].getParent();
             if (parentContainer != null) {
-                parentContainer.setVisible(shouldBeVisible);
+                parentContainer.setVisible(isPlayerInGame);
             }
         }
 
+        backButton.setVisible(false);
+        button2.setVisible(false);
+        button3.setVisible(false);
+        button4.setVisible(false);
+
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
-        boolean isCardDrawn = currentCard != null && currentCard.id!=0;
+        boolean isCardDrawn = currentCard != null && currentCard.id != 0;
         drawnCard.setVisible(isCardDrawn);
         Node parentDrawnCard = drawnCard.getParent();
         if (parentDrawnCard != null) {
@@ -142,7 +150,105 @@ public class MenuController {
             if (shipContainer != null) {
                 loadFXMLInContainer(shipContainer, fxmlPath, DisplayContext.THUMBNAIL,
                         ContentType.SHIP, players[i]);
+                makeShipContainerClickable(shipContainer, players[i]);
             }
+        }
+    }
+
+    /**
+     * Shows a temporary view using the stack approach
+     * @param fxmlPath Path to the FXML file to load
+     */
+    @FXML
+    private void showTemporaryView(String fxmlPath) {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentView = currentFrame.getChildren().getFirst();
+            viewStack.push(currentView);
+            currentView.setVisible(false);
+        }
+
+        loadMenuInCurrentFrame(fxmlPath);
+        
+        backButton.setVisible(true);
+    }
+
+    /**
+     * Returns to the previous view in the stack
+     */
+    @FXML
+    private void returnToPreviousView() {
+        currentFrame.getChildren().clear();
+
+        if (!viewStack.isEmpty()) {
+            Node previousView = viewStack.pop();
+            previousView.setVisible(true);
+            currentFrame.getChildren().add(previousView);
+        }
+
+        backButton.setVisible(!viewStack.isEmpty());
+    }
+
+    /**
+     * Method called from FXML to load temporary controller
+     */
+    @FXML
+    private void loadTemporaryControllerInCurrentFrame() {
+        showTemporaryView("/fxml/buildingPhase0.fxml");
+    }
+
+    /**
+     * Generic method to show any temporary view
+     * @param fxmlPath Path to the FXML file
+     */
+    public void showTemporaryMenu(String fxmlPath) {
+        showTemporaryView(fxmlPath);
+    }
+
+    /**
+     * Clear all views in the stack and return to initial state
+     */
+    public void clearViewStack() {
+        currentFrame.getChildren().clear();
+        viewStack.clear();
+        
+        initializeCurrentFrame();
+        backButton.setVisible(false);
+    }
+
+    /**
+     * Check if there are temporary views in the stack
+     * @return true if there are views in the stack
+     */
+    public boolean hasTemporaryViews() {
+        return !viewStack.isEmpty();
+    }
+
+    /**
+     * Makes a ship container clickable and sets up the click handler
+     */
+    private void makeShipContainerClickable(StackPane shipContainer, ViewPlayer player) {
+        shipContainer.setOnMouseEntered(e -> shipContainer.setStyle("-fx-cursor: hand;"));
+        shipContainer.setOnMouseExited(e -> shipContainer.setStyle("-fx-cursor: default;"));
+
+        shipContainer.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) {
+                loadPlayerShipInCurrentFrame(player);
+            }
+        });
+    }
+
+    private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
+        if (hasTemporaryViews()) {
+            showTemporaryView(getFXMLPath(ContentType.SHIP));
+            return;
+        }
+
+        currentFrame.getChildren().clear();
+
+        if (currentPlayer != null) {
+            String fxmlPath = getFXMLPath(ContentType.SHIP);
+            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
+                    ContentType.SHIP, currentPlayer);
         }
     }
 
@@ -168,9 +274,6 @@ public class MenuController {
                 ContentType.BOARD, null);
     }
 
-
-
-
     /**
      * Enhanced method to load menu with controller configuration
      */
@@ -182,7 +285,7 @@ public class MenuController {
             URL fxmlUrl = getClass().getResource(fxmlPath);
 
             if (fxmlUrl == null) {
-                System.err.println("fxml file not found: " + fxmlPath);
+                System.err.println("FXML file not found: " + fxmlPath);
                 return;
             }
 
@@ -194,13 +297,12 @@ public class MenuController {
                 region.setMaxHeight(Region.USE_PREF_SIZE);
             }
 
-
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(content);
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Error load menu: " + fxmlPath);
+            System.err.println("Error loading menu: " + fxmlPath);
         }
     }
 
@@ -231,6 +333,7 @@ public class MenuController {
                 }
             }
             default -> {
+                // No specific configuration needed
             }
         }
     }
@@ -241,13 +344,12 @@ public class MenuController {
     public static void loadContentInCurrentFrame(String fxmlPath, ClientGameModel gameModel, Object... parameters) {
         if (currentInstance != null) {
             Platform.runLater(() -> {
-                currentInstance.loadMenuInCurrentFrame(fxmlPath, parameters);
+                currentInstance.showTemporaryView(fxmlPath);
             });
         } else {
             System.err.println("No active MenuController instance to load: " + fxmlPath);
         }
     }
-
 
     // GRAPHICAL METHODS
 
@@ -264,7 +366,7 @@ public class MenuController {
             URL fxmlUrl = getClass().getResource(fxmlPath);
 
             if (fxmlUrl == null) {
-                System.err.println("No fxml file founded: " + fxmlPath);
+                System.err.println("FXML file not found: " + fxmlPath);
                 return;
             }
             FXMLLoader loader = new FXMLLoader();
@@ -280,7 +382,6 @@ public class MenuController {
             }
 
             container.getChildren().add(content);
-
             configureController(loader.getController(), contentType, player);
 
         } catch (IOException e) {

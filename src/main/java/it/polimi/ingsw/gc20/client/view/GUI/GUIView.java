@@ -431,8 +431,6 @@ public class GUIView extends ClientGameModel {
                 if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
                     Object controller = primaryStage.getScene().getRoot().getUserData();
                     if (controller instanceof LoginController loginController) {
-                        loginController.getErrorLabel().setText("Login attempt for user '" + username + "' failed. Please check your username and try again.");
-                        loginController.getErrorLabel().setVisible(true);
                     } else {
                         System.err.println("Controller is not of type LoginController or is null.");
                     }
