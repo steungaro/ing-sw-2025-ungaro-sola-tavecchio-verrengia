@@ -7,10 +7,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,28 +21,8 @@ public class MenuController {
         DIALOG
     }
 
-    private static class DisplayConfig {
-        final double aspectRatio;
-        final double maxWidth;
-        final double maxHeight;
-        final double minWidth;
-        final double minHeight;
-        final double padding;
-        final double widthMultiplier;
-        final double heightMultiplier;
-
-        DisplayConfig(double aspectRatio, double maxWidth, double maxHeight, 
-                     double minWidth, double minHeight, double padding,
-                     double widthMultiplier, double heightMultiplier) {
-            this.aspectRatio = aspectRatio;
-            this.maxWidth = maxWidth;
-            this.maxHeight = maxHeight;
-            this.minWidth = minWidth;
-            this.minHeight = minHeight;
-            this.padding = padding;
-            this.widthMultiplier = widthMultiplier;
-            this.heightMultiplier = heightMultiplier;
-        }
+    private record DisplayConfig(double aspectRatio, double maxWidth, double maxHeight, double minWidth,
+                                 double minHeight, double padding, double widthMultiplier, double heightMultiplier) {
     }
 
     private static final DisplayConfig SHIP_THUMBNAIL = new DisplayConfig(1.3, 200, 150, 100, 75, 5, 0.95, 0.95);
@@ -64,7 +42,6 @@ public class MenuController {
     @FXML private Label player2Name;
     @FXML private Label player3Name;
     @FXML private Label player4Name;
-    @FXML private VBox sidebarPane;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -79,16 +56,80 @@ public class MenuController {
         players = gameModel.getPlayers();
         
         loadPlayerShips();
+        loadPlayerNames();
         initializeCurrentFrame();
         initializeGameBoard();
     }
+
+    /**
+     * Loads player names in the sidebar
+     */
+    private void loadPlayerNames() {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] == null) continue;
+
+            Label playerNameLabel = switch (i) {
+                case 0 -> player1Name;
+                case 1 -> player2Name;
+                case 2 -> player3Name;
+                case 3 -> player4Name;
+                default -> null;
+            };
+
+            if (playerNameLabel != null) {
+                playerNameLabel.setText(players[i].username);
+            }
+        }
+    }
+
+    /**
+     * Loads all player ships in the sidebar
+     */
+    private void loadPlayerShips() {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] == null) continue;
+
+            StackPane shipContainer = getPlayerShipContainer(i);
+            String fxmlPath = getFXMLPath(ContentType.SHIP);
+
+            if (shipContainer != null) {
+                loadFXMLInContainer(shipContainer, fxmlPath, DisplayContext.THUMBNAIL,
+                        ContentType.SHIP, players[i]);
+            }
+        }
+    }
+
+    /**
+     * Gets the ship container for the specified player
+     */
+    private StackPane getPlayerShipContainer(int playerIndex) {
+        return switch (playerIndex) {
+            case 0 -> player1Ship;
+            case 1 -> player2Ship;
+            case 2 -> player3Ship;
+            case 3 -> player4Ship;
+            default -> null;
+        };
+    }
+
+    /**
+     * Initializes the game board
+     */
+    private void initializeGameBoard() {
+        String fxmlPath = getFXMLPath(ContentType.BOARD);
+        loadFXMLInContainer(gameBoard, fxmlPath, DisplayContext.MAIN_VIEW,
+                ContentType.BOARD, null);
+    }
+
+
+    // GRAPHICAL METHODS
 
     /**
      * Generic method to load any type of FXML content into a container
      */
     private void loadFXMLInContainer(StackPane container, String fxmlPath, 
                                    DisplayContext context, ContentType contentType, 
-                                   ViewPlayer player, Object... additionalParams) {
+                                   ViewPlayer player) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Node content = loader.load();
@@ -103,7 +144,7 @@ public class MenuController {
 
             container.getChildren().add(content);
 
-            configureController(loader.getController(), contentType, player, additionalParams);
+            configureController(loader.getController(), contentType, player);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -202,8 +243,7 @@ public class MenuController {
             };
             case BOARD -> switch (context) {
                 case MAIN_VIEW -> BOARD_MAIN_VIEW;
-                case DIALOG -> BOARD_DIALOG;
-                case THUMBNAIL -> BOARD_DIALOG;
+                case DIALOG, THUMBNAIL -> BOARD_DIALOG;
             };
         };
     }
@@ -246,7 +286,7 @@ public class MenuController {
      * Configures the controller of the loaded content
      */
     private void configureController(Object controller, ContentType contentType, 
-                                   ViewPlayer player, Object... additionalParams) {
+                                   ViewPlayer player) {
         switch (contentType) {
             case SHIP -> {
                 if (controller instanceof ShipController shipController && player != null) {
@@ -263,36 +303,6 @@ public class MenuController {
     }
 
     /**
-     * Loads all player ships in the sidebar
-     */
-    private void loadPlayerShips() {
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] == null) continue;
-            
-            StackPane shipContainer = getPlayerShipContainer(i);
-            String fxmlPath = getFXMLPath(ContentType.SHIP);
-            
-            if (shipContainer != null) {
-                loadFXMLInContainer(shipContainer, fxmlPath, DisplayContext.THUMBNAIL, 
-                                  ContentType.SHIP, players[i]);
-            }
-        }
-    }
-
-    /**
-     * Gets the ship container for the specified player
-     */
-    private StackPane getPlayerShipContainer(int playerIndex) {
-        return switch (playerIndex) {
-            case 0 -> player1Ship;
-            case 1 -> player2Ship;
-            case 2 -> player3Ship;
-            case 3 -> player4Ship;
-            default -> null;
-        };
-    }
-
-    /**
      * Initializes currentFrame with current player's ship
      */
     private void initializeCurrentFrame() {
@@ -305,15 +315,6 @@ public class MenuController {
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
                               ContentType.SHIP, currentPlayer);
         }
-    }
-
-    /**
-     * Initializes the game board
-     */
-    private void initializeGameBoard() {
-        String fxmlPath = getFXMLPath(ContentType.BOARD);
-        loadFXMLInContainer(gameBoard, fxmlPath, DisplayContext.MAIN_VIEW, 
-                          ContentType.BOARD, null);
     }
 
     /**
