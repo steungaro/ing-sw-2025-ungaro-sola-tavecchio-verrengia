@@ -11,11 +11,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StartingCabinTest {
     StartingCabin cabin;
+
+    /**
+     * Sets up the StartingCabin instance before each test.
+     * Initializes the cabin object.
+     */
     @BeforeEach
     void setUp() {
         cabin = new StartingCabin();
     }
 
+    /**
+     * Tests that the starting cabin cannot load aliens,
+     * and that it throws an exception when trying to set or unload an alien.
+     */
     @Test
     void alien(){
         try {
@@ -32,6 +41,10 @@ public class StartingCabinTest {
         }
     }
 
+    /**
+     * Test that if the starting cabin has a life support near, the color remains NONE,
+     * and that it can be removed without changing the color.
+     */
     @Test
     void Support(){
         LifeSupport ls = new LifeSupport();
@@ -42,6 +55,9 @@ public class StartingCabinTest {
         assertEquals(AlienColor.NONE, cabin.getCabinColor());
     }
 
+    /**
+     * Test that the view component of the starting cabin can be created correctly,
+     */
     @Test
     void testCreateViewComponent() {
         Map<Direction, ConnectorEnum> connectors = cabin.getConnectors();

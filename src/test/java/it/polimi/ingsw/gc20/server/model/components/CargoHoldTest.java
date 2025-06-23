@@ -14,12 +14,21 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CargoHoldTest {
     private CargoHold cargoHold;
     private SpecialCargoHold specialCargoHold;
+
+    /**
+     * Sets up the CargoHold and SpecialCargoHold instances before each test.
+     * Initializes the cargo holds to be used in the tests.
+     */
     @BeforeEach
     void setUp() {
         cargoHold = new CargoHold();
         specialCargoHold = new SpecialCargoHold();
     }
 
+    /**
+     * Tests the set and get methods for the slots and available slots of CargoHold.
+     * It also checks that the IDComponent is set correctly and that life support is false.
+     */
     @Test
     void testSetGetAdnAvailableSlots(){
         cargoHold.setSlots(5);
@@ -31,6 +40,13 @@ public class CargoHoldTest {
     }
 
 
+    /**
+     * Tests that the cargo hold can be loaded with cargo of different colors,
+     * and that it throws an exception when trying to load cargo when the hold is full.
+     * It also checks that the cargo color is set correctly.
+     * @throws CargoFullException if the cargo hold is full
+     * @throws CargoNotLoadable if the cargo cannot be loaded
+     */
     @Test
     void testSetAndGetCargoHeld() throws CargoNotLoadable, CargoFullException {
         try {
@@ -54,6 +70,9 @@ public class CargoHoldTest {
         assertEquals(2, cargoHold.getCargoHeld().get(CargoColor.BLUE));
     }
 
+    /**
+     * Test if the view Component is created correctly for the CargoHold.
+     */
     @Test
     void testCreateViewComponent(){
         Map<Direction, ConnectorEnum> connectors = cargoHold.getConnectors();

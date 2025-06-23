@@ -12,6 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BatteryTest {
     private Battery battery;
 
+    /**
+     * Sets up the Battery instance before each test.
+     * Initializes the connectors for the battery.
+     */
     @BeforeEach
     void setUp() {
         battery = new Battery();
@@ -23,6 +27,11 @@ public class BatteryTest {
         battery.setConnectors(connectors);
     }
 
+    /**
+     * Test the set slots and available energy of the battery.
+     * It checks that the battery can hold a certain number of slots and available energy,
+     * and that it can use energy correctly.
+     */
     @Test
     void testBattery() {
         battery.setSlots(2);
@@ -37,13 +46,23 @@ public class BatteryTest {
         assertEquals(-1, battery.getAvailableEnergy());
     }
 
+    /**
+     * Test the set and get methods for the tile attribute of Battery.
+     */
     @Test
-    void testsetGetTile(){
+    void testSetGetTile(){
         Tile tile = new Tile();
         battery.setTile(tile);
         assertEquals(tile, battery.getTile());
     }
 
+    /**
+     * Test the rotation clockwise functionality of the battery,
+     * it checks that the connectors are updated correctly
+     * and the rotation direction is set to RIGHT.
+     * It also checks that the view component is created correctly
+     * with the correct rotation component value.
+     */
     @Test
     void testRotateClockwise() {
         battery.rotateClockwise();
