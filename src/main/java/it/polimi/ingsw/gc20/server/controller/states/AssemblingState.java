@@ -17,7 +17,7 @@ public class AssemblingState extends State {
     private final Map<Player, Boolean> assembled = new HashMap<>();
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
-    boolean fromBooked = false;
+    private final Map<Player, Boolean> fromBooked = new HashMap<>();
 
     /**
      * Constructs an AssemblingState object, initializing the state for the assembling phase of the game.
@@ -35,6 +35,7 @@ public class AssemblingState extends State {
         for (Player player : getController().getPlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
+            fromBooked.put(player, false);
 
             //init all the ship of the clients
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
@@ -73,7 +74,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = false;
+        fromBooked.put(player, false);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = false;
+        fromBooked.put(player, false);
 
     }
 
@@ -116,7 +117,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = true;
+        fromBooked.put(player, true);
     }
 
 
@@ -140,7 +141,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
-        if (fromBooked){
+        if (fromBooked.get(player) == true){
             throw new InvalidStateException("Cannot add a booked component back to the viewed pile!");
         }
         // add the component to the viewed pile
