@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.client.view.common.localmodel; // Or your chosen pa
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 
@@ -14,6 +13,5 @@ public interface GameModelListener {
     void onLobbyUpdated(ViewLobby lobby);
     void onErrorMessageReceived(String message);
     void onComponentInHandUpdated(ViewComponent component);
-    void onBoardUpdated(ViewBoard board);
-    void onCardUpdated(ViewAdventureCard card);
+    void onCurrentCardUpdated(ViewAdventureCard currentCard);
 }

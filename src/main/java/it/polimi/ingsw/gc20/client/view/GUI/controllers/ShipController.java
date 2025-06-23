@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
@@ -472,6 +473,26 @@ public abstract class ShipController implements GameModelListener {
 
     protected ImageView getImageViewAt(int row, int col) {
         return null;
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // ignore
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // ignore
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // ignore
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
     }
 }
 

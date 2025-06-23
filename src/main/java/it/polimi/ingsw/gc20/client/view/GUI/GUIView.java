@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI;
 
 import it.polimi.ingsw.gc20.client.view.GUI.controllers.*;
-
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
@@ -28,6 +27,7 @@ import java.util.Map;
 public class GUIView extends ClientGameModel {
 
     public enum GuiState {
+        MENU("menu"),
         WELCOME("welcome"),
         LOGIN("login"),
         NETWORK("network"),
@@ -58,18 +58,15 @@ public class GUIView extends ClientGameModel {
         ENGINE_MENU("engineMenu");
 
         private final String fxmlFileName;
-
         GuiState(String fxmlFileName) {
             this.fxmlFileName = fxmlFileName;
         }
-
         public String getFxmlFileName() {
             return fxmlFileName;
         }
     }
 
     private GuiState currentGuiState;
-
     private Stage peekDecksStage;
     private PeekDecksController peekDecksController;
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
@@ -81,20 +78,11 @@ public class GUIView extends ClientGameModel {
         currentGuiStateProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 Platform.runLater(() -> {
-                    if (primaryStage != null) {
-                        if (primaryStage.getScene() != null &&
-                                primaryStage.getScene().getRoot() != null &&
-                                primaryStage.getScene().getRoot().getId() != null &&
-                                primaryStage.getScene().getRoot().getId().equals(newValue.getFxmlFileName())) {
-                            return;
-                        }
-                        showScene(newValue.getFxmlFileName());
-                    } else {
-                        System.err.println("primaryStage not initialized: " + newValue.getFxmlFileName());
-                    }
+                    handleGuiStateChange(oldValue, newValue);
                 });
             }
         });
+
 
         boardProperty.addListener((observable, oldBoard, newBoard) -> {
             if (newBoard != null) {
@@ -102,6 +90,26 @@ public class GUIView extends ClientGameModel {
             }
         });
     }
+
+    private void handleGuiStateChange(GuiState oldState, GuiState newState) {
+        if (primaryStage == null) {
+            System.err.println("primaryStage not initialized: " + newState.getFxmlFileName());
+            return;
+        }
+
+        if (primaryStage.getScene() != null &&
+                primaryStage.getScene().getRoot() != null &&
+                primaryStage.getScene().getRoot().getId() != null &&
+                primaryStage.getScene().getRoot().getId().equals(newState.getFxmlFileName())) {
+            return;
+        }
+
+        System.out.println("GUI State changed from " +
+                (oldState != null ? oldState.name() : "null") +
+                " to " + newState.name());
+        showScene(newState.getFxmlFileName());
+    }
+
 
     public GuiState getCurrentGuiState() {
         return currentGuiStateProperty.get();
@@ -157,6 +165,7 @@ public class GUIView extends ClientGameModel {
 
             FXMLLoader loader = new FXMLLoader(resourceUrl);
             Parent root = loader.load();
+            root.setUserData(loader.getController());
             root.setId(fileName);
 
             Scene currentScene = primaryStage.getScene();
@@ -174,6 +183,7 @@ public class GUIView extends ClientGameModel {
             primaryStage.setTitle("Galaxy Trucker");
             root.setId(fileName);
         } catch (IOException e) {
+            e.printStackTrace();
             displayErrorMessage("Error loading UI: " + e.getMessage());
         }
     }
@@ -213,7 +223,7 @@ public class GUIView extends ClientGameModel {
         }
 
         if (client != null) {
-            currentGuiState = GuiState.LOGIN;
+            setCurrentGuiState(GuiState.LOGIN);
             return true;
         }
         return false;
@@ -226,14 +236,10 @@ public class GUIView extends ClientGameModel {
                 message.handleMessage();
             } catch (Exception e) {
                 System.out.println("Error while handling message: " + e.getMessage());
+                e.printStackTrace();
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
-    }
-
-    @Override
-    public void mainMenuState(){
-        setCurrentGuiState(GuiState.MAIN_MENU);
     }
 
     @Override
@@ -243,40 +249,42 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void planetMenu(List<Planet> planets) {
-        setCurrentGuiState(GuiState.PLANET_MENU);
+    public void mainMenuState(){
+        setCurrentGuiState(GuiState.MAIN_MENU);
+    }
+
+    private void showMenuContent(GuiState contentState) {
         Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof LoseCrewMenuController) {
-                    ((PlanetMenuController) controller).initializeWithPlanets(planets);
-                } else {
-                    System.err.println("Controller for PLANET_MENU_CONTROLLER is not of type planetMenu or is null.");
-                }
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this);
             } else {
-                System.err.println("Cannot setup planet menu: primaryStage, scene, or root is null.");
+                setCurrentGuiState(GuiState.MENU);
+                Platform.runLater(() ->
+                        MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this)
+                );
             }
         });
-        // TODO: sistemare dio cane
+    }
+
+
+    @Override
+    public void planetMenu(List<Planet> planets) {
+        showMenuContent(GuiState.PLANET_MENU);
+        // TODO pass planets to the controller
+
     }
 
     @Override
     public void populateShipMenu() {
-        setCurrentGuiState(GuiState.POPULATE_SHIP_MENU);
-        // TODO: to test, no other handler needed
+        showMenuContent(GuiState.POPULATE_SHIP_MENU);
     }
 
-    @Override
-    public void automaticAction(String message) {
-        // ignore this method for now
-        // currentGuiState = GuiState.AUTOMATIC_ACTION;
-        // TODO: DECIDE WHATO TO DO
-    }
 
     @Override
     public void validationMenu() {
-        setCurrentGuiState(GuiState.VALIDATION_MENU);
+        showMenuContent(GuiState.VALIDATION_MENU);
     }
+
 
     @Override
     public void init() {
@@ -285,14 +293,12 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void shieldsMenu(String message) {
-        setCurrentGuiState(GuiState.SHIELDS_MENU);
-        // TODO : Check if message is needed to be passed to the controller (maybe to indicate the side)
+        showMenuContent(GuiState.SHIELDS_MENU);
     }
+
 
     @Override
     public void rollDiceMenu(String message) {
-        // setCurrentGuiState(GuiState.ROLL_DICE_MENU);
-
         Platform.runLater(() -> {
             try {
                 Stage dialogStage = new Stage();
@@ -317,6 +323,7 @@ public class GUIView extends ClientGameModel {
                 dialogStage.show();
             } catch (IOException e) {
                 System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
+                e.printStackTrace();
                 displayErrorMessage("Error opening roll dice window: " + e.getMessage());
             }
         });
@@ -324,32 +331,21 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cargoMenu(int cargoNum) {
-        currentGuiState = GuiState.CARGO_MENU;
-        // Necessary?
+        showMenuContent(GuiState.CARGO_MENU);
     }
+
 
     @Override
     public void loseCrewMenu(int crewNum) {
-        setCurrentGuiState(GuiState.LOSE_CREW_MENU);
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof LoseCrewMenuController) {
-                    ((LoseCrewMenuController) controller).initializeWithCrewToLose(crewNum);
-                } else {
-                    System.err.println("Controller for LOSE_CREW_MENU is not of type LoseCreeMenu or is null.");
-                }
-            } else {
-                System.err.println("Cannot setup lose crew menu: primaryStage, scene, or root is null.");
-            }
-        });
+        showMenuContent(GuiState.LOSE_CREW_MENU);
     }
+
 
     @Override
     public void removeBatteryMenu(int batteryNum) {
-        setCurrentGuiState(GuiState.LOSE_ENERGY_MENU);
-        // Necessary?
+        showMenuContent(GuiState.LOSE_ENERGY_MENU);
     }
+
 
     @Override
     public void AssemblingStateMenu() {
@@ -359,17 +355,17 @@ public class GUIView extends ClientGameModel {
         }
 
         if (playerShip != null && playerShip.isLearner) {
-            setCurrentGuiState(GuiState.BUILDING_PHASE0);
+            showMenuContent(GuiState.BUILDING_PHASE0);
         } else {
-            setCurrentGuiState(GuiState.BUILDING_PHASE2);
+            showMenuContent(GuiState.BUILDING_PHASE2);
         }
     }
 
     @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-        currentGuiState = GuiState.LEADER_BOARD_MENU;
-        // Necessary?
+        showMenuContent(GuiState.LEADER_BOARD_MENU);
     }
+
 
     @Override
     public void loginSuccessful(String username) {
@@ -382,12 +378,15 @@ public class GUIView extends ClientGameModel {
     public void loginFailed(String username) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.LOGIN) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Login Failed");
-                alert.setHeaderText("Login attempt for user '" + username + "' failed.");
-                alert.setContentText("Please check your username and try again.");
-                if (primaryStage != null) alert.initOwner(primaryStage);
-                alert.showAndWait();
+                if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
+                    Object controller = primaryStage.getScene().getRoot().getUserData();
+                    if (controller instanceof LoginController loginController) {
+                    } else {
+                        System.err.println("Controller is not of type LoginController or is null.");
+                    }
+                } else {
+                    System.err.println("Cannot update errorLabel: primaryStage, scene, or root is null.");
+                }
             } else {
                 displayErrorMessage("Login failed for user: " + username + " (unexpected state: " + getCurrentGuiState() + ")");
             }
@@ -396,13 +395,15 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void idleMenu(String message) {
-        setCurrentGuiState(GuiState.IDLE_MENU);
+        showMenuContent(GuiState.IDLE_MENU);
     }
+
 
     @Override
     public void keepPlayingMenu() {
-        setCurrentGuiState(GuiState.KEEP_PLAYING_MENU);
+        showMenuContent(GuiState.KEEP_PLAYING_MENU);
     }
+
 
     @Override
     public void notifyDisconnection() throws RemoteException {
@@ -429,9 +430,9 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void branchMenu() {
-        setCurrentGuiState(GuiState.BRANCH_MENU);
-        // TODO: Improvment (
+        showMenuContent(GuiState.BRANCH_MENU);
     }
+
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
@@ -449,6 +450,7 @@ public class GUIView extends ClientGameModel {
 
                 peekDecksController.initializeWithCards(cards);
             } catch (IOException e) {
+                e.printStackTrace();
                 displayErrorMessage("Error opening peek decks window: " + e.getMessage());
             }
         });
@@ -456,37 +458,33 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cannonsMenu(String message) {
-        setCurrentGuiState(GuiState.CANNONS_MENU);
+        showMenuContent(GuiState.CANNONS_MENU);
     }
+
 
     @Override
     public void cardAcceptanceMenu(String message) {
-        setCurrentGuiState(GuiState.CARD_ACCEPTANCE_MENU);
+        showMenuContent(GuiState.CARD_ACCEPTANCE_MENU);
     }
+
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        currentGuiState = GuiState.CARGO_MENU;
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof CargoMenuController) {
-                    ((CargoMenuController) controller).initializeWithParameters(message, cargoToLose, cargoToGain, losing);
-                } else {
-                    System.err.println("Controller for CARGO_MENU is not of type CargoMenuController or is null.");
-                }
-            } else {
-                System.err.println("Cannot setup cargo menu: primaryStage, scene, or root is null.");
-            }
-        });
-        // TODO: Check button handler
+        showMenuContent(GuiState.CARGO_MENU);
     }
+
 
     @Override
     public void engineMenu(String message) {
-        setCurrentGuiState(GuiState.ENGINE_MENU);
-        // TODO: TO BE FIXED, NEED MULTIPLE SELECTIONS
+        showMenuContent(GuiState.ENGINE_MENU);
     }
+
+
+    @Override
+    public void automaticAction(String message) {
+        showMenuContent(GuiState.AUTOMATIC_ACTION);
+    }
+
 
     @Override
     public void inLobbyMenu() {
@@ -495,6 +493,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void login() {
+        setCurrentGuiState(GuiState.LOGIN);
         client.login(username);
         this.username = username;
     }

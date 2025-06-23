@@ -19,7 +19,6 @@
             <Font name="System Bold" size="24.0" />
         </font>
     </Label>
-   <Label fx:id="errorLabel" text="Error" textFill="RED" />
 
     <Label fx:id="waitingMessageLabel" prefHeight="17.0" prefWidth="246.0" text="Waiting for the owner to start the game" textFill="#aaaaaa">
         <font>
@@ -28,19 +27,21 @@
     </Label>
 
     <VBox alignment="CENTER" prefHeight="297.0" prefWidth="560.0" spacing="10" style="-fx-background-color: #333344; -fx-padding: 15; -fx-background-radius: 10;">
-        <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-            <Label text="Players" textFill="WHITE">
-                <font>
-                    <Font name="System Bold" size="16.0"/>
-                </font>
-            </Label>
-
-            <Label fx:id="playerCountLabel" text="(1/4)" textFill="#cccccc">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
-        </HBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+         <children>
+              <Label text="Players" textFill="WHITE">
+                  <font>
+                      <Font name="System Bold" size="16.0" />
+                  </font>
+              </Label>
+      
+              <Label fx:id="playerCountLabel" text="(1/4)" textFill="#cccccc">
+                  <font>
+                      <Font size="14.0" />
+                  </font>
+              </Label>
+         </children>
+      </HBox>
 
         <ListView fx:id="playersListView" minHeight="100.0" VBox.vgrow="ALWAYS">
             <style>

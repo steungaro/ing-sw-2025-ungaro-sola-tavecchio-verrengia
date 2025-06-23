@@ -225,7 +225,6 @@ public class TUI extends ClientGameModel {
     }
 
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        //conversion from list CargoColor to Map<Integer, CargoColor>
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
         ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(message, cargoToLose, cargoMap, losing));

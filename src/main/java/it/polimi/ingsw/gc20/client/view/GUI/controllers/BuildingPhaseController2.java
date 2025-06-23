@@ -2,7 +2,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
@@ -257,13 +256,8 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     }
 
     @Override
-    public void onBoardUpdated(ViewBoard board) {
-        // No need to update the board in this controller
-    }
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
-    @Override
-    public void onCardUpdated(ViewAdventureCard card) {
-        // No need to update the card in this controller
     }
 
     public interface BookedToHandClickHandler {

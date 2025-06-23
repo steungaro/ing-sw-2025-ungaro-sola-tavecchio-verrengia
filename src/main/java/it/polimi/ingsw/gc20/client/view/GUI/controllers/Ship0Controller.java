@@ -2,12 +2,15 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 
 import java.util.Objects;
 
@@ -55,44 +58,24 @@ public class Ship0Controller extends ShipController{
         final double imageRatio = imageWidth / imageHeight;
 
         rootPane.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
-            double containerWidth = newBounds.getWidth();
-            double containerHeight = newBounds.getHeight();
+            bgImage.setFitWidth(newBounds.getWidth()*0.7);
+            bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            double containerWidth = bgImage.getFitWidth();
+            double containerHeight = bgImage.getFitHeight();
+            double containerRatio = containerWidth / containerHeight;
 
-            double scaleFactor = Math.min(containerWidth / 300.0, containerHeight / 300.0);
-            scaleFactor = Math.max(0.3, Math.min(1.0, scaleFactor));
-
-            double targetWidth = containerWidth * 0.7 * scaleFactor;
-            double targetHeight = containerHeight * 0.7 * scaleFactor;
-
-            bgImage.setFitWidth(targetWidth);
-            bgImage.setFitHeight(targetHeight);
-
-            double containerRatio = targetWidth / targetHeight;
             double actualWidth, actualHeight;
 
             if (imageRatio > containerRatio) {
-                actualWidth = targetWidth;
-                actualHeight = targetWidth / imageRatio;
+                actualWidth = containerWidth;
+                actualHeight = containerWidth / imageRatio;
             } else {
-                actualHeight = targetHeight;
-                actualWidth = targetHeight * imageRatio;
+                actualHeight = containerHeight;
+                actualWidth = containerHeight * imageRatio;
             }
 
             double gridWidth = actualWidth * (1 - 0.167 - 0.167);
             double gridHeight = actualHeight * (1 - 0.04 - 0.04);
-
-            if (containerWidth < 150 || containerHeight < 150) {
-                gridWidth = Math.max(gridWidth, 80);
-                gridHeight = Math.max(gridHeight, 80);
-
-                componentsGrid.setHgap(0.5);
-                componentsGrid.setVgap(0.5);
-                componentsGrid.setStyle("-fx-border-color: white; -fx-border-width: 0.5px; -fx-background-color: rgba(255,255,255,0.1);");
-            } else {
-                componentsGrid.setHgap(2);
-                componentsGrid.setVgap(2);
-                componentsGrid.setStyle("-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true");
-            }
 
             componentsGrid.setPrefSize(gridWidth, gridHeight);
             componentsGrid.setMaxSize(gridWidth, gridHeight);
@@ -100,8 +83,8 @@ public class Ship0Controller extends ShipController{
 
             // Debug output
             // System.out.println("Container: " + containerWidth + "x" + containerHeight);
-            // System.out.println("Effective image: " + actualWidth + "x" + actualHeight);
-            // System.out.println("Grill: " + gridWidth + "x" + gridHeight);
+            // System.out.println("Immagine effettiva: " + actualWidth + "x" + actualHeight);
+            // System.out.println("Griglia: " + gridWidth + "x" + gridHeight);
 
             // Set the size of each ImageView to match the grid cell size
             double cellWidth = gridWidth / COLS;
@@ -178,34 +161,7 @@ public class Ship0Controller extends ShipController{
     }
 
     @Override
-    public void onShipUpdated(ViewShip ship) {
-        if (this.ship.equals(ship)) {
-            buildShipComponents(ship);
-        }
-    }
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
-    @Override
-    public void onLobbyUpdated(ViewLobby lobby) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onErrorMessageReceived(String message) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onComponentInHandUpdated(ViewComponent component) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onBoardUpdated(ViewBoard board) {
-        // Not used in this controller
-    }
-
-    @Override
-    public void onCardUpdated(ViewAdventureCard card) {
-        // Not used in this controller
     }
 }

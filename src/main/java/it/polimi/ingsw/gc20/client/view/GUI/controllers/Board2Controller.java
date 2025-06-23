@@ -73,16 +73,18 @@ public class Board2Controller extends BoardController {
 
         for (Circle circle : circles) {
             Label label = new Label();
-            label.setFont(new Font(16.0));
+            label.setFont(new Font(16));
             label.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
 
             label.layoutXProperty().bind(circle.layoutXProperty().subtract(label.widthProperty().divide(2)).add(circle.getRadius() / 2 - 8));
-            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 10));
+            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 12));
 
             circleLabels.add(label);
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
-                if (newParent instanceof Group) {
+                if (newParent instanceof Pane) {
+                    ((Pane) newParent).getChildren().add(label);
+                } else if (newParent instanceof Group) {
                     ((Group) newParent).getChildren().add(label);
                 }
             });
@@ -119,9 +121,10 @@ public class Board2Controller extends BoardController {
             return;
         }
 
+        double originalContentWidth = 800.0;
+        double originalContentHeight = 330.0;
         double scaleX = newPaneWidth / originalContentWidth;
         double scaleY = newPaneHeight / originalContentHeight;
-
         double scaleFactor = Math.min(scaleX, scaleY);
 
         if (Double.isInfinite(scaleFactor) || Double.isNaN(scaleFactor) || scaleFactor <= 0) {

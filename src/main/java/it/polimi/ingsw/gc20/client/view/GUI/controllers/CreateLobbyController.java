@@ -1,14 +1,18 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
-public class CreateLobbyController implements GUIController {
+import java.util.List;
+
+public class CreateLobbyController {
 
     @FXML
     private TextField lobbyNameField;
@@ -28,6 +32,8 @@ public class CreateLobbyController implements GUIController {
     @FXML
     private Label errorLabel;
 
+    private String username;
+
 
     @FXML
     public void initialize() {
@@ -38,10 +44,10 @@ public class CreateLobbyController implements GUIController {
         levelComboBox.setValue("L");
 
         errorLabel.setVisible(false);
-        errorLabel.setManaged(false);
+    }
 
-        createButton.setOnAction(_ -> handleCreateButton());
-        cancelButton.setOnAction(_ -> handleCancelButton());
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @FXML
@@ -57,16 +63,57 @@ public class CreateLobbyController implements GUIController {
         createButton.setDisable(true);
         errorLabel.setVisible(false);
 
-        int numPlayers = numPlayersComboBox.getValue();
+        Integer numPlayers = numPlayersComboBox.getValue();
         int level = levelComboBox.getValue().equals("L") ? 0 : 2;
 
-        try {
-            ClientGameModel.getInstance().getClient().createLobby(lobbyName, ClientGameModel.getInstance().getUsername(), numPlayers, level);
-        } catch (Exception e) {
-            errorLabel.setText("Error creating lobby: " + e.getMessage());
-            errorLabel.setVisible(true);
-            errorLabel.setManaged(true);
-        }
+        new Thread(() -> {
+            try {
+                ClientGameModel.getInstance().getClient().createLobby(lobbyName, ClientGameModel.getInstance().getUsername(), numPlayers, level);
+
+                String createdLobbyName = lobbyName;
+                long startTime = System.currentTimeMillis();
+                boolean success = true;
+
+                try {
+                    while (System.currentTimeMillis() - startTime < 10000) {
+                        List <ViewLobby> lobbyList = null; // ClientGameModel.getInstance().getLobbyList();
+
+                        /*if (lobbyList != null && lobbyList.stream()
+                                .anyMatch(lobby -> lobby.getID().equals(createdLobbyName))) {
+                            success = true;
+                            break;
+                        }
+                        Thread.sleep(100);*/
+
+
+                    }
+
+                    boolean finalSuccess = success;
+                    javafx.application.Platform.runLater(() -> {
+                        if (finalSuccess) {
+                            errorLabel.setText("LLobby successfully created!");
+                            errorLabel.setStyle("-fx-text-fill: green;");
+                        } else {
+                            errorLabel.setText("Timeout: Lobby may not have been created");
+                        }
+                        errorLabel.setVisible(true);
+                        createButton.setDisable(false);
+                    });
+                } catch (Exception e) {
+                    javafx.application.Platform.runLater(() -> {
+                        errorLabel.setText("Operation aborted");
+                        errorLabel.setVisible(true);
+                        createButton.setDisable(false);
+                    });
+                }
+            } catch (Exception e) {
+                javafx.application.Platform.runLater(() -> {
+                    errorLabel.setText("Error creating lobby: " + e.getMessage());
+                    errorLabel.setVisible(true);
+                    createButton.setDisable(false);
+                });
+            }
+        }).start();
     }
 
     @FXML
@@ -75,10 +122,8 @@ public class CreateLobbyController implements GUIController {
 
     }
 
-    @Override
-    public void showError(String errorMessage) {
-        errorLabel.setText(errorMessage);
-        errorLabel.setVisible(true);
-        errorLabel.setManaged(true);
+    private void closeStage() {
+        Stage stage = (Stage) cancelButton.getScene().getWindow();
+        stage.close();
     }
 }

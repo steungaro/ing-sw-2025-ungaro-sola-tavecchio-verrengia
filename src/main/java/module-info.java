@@ -29,7 +29,6 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20.client.view.TUI;
     exports it.polimi.ingsw.gc20.client.view.GUI.controllers;
     exports it.polimi.ingsw.gc20.server.model.lobby;
-    exports it.polimi.ingsw.gc20.client.view.common;
     opens it.polimi.ingsw.gc20.server.model.components to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.ship to com.fasterxml.jackson.databind;
     opens it.polimi.ingsw.gc20.server.model.cards to com.fasterxml.jackson.databind;

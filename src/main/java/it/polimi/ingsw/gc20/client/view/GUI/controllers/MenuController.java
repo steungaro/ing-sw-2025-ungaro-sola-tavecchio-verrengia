@@ -1,27 +1,53 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.Arrays;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Stack;
 
-public class MenuController implements Initializable {
+public class MenuController implements GameModelListener {
 
-    @FXML public StackPane currentFrame;
+    public enum DisplayContext {
+        THUMBNAIL,
+        MAIN_VIEW,
+        DIALOG
+    }
+
+    private record DisplayConfig(double aspectRatio, double maxWidth, double maxHeight, double minWidth,
+                                 double minHeight, double padding, double widthMultiplier, double heightMultiplier) {
+    }
+
+    private static final DisplayConfig SHIP_THUMBNAIL = new DisplayConfig(1.3, 200, 150, 100, 75, 5, 0.95, 0.95);
+    private static final DisplayConfig SHIP_MAIN_VIEW = new DisplayConfig(1.2, 800, 600, 200, 150, 20, 0.98, 0.98);
+    private static final DisplayConfig SHIP_DIALOG = new DisplayConfig(1.25, 400, 300, 150, 100, 10, 0.92, 0.92);
+
+    private static final DisplayConfig BOARD_MAIN_VIEW = new DisplayConfig(1.8, 1200, 800, 300, 200, 15, 0.98, 0.98);
+    private static final DisplayConfig BOARD_DIALOG = new DisplayConfig(1.8, 600, 450, 200, 150, 12, 0.92, 0.92);
+
+    @FXML public VBox drawnCard;
+    @FXML private StackPane currentFrame;
+    @FXML private StackPane gameBoard;
     @FXML private StackPane player1Ship;
     @FXML private StackPane player2Ship;
     @FXML private StackPane player3Ship;
@@ -30,225 +56,585 @@ public class MenuController implements Initializable {
     @FXML private Label player2Name;
     @FXML private Label player3Name;
     @FXML private Label player4Name;
-
-    @FXML private VBox drawnCard;
-    @FXML private Button acceptButton;
-    @FXML private Button discardButton;
-
-    @FXML private Button activateComponentButton;
-    @FXML private Button endTurnButtonLeft;
-    @FXML private Button button1;
-    @FXML private Button button2;
-    @FXML private Button button3;
-    @FXML private Button button4;
-
-    @FXML private StackPane gameBoard;
-    @FXML private ScrollPane messageScrollPane;
+    @FXML public Button backButton;
+    @FXML public Button button2;
+    @FXML public Button button3;
+    @FXML public Button button4;
     @FXML private Label serverMessages;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
+    private static MenuController currentInstance;
+    private final Stack<Node> viewStack = new Stack<>();
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public enum ContentType {
+        SHIP, BOARD
+    }
+
+    @FXML
+    public void initialize() {
         gameModel = ClientGameModel.getInstance();
-        setupEventHandlers();
-        initializePlayerDisplay();
-        initializeGameBoard();
-        initializeCurrentFrame();
-        setupVisibility();
-    }
-
-    private void setupEventHandlers() {
-        acceptButton.setOnAction(_ -> handleAcceptCard());
-        discardButton.setOnAction(_ -> handleDiscardCard());
-
-        activateComponentButton.setOnAction(_ -> handleActivateComponent());
-        endTurnButtonLeft.setOnAction(_ -> handleEndTurn());
-
-        button1.setOnAction(_ -> handleButton1());
-        button2.setOnAction(_ -> handleButton2());
-        button3.setOnAction(_ -> handleButton3());
-        button4.setOnAction(_ -> handleButton4());
-    }
-
-    private void setupVisibility() {
-    }
-
-    private void initializePlayerDisplay() {
-        loadPlayerUsername();
-        loadPlayerShips();
-    }
-
-    private void loadShipFXML(StackPane container, ViewPlayer player) {
-        try {
-            FXMLLoader loader;
-            if(gameModel.getShip(ClientGameModel.getInstance().getUsername()).isLearner) {
-                loader = new FXMLLoader(getClass().getResource("/fxml/ship0.fxml"));
-            }
-            else {
-                loader = new FXMLLoader(getClass().getResource("/fxml/ship.fxml"));
-            }
-
-            container.getChildren().clear();
-            Node shipNode = loader.load();
-
-            container.getChildren().removeIf(node -> node instanceof ImageView);
-
-            if (shipNode instanceof StackPane shipStackPane) {
-                optimizeShipFitting(container, shipStackPane);
-            }
-
-            container.getChildren().add(shipNode);
-
-            Object controller = loader.getController();
-            if (controller instanceof ShipController c) {
-                c.buildShipComponents(ClientGameModel.getInstance().getShip(player.username));
-                c.updateStatisticBoard(player);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadPlayerUsername() {
         players = gameModel.getPlayers();
+        
+        loadPlayerShips();
+        loadPlayerNames();
+        initializeCurrentFrame();
+        initializeGameBoard();
+        setVisibility();
+
+        ClientGameModel.getInstance().addListener(this);
+        currentInstance = this;
+    }
+
+    /**
+     * Static method to get the current MenuController instance
+     */
+    public static MenuController getCurrentInstance() {
+        return currentInstance;
+    }
+
+    /**
+     * Sets visibility of player ship containers based on the number of players
+     */
+    private void setVisibility() {
+        StackPane[] shipPanes = {player1Ship, player2Ship, player3Ship, player4Ship};
+
+        for (int i = 0; i < shipPanes.length; i++) {
+            boolean isPlayerInGame = i < players.length && players[i] != null;
+
+            Node parentContainer = shipPanes[i].getParent();
+            if (parentContainer != null) {
+                parentContainer.setVisible(isPlayerInGame);
+            }
+        }
+
+        backButton.setVisible(false);
+        button2.setVisible(false);
+        button3.setVisible(false);
+        button4.setVisible(false);
+
+        ViewAdventureCard currentCard = gameModel.getCurrentCard();
+        boolean isCardDrawn = currentCard != null && currentCard.id != 0;
+        drawnCard.setVisible(isCardDrawn);
+        Node parentDrawnCard = drawnCard.getParent();
+        if (parentDrawnCard != null) {
+            parentDrawnCard.setVisible(isCardDrawn);
+        }
+    }
+
+    /**
+     * Loads player names in the sidebar
+     */
+    private void loadPlayerNames() {
         for (int i = 0; i < players.length; i++) {
-            if (players[i] == null) return;
-            switch (i) {
-                case 0 -> player1Name.setText(players[i].username);
-                case 1 -> player2Name.setText(players[i].username);
-                case 2 -> player3Name.setText(players[i].username);
-                case 3 -> player4Name.setText(players[i].username);
+            if (players[i] == null) continue;
+
+            Label playerNameLabel = switch (i) {
+                case 0 -> player1Name;
+                case 1 -> player2Name;
+                case 2 -> player3Name;
+                case 3 -> player4Name;
+                default -> null;
+            };
+
+            if (playerNameLabel != null) {
+                playerNameLabel.setText(players[i].username);
             }
         }
     }
 
+    /**
+     * Loads all player ships in the sidebar
+     */
     private void loadPlayerShips() {
         for (int i = 0; i < players.length; i++) {
-            if (players[i] == null) return;
-            switch (i) {
-                case 0 -> loadShipFXML(player1Ship, players[i]);
-                case 1 -> loadShipFXML(player2Ship, players[i]);
-                case 2 -> loadShipFXML(player3Ship, players[i]);
-                case 3 -> loadShipFXML(player4Ship, players[i]);
+            if (players[i] == null) continue;
+
+            StackPane shipContainer = getPlayerShipContainer(i);
+            String fxmlPath = getFXMLPath(ContentType.SHIP);
+
+            if (shipContainer != null) {
+                loadFXMLInContainer(shipContainer, fxmlPath, DisplayContext.THUMBNAIL,
+                        ContentType.SHIP, players[i]);
+                makeShipContainerClickable(shipContainer, players[i]);
             }
         }
     }
 
-    private void optimizeShipFitting(StackPane container, StackPane shipNode) {
-        container.widthProperty().addListener((_, _, newWidth) -> {
-            if (newWidth.doubleValue() > 0) {
-                updateShipSize(container, shipNode);
+    /**
+     * Shows a temporary view using the stack approach
+     * @param fxmlPath Path to the FXML file to load
+     */
+    @FXML
+    private void showTemporaryView(String fxmlPath) {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentView = currentFrame.getChildren().getFirst();
+            viewStack.push(currentView);
+            currentView.setVisible(false);
+        }
+
+        loadMenuInCurrentFrame(fxmlPath);
+        
+        backButton.setVisible(true);
+    }
+
+    /**
+     * Returns to the previous view in the stack
+     */
+    @FXML
+    private void returnToPreviousView() {
+        currentFrame.getChildren().clear();
+
+        if (!viewStack.isEmpty()) {
+            Node previousView = viewStack.pop();
+            previousView.setVisible(true);
+            currentFrame.getChildren().add(previousView);
+        }
+
+        backButton.setVisible(!viewStack.isEmpty());
+    }
+
+    /**
+     * Method called from FXML to load temporary controller
+     */
+    @FXML
+    private void loadTemporaryControllerInCurrentFrame() {
+        showTemporaryView("/fxml/buildingPhase0.fxml");
+    }
+
+    /**
+     * Generic method to show any temporary view
+     * @param fxmlPath Path to the FXML file
+     */
+    public void showTemporaryMenu(String fxmlPath) {
+        showTemporaryView(fxmlPath);
+    }
+
+    /**
+     * Clear all views in the stack and return to the initial state
+     */
+    public void clearViewStack() {
+        currentFrame.getChildren().clear();
+        viewStack.clear();
+        
+        initializeCurrentFrame();
+        backButton.setVisible(false);
+    }
+
+    /**
+     * Check if there are temporary views in the stack
+     * @return true if there are views in the stack
+     */
+    public boolean hasTemporaryViews() {
+        return !viewStack.isEmpty();
+    }
+
+    /**
+     * Makes a ship container clickable and sets up the click handler
+     */
+    private void makeShipContainerClickable(StackPane shipContainer, ViewPlayer player) {
+        shipContainer.setOnMouseEntered(e -> shipContainer.setStyle("-fx-cursor: hand;"));
+        shipContainer.setOnMouseExited(e -> shipContainer.setStyle("-fx-cursor: default;"));
+
+        shipContainer.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 1) {
+                loadPlayerShipInCurrentFrame(player);
             }
         });
+    }
 
-        container.heightProperty().addListener((_, _, newHeight) -> {
-            if (newHeight.doubleValue() > 0) {
-                updateShipSize(container, shipNode);
-            }
-        });
+    private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
+        if (hasTemporaryViews()) {
+            showTemporaryView(getFXMLPath(ContentType.SHIP));
+            return;
+        }
 
-        if (container.getWidth() > 0 && container.getHeight() > 0) {
-            updateShipSize(container, shipNode);
+        currentFrame.getChildren().clear();
+
+        if (currentPlayer != null) {
+            String fxmlPath = getFXMLPath(ContentType.SHIP);
+            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
+                    ContentType.SHIP, currentPlayer);
         }
     }
 
-    private void updateShipSize(StackPane container, StackPane shipNode) {
-        double containerWidth = container.getWidth();
-        double containerHeight = container.getHeight();
-
-        if (containerWidth <= 0 || containerHeight <= 0) return;
-
-        double padding = 10;
-        double availableWidth = containerWidth - padding;
-        double availableHeight = containerHeight - padding;
-
-        double shipAspectRatio = 1.3;
-
-        double targetWidth, targetHeight;
-
-        if (availableWidth / availableHeight > shipAspectRatio) {
-            targetHeight = availableHeight;
-            targetWidth = targetHeight * shipAspectRatio;
-        } else {
-            targetWidth = availableWidth;
-            targetHeight = targetWidth / shipAspectRatio;
-        }
-
-        targetWidth = Math.max(60, Math.min(targetWidth, 300));
-        targetHeight = Math.max(40, Math.min(targetHeight, 200));
-
-        shipNode.setPrefWidth(targetWidth);
-        shipNode.setPrefHeight(targetHeight);
-        shipNode.setMaxWidth(targetWidth);
-        shipNode.setMaxHeight(targetHeight);
+    /**
+     * Gets the ship container for the specified player
+     */
+    private StackPane getPlayerShipContainer(int playerIndex) {
+        return switch (playerIndex) {
+            case 0 -> player1Ship;
+            case 1 -> player2Ship;
+            case 2 -> player3Ship;
+            case 3 -> player4Ship;
+            default -> null;
+        };
     }
 
+    /**
+     * Initializes the game board
+     */
     private void initializeGameBoard() {
-        StackPane container = gameBoard;
+        String fxmlPath = getFXMLPath(ContentType.BOARD);
+        loadFXMLInContainer(gameBoard, fxmlPath, DisplayContext.MAIN_VIEW,
+                ContentType.BOARD, null);
+    }
+
+    /**
+     * Enhanced method to load the menu with controller configuration
+     */
+    public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
         try {
-            FXMLLoader loader;
-            if(gameModel.getShip(ClientGameModel.getInstance().getUsername()).isLearner) {
-                loader = new FXMLLoader(getClass().getResource("/fxml/board0.fxml"));
+            if (!fxmlPath.startsWith("/")) {
+                fxmlPath = "/fxml/" + fxmlPath + ".fxml";
             }
-            else {
-                loader = new FXMLLoader(getClass().getResource("/fxml/board2.fxml"));
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+
+            if (fxmlUrl == null) {
+                System.err.println("FXML file not found: " + fxmlPath);
+                return;
             }
-            container.getChildren().clear();
-            container.getChildren().add(loader.load());
+
+            Parent content = FXMLLoader.load(fxmlUrl);
+            if (content instanceof Region region) {
+                region.prefWidthProperty().bind(currentFrame.widthProperty());
+                region.prefHeightProperty().bind(currentFrame.heightProperty());
+                region.setMaxWidth(Region.USE_PREF_SIZE);
+                region.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+
+            currentFrame.getChildren().clear();
+            currentFrame.getChildren().add(content);
+
         } catch (IOException e) {
             e.printStackTrace();
+            System.err.println("Error loading menu: " + fxmlPath);
         }
     }
-    
+
+    /**
+     * Configures the loaded menu controller with specific parameters
+     */
+    private void configureMenuController(Object controller, String menuType, Object... parameters) {
+        // TODO: check
+        switch (menuType) {
+            case "loseCrewMenu" -> {
+                if (controller instanceof LoseCrewMenuController && parameters.length > 0) {
+                    ((LoseCrewMenuController) controller).initializeWithCrewToLose((Integer) parameters[0]);
+                }
+            }
+            case "cargoMenu" -> {
+                if (controller instanceof CargoMenuController && parameters.length >= 4) {
+                    ((CargoMenuController) controller).initializeWithParameters(
+                            (String) parameters[0],
+                            (Integer) parameters[1],
+                            (List<CargoColor>) parameters[2],
+                            (Boolean) parameters[3]
+                    );
+                }
+            }
+            case "idleMenu" -> {
+                if (controller instanceof IdleMenuController && parameters.length > 0) {
+                    ((IdleMenuController) controller).initializeWithMessage((String) parameters[0]);
+                }
+            }
+            default -> {
+                // No specific configuration needed
+            }
+        }
+    }
+
+    /**
+     * Static method with parameters support
+     */
+    public static void loadContentInCurrentFrame(String fxmlPath, ClientGameModel gameModel, Object... parameters) {
+        if (currentInstance != null) {
+            Platform.runLater(() -> {
+                currentInstance.showTemporaryView(fxmlPath);
+            });
+        } else {
+            System.err.println("No active MenuController instance to load: " + fxmlPath);
+        }
+    }
+
+    // GRAPHICAL METHODS
+
+    /**
+     * Generic method to load any type of FXML content into a container
+     */
+    private void loadFXMLInContainer(StackPane container, String fxmlPath, 
+                                   DisplayContext context, ContentType contentType, 
+                                   ViewPlayer player) {
+        try {
+            if (!fxmlPath.startsWith("/")) {
+                fxmlPath = "/" + fxmlPath + ".fxml";
+            }
+            URL fxmlUrl = getClass().getResource(fxmlPath);
+
+            if (fxmlUrl == null) {
+                System.err.println("FXML file not found: " + fxmlPath);
+                return;
+            }
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(fxmlUrl);
+            Node content = loader.load();
+
+            if (content instanceof StackPane contentPane) {
+                configureGenericSizing(container, contentPane, context, contentType);
+            } else if (content instanceof Pane contentPane) {
+                StackPane wrapper = new StackPane(contentPane);
+                configureGenericSizing(container, wrapper, context, contentType);
+                content = wrapper;
+            }
+
+            container.getChildren().add(content);
+            configureController(loader.getController(), contentType, player);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Error loading FXML: " + fxmlPath);
+        }
+    }
+
+    /**
+     * Unified method to configure sizing for any element
+     */
+    private void configureGenericSizing(StackPane container, StackPane element, 
+                                      DisplayContext context, ContentType contentType) {
+        DisplayConfig config = getDisplayConfig(context, contentType);
+        
+        element.prefWidthProperty().unbind();
+        element.prefHeightProperty().unbind();
+        
+        if (context == DisplayContext.THUMBNAIL) {
+            configureThumbnailSizing(container, element, config);
+        } else {
+            configureResponsiveSizing(container, element, config);
+        }
+    }
+
+    /**
+     * Enhanced configuration for thumbnails
+     */
+    private void configureThumbnailSizing(StackPane container, StackPane element, DisplayConfig config) {
+        element.setMinWidth(config.minWidth);
+        element.setMinHeight(config.minHeight);
+        element.setMaxWidth(config.maxWidth);
+        element.setMaxHeight(config.maxHeight);
+        
+        element.prefWidthProperty().bind(
+            container.widthProperty()
+                .multiply(config.widthMultiplier)
+                .subtract(config.padding)
+        );
+        element.prefHeightProperty().bind(
+            container.heightProperty()
+                .multiply(config.heightMultiplier)
+                .subtract(config.padding)
+        );
+        
+        Platform.runLater(() -> {
+            double containerWidth = container.getWidth();
+            double containerHeight = container.getHeight();
+            
+            if (containerWidth > 0 && containerHeight > 0) {
+                double calculatedWidth = containerWidth * config.widthMultiplier - config.padding;
+                double calculatedHeight = containerHeight * config.heightMultiplier - config.padding;
+                
+                if (calculatedWidth < config.minWidth || calculatedHeight < config.minHeight) {
+                    element.prefWidthProperty().unbind();
+                    element.prefHeightProperty().unbind();
+                    element.setPrefWidth(Math.max(calculatedWidth, config.minWidth));
+                    element.setPrefHeight(Math.max(calculatedHeight, config.minHeight));
+                }
+            }
+        });
+    }
+
+    /**
+     * Responsive configuration for the main view and dialog
+     */
+    private void configureResponsiveSizing(StackPane container, StackPane element, DisplayConfig config) {
+        element.setMinWidth(config.minWidth);
+        element.setMinHeight(config.minHeight);
+        element.setMaxWidth(config.maxWidth);
+        element.setMaxHeight(config.maxHeight);
+        
+        container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            if (newWidth.doubleValue() > 0) {
+                updateElementSizeSafely(container, element, config);
+            }
+        });
+        
+        container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            if (newHeight.doubleValue() > 0) {
+                updateElementSizeSafely(container, element, config);
+            }
+        });
+        
+        Platform.runLater(() -> updateElementSizeSafely(container, element, config));
+    }
+
+    /**
+     * Gets the appropriate configuration for the context and content type
+     */
+    private DisplayConfig getDisplayConfig(DisplayContext context, ContentType contentType) {
+        return switch (contentType) {
+            case SHIP -> switch (context) {
+                case THUMBNAIL -> SHIP_THUMBNAIL;
+                case MAIN_VIEW -> SHIP_MAIN_VIEW;
+                case DIALOG -> SHIP_DIALOG;
+            };
+            case BOARD -> switch (context) {
+                case MAIN_VIEW -> BOARD_MAIN_VIEW;
+                case DIALOG, THUMBNAIL -> BOARD_DIALOG;
+            };
+        };
+    }
+
+    /**
+     * Updates element size safely (handles bindings)
+     */
+    private void updateElementSizeSafely(StackPane container, StackPane element, DisplayConfig config) {
+        double containerWidth = container.getWidth();
+        double containerHeight = container.getHeight();
+        
+        if (containerWidth <= 0 || containerHeight <= 0) return;
+        
+        double availableWidth = containerWidth - config.padding;
+        double availableHeight = containerHeight - config.padding;
+        
+        double targetWidth, targetHeight;
+        
+        if (availableWidth / availableHeight > config.aspectRatio) {
+            targetHeight = availableHeight;
+            targetWidth = targetHeight * config.aspectRatio;
+        } else {
+            targetWidth = availableWidth;
+            targetHeight = targetWidth / config.aspectRatio;
+        }
+        
+        targetWidth = Math.max(config.minWidth, Math.min(targetWidth, config.maxWidth));
+        targetHeight = Math.max(config.minHeight, Math.min(targetHeight, config.maxHeight));
+        
+        element.prefWidthProperty().unbind();
+        element.prefHeightProperty().unbind();
+        
+        element.setPrefWidth(targetWidth);
+        element.setPrefHeight(targetHeight);
+        element.setMaxWidth(targetWidth);
+        element.setMaxHeight(targetHeight);
+    }
+
+    /**
+     * Configures the controller of the loaded content
+     */
+    private void configureController(Object controller, ContentType contentType, 
+                                   ViewPlayer player) {
+        switch (contentType) {
+            case SHIP -> {
+                if (controller instanceof ShipController shipController && player != null) {
+                    shipController.buildShipComponents(gameModel.getShip(player.username));
+                    shipController.updateStatisticBoard(player);
+                }
+            }
+            case BOARD -> {
+                if (controller instanceof BoardController boardController) {
+                    boardController.updateBoardDisplay(gameModel.getBoard());
+                }
+            }
+        }
+    }
+
+    /**
+     * Initializes currentFrame with current player's ship
+     */
     private void initializeCurrentFrame() {
-        loadShipFXML(currentFrame, Arrays.stream(gameModel.getPlayers())
+        ViewPlayer currentPlayer = Arrays.stream(gameModel.getPlayers())
                 .filter(p -> p != null && p.username.equals(gameModel.getUsername()))
-                .findFirst().orElse(null));
-    }
-
-    public void updateServerMessages(String ignoredMessage) {
-
-    }
-
-    private void handleAcceptCard() {
-        try {
-            gameModel.getClient().acceptCard(gameModel.getUsername());
-        } catch (RemoteException e) {
-            updateServerMessages("Error accepting card: " + e.getMessage());
+                .findFirst().orElse(null);
+        
+        if (currentPlayer != null) {
+            String fxmlPath = getFXMLPath(ContentType.SHIP);
+            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
+                              ContentType.SHIP, currentPlayer);
         }
     }
 
-    private void handleDiscardCard() {
-        try {
-            gameModel.getClient().endMove(ClientGameModel.getInstance().getUsername());
-        } catch (RemoteException e) {
-            updateServerMessages("Error discarding card: " + e.getMessage());
-        }
+    /**
+     * Gets the appropriate FXML path for the content type
+     */
+    private String getFXMLPath(ContentType contentType) {
+        return switch (contentType) {
+            case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+                        "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+            case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+                         "/fxml/board0.fxml" : "/fxml/board2.fxml";
+        };
     }
 
-    private void handleActivateComponent() {
-
+    /**
+     * Static method to load ship in other controllers
+     */
+    public static void loadShipInContainer(StackPane container, ViewPlayer player, 
+                                         DisplayContext context) {
+        MenuController controller = new MenuController();
+        String fxmlPath = controller.getFXMLPath(ContentType.SHIP);
+        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.SHIP, player);
     }
 
-    private void handleEndTurn() {
+    /**
+     * Static method to load board in other controllers
+     */
+    public static void loadBoardInContainer(StackPane container, DisplayContext context) {
+        MenuController controller = new MenuController();
+        String fxmlPath = controller.getFXMLPath(ContentType.BOARD);
+        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.BOARD, null);
     }
 
-    private void handleButton1() {
-
+    /**
+     * Generic static method for any content
+     */
+    public static void loadContentInContainer(StackPane container, ContentType contentType, 
+                                            DisplayContext context, ViewPlayer player) {
+        MenuController controller = new MenuController();
+        String fxmlPath = controller.getFXMLPath(contentType);
+        controller.loadFXMLInContainer(container, fxmlPath, context, contentType, player);
     }
 
-    private void handleButton2() {
-
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // TODO
     }
 
-    private void handleButton3() {
-
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // ignore
     }
 
-    private void handleButton4() {
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // TODO: decide what to do
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        Platform.runLater(() -> {
+            if (currentCard != null) {
+                String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
+                String currentText = serverMessages.getText();
+                if (currentText.equals("Waiting for server messages...")) {
+                    serverMessages.setText(cardInfo);
+                } else {
+                    serverMessages.setText(currentText + "\n" + cardInfo);
+                }
+            }
+        });
 
     }
 }
