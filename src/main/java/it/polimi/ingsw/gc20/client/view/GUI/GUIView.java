@@ -58,11 +58,9 @@ public class GUIView extends ClientGameModel {
         ENGINE_MENU("engineMenu");
 
         private final String fxmlFileName;
-
         GuiState(String fxmlFileName) {
             this.fxmlFileName = fxmlFileName;
         }
-
         public String getFxmlFileName() {
             return fxmlFileName;
         }
@@ -301,7 +299,6 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void rollDiceMenu(String message) {
-        // TODO
         Platform.runLater(() -> {
             try {
                 Stage dialogStage = new Stage();
@@ -352,20 +349,16 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void AssemblingStateMenu() {
-        Platform.runLater(() -> {
-            setCurrentGuiState(GuiState.MENU);
-            showScene(getCurrentGuiState().getFxmlFileName());
-            ViewShip playerShip = null;
-            if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
-                playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-            }
+        ViewShip playerShip = null;
+        if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
+            playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
+        }
 
-            if (playerShip != null && playerShip.isLearner) {
-                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE0.getFxmlFileName(), this);
-            } else {
-                MenuController.loadContentInCurrentFrame(GuiState.BUILDING_PHASE2.getFxmlFileName(), this);
-            }
-        });
+        if (playerShip != null && playerShip.isLearner) {
+            showMenuContent(GuiState.BUILDING_PHASE0);
+        } else {
+            showMenuContent(GuiState.BUILDING_PHASE2);
+        }
     }
 
     @Override
