@@ -164,7 +164,6 @@ class SmugglersStateTest {
 
     @Test
     void testSmugglersState() throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
-        assertEquals("SmugglersState{ lostCargo=2, firePower=2, lostDays=1, reward=[YELLOW, BLUE]}", state.toString());
         assertEquals("player1", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
         state.activateCannons(controller.getPlayerByID("player1"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));
@@ -194,7 +193,6 @@ class SmugglersStateTest {
     void testSmugglersState2() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException {
         CargoHold cargoHold = (CargoHold) controller.getPlayerByID("player2").getShip().getComponentAt(1, 2);
         controller.getPlayerByID("player2").getShip().loadCargo(CargoColor.GREEN, cargoHold);
-        assertEquals("SmugglersState{ lostCargo=2, firePower=2, lostDays=1, reward=[YELLOW, BLUE]}", state.toString());
         assertEquals("player1", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
         state.activateCannons(controller.getPlayerByID("player1"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));

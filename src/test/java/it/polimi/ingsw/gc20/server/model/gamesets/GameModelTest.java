@@ -822,4 +822,12 @@ class GameModelTest {
         assertEquals(2, gameModel.getTurnedHourglass());
         assertThrows(HourglassException.class, () -> gameModel.turnHourglass());
     }
+
+    @Test
+    void testDemo() {
+        players.add("player3");
+        players.add("player4");
+        gameModel.startGame(level, players, gameId);
+        gameModel.createDemoShips();
+    }
 }

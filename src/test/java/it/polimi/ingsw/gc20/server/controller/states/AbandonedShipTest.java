@@ -162,6 +162,5 @@ public class AbandonedShipTest {
         } catch (InvalidTurnException | InvalidStateException | EmptyCabinException | ComponentNotFoundException e) {
             fail(e);
         }
-        assertEquals("AbandonedShipState", state.toString());
     }
 }

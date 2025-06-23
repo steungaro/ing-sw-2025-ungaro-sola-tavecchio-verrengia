@@ -159,6 +159,5 @@ class OpenSpaceStateTest {
         state.activateEngines(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         assertEquals(8, controller.getPlayerByID("player1").getPosition());
         assertEquals(1, controller.getPlayerByID("player2").getPosition());
-        assertEquals("OpenSpaceState", state.toString());
     }
 }

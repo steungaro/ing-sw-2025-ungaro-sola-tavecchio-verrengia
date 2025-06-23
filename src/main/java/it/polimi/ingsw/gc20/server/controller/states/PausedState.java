@@ -83,13 +83,7 @@ public class PausedState extends State {
     }
 
     @Override
-    public String toString() {
-        return "PausedState";
-    }
-
-    @Override
     public boolean isConcurrent(){
         return previousState.isConcurrent();
     }
-
 }

@@ -167,7 +167,6 @@ class MeteorSwarmStateTest {
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
         state.activateShield(controller.getPlayerByID("player2"), null, null);
-        assertEquals("MeteorSwarmState", state.toString());
     }
 
 }

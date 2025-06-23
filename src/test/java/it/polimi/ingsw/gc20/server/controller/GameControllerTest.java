@@ -1,21 +1,25 @@
 package it.polimi.ingsw.gc20.server.controller;
 
 import it.polimi.ingsw.gc20.server.controller.states.*;
-import it.polimi.ingsw.gc20.server.model.cards.*;
+import it.polimi.ingsw.gc20.server.exceptions.*;
+import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
+import it.polimi.ingsw.gc20.server.model.cards.FireType;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.cards.Projectile;
 import it.polimi.ingsw.gc20.server.model.components.*;
-import it.polimi.ingsw.gc20.server.model.gamesets.*;
-import it.polimi.ingsw.gc20.server.model.player.*;
-import it.polimi.ingsw.gc20.server.model.ship.*;
+import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
+import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
+import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.javatuples.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import it.polimi.ingsw.gc20.server.exceptions.*;
-
-import java.util.*;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,7 +63,7 @@ class GameControllerTest {
     @Test
     void setState() {
         gameController.setState(abandonedShipState);
-        assertEquals(abandonedShipState.toString(), gameController.getState());
+        assertEquals(abandonedShipState, gameController.getState());
     }
 
     @Test
@@ -80,7 +84,7 @@ class GameControllerTest {
         assertNotNull(drawnCard);
         while (drawnCard!= null){
                 gameController.drawCard();
-                if (gameController.getState().equals("EndgameState")) {
+                if (gameController.getState().getClass().getSimpleName().equals("EndgameState")) {
                     break;
                 }
                 drawnCard = gameController.getModel().getActiveCard();
@@ -90,7 +94,7 @@ class GameControllerTest {
     @Test
     void getState() {
         gameController.setState(abandonedShipState);
-        assertEquals(abandonedShipState.toString(), gameController.getState());
+        assertEquals(abandonedShipState.getClass().getSimpleName(), gameController.getState().getClass().getSimpleName());
     }
 
     @Test
@@ -242,7 +246,6 @@ class GameControllerTest {
 
     @Test
     void activateCannons() throws InvalidTileException {
-        // Configurazione dello stato di sciame meteoriti
 
 
         List<Projectile> projectiles = new ArrayList<>();
@@ -263,14 +266,12 @@ class GameControllerTest {
         MeteorSwarmState meteorSwarmState = new MeteorSwarmState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(meteorSwarmState);
 
-        // Aggiungo un cannone alla nave del giocatore
         Cannon cannon = new Cannon();
         gameController.getPlayerByID("player1").getShip().addComponent(cannon, 1, 1);
         Pair<Integer, Integer> cannonCord = new Pair<>(1, 1);
         List<Pair<Integer, Integer>> cannons = new ArrayList<>();
         cannons.add(cannonCord);
 
-        // Aggiungo una batteria carica alla nave
         Battery battery = new Battery();
         battery.setSlots(3);
         battery.setAvailableEnergy(3);
@@ -279,12 +280,9 @@ class GameControllerTest {
         List<Pair<Integer, Integer>> batteries = new ArrayList<>();
         batteries.add(batteryCord);
 
-        //tiro il dado
         gameController.rollDice("player1");
-        // Attivo il cannone
         gameController.activateCannons("player1", cannons, batteries);
 
-        // Verifico che l'energia della batteria sia diminuita (il cannone ha consumato energia)
         Battery usedBattery = (Battery) gameController.getPlayerByID("player1").getShip().getComponentAt(2, 2);
         assertEquals(2, usedBattery.getAvailableEnergy());
 
@@ -466,7 +464,7 @@ class GameControllerTest {
     void disconnectPlayer() {
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
-        gameController.disconnectPlayer("+1 voto se leggi questo");
+        gameController.disconnectPlayer("+1/30 if you're reading this :)");
         gameController.disconnectPlayer("player1");
         assertTrue(gameController.isPlayerDisconnected("player1"));
         assertFalse(gameController.getInGameConnectedPlayers().contains("player1"));
@@ -478,7 +476,7 @@ class GameControllerTest {
 
     @Test
     void reconnectPlayer() {
-        gameController.reconnectPlayer("ci sei cascato di nuovo +2");
+        gameController.reconnectPlayer("you fell for it twice");
         gameController.reconnectPlayer("player2");
         AbandonedShipState abandonedShipState1 = new AbandonedShipState(gameController.getModel(), gameController, adventureCard);
         gameController.setState(abandonedShipState1);
