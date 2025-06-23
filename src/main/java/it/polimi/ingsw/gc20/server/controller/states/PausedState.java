@@ -46,12 +46,12 @@ public class PausedState extends State {
         this.previousState = previousState;
         this.phase = StatePhase.STANDBY_PHASE;
         getController().getMessageManager().broadcastPhase(new StandbyMessage("Everyone disconnected. Waiting for the game to resume."));
-        // If nobody reconnects in 30 seconds, the remaining player wins the game
+        // If nobody reconnects in 90 seconds, the remaining player wins the game
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
         future = scheduler.schedule(() -> {
             getController().setState(new EndgameState(getController()));
             shutdown();
-        }, 120, TimeUnit.SECONDS);
+        }, 90, TimeUnit.SECONDS);
     }
 
     /**
