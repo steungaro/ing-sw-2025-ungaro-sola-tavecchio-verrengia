@@ -15,10 +15,9 @@ public abstract class Ship {
 
     protected final Set<Component> waste;
     protected int singleEngines;
-    protected final int doubleCannons;
     protected int doubleEngines;
     protected int doubleCannonsPower;
-    protected Float singleCannonsPower;
+    protected float singleCannonsPower;
     protected int totalEnergy;
     protected final Map<CargoColor, Integer> cargos;
     protected int astronauts;
@@ -29,7 +28,6 @@ public abstract class Ship {
     public Ship() {
         waste = new HashSet<>();
         singleEngines = 0;
-        doubleCannons = 0;
         doubleEngines = 0;
         doubleCannonsPower = 0;
         singleCannonsPower = 0f;
@@ -39,7 +37,7 @@ public abstract class Ship {
     }
 
 
-    public Float getSingleCannonsPower() {
+    public float getSingleCannonsPower() {
         return singleCannonsPower;
     }
 
@@ -210,7 +208,7 @@ public abstract class Ship {
      * @param d Direction: the direction from which the ship is being attacked
      * @return if the side is shielded
      */
-    public Boolean getShield(Direction d) {
+    public boolean getShield(Direction d) {
         //parse throws the component of the ship until it finds a shield that covers the direction or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
@@ -522,7 +520,7 @@ public abstract class Ship {
      * @param c Component to destroy
      * @return True if the ship remains valid after removal
      */
-    public Boolean killComponent(Component c) throws ComponentNotFoundException {
+    public boolean killComponent(Component c) throws ComponentNotFoundException {
         if (c == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }

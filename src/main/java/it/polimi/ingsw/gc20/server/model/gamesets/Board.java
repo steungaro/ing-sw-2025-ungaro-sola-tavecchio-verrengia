@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public abstract class Board {
     protected List<AdventureCard> deck;
-    protected Integer spaces;
+    protected int spaces;
     protected final List<Player> stallBox;
     protected final Logger logger = Logger.getLogger(Board.class.getName());
 
@@ -49,7 +49,7 @@ public abstract class Board {
      *
      * @param spaces the number of spaces to set on the board
      */
-    public void setSpaces(Integer spaces) {
+    public void setSpaces(int spaces) {
         this.spaces = spaces;
     }
 
@@ -63,9 +63,9 @@ public abstract class Board {
     /**
      * Retrieves the number of spaces on the board.
      *
-     * @return the number of spaces as an Integer
+     * @return the number of spaces as an int
      */
-    public Integer getSpaces() {
+    public int getSpaces() {
         return this.spaces;
     }
 
