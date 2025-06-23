@@ -238,12 +238,10 @@ public abstract class State{
      * Validates whether the player's ship meets the required criteria.
      *
      * @param player the Player whose ship is to be validated
-     * @return true if the player's ship is valid, false otherwise
      * @throws InvalidStateException if the state of the game or player is invalid for validation
      */
-    public boolean isShipValid(Player player) throws InvalidStateException {
+    public void isShipValid(Player player) throws InvalidStateException {
         exception();
-        return false;
     }
     /**
      * Removes a component from the specified player's ship at the given coordinates.
