@@ -152,16 +152,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private void loadShip() {
         ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
         ClientGameModel clientGameModel = ClientGameModel.getInstance();
-        if (clientGameModel != null) {
-            String currentUsername = clientGameModel.getUsername();
-            ViewPlayer[] players = clientGameModel.getPlayers();
-            if (players != null && currentUsername != null) {
-                Optional<ViewPlayer> currentPlayerOpt = Arrays.stream(players)
-                        .filter(p -> currentUsername.equals(p.username))
-                        .findFirst();
-                currentPlayerOpt.ifPresent(this::updateStatisticBoard);
-            }
-        }
         buildShipComponents(ship);
     }
 
@@ -361,15 +351,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         );
 
         parent.getChildren().add(box);
-    }
-
-    public void updateStatisticBoard(ViewPlayer player) {
-        if (player != null) {
-            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            usernameLabel.setText("Username: " + player.username);
-            creditsLabel.setText("Credits: " + player.credits);
-            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
-        }
     }
 
     private void loadUncoveredComponents() {
