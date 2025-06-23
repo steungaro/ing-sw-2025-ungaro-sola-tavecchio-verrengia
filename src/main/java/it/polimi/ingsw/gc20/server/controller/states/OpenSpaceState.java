@@ -102,11 +102,6 @@ public class OpenSpaceState extends PlayingState {
         for (Player player : getModel().getInGamePlayers()) {
             getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
         }
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
         getModel().getActiveCard().playCard();

@@ -45,12 +45,6 @@ public class EpidemicState extends PlayingState {
         for (Player p: getController().getModel().getInGamePlayers()) {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(p.getUsername(), p.getShip(), "epidemic"));
         }
-
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         //effect ended, draw a new card
         phase = StatePhase.DRAW_CARD_PHASE;
         //notify all the players that the epidemic effect is over, and we wait for a new card

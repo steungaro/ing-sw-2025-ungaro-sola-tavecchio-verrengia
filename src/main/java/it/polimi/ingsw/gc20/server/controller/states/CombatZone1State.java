@@ -349,11 +349,6 @@ public class  CombatZone1State extends CargoState {
         setCurrentPlayer(getController().getFirstOnlinePlayer());
         //notify all players that an automatic action is being performed
         getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("Finding the player with fewer crew members..."));
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         //set the phase to the next phase
         phase = StatePhase.AUTOMATIC_ACTION;
         automaticAction();
