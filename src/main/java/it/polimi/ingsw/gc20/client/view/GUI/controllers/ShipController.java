@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -93,43 +94,24 @@ public abstract class ShipController implements GameModelListener {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane(); // This pane will be the cell in the grid
 
-        if (componentId >= 1000 && componentId <= 1003) {
-            ViewPlayer[] players = ClientGameModel.getInstance().getPlayers();
-            ViewPlayer currentPlayer = Arrays.stream(players)
-                    .filter(p -> p != null && playerUsername.equals(p.username))
-                    .findFirst()
-                    .orElse(null);
-            if (currentPlayer != null && currentPlayer.playerColor != null) {
-                switch (currentPlayer.playerColor) {
-                    case BLUE -> componentId = 1000;
-                    case RED -> componentId = 1001;
-                    case GREEN -> componentId = 1002;
-                    case YELLOW -> componentId = 1003;
-                }
-            }
-        }
-
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            ImageView imageView = new ImageView(componentImage); // Create a new ImageView
-
+            targetCell.setImage(componentImage);
             if (comp.rotComp >= 0 && comp.rotComp <= 3) {
-                imageView.setRotate(comp.rotComp * 90); // Rotate the new ImageView
+                targetCell.setRotate(comp.rotComp * 90);
             }
 
-            imageView.setFitWidth(targetCell.getFitWidth());
-            imageView.setFitHeight(targetCell.getFitHeight());
-
-            layeredPane.getChildren().add(imageView); // Add the rotated ImageView to the layeredPane
-            if (comp.isBattery()) {
-                setComponentProp(layeredPane, (ViewBattery) comp);
-            } else if (comp.isCabin()) {
+            layeredPane.getChildren().add(targetCell);
+            if (comp.isCabin()) {
                 setComponentProp(layeredPane, (ViewCabin) comp);
+            } else if (comp.isBattery()) {
+                setComponentProp(layeredPane, (ViewBattery) comp);
             } else if (comp.isCargoHold()) {
                 setComponentProp(layeredPane, (ViewCargoHold) comp);
             }
 
+            // Make sure the layered pane fills the cell
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
             GridPane.setFillHeight(layeredPane, true);
@@ -184,8 +166,8 @@ public abstract class ShipController implements GameModelListener {
                 alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
                 alienIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
                 layeredPane.getChildren().add(alienIcon);
+                StackPane.setAlignment(alienIcon, Pos.CENTER);
             } catch (Exception e) {
                 System.err.println("Unable to load alien image: " + e.getMessage());
             }
@@ -199,10 +181,10 @@ public abstract class ShipController implements GameModelListener {
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.TOP_LEFT);
-                StackPane.setAlignment(astronautIcon, javafx.geometry.Pos.BOTTOM_LEFT);
-
                 layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
+                StackPane.setAlignment(astronautsLabel, Pos.CENTER_LEFT);
+                StackPane.setAlignment(astronautIcon, Pos.CENTER_RIGHT);
+
             } catch (Exception e) {
                 System.err.println("Unable to load astronaut image: " + e.getMessage());
                 layeredPane.getChildren().add(astronautsLabel);
@@ -221,7 +203,7 @@ public abstract class ShipController implements GameModelListener {
                 Label colorIndicator = new Label("");
                 colorIndicator.setStyle("-fx-background: " + colorStr +
                         "; -fx-min-width: 15px; -fx-min-height: 15px; -fx-border-color: white; -fx-border-width: 1px;");
-                StackPane.setAlignment(colorIndicator, javafx.geometry.Pos.BOTTOM_RIGHT);
+                StackPane.setAlignment(colorIndicator, Pos.BOTTOM_RIGHT);
                 StackPane.setMargin(colorIndicator, new Insets(0, 5, 5, 0));
                 layeredPane.getChildren().add(colorIndicator);
             }
