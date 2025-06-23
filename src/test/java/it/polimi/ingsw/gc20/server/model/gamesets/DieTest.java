@@ -11,22 +11,36 @@ class DieTest {
 
     private Die die;
 
+    /**
+     * Sets up the test environment before each test case.
+     */
     @BeforeEach
     void setUp() {
         die = new Die();
     }
 
+    /**
+     * Cleans up the test environment after each test case.
+     * This method is called after each test to ensure that the die object is reset.
+     */
     @AfterEach
     void tearDown() {
         die = null;
     }
 
+    /**
+     * Tests the rollDie method of the Die class.
+     */
     @Test
     void rollDie() {
         int result = die.rollDie();
         assertTrue(result >= 1 && result <= 6, "Die roll should be between 1 and 6");
     }
 
+    /**
+     * Tests the getLastRolled method of the Die class.
+     * It should throw a DieNotRolledException if the die has not been rolled yet.
+     */
     @Test
     void getLastRolled() {
         assertThrows(DieNotRolledException.class, ()->die.getLastRolled());

@@ -19,6 +19,19 @@ class NormalShipTest {
     private Cabin Cabin1;
     private CargoHold cargoHold;
 
+    /**
+     * Sets up the test environment for `NormalShipTest` by initializing a new ship and its components.
+     * <p>
+     * The setup involves:
+     * - Creating a new `NormalShip` instance.
+     * - Initializing various components (`Cannon`, `Engine`, `Battery`, `Cabin`, `CargoHold`) with specific configurations.
+     * - Adding these components to the ship at specific positions.
+     * - Configuring connectors for each component to match its intended functionality.
+     * - Initializing astronauts in the ship to simulate the test scenario.
+     * <p>
+     * This method is executed before each test to ensure a consistent and isolated test environment.
+     * If adding components fails, the test setup will report an error.
+     */
     @BeforeEach
     void setUp() {
         // Create a new NormalShip
@@ -122,6 +135,17 @@ class NormalShipTest {
         ship.initAstronauts();
     }
 
+    /**
+     * Tests the functionality of getting and setting the color that the cabin can host within the ship.
+     * <p>
+     * Validates the following scenarios:
+     * - The default color that the cabin can host is `AlienColor.NONE`.
+     * - After setting a new color (e.g., `AlienColor.BROWN`), the cabin correctly reflects the updated
+     *   color and allows retrieval of the same.
+     * <p>
+     * The test ensures consistency in the behavior of the `getColorHostable()` and `setColorHostable()`
+     * methods from the `NormalShip` class.
+     */
     @Test
     void ColorHostable(){
         assertEquals(AlienColor.NONE, ship.getColorHostable());
@@ -129,6 +153,24 @@ class NormalShipTest {
         assertEquals(AlienColor.BROWN, ship.getColorHostable());
     }
 
+    /**
+     * Tests the behavior of the {@code getFirstComponent} method of the {@code NormalShip} class.
+     * <p>
+     * This method verifies that the first component encountered in a specific direction and
+     * at a particular row/column of the ship's board is correctly identified. The test ensures that the
+     * logic related to directions (UP, DOWN, LEFT, RIGHT) and boundary validation is implemented correctly.
+     * <p>
+     * The following scenarios are validated:
+     * - Retrieving the first component in the UP direction for a given column.
+     * - Retrieving the first component in the DOWN direction for a given column.
+     * - Retrieving the first component in the RIGHT direction for a given row.
+     * - Ensuring {@code null} is returned when no component exists in the specified direction and position.
+     * - Retrieving the first component in the LEFT direction for a given row.
+     * <p>
+     * Assertions:
+     * - The returned component matches the expected component in valid cases.
+     * - {@code null} is returned for out-of-bound indices or when no component exists in the specified path.
+     */
     @Test
     void getFirstComponent() {
         assertEquals(cargoHold, ship.getFirstComponent(Direction.UP, 2));
@@ -139,6 +181,24 @@ class NormalShipTest {
     }
 
 
+    /**
+     * Tests the functionality of the {@code addBookedToWaste} method in the {@code NormalShip} class.
+     * <p>
+     * Validates that booked cabins are successfully transferred to the waste when this method is invoked.
+     * <p>
+     * The test ensures the following:
+     * - A cabin added to the booked list of the ship is correctly identified as booked.
+     * - All booked cabins are removed from the booked list after invoking the {@code addBookedToWaste} method.
+     * - All removed cabins are successfully added to the waste list.
+     * - The count of cabins in the waste list matches the number of cabins that were previously booked.
+     * <p>
+     * Assertions:
+     * - The booked list no longer contains cabins that were moved to waste.
+     * - The waste list size increases correctly after the transfer.
+     * - Exceptions are not thrown during the execution of the method.
+     * <p>
+     * If the booked cabins are not properly transferred or other issues occur, the test will fail.
+     */
     @Test
     void addBookedToWaste (){
         try {
@@ -159,6 +219,24 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the functionality of the {@code removeBooked} method in the {@code NormalShip} class.
+     * <p>
+     * The test validates the following scenarios:
+     * - Successfully removes a booked component from the ship.
+     * - Verifies that the removed component no longer exists in the booked list.
+     * - Ensures that other booked components are unaffected when removing a specific component.
+     * - Allows re-adding a previously removed booked component.
+     * - Handles the removal of a component that was never booked, ensuring that a {@code ComponentNotFoundException} is thrown.
+     * <p>
+     * Assertions:
+     * - The booked list does not contain the removed component after successful removal.
+     * - The booked list still contains other components that are not removed.
+     * - The method allows re-booking of removed components without errors.
+     * - A {@code ComponentNotFoundException} is thrown when attempting to remove a component that was not booked.
+     * <p>
+     * If any of the above validations fail, the test will mark the method as incorrect.
+     */
     @Test
     void removeBooked() {
         Cabin cabin3 = new Cabin();
@@ -191,6 +269,23 @@ class NormalShipTest {
         assertThrows (ComponentNotFoundException.class, ()-> ship.removeBooked(cabin5));
     }
 
+    /**
+     * Verifies the functionality of the {@code getComponentAt} method in the {@code NormalShip} class.
+     * <p>
+     * This test confirms that the method correctly retrieves components located at specific row and
+     * column indices in the ship's structure or returns {@code null} when no component exists at
+     * the specified position.
+     * <p>
+     * Validates the following scenarios:
+     * - Retrieve the correct component for valid positions with components present.
+     * - Return {@code null} for out-of-bound positions or positions with no component.
+     * <p>
+     * Assertions:
+     * - The component at specified valid indices matches the expected component.
+     * - The method returns {@code null} for positions without components or invalid indices.
+     * <p>
+     * Failure of assertions will indicate issues in row/column boundary management or component retrieval logic.
+     */
     @Test
     void getComponentAt() {
         assertEquals(upCannon, ship.getComponentAt(1, 3));
@@ -202,6 +297,23 @@ class NormalShipTest {
         assertNull(ship.getComponentAt(0, 0));
     }
 
+    /**
+     * Tests the behavior of the {@code firePower} method in the {@code NormalShip} class.
+     * <p>
+     * Validates the following scenarios:
+     * - Calculation of firepower when a set of cannons and a power level is provided.
+     * - Proper handling when no cannons are present in the set.
+     * - Accurate computation of firepower when multiple cannons with varying power levels
+     *   are included in the set.
+     * - Adjustments in firepower calculation when specific conditions, such as the presence
+     *   of a "purple alien," are applied.
+     * - Ensures that no exceptions occur during the calculation process.
+     * <p>
+     * Assertions:
+     * - The returned firepower value matches the expected result for each test case.
+     * - A failure in firepower calculation will trigger the test to fail with a specific
+     *   failure message.
+     */
     @Test
     void testFirePower() {
         try {
@@ -228,6 +340,22 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the functionality of the {@code enginePower} method in the {@code NormalShip} class.
+     * <p>
+     * Validates the following scenarios:
+     * - Calculates the engine power correctly with a given number of double engines activated.
+     * - Handles the reduction in engine power when specific components, such as single or double engines, are removed.
+     * - Considers the influence of a brown alien on the engine power calculation.
+     * - Ensures proper handling of the {@code ComponentNotFoundException} when attempting to kill a non-existent component.
+     * <p>
+     * Assertions:
+     * - The returned engine power value correctly reflects the number of active engines and the presence of a brown alien.
+     * - The engine power reduces appropriately when components are removed.
+     * - The engine power computation does not fail unexpectedly despite the removal or non-existence of components.
+     * <p>
+     * The test ensures accurate and reliable behavior of the {@code enginePower} method in different scenarios.
+     */
     @Test
     void enginePower() {
         try {
@@ -244,6 +372,22 @@ class NormalShipTest {
     }
 
 
+    /**
+     * Tests the functionality of the {@code setComponentAt} method in the {@code NormalShip} class.
+     * <p>
+     * Validates the behavior of placing a new component at a specific row and column on the ship's board.
+     * Ensures that the correct component is placed at the specified position and the changes
+     * are reflected when retrieving the component from the same position.
+     * <p>
+     * The test includes the following validations:
+     * - Successfully sets a new component (e.g., {@code Cannon}) at a valid position on the board.
+     * - Verifies that the {@code getComponentAt} method retrieves the expected component after placement.
+     * - Ensures that no exceptions, such as {@code InvalidTileException}, are thrown during valid operations.
+     * <p>
+     * Assertions:
+     * - The component set at the given coordinates matches the expected new component.
+     * - The test fails with a specific error message if the component cannot be set due to an invalid position or other issues.
+     */
     @Test
     void setComponentAt() {
         Cannon newCannon = new Cannon();
@@ -293,6 +437,23 @@ class NormalShipTest {
     }
 
 
+    /**
+     * Tests the functionality of updating the life support system for a spaceship's cabin.
+     * It verifies if the cabin's alien color updates properly when life support is added and removed.
+     * <p>
+     * The test ensures the following:
+     * 1. The initial alien color of the cabin is verified to be NONE.
+     * 2. A LifeSupport component is created and its color is set.
+     * 3. The proper connectors for both the cabin and the life support system are configured,
+     *    and the life support component is added to the spaceship.
+     * 4. After adding the life support, the cabin's alien color should change to match the life support's color.
+     * 5. The life support system is then removed, and the cabin's alien color is verified to revert back to NONE.
+     * <p>
+     * Exceptions are verified to ensure no failures occur in adding or removing the life support component.
+     * <p>
+     * The test will fail if the life support addition or removal does not correctly update the cabin's color
+     * or if any unexpected exceptions occur.
+     */
     @Test
     void updateLifeSupport(){
         assertEquals(AlienColor.NONE,  Cabin1.getAlienColor());
@@ -327,7 +488,26 @@ class NormalShipTest {
     }
 
 
-
+    /**
+     * Tests the functionality of the removeBooked method.
+     * <p>
+     * This test ensures that the method correctly removes a specified Cabin
+     * object from the list of booked cabins in a Ship instance. It verifies
+     * that the removed Cabin is no longer present in the booked cabins list
+     * while other cabins remain unaffected. The test also handles any
+     * unexpected exceptions and fails the test if such occur.
+     * <p>
+     * Assertions:
+     * - After adding a Cabin to the booked list, it is verified to be present
+     *   in the list.
+     * - When a Cabin is removed using removeBooked, it is verified to no longer
+     *   exist in the booked list.
+     * - Other cabins in the list remain unaffected by the removal operation.
+     * <p>
+     * Failure Condition:
+     * - If an exception is thrown during the execution, the test will fail with
+     *   a corresponding failure message.
+     */
     @Test
     void removeBookedTest() {
         try {
@@ -347,6 +527,18 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the getBooked() method of the Ship class to verify that it correctly
+     * retrieves a list of all booked components, such as Cabins.
+     * <p>
+     * The method first adds cabins to the booked list using the addBooked() method
+     * and then validates that these cabins are included in the list returned by
+     * getBooked(). It uses assertions to check that the expected components are
+     * present in the retrieved list of booked components.
+     * <p>
+     * If any exception occurs during the test, it fails the test with an appropriate
+     * error message.
+     */
     @Test
     void getBooked() {
         try {
@@ -366,6 +558,15 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the `addBooked` method to ensure that a cabin can be successfully added
+     * to the list of booked cabins associated with a ship.
+     * <p>
+     * The test initializes a new `Cabin` object, invokes the `addBooked` method
+     * to add the cabin to the ship's booked list, and asserts that the cabin is
+     * present in the booked list after the addition. If any exception is thrown
+     * during the process, the test fails with an appropriate message.
+     */
     @Test
     void addBooked() {
         try {
@@ -377,17 +578,47 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the getRows method of the Ship class.
+     * Verifies that the number of rows returned by the getRows method matches the expected value.
+     */
     @Test
     void getRows() {
         assertEquals(5, ship.getRows());
     }
 
+    /**
+     * Tests the getCols method of the Ship object.
+     * Ensures that the method returns the correct number of columns.
+     * <p>
+     * The test verifies that the number of columns returned by the
+     * getCols method matches the expected value.
+     */
     @Test
     void getCols() {
         assertEquals(7, ship.getCols());
     }
 
 
+    /**
+     * Tests the functionality of adding and removing a life support component
+     * from a ship and its impact on the connected cabin's properties and behavior.
+     * <p>
+     * The method performs the following actions:
+     * 1. Initializes a set of connectors with a specific configuration and assigns
+     *    them to the cabin used for this test.
+     * 2. Adds a life support component to a specified position in the ship layout
+     *    and verifies its effect on the cabin's color to match the life support's color.
+     * 3. Removes the life support component and confirms that the cabin's color
+     *    resets to its default state.
+     * 4. Performs additional testing to validate the removal of life support,
+     *    such as loading and unloading the crew from the cabin and validating
+     *    that an exception is appropriately thrown if the life support is
+     *    removed while its absence impacts aliens in the connected cabin.
+     * <p>
+     * Assertions and exception handling ensure the correctness of the life
+     * support addition, removal, and associated behaviors.
+     */
     @Test
     void updateLifeSupportRemove() {
         Map<Direction, ConnectorEnum> connectorsLifeSupport = new HashMap<>();
@@ -432,6 +663,33 @@ class NormalShipTest {
         }
     }
 
+
+    /**
+     * Tests the functionality of adding an alien to a cabin in the spaceship while validating
+     * various constraints and scenarios related to alien placement and cabin conditions.
+     * <p>
+     * This method performs the following validations:
+     * 1. Ensures that astronauts are removed from the cabin before adding an alien.
+     * 2. Configures the cabin with a proper set of connectors required for life support.
+     * 3. Adds a life support component to the spaceship and verifies the ability to add an alien of a specific color.
+     * 4. Verifies that the alien color and placement are correctly updated in the respective cabin.
+     * 5. Tests the prevention of adding multiple aliens of the same color, ensuring that an appropriate exception is thrown.
+     * 6. Verifies the restriction that prevents simultaneously having astronauts and aliens in the same cabin.
+     * 7. Removes components and re-adds life support to validate subsequent alien addition constraints.
+     * 8. Ensures that adding an alien when one of the same color is already designated as present throws the proper exception.
+     * <p>
+     * The method uses assertions and exception handling to verify the correct behavior of the spaceship's alien placement logic.
+     * <p>
+     * Exceptions handled:
+     * - {@link InvalidAlienPlacement}: Thrown when conditions for valid alien placement are violated.
+     * - {@link InvalidTileException}: Thrown if the life support component cannot be added to the specified location.
+     * - {@link ComponentNotFoundException}: Thrown when attempting to remove a non-existing component.
+     * <p>
+     * Assertions:
+     * - Ensures the correct alien color is placed in the cabin.
+     * - Verifies appropriate exceptions are thrown under invalid conditions.
+     * - Confirms that life support components are properly managed.
+     */
     @Test
     void addAlien() {
         // Test adding an alien to the cabin
@@ -487,6 +745,20 @@ class NormalShipTest {
         assertThrows(InvalidAlienPlacement.class, () -> ship.addAlien(AlienColor.PURPLE, Cabin1));
     }
 
+    /**
+     * Tests the functionality and behavior of the crew-related methods and alien state of the {@code Ship} class.
+     * <p>
+     * The test verifies the following:
+     * - Initial crew count and alien presence.
+     * - Updates to the crew count and alien state after specific actions, such as unloading crew,
+     *   toggling the presence of brown or purple aliens, and handling both alien types simultaneously.
+     * - Ensures proper exception handling when attempting to unload crew from an empty cabin,
+     *   failing the test if an {@code EmptyCabinException} is thrown unexpectedly.
+     * <p>
+     * Assertions include:
+     * - The correctness of the crew count after each relevant operation.
+     * - The alien color state changes in response to the toggling of {@code brownAlien} and {@code purpleAlien}.
+     */
     @Test
     void testCrew(){
         try {
@@ -507,6 +779,23 @@ class NormalShipTest {
         }
     }
 
+    /**
+     * Tests the functionality of the addComponent method in the Ship class.
+     * <p>
+     * The method ensures that components can be added to valid positions
+     * on the ship's grid and verifies that an InvalidTileException is thrown
+     * when attempting to add a component to an invalid position.
+     * <p>
+     * Successful addition:
+     * - A new component (e.g., Cannon) is added to a valid tile.
+     * - The position of the component is verified using assertions.
+     * <p>
+     * Exception handling:
+     * - Attempts to add a component to an invalid position.
+     * - Verifies that the appropriate exception is thrown with the correct message.
+     * <p>
+     * This test ensures the integrity of the component addition logic in the Ship class.
+     */
     @Test
     void addComponent() {
         Cannon newCannon = new Cannon();
