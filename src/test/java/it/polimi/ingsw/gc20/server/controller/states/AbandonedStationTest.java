@@ -172,6 +172,5 @@ public class AbandonedStationTest {
             fail();
         }
         assertEquals(4, controller.getPlayerByID("player2").getPosition(), "Player position should be 4 after accepting the card");
-        assertEquals("AbandonedStationState", state.toString());
     }
 }

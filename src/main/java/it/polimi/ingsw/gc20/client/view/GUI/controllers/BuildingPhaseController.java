@@ -338,7 +338,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
-
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
@@ -367,7 +366,12 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    public void setComponentProp(StackPane ignoredLayeredPane, ViewComponent ignoredComp) {
+    public void setComponentProp(StackPane pane, ViewComponent comp) {
+        if (comp.isCabin()) {
+            setComponentProp(pane, (ViewCabin) comp);
+        } else if (comp.isBattery()) {
+            setComponentProp(pane, (ViewBattery) comp);
+        }
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {

@@ -82,4 +82,9 @@ public class LearnerBoardTest {
         players.remove(player1);
         assertEquals(board.getStallBox(), players);
     }
+
+    @Test
+    void testIsLearnerBoard() {
+        assertTrue(board.isLearner());
+    }
 }
