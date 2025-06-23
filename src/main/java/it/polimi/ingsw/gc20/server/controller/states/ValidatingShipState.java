@@ -50,7 +50,7 @@ public class ValidatingShipState extends State {
     }
 
     @Override
-    public boolean isShipValid(Player player) throws InvalidStateException{
+    public void isShipValid(Player player) throws InvalidStateException{
         if (phase != StatePhase.VALIDATE_SHIP_PHASE) {
             throw new InvalidStateException("Cannot validate ship in this phase.");
         }
@@ -78,11 +78,9 @@ public class ValidatingShipState extends State {
                     getController().getMessageManager().sendToPlayer(player.getUsername(), new StandbyMessage("ship is valid waiting for other players"));
                 }
             }
-            return true;
         } else {
             getController().getMessageManager().sendToPlayer(player.getUsername(), new ValidateShipPhase());
         }
-        return false;
     }
 
     @Override
