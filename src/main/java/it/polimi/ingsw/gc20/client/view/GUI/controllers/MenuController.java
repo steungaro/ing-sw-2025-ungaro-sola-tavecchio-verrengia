@@ -1,8 +1,12 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -22,7 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
-public class MenuController {
+public class MenuController implements GameModelListener {
 
     public enum DisplayContext {
         THUMBNAIL,
@@ -56,6 +60,7 @@ public class MenuController {
     @FXML public Button button2;
     @FXML public Button button3;
     @FXML public Button button4;
+    @FXML private Label serverMessages;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -77,6 +82,7 @@ public class MenuController {
         initializeGameBoard();
         setVisibility();
 
+        ClientGameModel.getInstance().addListener(this);
         currentInstance = this;
     }
 
@@ -205,7 +211,7 @@ public class MenuController {
     }
 
     /**
-     * Clear all views in the stack and return to initial state
+     * Clear all views in the stack and return to the initial state
      */
     public void clearViewStack() {
         currentFrame.getChildren().clear();
@@ -275,7 +281,7 @@ public class MenuController {
     }
 
     /**
-     * Enhanced method to load menu with controller configuration
+     * Enhanced method to load the menu with controller configuration
      */
     public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
         try {
@@ -446,7 +452,7 @@ public class MenuController {
     }
 
     /**
-     * Responsive configuration for main view and dialog
+     * Responsive configuration for the main view and dialog
      */
     private void configureResponsiveSizing(StackPane container, StackPane element, DisplayConfig config) {
         element.setMinWidth(config.minWidth);
@@ -594,5 +600,41 @@ public class MenuController {
         MenuController controller = new MenuController();
         String fxmlPath = controller.getFXMLPath(contentType);
         controller.loadFXMLInContainer(container, fxmlPath, context, contentType, player);
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // TODO
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // ignore
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // TODO: decide what to do
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        Platform.runLater(() -> {
+            if (currentCard != null) {
+                String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
+                String currentText = serverMessages.getText();
+                if (currentText.equals("Waiting for server messages...")) {
+                    serverMessages.setText(cardInfo);
+                } else {
+                    serverMessages.setText(currentText + "\n" + cardInfo);
+                }
+            }
+        });
+
     }
 }

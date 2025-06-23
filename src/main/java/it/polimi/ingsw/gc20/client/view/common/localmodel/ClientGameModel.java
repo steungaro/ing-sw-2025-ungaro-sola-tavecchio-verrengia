@@ -79,6 +79,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
+        for (GameModelListener listener : listeners) {
+            listener.onCurrentCardUpdated(this.currentCard);
+        }
     }
 
     public MenuState getCurrentMenuState() {

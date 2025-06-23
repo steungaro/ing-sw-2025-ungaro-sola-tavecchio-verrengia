@@ -332,4 +332,9 @@ public class BuildingMenu implements MenuState, GameModelListener {
     public void onComponentInHandUpdated(ViewComponent component) {
 
     }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        // ignore
+    }
 }
