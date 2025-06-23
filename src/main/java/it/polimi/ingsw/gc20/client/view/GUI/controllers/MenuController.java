@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 public class MenuController implements GameModelListener {
@@ -633,8 +634,24 @@ public class MenuController implements GameModelListener {
                 } else {
                     serverMessages.setText(currentText + "\n" + cardInfo);
                 }
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
+
+                imageView.setFitWidth(200);
+                imageView.setFitHeight(300);
+                imageView.setPreserveRatio(true);
+
+                drawnCard.getChildren().clear();
+                drawnCard.getChildren().add(imageView);
+
             }
         });
 
+    }
+
+    private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {
+        String series = (viewAdventureCard.id > 20) ? "II" : "I";
+        int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
+        String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
+        return new javafx.scene.image.Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
     }
 }

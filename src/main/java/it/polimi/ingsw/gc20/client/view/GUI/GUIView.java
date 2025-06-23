@@ -44,7 +44,7 @@ public class GUIView extends ClientGameModel {
         SHIELDS_MENU("shieldsMenu"),
         LOSE_CREW_MENU("loseCrewMenu"),
         LOSE_ENERGY_MENU("loseEnergyMenu"),
-        KEEP_PLAYING_MENU("KeepPlayingMenu"),
+        KEEP_PLAYING_MENU("keepPlayingMenu"),
         IDLE_MENU("idleMenu"),
         BOARD0("board0"),
         SHIP0("ship0"),
