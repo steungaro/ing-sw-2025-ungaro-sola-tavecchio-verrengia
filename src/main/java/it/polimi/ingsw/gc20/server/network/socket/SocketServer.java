@@ -25,15 +25,25 @@ public class SocketServer implements Server {
     private final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private boolean running;
-    private static final int DEFAULT_PORT = 8080;
+    private final int port;
     private final SocketAuthService authService = new SocketAuthService(this);
+
+    /**
+     * Constructs a SocketServer with the specified port.
+     *
+     * @param port the port on which the server will listen for incoming connections
+     */
+    public SocketServer(int port) {
+        this.port = port;
+        this.running = false;
+    }
 
     @Override
     public void start() {
         try {
-            serverSocket = new ServerSocket(DEFAULT_PORT);
+            serverSocket = new ServerSocket(port);
             running = true;
-            LOGGER.info("Socket server set up on port: " + DEFAULT_PORT);
+            LOGGER.info("Socket server set up on port: " + port);
 
             // Thread to accept connections
             new Thread(this::acceptConnections).start();

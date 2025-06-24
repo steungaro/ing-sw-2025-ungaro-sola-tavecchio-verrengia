@@ -107,5 +107,7 @@ public class AssemblingStateTest {
         }
         assertFalse(state.allAssembled());
         assertTrue(state.isConcurrent());
+        state.rejoin("player1");
+        state.resume("player1");
     }
 }

@@ -20,6 +20,10 @@ class GameModelTest {
     String gameId = "1";
     GameModel gameModel = new GameModel();
 
+    /**
+     * Sets up the test environment before each test case.
+     * This method initializes the player list with two player names.
+     */
     @BeforeEach
     void setUp() {
         players.add("player1");
@@ -28,6 +32,12 @@ class GameModelTest {
 
     private NormalShip ship, ship2;
 
+    /**
+     * Sets up the test environment before each test case.
+     * This method initializes two NormalShip objects with various components and connectors.
+     * It also loads cargo into the ships and initializes astronauts.
+     * The setup is done to ensure that the ships are ready for testing various game model functionalities.
+     */
     @BeforeEach
     void setUp2() {
         // Create a new NormalShip
@@ -203,18 +213,29 @@ class GameModelTest {
         ship2.initAstronauts();
     }
 
+    /**
+     * Tests the default constructor of the GameModel class.
+     * It checks if the gameModel object is not null and if the game is initialized to null.
+     */
     @Test
     void defaultConstructor() {
         assertNotNull(gameModel);
         assertNull(gameModel.getGame());
     }
 
+    /**
+     * Tests the setLevel method of the GameModel class.
+     * It sets a level and checks if the level is correctly set in the gameModel object.
+     */
     @Test
     void setLevel(){
         gameModel.setLevel(level);
         assertEquals(level, gameModel.getLevel());
     }
 
+    /**
+     * Tests the setPlayers method of the GameModel class.
+     */
     @Test
     void setGame (){
         Game game = new Game();
@@ -222,6 +243,13 @@ class GameModelTest {
         assertEquals(game, gameModel.getGame());
     }
 
+    /**
+     * Tests the setActiveCard method of the GameModel class.
+     * This method assigns a specific AdventureCard as the active card in the game model.
+     * It validates
+     * that the active card is correctly set
+     * by checking its non-null status and ensuring it matches the assigned card.
+     */
     @Test
     void setActiveCard() {
         AdventureCard card = new AdventureCard();
@@ -231,6 +259,12 @@ class GameModelTest {
     }
 
 
+    /**
+     * Tests the startGame method of the GameModel class.
+     * It initializes a game with a specified level, players, and game ID.
+     * It checks if the game is started correctly by verifying the game object,
+     * level, players' ships, and pile of components.
+     */
     @Test
     void startGame() {
         gameModel.startGame(level, players, gameId);
@@ -247,6 +281,9 @@ class GameModelTest {
         assertEquals(152, gameModel.getGame().getPile().getUnviewed().size());
     }
 
+    /**
+     * Tests all the methods related to assembling the ship in the game model.
+     */
     @Test
     void assembling() {
         // init game
@@ -297,6 +334,9 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the methods that calculate the score of players in the game model.
+     */
     @Test
     void calculateScore() {
         gameModel.startGame(level, players, gameId);
@@ -344,6 +384,13 @@ class GameModelTest {
         assertEquals(10, score.get(player2));
     }
 
+    /**
+     * Tests the movePlayer method of the GameModel class.
+     * This method verifies
+     * that the player's position is correctly updated when moved by a specific number of steps.
+     * It ensures
+     * that the player's new position reflects the correct calculation of the original position plus the steps moved.
+     */
     @Test
     void testMovePlayer() {
         gameModel.startGame(level, players, gameId);
@@ -354,6 +401,22 @@ class GameModelTest {
         assertEquals(8, player.getPosition());
     }
 
+    /**
+     * Tests the addCredits method of the GameModel class.
+     * <p>
+     * This test verifies that the credit balance of a player is correctly
+     * updated when credits are added using the addCredits method.
+     * It ensures
+     * that the new credit value is accurate based on the initial value and
+     * the number of credits added.
+     * <p>
+     * The test performs the following steps:
+     * 1. Starts a new game session by initializing the game model with the required parameters.
+     * 2. Retrieves the first player from the list of players in the game.
+     * 3. Records the player's initial credit balance.
+     * 4. Calls the addCredits method to add a specific number of credits to the player.
+     * 5. Asserts that the player's new credit balance is equal to the initial balance plus the added credits.
+     */
     @Test
     void testAddCredits() {
         gameModel.startGame(level, players, gameId);
@@ -364,6 +427,18 @@ class GameModelTest {
         assertEquals(initialCredits + 10, player.getCredits());
     }
 
+    /**
+     * Tests the getCrew method of the GameModel class.
+     * <p>
+     * This test validates that the getCrew method correctly retrieves the crew size of a player's ship.
+     * <p>
+     * Test steps:
+     * 1. Starts a new game session with the specified level, players, and game ID.
+     * 2. Retrieves the first player from the list of players in the game.
+     * 3. Sets a predefined ship for the player.
+     * 4. Calls the getCrew method to retrieve the crew size of the player's ship.
+     * 5. Asserts that the crew size returned by the method matches the crew size of the predefined ship.
+     */
     @Test
     void testGetCrew() {
         gameModel.startGame(level, players, gameId);
@@ -374,6 +449,19 @@ class GameModelTest {
         assertEquals(ship.crew(), crew);
     }
 
+    /**
+     * Tests the getAstronauts method of the GameModel class.
+     * <p>
+     * This test verifies that the getAstronauts method correctly retrieves the number of astronauts
+     * in a player's ship.
+     * <p>
+     * Test steps:
+     * 1. Starts a new game session with the specified level, players, and game ID.
+     * 2. Retrieves the first player from the list of players in the game.
+     * 3. Sets a predefined ship for the player.
+     * 4. Calls the getAstronauts method to retrieve the number of astronauts in the player's ship.
+     * 5. Asserts that the number of astronauts returned by the method matches the number in the predefined ship.
+     */
     @Test
     void testGetAstronauts() {
         gameModel.startGame(level, players, gameId);
@@ -384,6 +472,24 @@ class GameModelTest {
         assertEquals(ship.getAstronauts(), astronauts);
     }
 
+    /**
+     * Tests the firePower method of the GameModel class.
+     * <p>
+     * This test validates the calculation of the firepower available to a player when specific ship components
+     * are used in an attack.
+     * It ensures that the returned firepower value matches the expected value calculated
+     * based on the components and their energy usage.
+     * <p>
+     * Test steps:
+     * 1. Starts a new game session with predefined parameters (level, players, game ID).
+     * 2. Retrieves the first player from the list of players in the game.
+     * 3. Assigns a ship to the player.
+     * 4. Prepares a list of batteries and a set of cannons from the ship.
+     * 5. Calls the firePower method with the player, selected cannons, and batteries.
+     * 6. Asserts that the returned firepower equals the value calculated by the ship's firePower method.
+     * 7. Verifies that the energy of the used battery is correctly decremented.
+     * 8. Ensures no exceptions are thrown during the test execution.
+     */
     @Test
     void testFirePower() {
         gameModel.startGame(level, players, gameId);
@@ -406,6 +512,22 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the engine power calculation functionality of the GameModel class.
+     * <p>
+     * This test verifies that the `enginePower` method correctly calculates the power of a player's
+     * ship engine based on provided input and ensures that energy consumption is applied as expected.
+     * <p>
+     * Test steps:
+     * 1. Initializes the game with a specified level, players, and game ID.
+     * 2. Retrieves the first player from the list of players in the game and assigns a predefined ship to them.
+     * 3. Prepares a list of batteries for the test by selecting a specific component from the ship.
+     * 4. Calls the `enginePower` method with the player, speed, and list of batteries.
+     * 5. Asserts that the returned engine power matches the expected power
+     * calculated by the ship's `enginePower` method.
+     * 6. Verifies that the energy of the battery used in the calculation is reduced to the expected value.
+     * 7. Ensures no exceptions are thrown during the execution of the test.
+     */
     @Test
     void testEnginePower() {
         gameModel.startGame(level, players, gameId);
@@ -424,6 +546,22 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of the getInGamePlayers method in the GameModel class.
+     * <p>
+     * This test verifies that the getInGamePlayers method correctly retrieves the list of players
+     * who are actively participating in the game.
+     * The method excludes players who have their
+     * game status set to inactive.
+     * <p>
+     * Test steps:
+     * 1. Starts the game by initializing the game model with the required level, players, and game ID.
+     * 2. Retrieves the list of players after the game starts and asserts the total player count.
+     * 3. Sets one player's game status to inactive.
+     * 4. Calls the getInGamePlayers method again and asserts that the list only includes the remaining
+     *    active players.
+     * 5. Validates that the order of players in the list matches the expected results based on the game status.
+     */
     @Test
     void testGetInGamePlayers() {
         gameModel.startGame(level, players, gameId);
@@ -439,6 +577,17 @@ class GameModelTest {
         assertEquals(player2, inGamePlayers.getFirst());
     }
 
+    /**
+     * Tests the autoValidation method of the GameModel class.
+     * <p>
+     * This test ensures that the autoValidation method performs successfully without throwing any exceptions.
+     * <p>
+     * Test steps:
+     * 1. Starts a new game session using the specified level, players, and game ID.
+     * 2. Retrieves the first player from the list of players in the game.
+     * 3. Calls the autoValidation method for the retrieved player.
+     * 4. Verifies that no exceptions are thrown during the execution of this method.
+     */
     @Test
     void testAutoValidation() {
         gameModel.startGame(level, players, gameId);
@@ -446,6 +595,15 @@ class GameModelTest {
         assertDoesNotThrow(() -> gameModel.autoValidation(player));
     }
 
+    /**
+     * Tests the functionality of the heavy meteor cannon in the game model.
+     * <p>
+     * The test sets up a game instance and a player with a ship, then simulates
+     * the firing of a heavy meteor projectile with the cannon.
+     * The method verifies
+     * that the list of cannons returned by the {@code heavyMeteorCannon} method is
+     * not empty, ensuring that the functionality works as expected.
+     */
     @Test
     void testHeavyMeteorCannon() {
         gameModel.startGame(level, players, gameId);
@@ -461,6 +619,21 @@ class GameModelTest {
         assertFalse(cannons.isEmpty());
     }
 
+    /**
+     * Tests the functionality of the `moveCargo` method within the game model.
+     * This test verifies that cargo can be successfully moved between different
+     * cargo holds within a ship, as well as removed from the ship when necessary.
+     * <p>
+     * The test initializes a game, sets up a player's ship with an initial cargo hold,
+     * and asserts the following scenarios:
+     * - Proper setup of cargo in the initial cargo hold.
+     * - Movement of cargo between two connected cargo holds.
+     * - Removal of cargo from the ship when moved to a null destination.
+     * <p>
+     * The test also ensures that no exceptions are thrown during the execution of
+     * these operations, with appropriate assertions to validate the cargo quantities
+     * at each stage of the process.
+     */
     @Test
     void testMoveCargo() {
         gameModel.startGame(level, players, gameId);
@@ -495,6 +668,16 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of adding cargo to a ship's cargo hold.
+     * <p>
+     * This test initializes a game model, starts the game with specified parameters,
+     * and verifies the process of adding cargo to a ship's cargo hold.
+     * It ensures that:
+     * - Cargo is added to the ship with the correct count based on the cargo color.
+     * - Attempting to add cargo beyond the cargo hold's capacity results in a CargoFullException.
+     * - The test handles exceptions appropriately and fails if any unexpected exceptions are thrown.
+     */
     @Test
     void testAddCargo() {
         gameModel.startGame(level, players, gameId);
@@ -528,6 +711,26 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the handling of exceptions when moving cargo in the game model.
+     * <p>
+     * This method validates the behavior of the {@code moveCargo} functionality to ensure
+     * appropriate exceptions are thrown under specific conditions.
+     * <p>
+     * The test performs the following validations:
+     * 1. Confirms that an {@link InvalidCargoException} is thrown when attempting to move
+     *    cargo to a {@code null} destination cargo hold.
+     * 2. Verifies that adding too much cargo to a cargo hold results in the appropriate
+     *    {@link CargoFullException}.
+     * <p>
+     * The method also ensures that valid configurations, such as setting up cargo holds
+     * with specific dimensions and connectors, do not inadvertently throw exceptions during
+     * test setup.
+     * <p>
+     * Assertions made within this test:
+     * - Ensures that exceptions are thrown for invalid actions.
+     * - Fails if any unexpected exceptions are encountered during the test execution.
+     */
     @Test
     void testMoveCargoExceptions() {
         gameModel.startGame(level, players, gameId);
@@ -562,6 +765,20 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of the {@code viewDeck} method in {@code GameModel}.
+     * <p>
+     * This method ensures that the deck view returns a valid, non-empty list of cards
+     * when a valid index is provided.
+     * It also verifies that an {@code InvalidIndexException}
+     * is thrown when an invalid index is passed to the {@code viewDeck} method.
+     * <p>
+     * Assertions:
+     * - Checks that the list of adventure cards returned is not null.
+     * - Ensures that the list of adventure cards is not empty.
+     * - Verifies that an {@code InvalidIndexException} is thrown for an invalid index.
+     * - Fails the test if an unexpected {@code InvalidIndexException} is thrown during normal execution.
+     */
     @Test
     void testViewDeck() {
         gameModel.startGame(level, players, gameId);
@@ -577,6 +794,24 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the removal of a component from a player's ship at a specific
+     * location.
+     * It verifies that the specified component is successfully
+     * removed and no longer exists at the given coordinates.
+     * <p>
+     * The method simulates starting a game, sets up a player with a ship,
+     * and invokes the {@code removeComponent} method.
+     * It then asserts that the component at the specified location has been removed.
+     * <p>
+     * If the component is not found during the removal operation, the
+     * {@code ComponentNotFoundException} is caught, and the test fails.
+     * <p>
+     * Assertions:
+     * - Ensures the component is removed and returns {@code null} for the
+     *   specified location on the ship.
+     * - Ensures no exceptions are thrown during the process.
+     */
     @Test
     void testRemoveComponent() {
         gameModel.startGame(level, players, gameId);
@@ -594,6 +829,23 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of setting an alien in a cabin within the game model.
+     * <p>
+     * This test verifies that an alien of a specified color can be placed into a cabin
+     * by calling the game model's `setAlien` method.
+     * It also ensures that an exception
+     * (`InvalidAlienPlacement`) is thrown when attempting to place an alien of a different
+     * color into the cabin that already has an alien.
+     * <p>
+     * The test performs the following checks:
+     * - Ensures the alien's color is successfully set to the cabin's alien color.
+     * - Validates that attempting to set an alien of an incompatible color throws
+     *   the appropriate exception.
+     * <p>
+     * If an `InvalidAlienPlacement` exception is thrown incorrectly during the test,
+     * it explicitly fails, as this behavior would not be expected.
+     */
     @Test
     void testSetAlien() {
         gameModel.startGame(level, players, gameId);
@@ -619,6 +871,21 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the behavior of adding pieces to a player's ship in the game model.
+     * <p>
+     * This method ensures the following:
+     * - A component is successfully booked for a player without throwing an exception.
+     * - After invoking the addPieces method, the component is moved from the booked list
+     *   to the waste list of the player's ship.
+     * - The number of astronauts in the player's ship is updated and is not zero.
+     * <p>
+     * The test starts with initializing the game with a given level, players, and game ID.
+     * A player is retrieved, and their ship is set.
+     * A specific component is added to
+     * the player's booked components, and the addPieces method is executed to verify
+     * the proper transfer and updates within the player's ship.
+     */
     @Test
     void testAddPieces() {
         gameModel.startGame(level, players, gameId);
@@ -641,6 +908,14 @@ class GameModelTest {
         assertNotEquals(0, player.getShip().getAstronauts());
     }
 
+    /**
+     * Tests the functionality of the createDeck method within the game model.
+     * <p>
+     * Validates that a deck is successfully created and is not empty after the
+     * method execution.
+     * The test ensures that the game model correctly assigns a
+     * deck to the board for the current game.
+     */
     @Test
     void testCreateDeck() {
         gameModel.startGame(level, players, gameId);
@@ -650,6 +925,23 @@ class GameModelTest {
         assertFalse(gameModel.getGame().getBoard().getDeck().isEmpty());
     }
 
+    /**
+     * Tests the functionality of drawing a card in the game and its effects
+     * on the game's state and player positions.
+     * <p>
+     * This method initializes and starts a game using the provided level, players,
+     * and game ID. It sets initial positions for two players and verifies the behavior
+     * of the drawCard method.
+     * <p>
+     * The test ensures:
+     * - A drawn card is not null.
+     * - The drawn card matches the game's active card.
+     * - A player's state is updated correctly if their position indicates
+     *   they are out of the game based on the board's total spaces.
+     * <p>
+     * The test also expects no EmptyDeckException to be thrown during execution.
+     * An exception results in test failure with an appropriate message.
+     */
     @Test
     void testDrawCard() {
         gameModel.startGame(level, players, gameId);
@@ -674,6 +966,25 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of the `loseCrew` method in the `gameModel` class.
+     * Verifies that when a crew member is lost from the ship, the alien
+     * associated with the cabin is removed and the cabin's alien color
+     * is reset to `NONE`.
+     * <p>
+     * This test covers:
+     * - Starting the game and initializing required objects such as the player and ship.
+     * - Placing an alien in a specific cabin and ensuring it is successfully set.
+     * - Calling the `loseCrew` method and verifying that the alien and its associated
+     *   color are properly removed from the specified cabin.
+     * <p>
+     * Assertions:
+     * - Ensures the cabin initially has an alien after being set.
+     * - Verifies that after losing the crew, the cabin no longer has an alien
+     *   and its color is reset.
+     * <p>
+     * If any unexpected exceptions are thrown during the execution, the test will fail.
+     */
     @Test
     void testLoseCrew() {
         gameModel.startGame(level, players, gameId);
@@ -699,6 +1010,21 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of the `useShield` method in the game model.
+     * <p>
+     * The method ensures that the shield usage reduces the available energy of the
+     * ship's battery and verifies that the `EnergyException` is thrown when attempting
+     * to use the shield after the battery is depleted.
+     * <p>
+     * The test performs the following validations:
+     * - Confirms the battery's energy level decreases by 1 after using the shield.
+     * - Repeatedly uses the shield until the battery is depleted, validating energy
+     *   reduction at each step.
+     * - Ensures an `EnergyException` is thrown when attempting to use the shield
+     *   with no available energy in the battery.
+     * - Fails the test if an unexpected `EnergyException` is thrown prematurely.
+     */
     @Test
     void testUseShield() {
         gameModel.startGame(level, players, gameId);
@@ -724,6 +1050,18 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the firing functionality in the game model, ensuring that when a player fires a
+     * projectile at a specified location, the expected outcomes occur, such as changes in
+     * the game state or effects on game components like aliens within the cabin.
+     * <p>
+     * This method sets up a game scenario with a specific ship, cabin, and alien configuration.
+     * It then simulates firing a projectile with specific properties (direction and fire type)
+     * and verifies if the alien in the targeted cabin is correctly removed as a result of the action.
+     * <p>
+     * The test ensures no exceptions are thrown during the execution and asserts the expected
+     * behavior according to the game rules.
+     */
     @Test
     void testFire() {
         gameModel.startGame(level, players, gameId);
@@ -750,6 +1088,25 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the {@code removeEnergy} method of the {@code GameModel} class.
+     * <p>
+     * This test method initializes a game with a specific level, players, and game ID,
+     * and sets up a ship for the first player.
+     * It retrieves a specific {@code Battery}
+     * component from the ship and tracks its initial available energy.
+     * The test verifies
+     * that the energy is successfully reduced by the expected amount after calling
+     * {@code removeEnergy}.
+     * It also ensures that an {@code EnergyException} is thrown
+     * when attempting to remove energy from an already depleted battery.
+     * <p>
+     * Assertions:
+     * - The energy of the battery decreases by 1 after calling the method.
+     * - An {@code EnergyException} is expected
+     *   when attempting to remove energy beyond the battery's available amount.
+     * - If an {@code EnergyException} is thrown prematurely, the test fails.
+     */
     @Test
     void testRemoveEnergy() {
         gameModel.startGame(level, players, gameId);
@@ -779,6 +1136,17 @@ class GameModelTest {
         }
     }
 
+    /**
+     * Tests the functionality of the hourglass mechanism in the game model.
+     * <p>
+     * This test verifies that the hourglass period is correctly set, the countdown
+     * starts as expected, and the remaining time decreases consistently over the
+     * course of the test.
+     * Additionally, it checks that turning the hourglass resets
+     * the remaining time without throwing any exceptions.
+     *
+     * @throws InterruptedException if the thread sleep is interrupted
+     */
     @Test
     void testHourglass1 () throws InterruptedException {
         gameModel.startGame(level, players, gameId);
@@ -798,6 +1166,21 @@ class GameModelTest {
         assertEquals(5, gameModel.getRemainingTime());
     }
 
+    /**
+     * Tests the hourglass functionality in the game model.
+     * <p>
+     * This test ensures the correct behavior of the hourglass timer during game play, including
+     * - Setting the hourglass period.
+     * - Ensuring HourglassException is thrown when attempting to turn the hourglass prematurely.
+     * - Verifying smooth hourglass turning after the set period has elapsed.
+     * - Ensuring the countdown timer stops at zero after later periods.
+     * - Checking the count of turned hourglasses is updated correctly.
+     * <p>
+     * The method also verifies that no exceptions are thrown when turning the hourglass after
+     * the valid period has passed.
+     *
+     * @throws InterruptedException if the thread is interrupted during the sleep intervals.
+     */
     @Test
     void testHourglass2 () throws InterruptedException {
         gameModel.startGame(level, players, gameId);
@@ -823,6 +1206,16 @@ class GameModelTest {
         assertThrows(HourglassException.class, () -> gameModel.turnHourglass());
     }
 
+    /**
+     * Tests the functionality of initializing a demo game setup.
+     * This method performs the following actions:
+     * - Adds "player3" and "player4" to the player collection.
+     * - Starts a new game using the provided level, players, and gameId.
+     * - Creates demo ships in the game environment.
+     * <p>
+     * This test ensures that the game model correctly sets up a demo scenario
+     * with the specified players and game configuration.
+     */
     @Test
     void testDemo() {
         players.add("player3");

@@ -101,9 +101,42 @@ public class ValidatingShipState extends State {
         }
         //remove the component from the ship
         getModel().removeComponent(coordinates.getValue0(), coordinates.getValue1(), player);
+        if (getModel().getLevel() != 2) {
+            int oldPosition = player.getPosition();
+            player.setPosition(-1);
+            for (Player p: getModel().getGame().getPlayers()) {
+                int pos = p.getPosition();
+                if (pos < oldPosition) {
+                    p.setPosition(getNextPosition(pos));
+                }
+            }
+
+            for (int i : new int[]{4, 2, 1, 0}){
+                if (getModel().getGame().isOccupied(i)) {
+                    player.setPosition(i);
+                }
+            }
+        }
         //notify the players of the ship changes
         getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "removed component"));
         isShipValid(player);
+    }
+
+    /**
+     * Returns the next position for a player based on their current position.
+     * This method is used to ensure that players are moved to the next available position
+     * when a component is removed from their ship.
+     *
+     * @param pos the current position of the player
+     * @return the next position for the player
+     */
+    private int getNextPosition(int pos) {
+        return switch (pos) {
+            case 0 -> 1;
+            case 1 -> 2;
+            case 2 -> 4;
+            default -> pos;
+        };
     }
 
     @Override

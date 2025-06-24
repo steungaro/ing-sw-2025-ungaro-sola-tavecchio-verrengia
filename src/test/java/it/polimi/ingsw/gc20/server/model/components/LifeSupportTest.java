@@ -13,16 +13,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LifeSupportTest {
     LifeSupport ls;
 
+    /**
+     * Sets up the LifeSupport instance before each test.
+     */
     @BeforeEach
     void setUp() {
         ls = new LifeSupport();
     }
 
+    /**
+     * Test that the LifeSupport component is correctly identified as a life support system.
+     */
     @Test
     void isLifeSupport() {
         assertTrue(ls.isLifeSupport());
     }
 
+    /**
+     * Tests the creation of a ViewComponent from the LifeSupport component.
+     */
     @Test
     void createViewComponent() {
         Map<Direction, ConnectorEnum> connectors = ls.getConnectors();

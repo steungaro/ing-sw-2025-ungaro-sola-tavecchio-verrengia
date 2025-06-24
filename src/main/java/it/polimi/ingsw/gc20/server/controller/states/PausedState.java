@@ -62,9 +62,7 @@ public class PausedState extends State {
      */
     @Override
     public void resume(String reconnected) {
-        if (future != null && !future.isDone()) {
-            future.cancel(false);
-        }
+        shutdown();
         getController().setState(previousState);
         if (previousState.isConcurrent()){
             try {

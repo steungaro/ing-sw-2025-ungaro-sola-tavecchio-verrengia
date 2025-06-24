@@ -13,6 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class EngineTest {
     Engine engine;
 
+    /**
+     * Sets up the Engine instance before each test.
+     * Initializes the connectors for the engine.
+     */
     @BeforeEach
     void setUp() {
         engine = new Engine();
@@ -24,6 +28,11 @@ public class EngineTest {
         engine.setConnectors(connectors);
     }
 
+    /**
+     * Tests that the engine can be rotated clockwise and counterclockwise,
+     * and that the connectors are updated accordingly.
+     * It checks the orientation and the connectors after each rotation.
+     */
     @Test
     void rotate() {
         engine.rotateClockwise();
@@ -40,6 +49,9 @@ public class EngineTest {
         assertEquals(ConnectorEnum.S, engine.getConnectors().get(Direction.RIGHT));
     }
 
+    /**
+     * Tests the creation of a ViewComponent from the Engine.
+     */
     @Test
     void createViewComponent() {
         Map<Direction, ConnectorEnum> connectors = engine.getConnectors();
