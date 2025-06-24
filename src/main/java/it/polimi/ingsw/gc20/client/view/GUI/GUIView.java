@@ -315,7 +315,6 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cargoMenu(int cargoNum) {
-        // Remove cargoNum from the context data
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("cargoNum", cargoNum);
         showMenuContent(GuiState.CARGO_MENU, contextData);

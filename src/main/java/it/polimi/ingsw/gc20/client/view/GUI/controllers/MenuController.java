@@ -329,10 +329,7 @@ public class MenuController implements GameModelListener {
             case "cargoMenu" -> {
                 if (controller instanceof CargoMenuController && parameters.length >= 4) {
                     ((CargoMenuController) controller).initializeWithParameters(
-                            (String) parameters[0],
-                            (Integer) parameters[1],
-                            (List<CargoColor>) parameters[2],
-                            (Boolean) parameters[3]
+                            (String) parameters[0]
                     );
                 }
             }
