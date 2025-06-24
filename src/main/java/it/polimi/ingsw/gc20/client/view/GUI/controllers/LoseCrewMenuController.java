@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class LoseCrewMenuController {
+public class LoseCrewMenuController implements MenuController.ContextDataReceiver {
     @FXML
     private Label crewToLoseLabel;
 
@@ -57,10 +58,14 @@ public class LoseCrewMenuController {
             ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
-            Object controller = loader.getController();
-            shipController.enableCellClickHandler(this::selectCabin);
+            shipController = (ShipController) loader.getController();
 
-
+            if (shipController != null) {
+                shipController.buildShipComponents(ship);
+                shipController.enableCellClickHandler(this::selectCabin);
+            } else {
+                showError("Error, ship controller not found.");
+            }
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
@@ -107,5 +112,15 @@ public class LoseCrewMenuController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("crewNum")) {
+            int crewToLose = (int) contextData.get("crewNum");
+            initializeWithCrewToLose(crewToLose);
+        } else {
+            showError("No crew to lose data provided.");
+        }
     }
 }

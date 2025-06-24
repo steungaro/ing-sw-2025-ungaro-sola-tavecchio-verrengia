@@ -15,10 +15,9 @@ public abstract class Ship {
 
     protected final Set<Component> waste;
     protected int singleEngines;
-    protected final int doubleCannons;
     protected int doubleEngines;
     protected int doubleCannonsPower;
-    protected Float singleCannonsPower;
+    protected float singleCannonsPower;
     protected int totalEnergy;
     protected final Map<CargoColor, Integer> cargos;
     protected int astronauts;
@@ -29,7 +28,6 @@ public abstract class Ship {
     public Ship() {
         waste = new HashSet<>();
         singleEngines = 0;
-        doubleCannons = 0;
         doubleEngines = 0;
         doubleCannonsPower = 0;
         singleCannonsPower = 0f;
@@ -39,7 +37,7 @@ public abstract class Ship {
     }
 
 
-    public Float getSingleCannonsPower() {
+    public float getSingleCannonsPower() {
         return singleCannonsPower;
     }
 
@@ -94,10 +92,11 @@ public abstract class Ship {
     protected abstract void setComponentAt(Component c, int row, int col) throws InvalidTileException;
 
     /**
-     * Function that determines the total firepower of the ship
-     * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half-power)
-     * the user will select one by one the cannons he wants to use (single cannons automatically selected) every time he selects a cannon the power of the ship will be recalculated
-     * it also checks if the ship has the necessary number of batteries
+     * Function that determines the total firepower of the ship.
+     * It is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half-power).
+     * The user will select one by one the cannons he wants to use (single cannons automatically selected) every time he selects a cannon, the power of the ship will be recalculated.
+     * It also checks if the ship has the necessary number of batteries.
+     *
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
      * @throws EnergyException if the number of cannons is greater than the total energy of the ship
@@ -209,7 +208,7 @@ public abstract class Ship {
      * @param d Direction: the direction from which the ship is being attacked
      * @return if the side is shielded
      */
-    public Boolean getShield(Direction d) {
+    public boolean getShield(Direction d) {
         //parse throws the component of the ship until it finds a shield that covers the direction or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
@@ -443,14 +442,14 @@ public abstract class Ship {
                 // Skip if there's no connector in this direction
                 if (connector == null || connector == ConnectorEnum.ZERO) {
                     if(component.isCannon() && component.getRotation() == dir) {
-                        //if it's a cannon we need to check if it has a component in the direction of the cannon
+                        //if it's a cannon, we need to check if it has a component in the direction of the cannon
                         if(getComponentAt(adjRow, adjCol) != null) {
                             System.out.println("Cannon has a component in the direction of the cannon at the coordinates " + adjRow + ", " + adjCol);
                             return false;
                         }
 
                     } else if (component.isEngine() && ((Engine) component).getOrientation() == dir) {
-                        //if it's an engine we need to check if it has a component in the direction of the engine
+                        //if it's an engine, we need to check if it has a component in the direction of the engine
                         if(getComponentAt(adjRow, adjCol) != null) {
                             System.out.println("Engine has a component in the direction of the engine at the coordinates " + adjRow + ", " + adjCol);
                             return false;
@@ -468,7 +467,6 @@ public abstract class Ship {
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
                             queue.add(new int[]{adjRow, adjCol});
-                            visited[adjRow][adjCol] = true;
                         }else{
                             System.out.println("Invalid connection found at coordinates: " + adjRow + ", " + adjCol);
                             return false;
@@ -520,7 +518,7 @@ public abstract class Ship {
      * @param c Component to destroy
      * @return True if the ship remains valid after removal
      */
-    public Boolean killComponent(Component c) throws ComponentNotFoundException {
+    public boolean killComponent(Component c) throws ComponentNotFoundException {
         if (c == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
@@ -717,10 +715,11 @@ public abstract class Ship {
     }
 
     /**
-     * Costruttore statico factory per creare un messaggio partendo dalla nave
-     *
-     * @param username nome dell'utente che sta assemblando la nave
-     * @param ship nave del giocatore da cui estrarre la tabella di componenti
+     * Creates an UpdateShipMessage from the ship's state
+     * @param username Username of the player
+     * @param ship Ship to create the message from
+     * @param action Action performed on the ship
+     * @return UpdateShipMessage containing the ship's state
      */
     public static UpdateShipMessage messageFromShip(String username, Ship ship, String action) {
         ViewComponent[][] components = new ViewComponent[5][7];

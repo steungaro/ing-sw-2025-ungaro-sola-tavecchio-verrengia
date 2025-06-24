@@ -17,7 +17,7 @@ public class AssemblingState extends State {
     private final Map<Player, Boolean> assembled = new HashMap<>();
     private final Map<Player, Component> componentsInHand = new HashMap<>();
     private final Map<Integer, Player> deckPeeked = new HashMap<>();
-    boolean fromBooked = false;
+    private final Map<Player, Boolean> fromBooked = new HashMap<>();
 
     /**
      * Constructs an AssemblingState object, initializing the state for the assembling phase of the game.
@@ -35,6 +35,7 @@ public class AssemblingState extends State {
         for (Player player : getController().getPlayers()) {
             assembled.put(player, false);
             componentsInHand.put(player, null);
+            fromBooked.put(player, false);
 
             //init all the ship of the clients
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "init all ship"));
@@ -73,7 +74,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = false;
+        fromBooked.put(player, false);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = false;
+        fromBooked.put(player, false);
 
     }
 
@@ -116,7 +117,7 @@ public class AssemblingState extends State {
                 deckPeeked.put(i, null);
             }
         }
-        fromBooked = true;
+        fromBooked.put(player, true);
     }
 
 
@@ -140,7 +141,7 @@ public class AssemblingState extends State {
         if (componentsInHand.get(player) == null) {
             throw new InvalidStateException("Player is not in the PLACE_COMPONENT phase.");
         }
-        if (fromBooked){
+        if (fromBooked.get(player) == true){
             throw new InvalidStateException("Cannot add a booked component back to the viewed pile!");
         }
         // add the component to the viewed pile
@@ -238,11 +239,6 @@ public class AssemblingState extends State {
         getController().getMessageManager().sendToPlayer(player.getUsername(), new DeckPeekedMessage(player.getUsername(), getModel().viewDeck(num)));
     }
 
-    /**
-     * this method is used to turn the hourglass
-     * @param player the player who is turning the hourglass
-     * @throws HourglassException if the hourglass cannot be turned
-     */
     @Override
     public void turnHourglass(Player player) throws HourglassException {
         //check if the hourglass can be turned
@@ -273,6 +269,13 @@ public class AssemblingState extends State {
         }
     }
 
+    /**
+     * This method is called when a player takes a component from the unviewed or viewed pile.
+     * It adds the component to the player's hand and notifies them to proceed to the PLACE_COMPONENT phase.
+     *
+     * @param player    the player who is taking the component
+     * @param component the component being taken
+     */
     private void takeComponent (Player player, Component component){
         // Add component to player's hand
         componentsInHand.put(player, component);
@@ -286,10 +289,12 @@ public class AssemblingState extends State {
         }
     }
 
+    @Override
     public boolean isConcurrent(){
         return true;
     }
 
+    @Override
     public void rejoin(String username) {
         //notify the player that they are in the TAKE_COMPONENT phase after updating the model
         getController().getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), true));
@@ -307,9 +312,7 @@ public class AssemblingState extends State {
 
     }
 
-    /**
-     * this method is called to resume the game after has been paused
-     */
+    @Override
     public void resume(String username){
         //check the assembled status of the players
         for (Player player : getController().getPlayers()) {
@@ -325,6 +328,12 @@ public class AssemblingState extends State {
         }
     }
 
+    /**
+     * This method notifies all players about the change in the pile.
+     * It is called when a player takes a component from the unviewed pile.
+     *
+     * @param username the username of the player who took the component
+     */
     private void pileUpdate(String username){
         getController().getMessageManager().broadcastUpdate(PileUpdateMessage.fromComponent(username,
                 getModel().getGame().getPile().getUnviewed().size(),
@@ -332,6 +341,12 @@ public class AssemblingState extends State {
                 "taken from unviewed"));
     }
 
+    /**
+     * This method checks if the hourglass has been turned and if the time is up.
+     * If the hourglass has been turned twice and the remaining time is 0, it throws an InvalidStateException.
+     *
+     * @throws InvalidStateException if the hourglass has been turned twice and the remaining time is 0
+     */
     private void checkHourglass() throws InvalidStateException{
         //check if the hourglass has been turned
         if (getModel().getLevel()==2 && getModel().getTurnedHourglass() == 2 && getModel().getRemainingTime() == 0 ) {

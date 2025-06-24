@@ -70,6 +70,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
     @FXML
     protected GridPane bookedGrid;
 
+    @FXML
+    public HBox rotateButtonsContainer;
+
     private ViewComponent selectedComponent;
     protected boolean placementModeActive = false;
     protected ViewShip ship;
@@ -85,14 +88,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
             showError("Could not load current player data. Building phase may not function correctly.");
             nonLearnerButtonsContainer.setVisible(false);
             nonLearnerButtonsContainer.setManaged(false);
-        } else {
-            loadShipData(this.currentPlayerBeingViewed);
         }
 
         covered();
         loadShip();
         loadUncoveredComponents();
-        loadOtherPlayersList();
 
         ClientGameModel.getInstance().addListener(this);
 
@@ -152,134 +152,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 currentPlayerBeingViewed.username.equals(ClientGameModel.getInstance().getUsername());
     }
 
-    private void loadShipData(ViewPlayer playerToView) {
-        if (playerToView == null) {
-            showError("Player data is null. Cannot display ship.");
-            clearAllComponents();
-            updateStatisticBoard(null);
-            nonLearnerButtonsContainer.setVisible(false);
-            nonLearnerButtonsContainer.setManaged(false);
-            if(componentInHandPane != null) componentInHandPane.getChildren().clear();
-            return;
-        }
-
-        this.currentPlayerBeingViewed = playerToView;
-        this.ship = ClientGameModel.getInstance().getShip(playerToView.username);
-
-        updateStatisticBoard(playerToView);
-
-        if (this.ship == null) {
-            System.out.println("Ship data not found for player: " + playerToView.username + ". Displaying empty grid.");
-            clearAllComponents();
-        } else {
-            buildShipComponents(this.ship);
-        }
-
-        boolean isLoggedInPlayerLearner = (this.ship != null) && this.ship.isLearner;
-
-        nonLearnerButtonsContainer.setVisible(!isLoggedInPlayerLearner);
-        nonLearnerButtonsContainer.setManaged(!isLoggedInPlayerLearner);
-
-        updateComponentInHand();
-    }
-
-    private void loadOtherPlayersList() {
-        ClientGameModel model = ClientGameModel.getInstance();
-        ViewPlayer[] allPlayers = model.getPlayers();
-        String myUsername = model.getUsername();
-
-        if (allPlayers == null) return;
-
-        List<ViewPlayer> displayPlayers = Arrays.stream(allPlayers)
-                .filter(p -> p != null && !p.username.equals(myUsername))
-                .collect(Collectors.toList());
-
-        otherPlayersShipsList.getItems().setAll(displayPlayers);
-
-        otherPlayersShipsList.setCellFactory(_ -> new ListCell<>() {
-            @Override
-            protected void updateItem(ViewPlayer player, boolean empty) {
-                super.updateItem(player, empty);
-                if (empty || player == null) {
-                    setText(null);
-                    setStyle("-fx-background-color: rgba(51,51,68,0.8)");
-                    setOnMouseClicked(null);
-                } else {
-                    setText(player.username);
-                    setStyle("-fx-text-fill: white; -fx-background-color: rgba(51,51,68,0.8);");
-
-                    setOnMouseClicked(_ -> {
-                        ViewPlayer clickedPlayer = getItem();
-                        if (clickedPlayer != null && !clickedPlayer.username.equals(myUsername)) {
-                            navigateToOpponentShipScreen(clickedPlayer);
-                        }
-                    });
-                }
-            }
-        });
-
-        otherPlayersShipsList.getSelectionModel().selectedItemProperty().addListener((_, _, newSelection) -> {
-            if (newSelection != null) {
-                if (!newSelection.username.equals(myUsername)) {
-                    navigateToOpponentShipScreen(newSelection);
-                } else {
-                    System.out.println("Selected own player from list. View remains on own ship.");
-                }
-            }
-        });
-
-        if (this.currentPlayerBeingViewed != null) {
-            Optional<ViewPlayer> selfInList = displayPlayers.stream()
-                    .filter(p -> p.username.equals(this.currentPlayerBeingViewed.username))
-                    .findFirst();
-            selfInList.ifPresent(player -> otherPlayersShipsList.getSelectionModel().select(player));
-        }
-    }
-
-    private void navigateToOpponentShipScreen(ViewPlayer opponent) {
-        System.out.println("Navigating to view ship of: " + opponent.username);
-        try {
-            String shipType;
-            if (ship.isLearner) {
-                shipType = "ship0";
-            } else{
-                shipType = "ship2";
-            }
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + shipType + ".fxml"));
-            Parent opponentViewRoot = loader.load();
-
-            Object controller = loader.getController();
-            if (controller instanceof ShipController c) {
-                c.buildShipComponents(ClientGameModel.getInstance().getShip(opponent.username));
-                c.updateStatisticBoard(opponent);
-            }
-
-            Stage stage = new Stage();
-            stage.setTitle("Opponent Ship: " + opponent.username);
-            stage.setScene(new Scene(opponentViewRoot));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setWidth(500);
-            stage.setHeight(500);
-            stage.showAndWait();
-
-        } catch (IOException e) {
-            showError("Could not load opponent ship view: " + e.getMessage());
-        }
-    }
-
     private void loadShip() {
         ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
         ClientGameModel clientGameModel = ClientGameModel.getInstance();
-        if (clientGameModel != null) {
-            String currentUsername = clientGameModel.getUsername();
-            ViewPlayer[] players = clientGameModel.getPlayers();
-            if (players != null && currentUsername != null) {
-                Optional<ViewPlayer> currentPlayerOpt = Arrays.stream(players)
-                        .filter(p -> currentUsername.equals(p.username))
-                        .findFirst();
-                currentPlayerOpt.ifPresent(this::updateStatisticBoard);
-            }
-        }
         buildShipComponents(ship);
     }
 
@@ -338,7 +213,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         parent.getChildren().remove(targetCell);
         StackPane layeredPane = new StackPane();
 
-
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
@@ -367,7 +241,12 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    public void setComponentProp(StackPane ignoredLayeredPane, ViewComponent ignoredComp) {
+    public void setComponentProp(StackPane pane, ViewComponent comp) {
+        if (comp.isCabin()) {
+            setComponentProp(pane, (ViewCabin) comp);
+        } else if (comp.isBattery()) {
+            setComponentProp(pane, (ViewBattery) comp);
+        }
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
@@ -375,7 +254,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
         batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
         try {
-            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/battery.png"))));
+            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
             batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
@@ -393,7 +272,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
             String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
-                    "/images/icons/purple_alien.png" : "/images/icons/brown_alien.png";
+                    "/fxml/icons/purple_alien.png" : "/fxml/icons/brown_alien.png";
 
             try {
                 ImageView alienIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(alienImagePath))));
@@ -411,7 +290,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
             astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
             try {
-                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/astr.png"))));
+                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/astr.png"))));
                 astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
@@ -448,11 +327,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         Rectangle box = new Rectangle();
 
-        // Bind size to parent for scaling
         box.widthProperty().bind(parent.widthProperty().multiply(0.15));
         box.heightProperty().bind(parent.heightProperty().multiply(0.15));
 
-        // Set color based on type
         switch (type) {
             case "red" -> box.setFill(javafx.scene.paint.Color.RED);
             case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
@@ -469,7 +346,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         box.setStroke(javafx.scene.paint.Color.BLACK);
         box.setStrokeWidth(1);
 
-        // Position using binding for responsive layout
         box.translateXProperty().bind(
                 parent.widthProperty().multiply(relativePos[0] - 0.5)
         );
@@ -478,15 +354,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         );
 
         parent.getChildren().add(box);
-    }
-
-    public void updateStatisticBoard(ViewPlayer player) {
-        if (player != null) {
-            playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            usernameLabel.setText("Username: " + player.username);
-            creditsLabel.setText("Credits: " + player.credits);
-            inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
-        }
     }
 
     private void loadUncoveredComponents() {
@@ -542,12 +409,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
         componentInHandPane.getChildren().clear();
 
-        HBox rotationButtonsContainer = (HBox) rootPane.lookup("#rotationButtonsContainer");
-        if (rotationButtonsContainer != null) {
-            rotationButtonsContainer.setVisible(true);
-            rotationButtonsContainer.setManaged(true);
-        }
-
         if (componentInHand != null) {
             Pane componentPane = createComponentPane(componentInHand);
             componentPane.setTranslateX((componentInHandPane.getWidth() - componentPane.getPrefWidth()) / 2);
@@ -562,10 +423,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
             componentInHandPane.getChildren().add(componentPane);
             selectedComponent = componentInHand;
+
+            rotateButtonsContainer.setVisible(true);
+            rotateButtonsContainer.setManaged(true);
         } else {
-            if (rotationButtonsContainer != null) {
-                rotationButtonsContainer.setVisible(false);
-                rotationButtonsContainer.setManaged(false);
+            if (rotateButtonsContainer != null) {
+                rotateButtonsContainer.setVisible(false);
+                rotateButtonsContainer.setManaged(false);
             }
             selectedComponent = null;
         }
@@ -737,13 +601,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
     }
 
     private void selectComponent(ViewComponent ignoredComponent, Pane sourcePane, int index) {
-
-        // If there's a componentInHand, ignore
         if (ClientGameModel.getInstance().getComponentInHand() != null) {
             return;
         }
-
-        // Add to componentInHand
         try{
             ClientGameModel.getInstance().getClient().takeComponentFromViewed(ClientGameModel.getInstance().getUsername(), index);
         } catch (RemoteException e) {
@@ -949,30 +809,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
-    @FXML
-    private void navigateToGameBoard() {
-        try {
-            String boardType;
-            if (ship != null && ship.isLearner) {
-                boardType = "board0";
-            } else {
-                boardType = "board2";
-            }
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + boardType + ".fxml"));
-            Parent boardViewRoot = loader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Game Board");
-            stage.setScene(new Scene(boardViewRoot));
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-
-        } catch (IOException e) {
-            showError("Unable to load Game Board: " + e.getMessage());
-        }
-    }
-
     protected void handleBookedClick(int index) {
         String username = ClientGameModel.getInstance().getUsername();
         try {
@@ -1006,20 +842,20 @@ public abstract class BuildingPhaseController implements GameModelListener {
     }
 
     @Override
-    public void onLobbyUpdated(ViewLobby lobby) {
-        // Not needed for this controller
-    }
-
-
-    @Override
-    public void onErrorMessageReceived(String message) {
-        showError(message);
-    }
-
-    @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         updateComponentInHand();
         loadUncoveredComponents();
         updateBookedComponents();
+    }
+
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // Ignore
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // Ignore
     }
 }

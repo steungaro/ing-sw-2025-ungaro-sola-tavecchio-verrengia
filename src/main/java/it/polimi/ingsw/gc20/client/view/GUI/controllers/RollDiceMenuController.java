@@ -6,8 +6,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 
-public class RollDiceMenuController {
+public class RollDiceMenuController implements MenuController.ContextDataReceiver {
 
     @FXML
     private Label messageLabel;
@@ -37,13 +38,18 @@ public class RollDiceMenuController {
         }
     }
 
-    @FXML
-    private void handleViewOptions() {
-        // TODO
-    }
-
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("message")) {
+            String message = (String) contextData.get("message");
+            initializeWithMessage(message);
+        } else {
+            throw new IllegalArgumentException("Context data must contain a message");
+        }
     }
 }

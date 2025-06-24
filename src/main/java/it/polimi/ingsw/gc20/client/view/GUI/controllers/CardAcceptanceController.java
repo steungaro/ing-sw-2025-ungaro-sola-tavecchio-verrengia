@@ -8,9 +8,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
+import java.util.Map;
 import java.util.Objects;
 
-public class CardAcceptanceController {
+public class CardAcceptanceController implements MenuController.ContextDataReceiver{
 
     @FXML
     private Label messageLabel;
@@ -75,6 +76,16 @@ public class CardAcceptanceController {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if( contextData.containsKey("message")) {
+            String message = (String) contextData.get("message");
+            updateMessage(message);
+        } else {
+            throw new IllegalArgumentException("Context data must contain 'message'");
         }
     }
 }

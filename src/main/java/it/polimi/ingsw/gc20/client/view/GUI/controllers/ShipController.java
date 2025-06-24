@@ -1,37 +1,31 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.javatuples.Pair;
 
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ShipController {
-    // TODO: Display battery, cabin, cargo hold, aliens (look at buildingPhaese for first implementation)
-    // TODO: Clickacle section for ship components, so that the user can click on a component and do thinks (custom for menu)
-
-    protected int ROWS = 0;
-    protected int COLS = 0;
-    public String playerUsername;;
+public abstract class ShipController implements GameModelListener {
+    public String playerUsername;
     protected ViewShip ship;
 
     @FXML protected Label playerColorLabel;
@@ -78,10 +72,14 @@ public abstract class ShipController {
     protected void initialize() {
         playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
-        // TODO: add shipChangeListener to update ship components when ship changes
+        ClientGameModel.getInstance().addListener(this);
         buildShipComponents(ship);
     }
 
+    public void reloadShip() {
+        ship = ClientGameModel.getInstance().getShip(playerUsername);
+        buildShipComponents(ship);
+    }
 
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
@@ -105,28 +103,20 @@ public abstract class ShipController {
         try {
             Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
             targetCell.setImage(componentImage);
+            if (comp.rotComp >= 0 && comp.rotComp <= 3) {
+                targetCell.setRotate(comp.rotComp * 90);
+            }
 
-            // Create a new pane to hold the image and overlays.
-            StackPane contentPane = new StackPane();
-            contentPane.getChildren().add(targetCell);
-
-            // Add overlays to the contentPane
-            if (comp.isBattery()) {
-                setComponentProp(contentPane, (ViewBattery) comp);
-            } else if (comp.isCabin()) {
-                setComponentProp(contentPane, (ViewCabin) comp);
+            layeredPane.getChildren().add(targetCell);
+            if (comp.isCabin()) {
+                setComponentProp(layeredPane, (ViewCabin) comp);
+            } else if (comp.isBattery()) {
+                setComponentProp(layeredPane, (ViewBattery) comp);
             } else if (comp.isCargoHold()) {
-                setComponentProp(contentPane, (ViewCargoHold) comp);
+                setComponentProp(layeredPane, (ViewCargoHold) comp);
             }
 
-            // Rotate the contentPane if needed
-            if (comp.rotComp != 0) {
-                contentPane.setRotate(comp.rotComp * 90);
-            }
-
-            // Add the rotated content to the main layeredPane
-            layeredPane.getChildren().add(contentPane);
-
+            // Make sure the layered pane fills the cell
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
             GridPane.setFillHeight(layeredPane, true);
@@ -155,7 +145,7 @@ public abstract class ShipController {
         batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
         try {
-            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/battery.png"))));
+            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
             batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
@@ -173,7 +163,7 @@ public abstract class ShipController {
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
             String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
-                    "/images/icons/purple_alien.png" : "/images/icons/brown_alien.png";
+                    "/fxml/icons/purple_alien.png" : "/fxml/icons/brown_alien.png";
 
             try {
                 ImageView alienIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(alienImagePath))));
@@ -181,8 +171,8 @@ public abstract class ShipController {
                 alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
                 alienIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
                 layeredPane.getChildren().add(alienIcon);
+                StackPane.setAlignment(alienIcon, Pos.CENTER);
             } catch (Exception e) {
                 System.err.println("Unable to load alien image: " + e.getMessage());
             }
@@ -191,15 +181,15 @@ public abstract class ShipController {
             astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
             try {
-                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/astr.png"))));
+                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/astr.png"))));
                 astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.TOP_LEFT);
-                StackPane.setAlignment(astronautIcon, javafx.geometry.Pos.BOTTOM_LEFT);
-
                 layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
+                StackPane.setAlignment(astronautsLabel, Pos.CENTER_LEFT);
+                StackPane.setAlignment(astronautIcon, Pos.CENTER_RIGHT);
+
             } catch (Exception e) {
                 System.err.println("Unable to load astronaut image: " + e.getMessage());
                 layeredPane.getChildren().add(astronautsLabel);
@@ -218,7 +208,7 @@ public abstract class ShipController {
                 Label colorIndicator = new Label("");
                 colorIndicator.setStyle("-fx-background: " + colorStr +
                         "; -fx-min-width: 15px; -fx-min-height: 15px; -fx-border-color: white; -fx-border-width: 1px;");
-                StackPane.setAlignment(colorIndicator, javafx.geometry.Pos.BOTTOM_RIGHT);
+                StackPane.setAlignment(colorIndicator, Pos.BOTTOM_RIGHT);
                 StackPane.setMargin(colorIndicator, new Insets(0, 5, 5, 0));
                 layeredPane.getChildren().add(colorIndicator);
             }
@@ -400,7 +390,7 @@ public abstract class ShipController {
                         clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
                     });
 
-                    clickArea.setOnMouseClicked(event -> {
+                    clickArea.setOnMouseClicked(_ -> {
                         if (handler != null) {
                             handler.onCellClicked(finalRow, finalCol);
                         }
@@ -416,7 +406,7 @@ public abstract class ShipController {
 
     public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
         Set<int[]> selectedCells = new HashSet<>();
-        Map<Rectangle, int[]> rectToCoord = new HashMap<>();
+        Map<Rectangle, int[]> rectToCoordinates = new HashMap<>();
 
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
@@ -435,28 +425,28 @@ public abstract class ShipController {
                             componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
                     );
 
-                    int[] coord = new int[]{row, col};
-                    rectToCoord.put(clickArea, coord);
+                    int[] coordinates = new int[]{row, col};
+                    rectToCoordinates.put(clickArea, coordinates);
 
-                    clickArea.setOnMouseClicked(event -> {
-                        if (selectedCells.contains(coord)) {
-                            selectedCells.remove(coord);
+                    clickArea.setOnMouseClicked(_ -> {
+                        if (selectedCells.contains(coordinates)) {
+                            selectedCells.remove(coordinates);
                             clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                         } else {
-                            selectedCells.add(coord);
+                            selectedCells.add(coordinates);
                             clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
                         }
                     });
 
                     clickArea.setOnMouseEntered(_ -> {
-                        if (!selectedCells.contains(coord)) {
+                        if (!selectedCells.contains(coordinates)) {
                             clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.1));
                         }
                         clickArea.setCursor(javafx.scene.Cursor.HAND);
                     });
 
                     clickArea.setOnMouseExited(_ -> {
-                        if (!selectedCells.contains(coord)) {
+                        if (!selectedCells.contains(coordinates)) {
                             clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                         }
                         clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
@@ -487,6 +477,26 @@ public abstract class ShipController {
 
     protected ImageView getImageViewAt(int row, int col) {
         return null;
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        reloadShip();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // ignore
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // ignore
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
     }
 }
 

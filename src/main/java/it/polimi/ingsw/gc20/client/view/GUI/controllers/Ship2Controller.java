@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -146,5 +147,10 @@ public class Ship2Controller extends ShipController{
 
     protected int getCols() {
         return COLS;
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        // ignore
     }
 }

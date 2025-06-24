@@ -1,8 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -18,16 +23,18 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
-public class MenuController {
+public class MenuController implements GameModelListener {
 
     public enum DisplayContext {
         THUMBNAIL,
         MAIN_VIEW,
         DIALOG
+    }
+
+    public interface ContextDataReceiver {
+        void setContextData(Map<String, Object> contextData);
     }
 
     private record DisplayConfig(double aspectRatio, double maxWidth, double maxHeight, double minWidth,
@@ -37,9 +44,10 @@ public class MenuController {
     private static final DisplayConfig SHIP_THUMBNAIL = new DisplayConfig(1.3, 200, 150, 100, 75, 5, 0.95, 0.95);
     private static final DisplayConfig SHIP_MAIN_VIEW = new DisplayConfig(1.2, 800, 600, 200, 150, 20, 0.98, 0.98);
     private static final DisplayConfig SHIP_DIALOG = new DisplayConfig(1.25, 400, 300, 150, 100, 10, 0.92, 0.92);
-
     private static final DisplayConfig BOARD_MAIN_VIEW = new DisplayConfig(1.8, 1200, 800, 300, 200, 15, 0.98, 0.98);
     private static final DisplayConfig BOARD_DIALOG = new DisplayConfig(1.8, 600, 450, 200, 150, 12, 0.92, 0.92);
+    private ContentType currentContentType = null;
+
 
     @FXML public VBox drawnCard;
     @FXML private StackPane currentFrame;
@@ -56,6 +64,9 @@ public class MenuController {
     @FXML public Button button2;
     @FXML public Button button3;
     @FXML public Button button4;
+    @FXML private Label serverMessages;
+    @FXML public Button acceptButton;
+    @FXML public Button discardButton;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -73,10 +84,11 @@ public class MenuController {
         
         loadPlayerShips();
         loadPlayerNames();
-        initializeCurrentFrame();
+        printCurrentCard(gameModel.getCurrentCard());
         initializeGameBoard();
         setVisibility();
 
+        ClientGameModel.getInstance().addListener(this);
         currentInstance = this;
     }
 
@@ -102,7 +114,8 @@ public class MenuController {
             }
         }
 
-        backButton.setVisible(false);
+        updateBackButtonVisibility();
+
         button2.setVisible(false);
         button3.setVisible(false);
         button4.setVisible(false);
@@ -110,11 +123,24 @@ public class MenuController {
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
         drawnCard.setVisible(isCardDrawn);
-        Node parentDrawnCard = drawnCard.getParent();
-        if (parentDrawnCard != null) {
-            parentDrawnCard.setVisible(isCardDrawn);
-        }
+        acceptButton.setVisible(false);
+        discardButton.setVisible(false) ;
     }
+
+    public void setAcceptableButtonVisibility(boolean visible) {
+        acceptButton.setVisible(visible);
+        discardButton.setVisible(visible);
+    }
+
+    public void hideAcceptableButtons() {
+        setAcceptableButtonVisibility(false);
+    }
+
+    private void updateBackButtonVisibility() {
+        boolean shouldShowBack = currentContentType == ContentType.SHIP;
+        backButton.setVisible(shouldShowBack);
+    }
+
 
     /**
      * Loads player names in the sidebar
@@ -183,17 +209,35 @@ public class MenuController {
             Node previousView = viewStack.pop();
             previousView.setVisible(true);
             currentFrame.getChildren().add(previousView);
+            currentContentType = null;
         }
-
-        backButton.setVisible(!viewStack.isEmpty());
+        updateBackButtonVisibility();
     }
 
-    /**
-     * Method called from FXML to load temporary controller
-     */
     @FXML
-    private void loadTemporaryControllerInCurrentFrame() {
-        showTemporaryView("/fxml/buildingPhase0.fxml");
+    public void handleAcceptCard(){
+        if (gameModel.getClient() != null) {
+            try{
+                gameModel.getClient().acceptCard(
+                        ClientGameModel.getInstance().getUsername());
+                hideAcceptableButtons();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void handleDiscardCard() {
+        if (ClientGameModel.getInstance().getClient() != null) {
+            try {
+                ClientGameModel.getInstance().getClient().endMove(
+                        ClientGameModel.getInstance().getUsername());
+                hideAcceptableButtons();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -205,14 +249,13 @@ public class MenuController {
     }
 
     /**
-     * Clear all views in the stack and return to initial state
+     * Clear all views in the stack and return to the initial state
      */
     public void clearViewStack() {
         currentFrame.getChildren().clear();
         viewStack.clear();
-        
+
         initializeCurrentFrame();
-        backButton.setVisible(false);
     }
 
     /**
@@ -242,6 +285,7 @@ public class MenuController {
             showTemporaryView(getFXMLPath(ContentType.SHIP));
             return;
         }
+        saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
 
@@ -249,7 +293,11 @@ public class MenuController {
             String fxmlPath = getFXMLPath(ContentType.SHIP);
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
                     ContentType.SHIP, currentPlayer);
+
+            currentContentType = ContentType.SHIP;
+            updateBackButtonVisibility();
         }
+
     }
 
     /**
@@ -275,7 +323,7 @@ public class MenuController {
     }
 
     /**
-     * Enhanced method to load menu with controller configuration
+     * Enhanced method to load the menu with controller configuration
      */
     public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
         try {
@@ -289,6 +337,8 @@ public class MenuController {
                 return;
             }
 
+            saveCurrentStateToStack();
+
             Parent content = FXMLLoader.load(fxmlUrl);
             if (content instanceof Region region) {
                 region.prefWidthProperty().bind(currentFrame.widthProperty());
@@ -300,11 +350,22 @@ public class MenuController {
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(content);
 
+            currentContentType = null;
+            updateBackButtonVisibility();
+
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading menu: " + fxmlPath);
         }
     }
+
+    private void saveCurrentStateToStack() {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentView = currentFrame.getChildren().getFirst();
+            viewStack.push(currentView);
+        }
+    }
+
 
     /**
      * Configures the loaded menu controller with specific parameters
@@ -320,10 +381,7 @@ public class MenuController {
             case "cargoMenu" -> {
                 if (controller instanceof CargoMenuController && parameters.length >= 4) {
                     ((CargoMenuController) controller).initializeWithParameters(
-                            (String) parameters[0],
-                            (Integer) parameters[1],
-                            (List<CargoColor>) parameters[2],
-                            (Boolean) parameters[3]
+                            (String) parameters[0]
                     );
                 }
             }
@@ -341,13 +399,57 @@ public class MenuController {
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String fxmlPath, ClientGameModel gameModel, Object... parameters) {
-        if (currentInstance != null) {
-            Platform.runLater(() -> {
-                currentInstance.showTemporaryView(fxmlPath);
-            });
-        } else {
-            System.err.println("No active MenuController instance to load: " + fxmlPath);
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
+        MenuController instance = getCurrentInstance();
+        if (instance == null) {
+            guiView.displayErrorMessage("MenuController not initialized");
+            return;
+        }
+
+        try {
+            if (contentFileName == null || contentFileName.trim().isEmpty()) {
+                guiView.displayErrorMessage("FXML file name cannot be null or empty");
+                return;
+            }
+
+            String fxmlPath = "/fxml/" + contentFileName.trim() + ".fxml";
+            URL fxmlResource = MenuController.class.getResource(fxmlPath);
+
+            if (fxmlResource == null) {
+                guiView.displayErrorMessage("FXML file not found: " + fxmlPath);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlResource);
+            Parent content = loader.load();
+            Object controller = loader.getController();
+
+            if (controller != null && contextData != null) {
+                try {
+                    ((ContextDataReceiver) controller).setContextData(contextData);
+                } catch (ClassCastException e) {
+                    guiView.displayErrorMessage("Unable to obtain the context data receiver: " + e.getMessage());
+                }
+            }
+
+            if (content instanceof Region region) {
+                region.prefWidthProperty().bind(instance.currentFrame.widthProperty());
+                region.prefHeightProperty().bind(instance.currentFrame.heightProperty());
+                region.setMaxWidth(Region.USE_PREF_SIZE);
+                region.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+
+            instance.currentFrame.getChildren().clear();
+            instance.currentFrame.getChildren().add(content);
+
+        } catch (IOException e) {
+            System.err.println("Error loading menu: " + e.getMessage());
+            e.printStackTrace();
+            guiView.displayErrorMessage("Error loading menu " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+            guiView.displayErrorMessage("Unexpected error: " + e.getMessage());
         }
     }
 
@@ -446,7 +548,7 @@ public class MenuController {
     }
 
     /**
-     * Responsive configuration for main view and dialog
+     * Responsive configuration for the main view and dialog
      */
     private void configureResponsiveSizing(StackPane container, StackPane element, DisplayConfig config) {
         element.setMinWidth(config.minWidth);
@@ -553,6 +655,8 @@ public class MenuController {
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
                               ContentType.SHIP, currentPlayer);
         }
+        currentContentType = ContentType.SHIP;
+        updateBackButtonVisibility();
     }
 
     /**
@@ -594,5 +698,60 @@ public class MenuController {
         MenuController controller = new MenuController();
         String fxmlPath = controller.getFXMLPath(contentType);
         controller.loadFXMLInContainer(container, fxmlPath, context, contentType, player);
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // TODO
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        // ignore
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // TODO: decide what to do
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        printCurrentCard(currentCard);
+    }
+
+    private void printCurrentCard(ViewAdventureCard currentCard) {
+        Platform.runLater(() -> {
+            if (currentCard != null && currentCard.id != 0) {
+                String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
+                String currentText = serverMessages.getText();
+                if (currentText.equals("Waiting for server messages...")) {
+                    serverMessages.setText(cardInfo);
+                } else {
+                    serverMessages.setText(currentText + "\n" + cardInfo);
+                }
+                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
+
+                imageView.setFitWidth(200);
+                imageView.setFitHeight(300);
+                imageView.setPreserveRatio(true);
+
+                drawnCard.getChildren().clear();
+                drawnCard.getChildren().add(imageView);
+
+            }
+        });
+    }
+
+    private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {
+        String series = (viewAdventureCard.id > 20) ? "II" : "I";
+        int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
+        String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
+        return new javafx.scene.image.Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
     }
 }

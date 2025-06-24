@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,17 +14,74 @@ import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class ActivationMenuController {
+public class ActivationMenuController implements MenuController.ContextDataReceiver {
 
     public enum ActivationType {
-        CANNONS,
-        ENGINES,
-        SHIELDS
+        CANNONS {
+            @Override
+            public boolean matches(ViewComponent component) {
+                return component.isCannon();
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateCannons(username, primary, batteries);
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+            }
+        },
+        ENGINES {
+            @Override
+            public boolean matches(ViewComponent component) {
+                return component.isEngine();
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateEngines(username, primary, batteries);
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+            }
+        },
+        SHIELDS {
+            @Override
+            public boolean matches(ViewComponent component) {
+                return component.isShield();
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateShield(username, primary.getFirst(), batteries.getFirst());
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateShield(username, null, null);
+            }
+        },
+        BATTERY {
+            @Override
+            public boolean matches(ViewComponent component) {
+                return component.isBattery();
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                if (batteries != null && !batteries.isEmpty()) {
+                    Pair<Integer, Integer> batteryCoordinates = batteries.getFirst();
+                    ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
+                }
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().loseEnergy(username, null);
+            }
+        };
+
+        public abstract boolean matches(ViewComponent component);
+        public abstract void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException;
+        public abstract void skip(String username) throws RemoteException;
     }
 
     @FXML
@@ -36,8 +92,6 @@ public class ActivationMenuController {
     private Label errorLabel;
     @FXML
     private Pane shipPane;
-    @FXML
-    private ImageView cardImageView;
 
     private ShipController shipController;
     private ViewShip ship;
@@ -53,20 +107,10 @@ public class ActivationMenuController {
         loadShipView();
     }
 
-    public void initializeData(ActivationType type, String message, Integer cardId) {
+    public void initializeData(ActivationType type, String message, int batteryNum) {
         this.activationType = type;
         titleLabel.setText(type.toString() + " Activation");
         messageLabel.setText(message);
-
-        if (cardId != null) {
-            try {
-                String imagePath = "/fxml/cards/GT-cards_I_IT_" + String.format("%03d", cardId) + ".jpg";
-                Image cardImage = new Image(getClass().getResourceAsStream(imagePath));
-                cardImageView.setImage(cardImage);
-            } catch (Exception e) {
-                showError("Could not load card image.");
-            }
-        }
     }
 
     private void loadShipView() {
@@ -87,12 +131,13 @@ public class ActivationMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController) {
+            try {
                 this.shipController = (ShipController) controller;
                 shipController.enableCellClickHandler(this::selectComponent);
-            } else {
+            } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
+
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
@@ -100,16 +145,14 @@ public class ActivationMenuController {
     }
 
     private void selectComponent(int row, int col) {
-        int componentRow = row - 5;
-        int componentCol = col - (ship.isLearner ? 5 : 4);
-        selectedComponents.add(new Pair<>(componentRow, componentCol));
+        selectedComponents.add(new Pair<>(row, col));
         updateHighlights();
     }
 
     @FXML
     private void handleUndo() {
         if (!selectedComponents.isEmpty()) {
-            selectedComponents.remove(selectedComponents.size() - 1);
+            selectedComponents.removeLast();
             updateHighlights();
         }
     }
@@ -120,8 +163,8 @@ public class ActivationMenuController {
         }
         Map<Pair<Integer, Integer>, Color> highlights = new HashMap<>();
         for (Pair<Integer, Integer> coords : selectedComponents) {
-            int gridRow = coords.getValue0() + 5;
-            int gridCol = coords.getValue1() + (ship.isLearner ? 5 : 4);
+            int gridRow = coords.getValue0();
+            int gridCol = coords.getValue1();
             ViewComponent comp = ship.getComponent(gridRow, gridCol);
             if (comp != null) {
                 Color color = getColorForComponent(comp);
@@ -151,57 +194,35 @@ public class ActivationMenuController {
         List<Pair<Integer, Integer>> batteries = new ArrayList<>();
 
         for (Pair<Integer, Integer> coords : selectedComponents) {
-            ViewComponent comp = ship.getComponent(coords.getValue0() + 5, coords.getValue1() + (ship.isLearner ? 5 : 4));
+            ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
             if (comp == null) continue;
 
-            if (comp.isBattery()) {
-                batteries.add(coords);
-                continue;
-            }
+            if (activationType == ActivationType.BATTERY) {
+                if (comp.isBattery()) {
+                    batteries.add(coords);
+                }
+            } else {
+                if (comp.isBattery()) {
+                    batteries.add(coords);
+                    continue;
+                }
 
-            switch (activationType) {
-                case CANNONS:
-                    if (comp.isCannon()) {
-                        primary.add(coords);
-                    }
-                    break;
-                case ENGINES:
-                    if (comp.isEngine()) {
-                        primary.add(coords);
-                    }
-                    break;
-                case SHIELDS:
-                    if (comp.isShield()) {
-                        primary.add(coords);
-                    }
-                    break;
+                if (activationType.matches(comp)) {
+                    primary.add(coords);
+                }
             }
         }
 
         try {
-            ClientGameModel.getInstance().setBusy();
-            switch (activationType) {
-                case CANNONS:
-                    ClientGameModel.getInstance().getClient().activateCannons(username, primary, batteries);
-                    break;
-                case ENGINES:
-                    ClientGameModel.getInstance().getClient().activateEngines(username, primary, batteries);
-                    break;
-                case SHIELDS:
-                    //ClientGameModel.getInstance().getClient().activateShields(username, primary, batteries);
-                    break;
-            }
-            ClientGameModel.getInstance().setFree();
+            activationType.activate(username, primary, batteries);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 
     @FXML
     private void handleSkip() {
         try {
-            ClientGameModel.getInstance().setBusy();
             switch (activationType) {
                 case CANNONS:
                     ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
@@ -210,18 +231,39 @@ public class ActivationMenuController {
                     ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
                     break;
                 case SHIELDS:
-                    // ClientGameModel.getInstance().getClient().skipShields(username);
+                    ClientGameModel.getInstance().getClient().activateShield(username, null, null);
+                    break;
+                case BATTERY:
+                    ClientGameModel.getInstance().getClient().loseEnergy(username, null);
                     break;
             }
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("activationType") && contextData.containsKey("message")) {
+            activationType = (ActivationType) contextData.get("activationType");
+            String message = (String) contextData.get("message");
+            initializeData(activationType, message, 0);
+        } else if(contextData.containsKey("activationTyper") &&  contextData.containsKey("batteryNum")) {
+            activationType = (ActivationType) contextData.get("activationTyper");
+            int batteryNum = (int) contextData.get("batteryNum");
+            String message = "You have to lose " + batteryNum + " energy because you are short on cargo!";
+            initializeData(activationType, message, batteryNum);
+        }
+
+
+        else {
+            throw new IllegalArgumentException("Context data must contain activationType and message");
+        }
+
     }
 }

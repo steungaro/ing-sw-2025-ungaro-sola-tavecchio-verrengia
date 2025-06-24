@@ -1,74 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.ActivationMenuController"
-      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="800.0" prefWidth="900.0">
+<VBox alignment="CENTER" prefHeight="800.0" prefWidth="900.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.ActivationMenuController">
 
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
     <Label fx:id="titleLabel" text="Activation Menu" textFill="WHITE">
         <font>
-            <Font name="System Bold" size="24.0"/>
+            <Font name="System Bold" size="24.0" />
         </font>
     </Label>
 
-    <Label fx:id="messageLabel" wrapText="true" textFill="WHITE">
+    <Label fx:id="messageLabel" textFill="WHITE" wrapText="true">
         <font>
-            <Font size="14.0"/>
+            <Font size="14.0" />
         </font>
     </Label>
 
     <Label fx:id="errorLabel" contentDisplay="CENTER" textAlignment="CENTER" textFill="RED" visible="false">
         <font>
-            <Font size="14.0"/>
+            <Font size="14.0" />
         </font>
     </Label>
 
-    <HBox spacing="20" alignment="CENTER" VBox.vgrow="ALWAYS">
+    <HBox alignment="CENTER" spacing="20" VBox.vgrow="ALWAYS">
         <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
             <Label text="Your ship:" textFill="WHITE">
                 <font>
-                    <Font size="16.0"/>
+                    <Font size="16.0" />
                 </font>
             </Label>
-            <Pane fx:id="shipPane" VBox.vgrow="ALWAYS"/>
-        </VBox>
-
-        <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-            <Label text="Current Card:" textFill="WHITE">
-                <font>
-                    <Font size="16.0"/>
-                </font>
-            </Label>
-            <ImageView fx:id="cardImageView" fitHeight="400" fitWidth="280" preserveRatio="true"/>
+            <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
         </VBox>
     </HBox>
 
-    <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="activateButton" prefHeight="50" prefWidth="200" text="Activate"
-                onAction="#handleActivate">
+    <HBox alignment="CENTER" spacing="20">
+        <Button onAction="#handleActivate" prefHeight="50" prefWidth="200" text="Activate">
             <font>
-                <Font size="18.0"/>
+                <Font size="18.0" />
             </font>
             <style>
                 -fx-background-color: #4a7eb3;
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button fx:id="undoButton" prefHeight="50" prefWidth="200" text="Undo" onAction="#handleUndo">
+        <Button onAction="#handleUndo" prefHeight="50" prefWidth="200" text="Undo">
             <font>
                 <Font size="16.0" />
             </font>
@@ -77,10 +59,9 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button fx:id="skipButton" prefHeight="50" prefWidth="200" text="Skip"
-                onAction="#handleSkip">
+        <Button onAction="#handleSkip" prefHeight="50" prefWidth="200" text="Skip">
             <font>
-                <Font size="18.0"/>
+                <Font size="18.0" />
             </font>
             <style>
                 -fx-background-color: #4a7eb3;
@@ -89,4 +70,3 @@
         </Button>
     </HBox>
 </VBox>
-

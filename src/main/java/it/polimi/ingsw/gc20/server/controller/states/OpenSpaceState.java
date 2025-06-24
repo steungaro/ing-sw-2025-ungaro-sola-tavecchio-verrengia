@@ -42,11 +42,6 @@ public class OpenSpaceState extends PlayingState {
     }
 
     @Override
-    public String toString() {
-        return "OpenSpaceState";
-    }
-
-    @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
         if (!getCurrentPlayer().equals(player.getUsername())) {
@@ -101,11 +96,6 @@ public class OpenSpaceState extends PlayingState {
 
         for (Player player : getModel().getInGamePlayers()) {
             getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(player.getUsername(), 0, player.isInGame(), player.getColor(), (player.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
-        }
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
         phase = StatePhase.DRAW_CARD_PHASE;
         getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());

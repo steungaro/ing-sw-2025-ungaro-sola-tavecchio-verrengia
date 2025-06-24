@@ -57,7 +57,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      */
     public ClientGameModel() throws RemoteException {
         super();
-        // Initialize default state if necessary
+        // Initialize the default state if necessary
         this.loggedIn = false;
         this.username = null;
         this.client = null;
@@ -103,6 +103,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      */
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
+        for (GameModelListener listener : listeners) {
+            listener.onCurrentCardUpdated(this.currentCard);
+        }
     }
 
     /**
@@ -165,7 +168,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      * the specified menu state is added to a queue. Otherwise, it is immediately set as the current
      * menu state and displayed.
      *
-     * @param currentMenuState The menu-state to set or queue.
+     * @param currentMenuState menu state to set or queue.
      */
     public void setCurrentMenuStateNoClear(MenuState currentMenuState) {
         if (busy){

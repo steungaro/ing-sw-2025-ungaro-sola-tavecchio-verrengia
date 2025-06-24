@@ -58,11 +58,6 @@ public class CombatZone0State extends PlayingState {
         //notify the players that they are in the automatic action phase
         getController().getMessageManager().broadcastPhase(new AutomaticActionMessage("Finding the player with the minimum crew..."));
         this.manager = null;
-        try {
-            Thread.sleep(5000); // Sleep for 5 seconds (5000 milliseconds)
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
         this.phase = StatePhase.AUTOMATIC_ACTION;
         this.automaticAction();
     }

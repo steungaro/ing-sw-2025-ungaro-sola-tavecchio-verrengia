@@ -14,7 +14,7 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
  */
 public class Planet implements Serializable {
     private List<CargoColor> reward;
-    private Boolean available;
+    private boolean available;
     private Player player = null;
 
     /**
@@ -49,18 +49,18 @@ public class Planet implements Serializable {
     /**
      * Retrieves the availability status of the planet.
      *
-     * @return a Boolean indicating whether the planet is available (true) or not (false)
+     * @return a boolean indicating whether the planet is available (true) or not (false)
      */
-    public Boolean getAvailable() {
+    public boolean getAvailable() {
         return available;
     }
 
     /**
      * Sets the availability status of the planet.
      *
-     * @param available a Boolean indicating whether the planet is available (true) or not (false)
+     * @param available a boolean indicating whether the planet is available (true) or not (false)
      */
-    public void setAvailable(Boolean available) {
+    public void setAvailable(boolean available) {
         this.available = available;
     }
 

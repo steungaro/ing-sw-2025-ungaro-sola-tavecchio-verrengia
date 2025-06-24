@@ -4,7 +4,6 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,55 +14,47 @@ import org.javatuples.Pair;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.Optional;
 
-public class CargoMenuController {
+public class CargoMenuController implements MenuController.ContextDataReceiver {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
-    @FXML private Label operationTitle;
     @FXML private Pane shipPane;
-    @FXML private ComboBox<CargoColor> cargoColorComboBox;
-    @FXML private TextField fromCoordinatesField;
-    @FXML private TextField toCoordinatesField;
-    @FXML private Button unloadButton;
-    @FXML private Button moveButton;
-    @FXML private Button loadButton;
-    @FXML private Button endTurnButton;
-
-    private Message message;
     private String username;
-    private int cargoToLose;
-    private List<CargoColor> cargoToGain;
-    private boolean losing;
-    private Pattern coordinatePattern = Pattern.compile("^\\d+\\s+\\d+$");
     private ViewShip ship;
+    private ShipController shipController;
+    private int losing; // 0 aren't initialized, 1 losing cargo, 2 gaining cargo
+    private Pair<Integer, Integer> from;
+    private CargoColor colorFrom;
+    private List<CargoColor> cargoToGain;
+    private int cargoToLose;
+    private CargoColor currentCargo;
 
     @FXML
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
-        cargoColorComboBox.setItems(FXCollections.observableArrayList(CargoColor.values()));
-    }
-
-    public void initializeWithParameters(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        this.cargoToLose = cargoToLose;
-        this.cargoToGain = cargoToGain;
-        this.losing = losing;
-
-        messageLabel.setText(message);
-
-        if (losing) {
-            operationTitle.setText("You lose " + cargoToLose + " cargo");
-            loadButton.setDisable(true);
-        } else {
-            StringBuilder cargoMessage = new StringBuilder("You gain: ");
-            cargoToGain.forEach((color) ->
-                    cargoMessage.append(color).append(", "));
-            operationTitle.setText(cargoMessage.toString());
-        }
-
         ship = ClientGameModel.getInstance().getShip(username);
 
+
         loadShipView();
+    }
+
+    public void initializeWithParameters(String message) {
+        messageLabel.setText(message);
+
+        if(losing==1){
+            for (int i = 0; i < cargoToLose; i++) {
+                shipController.enableCellClickHandler(this::handleUnloadCargo);
+            }
+        } else if(losing==2){
+            for (CargoColor cargoColor : cargoToGain) {
+                currentCargo = cargoColor;
+                shipController.enableCellClickHandler(this::handleLoadCargo);
+            }
+        } else {
+            showError("Invalid operation, please try again.");
+        }
     }
 
     private void loadShipView() {
@@ -74,7 +65,6 @@ public class CargoMenuController {
             }
 
             String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
-
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent shipView = loader.load();
 
@@ -84,19 +74,25 @@ public class CargoMenuController {
             ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
+            Object controller = loader.getController();
+            try {
+                this.shipController = (ShipController) controller;
+            } catch (ClassCastException e) {
+                showError("Unable to get the ship controller");
+            }
+
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
     }
 
-    @FXML
-    private void handleUnloadCargo() {
-        if (!validateCargoColor() || !validateFromCoordinates()) {
+    private void handleUnloadCargo(int row, int col) {
+        Pair<Integer, Integer> coords = new Pair<>(row, col);
+        CargoColor color = showColorSelectionDialog();
+
+        if (color == null) {
             return;
         }
-
-        CargoColor color = cargoColorComboBox.getValue();
-        Pair<Integer, Integer> coords = parseCoordinates(fromCoordinatesField.getText());
 
         try {
             ClientGameModel.getInstance().getClient().unloadCargo(username, color, coords);
@@ -105,37 +101,66 @@ public class CargoMenuController {
         }
     }
 
-    @FXML
-    private void handleMoveCargo() {
-        if (!validateCargoColor() || !validateFromCoordinates() || !validateToCoordinates()) {
-            return;
-        }
+    public static CargoColor showColorSelectionDialog() {
+        Alert dialog = new Alert(Alert.AlertType.NONE);
+        dialog.setTitle("Cargo Selection");
+        dialog.setHeaderText("Select Cargo Color");
+        dialog.setContentText("Choose one of the available colors:");
 
-        CargoColor color = cargoColorComboBox.getValue();
-        Pair<Integer, Integer> from = parseCoordinates(fromCoordinatesField.getText());
-        Pair<Integer, Integer> to = parseCoordinates(toCoordinatesField.getText());
+        ButtonType redButton = new ButtonType("Red", ButtonBar.ButtonData.OK_DONE);
+        ButtonType yellowButton = new ButtonType("Yellow", ButtonBar.ButtonData.OK_DONE);
+        ButtonType blueButton = new ButtonType("Blue", ButtonBar.ButtonData.OK_DONE);
+        ButtonType greenButton = new ButtonType("Green", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        dialog.getButtonTypes().setAll(redButton, yellowButton, blueButton, greenButton, cancelButton);
+
+        Optional<ButtonType> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            if (result.get() == redButton) {
+                return CargoColor.RED;
+            } else if (result.get() == yellowButton) {
+                return CargoColor.YELLOW;
+            } else if (result.get() == blueButton) {
+                return CargoColor.BLUE;
+            } else if (result.get() == greenButton) {
+                return CargoColor.GREEN;
+            }
+        }
+        return null;
+    }
+
+    private void handleMoveCargoFrom(int row, int col) {
+        from = new Pair<>(row, col);
+        colorFrom = showColorSelectionDialog();
+
+        shipController.enableCellClickHandler(this::handleMoveCargoTo);
+    }
+
+    private void handleMoveCargoTo(int row, int col) {
+        Pair<Integer, Integer> to = new Pair<>(row, col);
 
         try {
-            ClientGameModel.getInstance().getClient().moveCargo(username, color, from, to);
+            ClientGameModel.getInstance().getClient().moveCargo(username, colorFrom, from, to);
+        } catch (RemoteException e) {
+            showError("Connection error: " + e.getMessage());
+        }
+    }
+
+    private void handleLoadCargo(int row, int col) {
+        Pair<Integer, Integer> coords = new Pair<>(row, col);
+
+        try {
+            ClientGameModel.getInstance().getClient().loadCargo(username, currentCargo, coords);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
 
     @FXML
-    private void handleLoadCargo() {
-        if (!validateCargoColor() || !validateToCoordinates()) {
-            return;
-        }
-
-        CargoColor color = cargoColorComboBox.getValue();
-        Pair<Integer, Integer> coords = parseCoordinates(toCoordinatesField.getText());
-
-        try {
-            ClientGameModel.getInstance().getClient().loadCargo(username, color, coords);
-        } catch (RemoteException e) {
-            showError("Connection error: " + e.getMessage());
-        }
+    private void moveCargo() {
+        shipController.enableCellClickHandler(this::handleMoveCargoFrom);
     }
 
     @FXML
@@ -146,47 +171,37 @@ public class CargoMenuController {
             showError("Connection error: " + e.getMessage());}
     }
 
-    private boolean validateCargoColor() {
-        if (cargoColorComboBox.getValue() == null) {
-            showError("Select a cargo to load");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateFromCoordinates() {
-        String text = fromCoordinatesField.getText();
-        if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Enter valid coordinates for the origin (row col)");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateToCoordinates() {
-        String text = toCoordinatesField.getText();
-        if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Enter valid coordinates for the origin (row col)");
-            return false;
-        }
-        return true;
-    }
-
-    private Pair<Integer, Integer> parseCoordinates(String input) {
-        String[] parts = input.trim().split("\\s+");
-        int row = Integer.parseInt(parts[0]) - 5;
-
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
-        boolean isLearner = ship != null && ship.isLearner;
-        int offset = isLearner ? 5 : 4;
-
-        int col = Integer.parseInt(parts[1]) - offset;
-
-        return new Pair<>(row, col);
-    }
-
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @SuppressWarnings( "unchecked")
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if(contextData.size()==1) {
+            losing = 1;
+            cargoToGain = null;
+            if (contextData.containsKey("cargoNum")) {
+                cargoToLose = (int) contextData.get("cargoNum");
+                if (cargoToLose <= 0) {
+                    showError("No cargo available to load/unload");
+                    return;
+                }
+                String message = "Select cargo to remove: " + cargoToLose;
+                initializeWithParameters(message);
+            } else {
+                showError("No cargo available to load/unload");
+            }
+        } else if (contextData.size()==4){
+            if(contextData.containsKey("message") && contextData.containsKey("cargoToLose") && contextData.containsKey("cargoToGain") && contextData.containsKey("losing")) {
+                losing = (boolean) contextData.get("losing") ? 2 : 1;
+                String message = (String) contextData.get("message");
+                cargoToGain = (List<CargoColor>) contextData.get("cargoToGain");
+                cargoToLose = (int) contextData.get("cargoToLose");
+
+                initializeWithParameters(message);
+            }
+        }
     }
 }
