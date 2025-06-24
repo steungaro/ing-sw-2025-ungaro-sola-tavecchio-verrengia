@@ -403,8 +403,6 @@ public abstract class Ship {
         Queue<int[]> queue = new LinkedList<>();
         // start from the coordinates passed as arguments
         queue.add(new int[]{startRow, startCol});
-        // mark the starting component as visited
-        visited[startRow][startCol] = true;
 
         // do while there are components in the queue
         while (!queue.isEmpty()) {
@@ -414,7 +412,7 @@ public abstract class Ship {
             int j = current[1];
             Component component = getComponentAt(i, j);
             // if the component is null, continue to the next iteration
-            if (component == null) continue;
+            if (component == null) return false;
 
             // Check connections in all four directions
             Map<Direction, ConnectorEnum> connectors = component.getConnectors();
@@ -478,6 +476,7 @@ public abstract class Ship {
                     }
                 }
             }
+            visited[i][j] = true; // Mark the current component as visited
         }
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
