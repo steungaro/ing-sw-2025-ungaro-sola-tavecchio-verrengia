@@ -37,11 +37,6 @@ public class EndgameState extends State {
         scheduler.shutdown();
     }
 
-    @Override
-    public String toString() {
-        return "EndgameState";
-    }
-
 
     @Override
     public void getScore() {

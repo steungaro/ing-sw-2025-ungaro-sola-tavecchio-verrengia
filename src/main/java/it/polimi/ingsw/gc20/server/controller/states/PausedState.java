@@ -60,6 +60,7 @@ public class PausedState extends State {
      *
      * @param reconnected the username of the player who reconnected
      */
+    @Override
     public void resume(String reconnected) {
         if (future != null && !future.isDone()) {
             future.cancel(false);

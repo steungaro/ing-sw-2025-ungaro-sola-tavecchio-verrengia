@@ -42,11 +42,6 @@ public class OpenSpaceState extends PlayingState {
     }
 
     @Override
-    public String toString() {
-        return "OpenSpaceState";
-    }
-
-    @Override
     public void activateEngines(Player player, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws InvalidTurnException, InvalidStateException, EnergyException, InvalidEngineException, ComponentNotFoundException {
         //check if the player is the current player
         if (!getCurrentPlayer().equals(player.getUsername())) {
