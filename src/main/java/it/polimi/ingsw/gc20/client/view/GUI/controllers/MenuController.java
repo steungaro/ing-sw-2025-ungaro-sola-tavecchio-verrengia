@@ -44,9 +44,10 @@ public class MenuController implements GameModelListener {
     private static final DisplayConfig SHIP_THUMBNAIL = new DisplayConfig(1.3, 200, 150, 100, 75, 5, 0.95, 0.95);
     private static final DisplayConfig SHIP_MAIN_VIEW = new DisplayConfig(1.2, 800, 600, 200, 150, 20, 0.98, 0.98);
     private static final DisplayConfig SHIP_DIALOG = new DisplayConfig(1.25, 400, 300, 150, 100, 10, 0.92, 0.92);
-
     private static final DisplayConfig BOARD_MAIN_VIEW = new DisplayConfig(1.8, 1200, 800, 300, 200, 15, 0.98, 0.98);
     private static final DisplayConfig BOARD_DIALOG = new DisplayConfig(1.8, 600, 450, 200, 150, 12, 0.92, 0.92);
+    private ContentType currentContentType = null;
+
 
     @FXML public VBox drawnCard;
     @FXML private StackPane currentFrame;
@@ -81,7 +82,7 @@ public class MenuController implements GameModelListener {
         
         loadPlayerShips();
         loadPlayerNames();
-        initializeCurrentFrame();
+        //initializeCurrentFrame();
         initializeGameBoard();
         setVisibility();
 
@@ -111,7 +112,8 @@ public class MenuController implements GameModelListener {
             }
         }
 
-        backButton.setVisible(false);
+        updateBackButtonVisibility();
+
         button2.setVisible(false);
         button3.setVisible(false);
         button4.setVisible(false);
@@ -124,6 +126,12 @@ public class MenuController implements GameModelListener {
             parentDrawnCard.setVisible(isCardDrawn);
         }
     }
+
+    private void updateBackButtonVisibility() {
+        boolean shouldShowBack = currentContentType == ContentType.SHIP;
+        backButton.setVisible(shouldShowBack);
+    }
+
 
     /**
      * Loads player names in the sidebar
@@ -192,9 +200,9 @@ public class MenuController implements GameModelListener {
             Node previousView = viewStack.pop();
             previousView.setVisible(true);
             currentFrame.getChildren().add(previousView);
+            currentContentType = null;
         }
-
-        backButton.setVisible(!viewStack.isEmpty());
+        updateBackButtonVisibility();
     }
 
     /**
@@ -219,9 +227,8 @@ public class MenuController implements GameModelListener {
     public void clearViewStack() {
         currentFrame.getChildren().clear();
         viewStack.clear();
-        
+
         initializeCurrentFrame();
-        backButton.setVisible(false);
     }
 
     /**
@@ -251,6 +258,7 @@ public class MenuController implements GameModelListener {
             showTemporaryView(getFXMLPath(ContentType.SHIP));
             return;
         }
+        saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
 
@@ -258,7 +266,11 @@ public class MenuController implements GameModelListener {
             String fxmlPath = getFXMLPath(ContentType.SHIP);
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
                     ContentType.SHIP, currentPlayer);
+
+            currentContentType = ContentType.SHIP;
+            updateBackButtonVisibility();
         }
+
     }
 
     /**
@@ -298,6 +310,8 @@ public class MenuController implements GameModelListener {
                 return;
             }
 
+            saveCurrentStateToStack();
+
             Parent content = FXMLLoader.load(fxmlUrl);
             if (content instanceof Region region) {
                 region.prefWidthProperty().bind(currentFrame.widthProperty());
@@ -309,11 +323,22 @@ public class MenuController implements GameModelListener {
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(content);
 
+            currentContentType = null;
+            updateBackButtonVisibility();
+
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error loading menu: " + fxmlPath);
         }
     }
+
+    private void saveCurrentStateToStack() {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentView = currentFrame.getChildren().getFirst();
+            viewStack.push(currentView);
+        }
+    }
+
 
     /**
      * Configures the loaded menu controller with specific parameters
@@ -603,6 +628,8 @@ public class MenuController implements GameModelListener {
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
                               ContentType.SHIP, currentPlayer);
         }
+        currentContentType = ContentType.SHIP;
+        updateBackButtonVisibility();
     }
 
     /**

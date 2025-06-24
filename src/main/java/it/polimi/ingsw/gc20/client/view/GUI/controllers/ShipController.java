@@ -76,6 +76,10 @@ public abstract class ShipController implements GameModelListener {
         buildShipComponents(ship);
     }
 
+    public void reloadShip() {
+        ship = ClientGameModel.getInstance().getShip(playerUsername);
+        buildShipComponents(ship);
+    }
 
 
     public boolean addComponent(ViewComponent comp, int row, int col) {
@@ -477,7 +481,7 @@ public abstract class ShipController implements GameModelListener {
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        // ignore
+        reloadShip();
     }
 
     @Override
