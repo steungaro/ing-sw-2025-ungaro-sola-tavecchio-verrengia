@@ -3,7 +3,9 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
-public class AutomaticActionController {
+import java.util.Map;
+
+public class AutomaticActionController implements MenuController.ContextDataReceiver{
 
     @FXML
     private Label titleLabel;
@@ -34,5 +36,13 @@ public class AutomaticActionController {
 
     public void initializeWithMessage(String message) {
         setMessage(message);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if(contextData.containsKey("message")) {
+            String message = (String) contextData.get("message");
+            initializeWithMessage(message);
+        }
     }
 }

@@ -4,10 +4,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import java.util.List;
 import java.util.Map;
 
-public class LeaderBoardMenuController {
+public class LeaderBoardMenuController implements MenuController.ContextDataReceiver{
+
+    private Map<String, Integer> leaderBoard;
 
     @FXML
     private Label titleLabel;
@@ -44,5 +45,21 @@ public class LeaderBoardMenuController {
 
     public void initializeWithScores(Map<String, Integer> playerScores) {
         setScoreboard(playerScores);
+    }
+
+    @SuppressWarnings( "unchecked")
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("leaderBoard")) {
+            try {
+                leaderBoard = (Map<String, Integer>) contextData.get("leaderBoard");
+            }
+            catch (ClassCastException e) {
+                throw new IllegalArgumentException("Invalid type for 'leaderBoard' in context data", e);
+            }
+            initializeWithScores(leaderBoard);
+        } else {
+            throw new IllegalArgumentException("Context data must contain 'leaderBoard'");
+        }
     }
 }

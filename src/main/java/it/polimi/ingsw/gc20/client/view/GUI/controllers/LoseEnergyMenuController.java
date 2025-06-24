@@ -10,8 +10,9 @@ import javafx.scene.layout.Pane;
 import org.javatuples.Pair;
 
 import java.rmi.RemoteException;
+import java.util.Map;
 
-public class LoseEnergyMenuController {
+public class LoseEnergyMenuController implements MenuController.ContextDataReceiver {
     @FXML
     private Label energyToLoseLabel;
 
@@ -80,5 +81,15 @@ public class LoseEnergyMenuController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("batteryNum")) {
+            int energyToLose = (int) contextData.get("batteryNum");
+            initializeWithEnergyToLose(energyToLose);
+        } else {
+            showError("No energy to lose data provided.");
+        }
     }
 }

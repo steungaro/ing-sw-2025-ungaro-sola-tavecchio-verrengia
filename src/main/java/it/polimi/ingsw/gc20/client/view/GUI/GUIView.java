@@ -430,6 +430,9 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("cards", cards);
+        showMenuContent(GuiState.PEEK_DECKS, contextData);
         // TODO
         Platform.runLater(() -> {
             try {
