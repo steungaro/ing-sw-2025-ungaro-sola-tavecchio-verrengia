@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -29,6 +30,7 @@ public class ShieldsMenuController {
     private ViewShip ship;
     int shieldRow;
     int shieldCol;
+    private ShipController shipController;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
@@ -61,11 +63,14 @@ public class ShieldsMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController shipController) {
+
+            try{
+                shipController = (ShipController) controller;
                 shipController.enableCellClickHandler(this::selectShieldToActivate);
-                shipController.enableCellClickHandler(this::selectBatteryToActivate);
-            } else {
+
+            } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
+                return;
             }
 
         } catch (IOException e) {
@@ -75,18 +80,16 @@ public class ShieldsMenuController {
 
     @FXML
     private void selectShieldToActivate(int row, int col) {
-        shieldRow = row - 5;
-        shieldCol = col - (ship.isLearner ? 5 : 4);
+        shieldRow = row;
+        shieldCol = col;
+        shipController.enableCellClickHandler(this::selectBatteryToActivate);
     }
 
     @FXML
     private void selectBatteryToActivate(int row, int col) {
         try {
-            int batteryRow = row - 5;
-            int batteryCol = col - 4;
-
             Pair<Integer, Integer> shieldCoordinates = new Pair<>(shieldRow, shieldCol);
-            Pair<Integer, Integer> batteryCoordinates = new Pair<>(batteryRow, batteryCol);
+            Pair<Integer, Integer> batteryCoordinates = new Pair<>(row, col);
 
             ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
         } catch (RemoteException e) {
@@ -102,11 +105,6 @@ public class ShieldsMenuController {
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void handleViewOptions() {
-        // TODO
     }
 
     private void showError(String message) {

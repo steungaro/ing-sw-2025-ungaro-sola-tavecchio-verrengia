@@ -761,7 +761,8 @@ public abstract class BuildingPhaseController implements GameModelListener {
         this.cellClickHandler = null;
         System.out.println("Placing mode deactivated");
 
-        componentsGrid.getChildren().removeIf(node -> node instanceof Rectangle);
+        componentsGrid.getChildren().removeIf(node ->
+                node.getClass().equals(javafx.scene.shape.Rectangle.class));
     }
 
     protected abstract int getRows();
@@ -801,8 +802,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
             java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
 
             for (javafx.scene.Node node : bookedGrid.getChildren()) {
-                if (node instanceof Rectangle) {
-                    nodesToRemove.add(node);
+                try{
+                    Rectangle rect = (Rectangle) node;
+                    nodesToRemove.add(rect);
+                } catch (ClassCastException e) {
+                    // Ignore nodes that are not rectangles
                 }
             }
             bookedGrid.getChildren().removeAll(nodesToRemove);

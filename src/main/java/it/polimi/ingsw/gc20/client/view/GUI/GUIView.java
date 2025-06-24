@@ -210,8 +210,12 @@ public class GUIView extends ClientGameModel {
         Platform.runLater(() -> {
             if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
                 Object controller = primaryStage.getScene().getRoot().getUserData();
-                if (controller instanceof BoardController) {
+                try {
                     ((BoardController) controller).updateBoardDisplay(newBoard);
+                } catch (ClassCastException e) {
+                    displayErrorMessage("Error: Current controller is not a BoardController." + e.getMessage());
+                } catch (NullPointerException e) {
+                    displayErrorMessage("Error: Current scene or root is null." + e.getMessage());
                 }
             }
         });
@@ -372,9 +376,17 @@ public class GUIView extends ClientGameModel {
             if (getCurrentGuiState() == GuiState.LOGIN) {
                 if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
                     Object controller = primaryStage.getScene().getRoot().getUserData();
-                    if (controller instanceof LoginController loginController) {
-                    } else {
-                        System.err.println("Controller is not of type LoginController or is null.");
+                    try{
+                        LoginController loginController = (LoginController) controller;
+                        if (loginController != null) {
+                            loginController.setErrorLabel("Login failed for user: " + username);
+                        } else {
+                            System.err.println("LoginController is null, cannot update errorLabel.");
+                        }
+                    } catch (ClassCastException e) {
+                        System.err.println("Error casting controller to LoginController: " + e.getMessage());
+                    } catch (NullPointerException e) {
+                        System.err.println("Error accessing scene or root: " + e.getMessage());
                     }
                 } else {
                     System.err.println("Cannot update errorLabel: primaryStage, scene, or root is null.");

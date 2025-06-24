@@ -72,12 +72,13 @@ public class ValidationMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController shipController) {
+
+            try{
+                ShipController shipController = (ShipController) controller;
                 shipController.enableCellClickHandler(this::selectComponentToRemove);
-            } else {
+            } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
-
         } catch (IOException e) {
             showError("Error while loading the ship view: " + e.getMessage());
         }

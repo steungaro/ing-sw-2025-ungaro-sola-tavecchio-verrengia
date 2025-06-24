@@ -74,7 +74,7 @@ public class Projectile implements Serializable {
     public void Fire(Ship s, int diceResult) throws InvalidShipException {
         try {
             if (direction == Direction.UP || direction == Direction.DOWN) {
-                if (s instanceof NormalShip) {
+                if (s.isNormal()) {
                     if (!s.killComponent(s.getFirstComponent(direction, diceResult - 4))) {
                         throw new InvalidShipException("Invalid ship");
                     }

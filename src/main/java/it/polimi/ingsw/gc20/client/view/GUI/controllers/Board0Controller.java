@@ -70,11 +70,7 @@ public class Board0Controller extends BoardController {
 
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
-                if (newParent instanceof Pane) {
-                    ((Pane) newParent).getChildren().add(label);
-                } else if (newParent instanceof Group) {
-                    ((Group) newParent).getChildren().add(label);
-                }
+                ((Group) newParent).getChildren().add(label);
             });
             if (scalableContent != null && circle.getParent() == scalableContent) {
                 scalableContent.getChildren().add(label);

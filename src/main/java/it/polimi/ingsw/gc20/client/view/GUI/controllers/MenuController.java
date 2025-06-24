@@ -336,11 +336,14 @@ public class MenuController implements GameModelListener {
             saveCurrentStateToStack();
 
             Parent content = FXMLLoader.load(fxmlUrl);
-            if (content instanceof Region region) {
+            try{
+                Region region = (Region) content;
                 region.prefWidthProperty().bind(currentFrame.widthProperty());
                 region.prefHeightProperty().bind(currentFrame.heightProperty());
                 region.setMaxWidth(Region.USE_PREF_SIZE);
                 region.setMaxHeight(Region.USE_PREF_SIZE);
+            } catch (ClassCastException e) {
+                System.err.println("Content is not a Region, cannot bind size: " + e.getMessage());
             }
 
             currentFrame.getChildren().clear();
@@ -404,11 +407,14 @@ public class MenuController implements GameModelListener {
                 }
             }
 
-            if (content instanceof Region region) {
+            try{
+                Region region = (Region) content;
                 region.prefWidthProperty().bind(instance.currentFrame.widthProperty());
                 region.prefHeightProperty().bind(instance.currentFrame.heightProperty());
                 region.setMaxWidth(Region.USE_PREF_SIZE);
                 region.setMaxHeight(Region.USE_PREF_SIZE);
+            } catch (ClassCastException e) {
+                System.err.println("Content is not a Region, cannot bind size: " + e.getMessage());
             }
 
             instance.currentFrame.getChildren().clear();
@@ -454,6 +460,7 @@ public class MenuController implements GameModelListener {
                 configureGenericSizing(container, wrapper, context, contentType);
                 content = wrapper;
             }
+            // TODO -> understand what type of content is expected
 
             container.getChildren().add(content);
             configureController(loader.getController(), contentType, player);
@@ -601,21 +608,28 @@ public class MenuController implements GameModelListener {
                                    ViewPlayer player) {
         switch (contentType) {
             case SHIP -> {
-                if (controller instanceof ShipController shipController && player != null) {
-                    shipController.buildShipComponents(gameModel.getShip(player.username));
-                    shipController.updateStatisticBoard(player);
+                try{
+                    ShipController shipController = (ShipController) controller;
+                    if(player != null) {
+                        shipController.buildShipComponents(gameModel.getShip(player.username));
+                    }
+                } catch (ClassCastException e) {
+                    System.err.println("Controller is not a ShipController: " + e.getMessage());
                 }
             }
             case BOARD -> {
-                if (controller instanceof BoardController boardController) {
+                try {
+                    BoardController boardController = (BoardController) controller;
                     boardController.updateBoardDisplay(gameModel.getBoard());
+                } catch (ClassCastException e) {
+                    System.err.println("Controller is not a BoardController: " + e.getMessage());
                 }
             }
         }
     }
 
     /**
-     * Initializes currentFrame with current player's ship
+     * Initializes the currentFrame with the current player's ship
      */
     private void initializeCurrentFrame() {
         ViewPlayer currentPlayer = Arrays.stream(gameModel.getPlayers())

@@ -82,10 +82,10 @@ public class Board2Controller extends BoardController {
             circleLabels.add(label);
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
-                if (newParent instanceof Pane) {
-                    ((Pane) newParent).getChildren().add(label);
-                } else if (newParent instanceof Group) {
+                try{
                     ((Group) newParent).getChildren().add(label);
+                } catch (ClassCastException e) {
+                    System.err.println("Error: Parent of circle is not a Group. Cannot add label.");
                 }
             });
             if (scalableContent != null && circle.getParent() == scalableContent) {

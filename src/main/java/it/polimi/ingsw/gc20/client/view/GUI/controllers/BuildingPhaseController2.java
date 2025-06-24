@@ -267,8 +267,9 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     public void enableBookedToHandInteraction(BookedToHandClickHandler handler) {
         if (bookedGrid != null) {
             System.out.println("booked components interaction enabled.");
-        
-            bookedGrid.getChildren().removeIf(node -> node instanceof Rectangle);
+
+            bookedGrid.getChildren().removeIf(node ->
+                    node.getClass().equals(javafx.scene.shape.Rectangle.class));
 
             for (int i = 0; i < 2; i++) {
                 if(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).getBooked(i) == null)

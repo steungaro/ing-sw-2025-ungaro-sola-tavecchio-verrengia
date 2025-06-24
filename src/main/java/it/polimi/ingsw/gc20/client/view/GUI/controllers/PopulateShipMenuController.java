@@ -51,9 +51,9 @@ public class PopulateShipMenuController {
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController shipController) {
-                shipController.enableCellClickHandler(this::selectCabinToPopulate);
-            } else {
+            try {
+                ((ShipController) controller).enableCellClickHandler(this::selectCabinToPopulate);
+            } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
 
