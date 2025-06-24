@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
@@ -22,10 +23,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.*;
 
 public class MenuController implements GameModelListener {
 
@@ -33,6 +31,10 @@ public class MenuController implements GameModelListener {
         THUMBNAIL,
         MAIN_VIEW,
         DIALOG
+    }
+
+    public interface ContextDataReceiver {
+        void setContextData(Map<String, Object> contextData);
     }
 
     private record DisplayConfig(double aspectRatio, double maxWidth, double maxHeight, double minWidth,
@@ -348,14 +350,25 @@ public class MenuController implements GameModelListener {
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String fxmlPath, ClientGameModel gameModel, Object... parameters) {
-        if (currentInstance != null) {
-            Platform.runLater(() -> {
-                currentInstance.showTemporaryView(fxmlPath);
-            });
-        } else {
-            System.err.println("No active MenuController instance to load: " + fxmlPath);
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
+        try {
+            FXMLLoader loader = new FXMLLoader(MenuController.class.getResource("/fxml/" + contentFileName + ".fxml"));
+            Parent content = loader.load();
+
+            Object controller = loader.getController();
+
+            if (controller instanceof ContextDataReceiver && contextData != null) {
+                ((ContextDataReceiver) controller).setContextData(contextData);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            guiView.displayErrorMessage("Error loading menu content: " + e.getMessage());
         }
+    }
+
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView) {
+        loadContentInCurrentFrame(contentFileName, guiView, null);
     }
 
     // GRAPHICAL METHODS
