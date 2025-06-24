@@ -25,16 +25,30 @@ public class ViewBoard  implements Serializable {
     public long timeStampOfLastHourglassRotation;
 
 
+    /*
+     * This method returns the remaining time for the hourglass.
+     */
     public int hourglassRemainingTime() {
         return System.currentTimeMillis() - timeStampOfLastHourglassRotation < 90000 ? 90 - ((int) (System.currentTimeMillis() - timeStampOfLastHourglassRotation))/1000 : 0;
     }
 
+    /**
+     * Constructor for the ViewBoard class.
+     * Initializes the board with the given parameters.
+     * @param isLearner Indicates if the board is in learner mode.
+     * @param players An array of ViewPlayer objects representing the players on the board.
+     */
     public ViewBoard(boolean isLearner, ViewPlayer[] players) {
         this.isLearner = isLearner;
         this.players = Arrays.copyOf(players, players.length);
     }
 
-    public String learnerPrint() {
+    /**
+     * This method returns the string representation of the learner board.
+     * It shows the players' positions and the current card in the learner state.
+     * @return The string representation of the board.
+     */
+    private String learnerPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
             if (player != null) {
@@ -90,7 +104,12 @@ public class ViewBoard  implements Serializable {
         return sb.toString();
     }
 
-    public String normalPrint() {
+    /**
+     * This method returns the string representation of the normal board.
+     * It shows the players' positions and the current card in the normal state.
+     * @return The string representation of the board in the normal state.
+     */
+    private String normalPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
             if (player != null) {
@@ -147,7 +166,12 @@ public class ViewBoard  implements Serializable {
         return sb.toString();
     }
 
-    public String learnerAssemblingPrint() {
+    /**
+     * This method returns the string representation of the learner board in the assembling state.
+     * It shows the players' positions and the current card in the assembling state.
+     * @return The string representation of the board in the assembling state.
+     */
+    private String learnerAssemblingPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
             if (player != null) {
@@ -202,7 +226,12 @@ public class ViewBoard  implements Serializable {
         return sb.toString();
     }
 
-    public String normalAssemblingPrint() {
+    /**
+     * This method returns the string representation of the normal board in the assembling state.
+     * It shows the players' positions and the current card in the assembling state.
+     * @return The string representation of the board in the assembling state.
+     */
+    private String normalAssemblingPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
             if (player != null) {
@@ -260,6 +289,7 @@ public class ViewBoard  implements Serializable {
         return sb.toString();
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(TOPPER).append("\n");
@@ -287,35 +317,6 @@ public class ViewBoard  implements Serializable {
         sb.append(BOTTOM).append("\n");
 
         return sb.toString();
-
-    }
-
-    public static void main(String[] args) throws RemoteException {
-        ViewPlayer[] players = new ViewPlayer[4];
-        players[0] = new ViewPlayer("Stefano", PlayerColor.RED, 6);
-        players[1] = new ViewPlayer("SolaNasone", PlayerColor.BLUE, 10);
-        players[2] = new ViewPlayer("Tave", PlayerColor.GREEN, 18);
-        players[3] = new ViewPlayer("Verri", PlayerColor.YELLOW, 20);
-        ViewBoard board = new ViewBoard(false, players);
-        board.assemblingState = true;
-
-        System.out.println(board);
-
-        ViewBoard learnerBoard = new ViewBoard(true, players);
-        learnerBoard.assemblingState = true;
-        System.out.println(learnerBoard);
-
-        learnerBoard.assemblingState = false;
-        ClientGameModel.setInstance(new TUI());
-        ClientGameModel.getInstance().setCurrentCard(new ViewAbandonedShip());
-        System.out.println(learnerBoard);
-
-        board.timeStampOfLastHourglassRotation = System.currentTimeMillis() - 50000;
-        System.out.println(board);
-
-        board.assemblingState = false;
-        board.timeStampOfLastHourglassRotation = System.currentTimeMillis() - 100000;
-        System.out.println(board);
 
     }
 }
