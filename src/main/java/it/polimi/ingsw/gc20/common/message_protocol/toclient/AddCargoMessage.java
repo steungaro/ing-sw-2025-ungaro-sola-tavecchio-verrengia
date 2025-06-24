@@ -6,6 +6,10 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 
 import java.util.List;
 
+/**
+ * This message is sent to the client to inform them about the cargo they have gained.
+ * It contains a list of CargoColor representing the cargo colors that the player has received.
+ */
 public record AddCargoMessage(
         List<CargoColor> reward
 ) implements Message {

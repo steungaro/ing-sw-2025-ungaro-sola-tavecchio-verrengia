@@ -4,6 +4,9 @@ import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import org.javatuples.Pair;
 
+/**
+ * This message is sent from the client to the server to remove a component from the player's ship.
+ */
 public record RemoveComponentMessage(
         String username, // the username of the player who wants to remove a component
         Pair<Integer, Integer> coordinates // the coordinates of the component to be removed

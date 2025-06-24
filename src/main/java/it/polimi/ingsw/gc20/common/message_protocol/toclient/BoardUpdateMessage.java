@@ -10,11 +10,23 @@ import it.polimi.ingsw.gc20.server.model.player.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This message is sent to the client to update the board state.
+ * It contains a ViewBoard object that represents the current state of the board.
+ */
 public record BoardUpdateMessage(
         ViewBoard viewBoard
 ) implements Message {
 
-    public static BoardUpdateMessage fromBoard(Board board, List<Player> players, Boolean assemblingState){
+    /**
+     * Creates a BoardUpdateMessage from the given board and players.
+     *
+     * @param board the current state of the board
+     * @param players the list of players in the game
+     * @param assemblingState indicates if the board is in assembling state
+     * @return a new BoardUpdateMessage containing the view of the board
+     */
+    public static BoardUpdateMessage fromBoard(Board board, List<Player> players, boolean assemblingState){
         List<ViewPlayer> playerList = new ArrayList<>();
         for (Player player: players ){
             ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), player.getPosition());

@@ -8,6 +8,10 @@ import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 
 import java.util.List;
 
+/**
+ * This message is sent to the client to update the ship of a player.
+ * It contains the components of the ship, the action performed, and other relevant information.
+ */
 public record UpdateShipMessage(
         String username,
         ViewComponent[][] components,

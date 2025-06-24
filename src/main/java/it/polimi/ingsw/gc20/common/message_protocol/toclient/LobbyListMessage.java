@@ -8,6 +8,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This message is sent to the client to provide a list of available lobbies.
+ */
 public record LobbyListMessage(
     List<LobbyInfo> lobbies
 ) implements Message {

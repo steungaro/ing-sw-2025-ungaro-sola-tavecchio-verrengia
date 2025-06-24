@@ -4,6 +4,9 @@ import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import org.javatuples.Pair;
 
+/**
+ * Message that is generated when a player loses energy.
+ */
 public record LoseEnergyMessage(
         String username,
         Pair<Integer, Integer> coordinates

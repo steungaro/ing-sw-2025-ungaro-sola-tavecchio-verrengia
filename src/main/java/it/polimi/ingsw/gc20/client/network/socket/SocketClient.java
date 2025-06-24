@@ -19,6 +19,10 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * SocketClient is a client that connects to a server using sockets.
+ * It implements the Client interface and provides methods to send and receive messages.
+ */
 public class SocketClient implements Client {
     private final String serverAddress;
     private final int serverPort;
@@ -30,6 +34,13 @@ public class SocketClient implements Client {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    /**
+     * Constructor for SocketClient.
+     * Initializes the client with the server address and port.
+     *
+     * @param serverAddress The address of the server to connect to.
+     * @param serverPort    The port of the server to connect to.
+     */
     public SocketClient(String serverAddress, int serverPort) {
         this.serverPort = serverPort;
         this.serverAddress = serverAddress;
@@ -63,6 +74,10 @@ public class SocketClient implements Client {
         LOGGER.info("Socket client stopped.");
     }
 
+    /**
+     * Receives messages from the server and updates the client game model.
+     * This method runs in a loop until the client is stopped or disconnected.
+     */
     public void receiveMessages() {
         while (running) {
             try {
@@ -124,6 +139,10 @@ public class SocketClient implements Client {
     }
 
 
+    /**
+     * Connects to the server using the specified address and port.
+     * Initializes input and output streams for communication.
+     */
     private void connectToServer() {
         try {
             // Create a socket connection to the server
@@ -149,6 +168,10 @@ public class SocketClient implements Client {
         }
     }
 
+    /**
+     * Disconnects the client from the server and closes the input/output streams and socket.
+     * This method is called when the client is stopped or when an error occurs.
+     */
     private void disconnect() {
         try {
             if (!running) return;

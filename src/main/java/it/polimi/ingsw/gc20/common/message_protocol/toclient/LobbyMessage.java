@@ -6,6 +6,9 @@ import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.util.List;
 
+/**
+ * This message is sent to the client to provide information about the lobby they're in.
+ */
 public record LobbyMessage(
         List<String> players,
         String lobbyName,

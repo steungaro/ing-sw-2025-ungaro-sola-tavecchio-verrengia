@@ -3,7 +3,9 @@ package it.polimi.ingsw.gc20.common.message_protocol.toserver.game;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
-// Event that is generated when a player takes a component from the pile or from booked components
+/**
+ * This message is sent by the player to take a component from one of the piles (unviewed, viewed, or booked).
+ */
 public record TakeComponentMessage(
         String username, // username of the player
         int index, // index of the component

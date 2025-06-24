@@ -3,6 +3,9 @@ package it.polimi.ingsw.gc20.common.message_protocol.toserver.game;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
+/**
+ * This message is sent by the player to peek a deck.
+ */
 public record PeekDeckMessage (
         String username, // username of the player
         int number // number of the deck to peek (1/2/3

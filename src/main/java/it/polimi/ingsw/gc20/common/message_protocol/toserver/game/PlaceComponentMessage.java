@@ -4,7 +4,9 @@ import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import org.javatuples.Pair;
 
-// Message generated when a player places the component in their hand on the ship
+/**
+ * This message is sent from the client to the server to place the component in their hand on the ship.
+ */
 public record PlaceComponentMessage(
         String username, // username of the player
         Pair<Integer, Integer> coordinates // coordinates of the component
