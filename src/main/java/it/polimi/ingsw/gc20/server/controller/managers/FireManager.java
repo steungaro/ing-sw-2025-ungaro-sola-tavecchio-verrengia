@@ -60,7 +60,7 @@ public class FireManager {
      * @throws InvalidShipException if the ship is not valid or has not been properly configured
      * @throws EnergyException if there is not enough energy in the specified battery to activate the cannon
      */
-    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, EnergyException {
+    public void activateCannon(Cannon cannon, Battery battery) throws InvalidShipException, EnergyException, DieNotRolledException {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
@@ -72,7 +72,7 @@ public class FireManager {
         batteries.add(battery);
         gm.removeEnergy(player, batteries);
         // Check if the cannon is a heavy-meteor-defense cannon
-        if (gm.heavyMeteorCannon(player, gm.getGame().rollDice(), fires.getFirst()).contains(cannon)) {
+        if (gm.heavyMeteorCannon(player, gm.getGame().lastRolled(), fires.getFirst()).contains(cannon)) {
             skipNextFire = true;
         }
     }
@@ -126,11 +126,21 @@ public class FireManager {
         }
         Projectile fire = fires.removeFirst();
         int dice = gm.getGame().lastRolled();
-        if(player.getShip().getFirstComponent(fire.getDirection(), dice) == null)
+        int check = dice;
+        if (fire.getDirection() == Direction.LEFT || fire.getDirection() == Direction.RIGHT) {
+            check -= 5;
+        } else {
+            if (player.getShip().isNormal()) {
+                check -= 4;
+            } else {
+                check -= 5;
+            }
+        }
+        if(player.getShip().getFirstComponent(fire.getDirection(), check) == null)
             return;
-        if(player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection())==null)
+        if(player.getShip().getFirstComponent(fire.getDirection(), check).getConnectors().get(fire.getDirection())==null)
             return;
-        if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), dice).getConnectors().get(fire.getDirection()) !=
+        if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), check).getConnectors().get(fire.getDirection()) !=
         ConnectorEnum.ZERO) {
             return;
         }
