@@ -23,6 +23,8 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GUIView extends ClientGameModel {
 
@@ -117,6 +119,24 @@ public class GUIView extends ClientGameModel {
 
     public void setCurrentGuiState(GuiState newState) {
         currentGuiStateProperty.set(newState);
+    }
+
+
+    private void showMenuContent(GuiState contentState) {
+        showMenuContent(contentState, null);
+    }
+
+    private void showMenuContent(GuiState contentState, Map<String, Object> contextData) {
+        Platform.runLater(() -> {
+            if (getCurrentGuiState() == GuiState.MENU) {
+                MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData);
+            } else {
+                setCurrentGuiState(GuiState.MENU);
+                Platform.runLater(() ->
+                        MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData)
+                );
+            }
+        });
     }
 
     @Override
@@ -253,25 +273,12 @@ public class GUIView extends ClientGameModel {
         setCurrentGuiState(GuiState.MAIN_MENU);
     }
 
-    private void showMenuContent(GuiState contentState) {
-        Platform.runLater(() -> {
-            if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this);
-            } else {
-                setCurrentGuiState(GuiState.MENU);
-                Platform.runLater(() ->
-                        MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this)
-                );
-            }
-        });
-    }
-
 
     @Override
     public void planetMenu(List<Planet> planets) {
-        showMenuContent(GuiState.PLANET_MENU);
-        // TODO pass planets to the controller
-
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("planets", planets);
+        showMenuContent(GuiState.PLANET_MENU, contextData);
     }
 
     @Override
@@ -293,7 +300,10 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void shieldsMenu(String message) {
-        showMenuContent(GuiState.SHIELDS_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        contextData.put("activationType", ActivationMenuController.ActivationType.SHIELDS);
+        showMenuContent(GuiState.SHIELDS_MENU, contextData);
     }
 
 
@@ -331,19 +341,25 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cargoMenu(int cargoNum) {
-        showMenuContent(GuiState.CARGO_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("cargoNum", cargoNum);
+        showMenuContent(GuiState.CARGO_MENU, contextData);
     }
 
 
     @Override
     public void loseCrewMenu(int crewNum) {
-        showMenuContent(GuiState.LOSE_CREW_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("crewNum", crewNum);
+        showMenuContent(GuiState.LOSE_CREW_MENU, contextData);
     }
 
 
     @Override
     public void removeBatteryMenu(int batteryNum) {
-        showMenuContent(GuiState.LOSE_ENERGY_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("batteryNum", batteryNum);
+        showMenuContent(GuiState.LOSE_ENERGY_MENU, contextData);
     }
 
 
@@ -363,7 +379,9 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
-        showMenuContent(GuiState.LEADER_BOARD_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("leaderBoard", leaderBoard);
+        showMenuContent(GuiState.LEADER_BOARD_MENU, contextData);
     }
 
 
@@ -395,7 +413,9 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void idleMenu(String message) {
-        showMenuContent(GuiState.IDLE_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        showMenuContent(GuiState.IDLE_MENU, contextData);
     }
 
 
@@ -436,6 +456,7 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void buildingMenu(List<ViewAdventureCard> cards) {
+        // TODO
         Platform.runLater(() -> {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/peekDecks.fxml"));
@@ -458,31 +479,46 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cannonsMenu(String message) {
-        showMenuContent(GuiState.CANNONS_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        contextData.put("activationType", ActivationMenuController.ActivationType.CANNONS);
+        showMenuContent(GuiState.CANNONS_MENU, contextData);
     }
 
 
     @Override
     public void cardAcceptanceMenu(String message) {
-        showMenuContent(GuiState.CARD_ACCEPTANCE_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        showMenuContent(GuiState.CARD_ACCEPTANCE_MENU, contextData);
     }
 
 
     @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
-        showMenuContent(GuiState.CARGO_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        contextData.put("cargoToLose", cargoToLose);
+        contextData.put("cargoToGain", cargoToGain);
+        contextData.put("losing", losing);
+        showMenuContent(GuiState.CARGO_MENU, contextData);
     }
 
 
     @Override
     public void engineMenu(String message) {
-        showMenuContent(GuiState.ENGINE_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        contextData.put("activationType", ActivationMenuController.ActivationType.ENGINES);
+        showMenuContent(GuiState.ENGINE_MENU, contextData);
     }
 
 
     @Override
     public void automaticAction(String message) {
-        showMenuContent(GuiState.AUTOMATIC_ACTION);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        showMenuContent(GuiState.AUTOMATIC_ACTION, contextData);
     }
 
 
