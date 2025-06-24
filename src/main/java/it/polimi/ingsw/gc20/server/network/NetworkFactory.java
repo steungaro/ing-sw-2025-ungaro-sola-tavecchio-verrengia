@@ -29,11 +29,12 @@ public class NetworkFactory {
      * The created server is then added to the collection of managed servers.
      *
      * @param type the type of server to create. Can be either {@code ServerType.RMI} or {@code ServerType.SOCKET}.
+     * @param port the port on which the server will listen for incoming connections.
      */
-    public void createServer(ServerType type) {
+    public void createServer(ServerType type, int port) {
         Server server = switch (type) {
-            case RMI -> new RMIServer();
-            case SOCKET -> new SocketServer();
+            case RMI -> new RMIServer(port);
+            case SOCKET -> new SocketServer(port);
         };
         servers.add(server);
     }

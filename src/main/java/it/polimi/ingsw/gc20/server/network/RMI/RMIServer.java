@@ -18,10 +18,10 @@ import java.util.logging.Logger;
 
 /**
  * The RMIServer class is responsible for managing a server implementation
- * that utilizes Java RMI (Remote Method Invocation) for communication.
+ * that uses Java RMI (Remote Method Invocation) for communication.
  * It includes operations for starting and stopping the server, managing
  * client connections, and registering services in the RMI registry.
- *
+ * <p>
  * This class implements the Server interface, ensuring compliance with
  * the core server management methods and providing a specific RMI-based
  * implementation.
@@ -31,22 +31,24 @@ public class RMIServer implements Server {
     private static RMIServerHandler rmiServerHandler = null;
     private final List<ClientHandler> clients;
     private final ExecutorService executor;
-    private static final int DEFAULT_PORT = 1099;
+    private final int port;
 
     /**
      * Constructor for the RMIServer class.
+     * @param port the port number on which the RMI server will listen for connections.
      */
-    public RMIServer() {
+    public RMIServer(int port) {
         rmiServerHandler = RMIServerHandler.getInstance();
         this.clients = new CopyOnWriteArrayList<>();
         this.executor = Executors.newCachedThreadPool();
+        this.port = port;
     }
 
     @Override
     public void start() {
         try {
             // Create the RMI registry
-            rmiServerHandler.createRegistry(DEFAULT_PORT);
+            rmiServerHandler.createRegistry(port);
 
             // creation of the gameService
             GameControllerInterface gameService = new RMIGameControllerService();
