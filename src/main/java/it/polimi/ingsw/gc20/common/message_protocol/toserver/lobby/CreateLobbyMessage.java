@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby;
 
 import it.polimi.ingsw.gc20.server.controller.MatchController;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 public record CreateLobbyMessage(
         String name, // the name of the lobby

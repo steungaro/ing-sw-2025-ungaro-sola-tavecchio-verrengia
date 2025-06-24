@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -15,7 +15,6 @@ import org.javatuples.Pair;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class CargoMenuController {

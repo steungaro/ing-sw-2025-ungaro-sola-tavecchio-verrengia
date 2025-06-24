@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toserver.game;
 
 import it.polimi.ingsw.gc20.server.controller.MatchController;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 // Message generated when a player places the component in their hand on the ship
 public record AddComponentMessage(

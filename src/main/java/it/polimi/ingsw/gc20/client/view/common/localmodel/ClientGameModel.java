@@ -9,7 +9,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;

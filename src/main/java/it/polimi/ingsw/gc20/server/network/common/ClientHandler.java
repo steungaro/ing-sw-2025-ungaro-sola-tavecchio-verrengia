@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.server.network.common;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 /**
  * Interface representing the operations that any client handler implementation

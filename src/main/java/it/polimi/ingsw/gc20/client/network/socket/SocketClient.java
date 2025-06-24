@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.client.network.socket;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.*;

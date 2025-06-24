@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toserver;
 
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.network.common.HeartbeatService;
 
 public record Pong(

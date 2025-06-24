@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.common.interfaces;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.rmi.*;
 

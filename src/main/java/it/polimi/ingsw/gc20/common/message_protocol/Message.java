@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gc20.common.message_protocol.toserver;
+package it.polimi.ingsw.gc20.common.message_protocol;
 
 import java.io.Serializable;
 

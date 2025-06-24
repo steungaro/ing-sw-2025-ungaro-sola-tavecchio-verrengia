@@ -2,7 +2,7 @@ package it.polimi.ingsw.gc20.common.message_protocol.toserver.game;
 
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import org.javatuples.Pair;
 
 public record AddAlienMessage(
