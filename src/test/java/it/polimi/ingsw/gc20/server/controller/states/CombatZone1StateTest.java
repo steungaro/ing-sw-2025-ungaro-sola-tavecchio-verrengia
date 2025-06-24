@@ -217,4 +217,10 @@ class CombatZone1StateTest {
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
     }
+
+    @Test
+    void currentQuitChooseBranchInvalidTest(){
+        assertThrows(InvalidStateException.class, ()->state.chooseBranch(controller.getPlayerByID("player1"), null));
+        state.currentQuit(controller.getPlayerByID("player1"));
+    }
 }

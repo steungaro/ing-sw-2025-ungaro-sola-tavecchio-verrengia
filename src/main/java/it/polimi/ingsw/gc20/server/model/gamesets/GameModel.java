@@ -365,7 +365,9 @@ public class GameModel {
     public void addPieces(Player p) {
         Ship s = p.getShip();
         p.getShip().initAstronauts();
-        s.addBookedToWaste();
+        if (level==2) {
+            s.addBookedToWaste();
+        }
     }
 
     /**
@@ -562,6 +564,9 @@ public class GameModel {
      */
     public Map<Player, Integer> calculateScore() {
         Map<Player, Integer> score = new HashMap<>();
+        for (Player p : game.getPlayers()) {
+            score.put(p, 0);
+        }
         game.sortPlayerByPosition();
         int min = 0;
         int waste;

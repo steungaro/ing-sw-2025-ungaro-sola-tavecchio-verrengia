@@ -12,11 +12,18 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CabinTest {
     private Cabin cabin;
 
+    /**
+     * Sets up the Cabin instance before each test.
+     * Initializes the cabin object.
+     */
     @BeforeEach
     void setUp() {
         cabin = new Cabin();
     }
 
+    /**
+     * Tests the set, get, and unload methods for astronauts in the Cabin.
+     */
     @Test
     void testSetAndGetAstronauts() {
         cabin.setAstronauts(1);
@@ -25,6 +32,13 @@ public class CabinTest {
         assertEquals(0, cabin.getAstronauts());
     }
 
+    /**
+     * Test that the alien can be set and retrieved correctly,
+     * and that it throws an exception when trying to set an alien
+     * when there are astronauts present in the cabin.
+     * It also checks that the cabin color is updated correctly
+     * @throws InvalidAlienPlacement if the alien cannot be placed, not thrown in this test
+     */
     @Test
     void testSetAndGetAlien() throws InvalidAlienPlacement {
         cabin.setColor(AlienColor.BROWN);
@@ -42,6 +56,10 @@ public class CabinTest {
         assertEquals(AlienColor.BOTH, cabin.getCabinColor());
     }
 
+    /**
+     * Tests that the cabin correctly updates its color
+     * when adding and removing life support systems.
+     */
     @Test
     void testAddAndRemoveSupport() throws InvalidAlienPlacement {
         LifeSupport lifeSupport = new LifeSupport();
@@ -60,6 +78,12 @@ public class CabinTest {
         assertEquals (AlienColor.PURPLE, cabin.getCabinColor());
     }
 
+    /**
+     * Tests the creation of a ViewComponent for the Cabin.
+     * It checks that the cabin's connectors are set correctly,
+     * the cabin has astronauts,
+     * and the cabin color is set correctly.
+     */
     @Test
     void testCreateViewComponent(){
         Map<Direction, ConnectorEnum> connectors = cabin.getConnectors();
