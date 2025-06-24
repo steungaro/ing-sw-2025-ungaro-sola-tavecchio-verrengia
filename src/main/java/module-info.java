@@ -21,6 +21,8 @@ module it.polimi.ingsw.gc20 {
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.board;
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.ship;
     exports it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards;
+    exports it.polimi.ingsw.gc20.client.view.common;
+    exports it.polimi.ingsw.gc20.client.network.common;
     exports it.polimi.ingsw.gc20.server.exceptions;
     exports it.polimi.ingsw.gc20.server.controller.states;
     exports it.polimi.ingsw.gc20.server.controller.managers;
