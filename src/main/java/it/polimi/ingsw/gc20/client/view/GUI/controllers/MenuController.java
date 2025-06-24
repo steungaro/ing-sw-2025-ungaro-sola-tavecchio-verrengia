@@ -348,29 +348,57 @@ public class MenuController implements GameModelListener {
      * Static method with parameters support
      */
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
-        try {
-            FXMLLoader loader = new FXMLLoader(MenuController.class.getResource("/fxml/" + contentFileName + ".fxml"));
-            Parent content = loader.load();
+        MenuController instance = getCurrentInstance();
+        if (instance == null) {
+            guiView.displayErrorMessage("MenuController not initialized");
+            return;
+        }
 
+        try {
+            if (contentFileName == null || contentFileName.trim().isEmpty()) {
+                guiView.displayErrorMessage("FXML file name cannot be null or empty");
+                return;
+            }
+
+            String fxmlPath = "/fxml/" + contentFileName.trim() + ".fxml";
+            URL fxmlResource = MenuController.class.getResource(fxmlPath);
+
+            if (fxmlResource == null) {
+                guiView.displayErrorMessage("FXML file not found: " + fxmlPath);
+                return;
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlResource);
+            Parent content = loader.load();
             Object controller = loader.getController();
 
             if (controller != null && contextData != null) {
                 try {
                     ((ContextDataReceiver) controller).setContextData(contextData);
                 } catch (ClassCastException e) {
-                    guiView.displayErrorMessage("Unable to get context dara receiver: " + e.getMessage());
+                    guiView.displayErrorMessage("Unable to obtain the context data receiver: " + e.getMessage());
                 }
             }
 
+            if (content instanceof Region region) {
+                region.prefWidthProperty().bind(instance.currentFrame.widthProperty());
+                region.prefHeightProperty().bind(instance.currentFrame.heightProperty());
+                region.setMaxWidth(Region.USE_PREF_SIZE);
+                region.setMaxHeight(Region.USE_PREF_SIZE);
+            }
+
+            instance.currentFrame.getChildren().clear();
+            instance.currentFrame.getChildren().add(content);
 
         } catch (IOException e) {
+            System.err.println("Error loading menu: " + e.getMessage());
             e.printStackTrace();
-            guiView.displayErrorMessage("Error loading menu content: " + e.getMessage());
+            guiView.displayErrorMessage("Error loading menu " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            e.printStackTrace();
+            guiView.displayErrorMessage("Unexpected error: " + e.getMessage());
         }
-    }
-
-    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView) {
-        loadContentInCurrentFrame(contentFileName, guiView, null);
     }
 
     // GRAPHICAL METHODS
