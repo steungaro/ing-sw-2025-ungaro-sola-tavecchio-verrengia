@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 
 import java.util.Objects;
 

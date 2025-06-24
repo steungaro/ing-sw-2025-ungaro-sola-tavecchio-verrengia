@@ -70,6 +70,9 @@ public abstract class BuildingPhaseController implements GameModelListener {
     @FXML
     protected GridPane bookedGrid;
 
+    @FXML
+    public HBox rotateButtonsContainer;
+
     private ViewComponent selectedComponent;
     protected boolean placementModeActive = false;
     protected ViewShip ship;
@@ -406,12 +409,6 @@ public abstract class BuildingPhaseController implements GameModelListener {
         ViewComponent componentInHand = ClientGameModel.getInstance().getComponentInHand();
         componentInHandPane.getChildren().clear();
 
-        HBox rotationButtonsContainer = (HBox) rootPane.lookup("#rotationButtonsContainer");
-        if (rotationButtonsContainer != null) {
-            rotationButtonsContainer.setVisible(true);
-            rotationButtonsContainer.setManaged(true);
-        }
-
         if (componentInHand != null) {
             Pane componentPane = createComponentPane(componentInHand);
             componentPane.setTranslateX((componentInHandPane.getWidth() - componentPane.getPrefWidth()) / 2);
@@ -426,10 +423,13 @@ public abstract class BuildingPhaseController implements GameModelListener {
 
             componentInHandPane.getChildren().add(componentPane);
             selectedComponent = componentInHand;
+
+            rotateButtonsContainer.setVisible(true);
+            rotateButtonsContainer.setManaged(true);
         } else {
-            if (rotationButtonsContainer != null) {
-                rotationButtonsContainer.setVisible(false);
-                rotationButtonsContainer.setManaged(false);
+            if (rotateButtonsContainer != null) {
+                rotateButtonsContainer.setVisible(false);
+                rotateButtonsContainer.setManaged(false);
             }
             selectedComponent = null;
         }

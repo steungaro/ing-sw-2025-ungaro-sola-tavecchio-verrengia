@@ -54,7 +54,7 @@
                         </VBox.margin>
                     </StackPane>
 
-                    <HBox alignment="CENTER" managed="false" spacing="8" visible="false">
+                    <HBox managed="false" visible="false" spacing="8" fx:id="rotateButtonsContainer" alignment="CENTER">
                         <Button minHeight="25" minWidth="80" onAction="#rotateComponentClockwise" style="-fx-background-color: #5bc0de; -fx-text-fill: white;" text="Rotate CW">
                             <font>
                                 <Font size="8.0" />
