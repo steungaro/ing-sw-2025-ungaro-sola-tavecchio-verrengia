@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,20 +15,20 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 public class CargoMenuController implements MenuController.ContextDataReceiver {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
-    @FXML private Button loadButton;
     private String username;
-    private final Pattern coordinatePattern = Pattern.compile("^\\d+\\s+\\d+$");
     private ViewShip ship;
     private ShipController shipController;
     private int losing; // 0 aren't initialized, 1 losing cargo, 2 gaining cargo
     private Pair<Integer, Integer> from;
     private CargoColor colorFrom;
+    private List<CargoColor> cargoToGain;
+    private int cargoToLose;
+    private CargoColor currentCargo;
 
     @FXML
     public void initialize() {
@@ -43,19 +42,15 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     public void initializeWithParameters(String message) {
         messageLabel.setText(message);
 
-        while (shipController==null) {
-            try {
-                wait(100);
-            }
-            catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                showError("Error initializing ship controller: " + e.getMessage());
-            }
-        }
         if(losing==1){
-            shipController.enableCellClickHandler(this::handleUnloadCargo);
+            for (int i = 0; i < cargoToLose; i++) {
+                shipController.enableCellClickHandler(this::handleUnloadCargo);
+            }
         } else if(losing==2){
-            shipController.enableCellClickHandler(this::handleLoadCargo);
+            for (CargoColor cargoColor : cargoToGain) {
+                currentCargo = cargoColor;
+                shipController.enableCellClickHandler(this::handleLoadCargo);
+            }
         } else {
             showError("Invalid operation, please try again.");
         }
@@ -155,11 +150,8 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     private void handleLoadCargo(int row, int col) {
         Pair<Integer, Integer> coords = new Pair<>(row, col);
 
-        // TODO validate cargo color
-        CargoColor color = CargoColor.BLUE;
-
         try {
-            ClientGameModel.getInstance().getClient().loadCargo(username, color, coords);
+            ClientGameModel.getInstance().getClient().loadCargo(username, currentCargo, coords);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
@@ -183,20 +175,32 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         errorLabel.setVisible(true);
     }
 
+    @SuppressWarnings( "unchecked")
     @Override
     public void setContextData(Map<String, Object> contextData) {
-        int losing = 1;
-        List<CargoColor> cargoToGain = null;
-        if (contextData.containsKey("cargoNum")) {
-            int cargoToLose = (int) contextData.get("cargoNum");
-            if (cargoToLose <= 0) {
+        if(contextData.size()==1) {
+            losing = 1;
+            cargoToGain = null;
+            if (contextData.containsKey("cargoNum")) {
+                cargoToLose = (int) contextData.get("cargoNum");
+                if (cargoToLose <= 0) {
+                    showError("No cargo available to load/unload");
+                    return;
+                }
+                String message = "Select cargo to remove: " + cargoToLose;
+                initializeWithParameters(message);
+            } else {
                 showError("No cargo available to load/unload");
-                return;
             }
-            String message = "Select cargo to remove: " + cargoToLose;
-            initializeWithParameters(message);
-        } else {
-           showError("No cargo available to load/unload");
+        } else if (contextData.size()==4){
+            if(contextData.containsKey("message") && contextData.containsKey("cargoToLose") && contextData.containsKey("cargoToGain") && contextData.containsKey("losing")) {
+                losing = (boolean) contextData.get("losing") ? 2 : 1;
+                String message = (String) contextData.get("message");
+                cargoToGain = (List<CargoColor>) contextData.get("cargoToGain");
+                cargoToLose = (int) contextData.get("cargoNum");
+
+                initializeWithParameters(message);
+            }
         }
     }
 }
