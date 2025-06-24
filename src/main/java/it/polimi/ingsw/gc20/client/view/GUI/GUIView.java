@@ -465,9 +465,13 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void cardAcceptanceMenu(String message) {
-        Map<String, Object> contextData = new HashMap<>();
-        contextData.put("message", message);
-        showMenuContent(GuiState.CARD_ACCEPTANCE_MENU, contextData);
+        Platform.runLater(() -> {
+            MenuController currentMenuController = MenuController.getCurrentInstance();
+            if (currentMenuController != null) {
+                currentMenuController.setAcceptableButtonVisibility(true);
+            }
+        });
+
     }
 
 

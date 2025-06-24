@@ -65,6 +65,8 @@ public class MenuController implements GameModelListener {
     @FXML public Button button3;
     @FXML public Button button4;
     @FXML private Label serverMessages;
+    @FXML public Button acceptButton;
+    @FXML public Button discardButton;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -121,10 +123,17 @@ public class MenuController implements GameModelListener {
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
         drawnCard.setVisible(isCardDrawn);
-        Node parentDrawnCard = drawnCard.getParent();
-        if (parentDrawnCard != null) {
-            parentDrawnCard.setVisible(isCardDrawn);
-        }
+        acceptButton.setVisible(false);
+        discardButton.setVisible(false) ;
+    }
+
+    public void setAcceptableButtonVisibility(boolean visible) {
+        acceptButton.setVisible(visible);
+        discardButton.setVisible(visible);
+    }
+
+    public void hideAcceptableButtons() {
+        setAcceptableButtonVisibility(false);
     }
 
     private void updateBackButtonVisibility() {
@@ -205,12 +214,30 @@ public class MenuController implements GameModelListener {
         updateBackButtonVisibility();
     }
 
-    /**
-     * Method called from FXML to load temporary controller
-     */
     @FXML
-    private void loadTemporaryControllerInCurrentFrame() {
-        showTemporaryView("/fxml/buildingPhase0.fxml");
+    public void handleAcceptCard(){
+        if (gameModel.getClient() != null) {
+            try{
+                gameModel.getClient().acceptCard(
+                        ClientGameModel.getInstance().getUsername());
+                hideAcceptableButtons();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    public void handleDiscardCard() {
+        if (ClientGameModel.getInstance().getClient() != null) {
+            try {
+                ClientGameModel.getInstance().getClient().endMove(
+                        ClientGameModel.getInstance().getUsername());
+                hideAcceptableButtons();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -375,7 +402,16 @@ public class MenuController implements GameModelListener {
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            guiView.displayErrorMessage("MenuController not initialized");
+            Platform.runLater(() -> {
+                try {
+                    Thread.sleep(100); // Breve pausa
+                    loadContentInCurrentFrame(contentFileName, guiView, contextData);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    guiView.displayErrorMessage("MenuController initialization interrupted");
+                }
+            });
+
             return;
         }
 
