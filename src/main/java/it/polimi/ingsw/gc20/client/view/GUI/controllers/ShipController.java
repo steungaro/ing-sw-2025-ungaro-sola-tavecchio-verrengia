@@ -141,7 +141,7 @@ public abstract class ShipController implements GameModelListener {
         batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
         try {
-            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/battery.png"))));
+            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
             batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
@@ -159,7 +159,7 @@ public abstract class ShipController implements GameModelListener {
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
             String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
-                    "/images/icons/purple_alien.png" : "/images/icons/brown_alien.png";
+                    "/fxml/icons/purple_alien.png" : "/fxml/icons/brown_alien.png";
 
             try {
                 ImageView alienIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(alienImagePath))));
@@ -177,7 +177,7 @@ public abstract class ShipController implements GameModelListener {
             astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
 
             try {
-                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/icons/astr.png"))));
+                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/astr.png"))));
                 astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
