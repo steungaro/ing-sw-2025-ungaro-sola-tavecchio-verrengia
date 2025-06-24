@@ -13,9 +13,11 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class PlanetMenuController {
+public class PlanetMenuController implements MenuController.ContextDataReceiver {
     @FXML
     private ListView<Planet> planetsListView;
 
@@ -99,5 +101,21 @@ public class PlanetMenuController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("planets")) {
+            try {
+                planets = (List<Planet>) contextData.get("planets");
+            } catch (ClassCastException e) {
+                System.err.println("Error while creating planets list: " + e.getMessage());
+                planets = new ArrayList<>();
+            }
+            initializeWithPlanets(planets);
+        } else {
+            showError("No planets data provided");
+        }
     }
 }

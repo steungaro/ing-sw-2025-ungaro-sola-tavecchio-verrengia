@@ -117,12 +117,13 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
-            if (controller instanceof ShipController) {
+            try {
                 this.shipController = (ShipController) controller;
                 shipController.enableCellClickHandler(this::selectComponent);
-            } else {
+            } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
+
 
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());

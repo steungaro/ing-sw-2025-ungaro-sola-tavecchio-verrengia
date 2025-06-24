@@ -121,11 +121,6 @@ public class GUIView extends ClientGameModel {
         currentGuiStateProperty.set(newState);
     }
 
-
-    private void showMenuContent(GuiState contentState) {
-        showMenuContent(contentState, null);
-    }
-
     private void showMenuContent(GuiState contentState, Map<String, Object> contextData) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
@@ -137,6 +132,10 @@ public class GUIView extends ClientGameModel {
                 );
             }
         });
+    }
+
+    private void showMenuContent(GuiState contentState) {
+        showMenuContent(contentState, null);
     }
 
     @Override
@@ -309,38 +308,14 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void rollDiceMenu(String message) {
-        Platform.runLater(() -> {
-            try {
-                Stage dialogStage = new Stage();
-                dialogStage.setTitle("Roll Dice");
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/rollDiceMenu.fxml"));
-                Parent root = loader.load();
-
-                Scene scene = new Scene(root);
-                dialogStage.setScene(scene);
-
-                RollDiceMenuController controller = loader.getController();
-                controller.initializeWithMessage(message);
-
-                dialogStage.initModality(javafx.stage.Modality.WINDOW_MODAL);
-                dialogStage.initOwner(primaryStage);
-
-                dialogStage.setMinWidth(600);
-                dialogStage.setMinHeight(500);
-                dialogStage.centerOnScreen();
-
-                dialogStage.show();
-            } catch (IOException e) {
-                System.err.println("Error uploading rollDiceMenu.fxml: " + e.getMessage());
-                e.printStackTrace();
-                displayErrorMessage("Error opening roll dice window: " + e.getMessage());
-            }
-        });
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        showMenuContent(GuiState.ROLL_DICE_MENU, contextData);
     }
 
     @Override
     public void cargoMenu(int cargoNum) {
+        // Remove cargoNum from the context data
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("cargoNum", cargoNum);
         showMenuContent(GuiState.CARGO_MENU, contextData);

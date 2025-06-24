@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.CargoMenuController"
-      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="600.0" prefWidth="700.0">
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.CargoMenuController">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
@@ -21,7 +17,7 @@
         </font>
     </Label>
 
-    <Label fx:id="messageLabel" wrapText="true" textFill="WHITE">
+    <Label fx:id="messageLabel" textFill="WHITE" wrapText="true">
         <font>
             <Font size="14.0" />
         </font>
@@ -42,22 +38,8 @@
         <Pane fx:id="shipPane" prefHeight="250" prefWidth="500" />
     </VBox>
 
-    <VBox fx:id="operationsContainer" spacing="10" alignment="CENTER" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label fx:id="operationTitle" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-
-        <HBox spacing="20" alignment="CENTER">
-            <ComboBox fx:id="cargoColorComboBox" promptText="Cargo color" prefWidth="150" />
-            <TextField fx:id="fromCoordinatesField" promptText="Source coordinates (row col)" prefWidth="180" />
-            <TextField fx:id="toCoordinatesField" promptText="Destination coordinates (row col)" prefWidth="180" />
-        </HBox>
-    </VBox>
-
-    <HBox spacing="20" alignment="CENTER">
-        <Button fx:id="unloadButton" prefHeight="50" prefWidth="150" text="Unload cargo" onAction="#handleUnloadCargo">
+    <HBox alignment="CENTER" spacing="20">
+        <Button fx:id="moveButton" onAction="#handleMoveCargo" prefHeight="50" prefWidth="150" text="Move cargo">
             <font>
                 <Font size="14.0" />
             </font>
@@ -66,25 +48,7 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button fx:id="moveButton" prefHeight="50" prefWidth="150" text="Move cargo" onAction="#handleMoveCargo">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-        <Button fx:id="loadButton" prefHeight="50" prefWidth="150" text="Load cargo" onAction="#handleLoadCargo">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-        <Button fx:id="endTurnButton" prefHeight="50" prefWidth="150" text="End turn" onAction="#handleEndTurn">
+        <Button fx:id="endTurnButton" onAction="#handleEndTurn" prefHeight="50" prefWidth="150" text="End turn">
             <font>
                 <Font size="14.0" />
             </font>

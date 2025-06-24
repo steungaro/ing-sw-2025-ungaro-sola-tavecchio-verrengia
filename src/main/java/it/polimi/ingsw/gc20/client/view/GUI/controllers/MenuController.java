@@ -357,9 +357,14 @@ public class MenuController implements GameModelListener {
 
             Object controller = loader.getController();
 
-            if (controller instanceof ContextDataReceiver && contextData != null) {
-                ((ContextDataReceiver) controller).setContextData(contextData);
+            if (controller != null && contextData != null) {
+                try {
+                    ((ContextDataReceiver) controller).setContextData(contextData);
+                } catch (ClassCastException e) {
+                    guiView.displayErrorMessage("Unable to get context dara receiver: " + e.getMessage());
+                }
             }
+
 
         } catch (IOException e) {
             e.printStackTrace();
