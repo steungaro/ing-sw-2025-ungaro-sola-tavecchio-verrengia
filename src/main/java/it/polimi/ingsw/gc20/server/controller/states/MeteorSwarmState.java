@@ -280,7 +280,7 @@ public class MeteorSwarmState extends PlayingState {
 
     @Override
     public String createsShieldMessage() {
-        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the shields to activate.";
+        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line " + result + ", select the shields to activate.";
     }
 
     @Override
@@ -290,6 +290,6 @@ public class MeteorSwarmState extends PlayingState {
 
     @Override
     public String createsCannonsMessage() {
-        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line" + result + ", select the cannons to activate.";
+        return "A " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstProjectile().getFireType() + " is coming from the " + fireManagerMap.get(getController().getPlayerByID(getCurrentPlayer())).getFirstDirection().getDirection() + " side at line " + result + ", select the cannons to activate.";
     }
 }
