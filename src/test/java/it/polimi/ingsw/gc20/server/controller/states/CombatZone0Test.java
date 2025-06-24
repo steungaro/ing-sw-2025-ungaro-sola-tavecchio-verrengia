@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CombatZone0Test {
     static GameController controller;
@@ -201,5 +200,11 @@ public class CombatZone0Test {
         state.rollDice(controller.getPlayerByID("player1"));
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
+    }
+
+    @Test
+    void currentQuitChooseBranchInvalidTest(){
+        assertThrows(InvalidStateException.class, ()->state.chooseBranch(controller.getPlayerByID("player1"), null));
+        state.currentQuit(controller.getPlayerByID("player1"));
     }
 }
