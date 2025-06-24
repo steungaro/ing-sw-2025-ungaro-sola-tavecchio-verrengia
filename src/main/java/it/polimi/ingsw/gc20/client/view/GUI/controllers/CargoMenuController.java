@@ -28,6 +28,8 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     private ViewShip ship;
     private ShipController shipController;
     private int losing; // 0 aren't initialized, 1 losing cargo, 2 gaining cargo
+    private Pair<Integer, Integer> from;
+    private CargoColor colorFrom;
 
     @FXML
     public void initialize() {
@@ -52,6 +54,10 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         }
         if(losing==1){
             shipController.enableCellClickHandler(this::handleUnloadCargo);
+        } else if(losing==2){
+            shipController.enableCellClickHandler(this::handleLoadCargo);
+        } else {
+            showError("Invalid operation, please try again.");
         }
     }
 
@@ -84,7 +90,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         }
     }
 
-    @FXML
     private void handleUnloadCargo(int row, int col) {
         Pair<Integer, Integer> coords = new Pair<>(row, col);
         CargoColor color = showColorSelectionDialog();
@@ -130,32 +135,28 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         return null;
     }
 
+    private void handleMoveCargoFrom(int row, int col) {
+        from = new Pair<>(row, col);
+        colorFrom = showColorSelectionDialog();
 
-    @FXML
-    private void handleMoveCargo() {
-        if (!validateCargoColor() || !validateFromCoordinates() || validateToCoordinates()) {
-            return;
-        }
+        shipController.enableCellClickHandler(this::handleMoveCargoTo);
+    }
 
-        CargoColor color = cargoColorComboBox.getValue();
-        Pair<Integer, Integer> from = parseCoordinates(fromCoordinatesField.getText());
-        Pair<Integer, Integer> to = parseCoordinates(toCoordinatesField.getText());
+    private void handleMoveCargoTo(int row, int col) {
+        Pair<Integer, Integer> to = new Pair<>(row, col);
 
         try {
-            ClientGameModel.getInstance().getClient().moveCargo(username, color, from, to);
+            ClientGameModel.getInstance().getClient().moveCargo(username, colorFrom, from, to);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
 
-    @FXML
-    private void handleLoadCargo() {
-        if (!validateCargoColor() || validateToCoordinates()) {
-            return;
-        }
+    private void handleLoadCargo(int row, int col) {
+        Pair<Integer, Integer> coords = new Pair<>(row, col);
 
-        CargoColor color = cargoColorComboBox.getValue();
-        Pair<Integer, Integer> coords = parseCoordinates(toCoordinatesField.getText());
+        // TODO validate cargo color
+        CargoColor color = CargoColor.BLUE;
 
         try {
             ClientGameModel.getInstance().getClient().loadCargo(username, color, coords);
@@ -165,50 +166,16 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     }
 
     @FXML
+    private void moveCargo() {
+        shipController.enableCellClickHandler(this::handleMoveCargoFrom);
+    }
+
+    @FXML
     private void handleEndTurn() {
         try {
             ClientGameModel.getInstance().getClient().endMove(username);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());}
-    }
-
-    private boolean validateCargoColor() {
-        if (cargoColorComboBox.getValue() == null) {
-            showError("Select a cargo to load");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateFromCoordinates() {
-        String text = fromCoordinatesField.getText();
-        if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Enter valid coordinates for the origin (row col)");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateToCoordinates() {
-        String text = toCoordinatesField.getText();
-        if (text == null || text.isEmpty() || !coordinatePattern.matcher(text).matches()) {
-            showError("Enter valid coordinates for the origin (row col)");
-            return true;
-        }
-        return false;
-    }
-
-    private Pair<Integer, Integer> parseCoordinates(String input) {
-        String[] parts = input.trim().split("\\s+");
-        int row = Integer.parseInt(parts[0]) - 5;
-
-        ViewShip ship = ClientGameModel.getInstance().getShip(username);
-        boolean isLearner = ship != null && ship.isLearner;
-        int offset = isLearner ? 5 : 4;
-
-        int col = Integer.parseInt(parts[1]) - offset;
-
-        return new Pair<>(row, col);
     }
 
     private void showError(String message) {
