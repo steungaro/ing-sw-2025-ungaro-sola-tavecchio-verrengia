@@ -84,7 +84,7 @@ public class MenuController implements GameModelListener {
         
         loadPlayerShips();
         loadPlayerNames();
-        //initializeCurrentFrame();
+        printCurrentCard(gameModel.getCurrentCard());
         initializeGameBoard();
         setVisibility();
 
@@ -722,8 +722,12 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        printCurrentCard(currentCard);
+    }
+
+    private void printCurrentCard(ViewAdventureCard currentCard) {
         Platform.runLater(() -> {
-            if (currentCard != null) {
+            if (currentCard != null && currentCard.id != 0) {
                 String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
                 String currentText = serverMessages.getText();
                 if (currentText.equals("Waiting for server messages...")) {
@@ -742,7 +746,6 @@ public class MenuController implements GameModelListener {
 
             }
         });
-
     }
 
     private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {

@@ -58,10 +58,14 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
             ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
-            Object controller = loader.getController();
-            shipController.enableCellClickHandler(this::selectCabin);
+            shipController = (ShipController) loader.getController();
 
-
+            if (shipController != null) {
+                shipController.buildShipComponents(ship);
+                shipController.enableCellClickHandler(this::selectCabin);
+            } else {
+                showError("Error, ship controller not found.");
+            }
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
