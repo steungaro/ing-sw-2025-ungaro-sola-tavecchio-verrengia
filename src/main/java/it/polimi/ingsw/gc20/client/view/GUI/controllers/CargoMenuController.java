@@ -197,7 +197,7 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
                 losing = (boolean) contextData.get("losing") ? 2 : 1;
                 String message = (String) contextData.get("message");
                 cargoToGain = (List<CargoColor>) contextData.get("cargoToGain");
-                cargoToLose = (int) contextData.get("cargoNum");
+                cargoToLose = (int) contextData.get("cargoToLose");
 
                 initializeWithParameters(message);
             }
