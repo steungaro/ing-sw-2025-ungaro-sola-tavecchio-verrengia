@@ -41,7 +41,7 @@ public class GUIView extends ClientGameModel {
         POPULATE_SHIP_MENU("populateShipMenu"),
         ROLL_DICE_MENU("rollDiceMenu"),
         PLANET_MENU("planetMenu"),
-        SHIELDS_MENU("shieldsMenu"),
+        SHIELDS_MENU("activationMenu"),
         LOSE_CREW_MENU("loseCrewMenu"),
         LOSE_ENERGY_MENU("loseEnergyMenu"),
         KEEP_PLAYING_MENU("keepPlayingMenu"),
@@ -51,11 +51,11 @@ public class GUIView extends ClientGameModel {
         CARD_ACCEPTANCE_MENU("cardAcceptance"),
         SHIP2("ship2"),
         CARGO_MENU("cargoMenu"),
-        CANNONS_MENU("cannonsMenu"),
+        CANNONS_MENU("activationMenu"),
         LEADER_BOARD_MENU("leaderBoardMenu"),
         AUTOMATIC_ACTION("automaticAction"),
         PEEK_DECKS("peekDecks"),
-        ENGINE_MENU("engineMenu");
+        ENGINE_MENU("activationMenu"),;
 
         private final String fxmlFileName;
         GuiState(String fxmlFileName) {
