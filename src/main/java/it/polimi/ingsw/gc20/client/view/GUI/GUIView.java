@@ -45,7 +45,7 @@ public class GUIView extends ClientGameModel {
         PLANET_MENU("planetMenu"),
         SHIELDS_MENU("activationMenu"),
         LOSE_CREW_MENU("loseCrewMenu"),
-        LOSE_ENERGY_MENU("loseEnergyMenu"),
+        LOSE_ENERGY_MENU("activationMenu"),
         KEEP_PLAYING_MENU("keepPlayingMenu"),
         IDLE_MENU("idleMenu"),
         BOARD0("board0"),
@@ -332,6 +332,7 @@ public class GUIView extends ClientGameModel {
     @Override
     public void removeBatteryMenu(int batteryNum) {
         Map<String, Object> contextData = new HashMap<>();
+        contextData.put("activationTyper", ActivationMenuController.ActivationType.BATTERY);
         contextData.put("batteryNum", batteryNum);
         showMenuContent(GuiState.LOSE_ENERGY_MENU, contextData);
     }

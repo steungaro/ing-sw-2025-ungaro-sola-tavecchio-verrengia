@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -19,18 +18,6 @@ import java.util.*;
 
 public class ActivationMenuController implements MenuController.ContextDataReceiver {
 
-    @Override
-    public void setContextData(Map<String, Object> contextData) {
-        if (contextData.containsKey("activationType") && contextData.containsKey("message")) {
-            activationType = (ActivationType) contextData.get("activationType");
-            message = (String) contextData.get("message");
-            initializeData(activationType, message);
-        } else {
-            throw new IllegalArgumentException("Context data must contain activationType and message");
-        }
-
-    }
-
     public enum ActivationType {
         CANNONS {
             @Override
@@ -41,16 +28,23 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
                 ClientGameModel.getInstance().getClient().activateCannons(username, primary, batteries);
             }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+            }
         },
         ENGINES {
             @Override
             public boolean matches(ViewComponent component) {
                 return component.isEngine();
             }
-
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
                 ClientGameModel.getInstance().getClient().activateEngines(username, primary, batteries);
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
             }
         },
         SHIELDS {
@@ -60,11 +54,34 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateShield(username, primary.getFirst(), batteries.getFirst());
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().activateShield(username, null, null);
+            }
+        },
+        BATTERY {
+            @Override
+            public boolean matches(ViewComponent component) {
+                return component.isBattery();
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                if (batteries != null && !batteries.isEmpty()) {
+                    Pair<Integer, Integer> batteryCoordinates = batteries.getFirst();
+                    ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
+                }
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().loseEnergy(username, null);
             }
         };
 
         public abstract boolean matches(ViewComponent component);
         public abstract void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException;
+        public abstract void skip(String username) throws RemoteException;
     }
 
     @FXML
@@ -75,13 +92,10 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
     private Label errorLabel;
     @FXML
     private Pane shipPane;
-    @FXML
-    private ImageView cardImageView;
 
     private ShipController shipController;
     private ViewShip ship;
     private String username;
-    private String message;
     private ActivationType activationType;
 
     private final List<Pair<Integer, Integer>> selectedComponents = new ArrayList<>();
@@ -93,7 +107,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         loadShipView();
     }
 
-    public void initializeData(ActivationType type, String message) {
+    public void initializeData(ActivationType type, String message, int batteryNum) {
         this.activationType = type;
         titleLabel.setText(type.toString() + " Activation");
         messageLabel.setText(message);
@@ -183,32 +197,32 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
             if (comp == null) continue;
 
-            if (comp.isBattery()) {
-                batteries.add(coords);
-                continue;
-            }
+            if (activationType == ActivationType.BATTERY) {
+                if (comp.isBattery()) {
+                    batteries.add(coords);
+                }
+            } else {
+                if (comp.isBattery()) {
+                    batteries.add(coords);
+                    continue;
+                }
 
-            if (activationType.matches(comp)) {
-                primary.add(coords);
+                if (activationType.matches(comp)) {
+                    primary.add(coords);
+                }
             }
-
         }
 
         try {
-            ClientGameModel.getInstance().setBusy();
             activationType.activate(username, primary, batteries);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
-
     }
 
     @FXML
     private void handleSkip() {
         try {
-            ClientGameModel.getInstance().setBusy();
             switch (activationType) {
                 case CANNONS:
                     ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
@@ -217,18 +231,39 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
                     ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
                     break;
                 case SHIELDS:
-                    // ClientGameModel.getInstance().getClient().skipShields(username);
+                    ClientGameModel.getInstance().getClient().activateShield(username, null, null);
+                    break;
+                case BATTERY:
+                    ClientGameModel.getInstance().getClient().loseEnergy(username, null);
                     break;
             }
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("activationType") && contextData.containsKey("message")) {
+            activationType = (ActivationType) contextData.get("activationType");
+            String message = (String) contextData.get("message");
+            initializeData(activationType, message, 0);
+        } else if(contextData.containsKey("activationTyper") &&  contextData.containsKey("batteryNum")) {
+            activationType = (ActivationType) contextData.get("activationTyper");
+            int batteryNum = (int) contextData.get("batteryNum");
+            String message = "You have to lose " + batteryNum + " energy because you are short on cargo!";
+            initializeData(activationType, message, batteryNum);
+        }
+
+
+        else {
+            throw new IllegalArgumentException("Context data must contain activationType and message");
+        }
+
     }
 }
