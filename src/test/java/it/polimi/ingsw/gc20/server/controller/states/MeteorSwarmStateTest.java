@@ -23,6 +23,22 @@ class MeteorSwarmStateTest {
     static MeteorSwarmState state;
     static AdventureCard card;
 
+    /**
+     * Sets up the initial state required for testing {@code MeteorSwarmState}.
+     * <p>
+     * This method is executed once before all tests in the class are run. It performs the following steps:
+     * <p>
+     * 1. Initializes an {@code AdventureCard} with specific projectiles and sets it as the active card in the game model.
+     * 2. Creates a {@code GameController} with predefined test data such as game name, players, and player count.
+     * 3. Constructs valid and invalid ships for each player with various components such as cannons, engines, batteries,
+     *    cabin, and cargo holds. The components are configured with appropriate directions, connector settings, and properties.
+     * 4. Sets the constructed ships to the players within the game model and initializes their astronauts.
+     * 5. Prepares a {@code MeteorSwarmState} instance using the current game controller and active card, which is later
+     *    utilized for testing.
+     *
+     * @throws InvalidStateException if the initial state of the test setup is invalid.
+     * @throws EmptyCabinException if the cabin does not contain the required setup.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
@@ -159,6 +175,31 @@ class MeteorSwarmStateTest {
         state = new MeteorSwarmState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the behavior and constraints of the {@code MeteorSwarmState} during a meteor swarm event.
+     * <p>
+     * This method performs various state transitions and validations for the {@code MeteorSwarmState}.
+     * The test sequence includes dice rolls, cannon activations, shield activations, and branch selection.
+     * It also ensures that exceptions are thrown when performing invalid actions.
+     * <p>
+     * The following operations are executed:
+     * 1. Rolls dice for a player and validates the current turn.
+     * 2. Activates cannons for both players without utilizing specific components.
+     * 3. Rolls dice again and activates shields for both players.
+     * 4. Attempts an invalid branch selection to ensure {@code InvalidStateException} is thrown.
+     * 5. Simulates a player quitting the current turn.
+     * <p>
+     * This test guarantees that the game transitions and validations in the {@code MeteorSwarmState}
+     * function as intended and handle exceptions appropriately.
+     *
+     * @throws InvalidTurnException         if an operation is invoked by a player
+     *                                      when it is not their turn.
+     * @throws InvalidStateException        if an operation is invoked in an invalid game state.
+     * @throws ComponentNotFoundException   if a required component for an operation
+     *                                      is not found.
+     * @throws EnergyException              if there is insufficient energy to perform
+     *                                      an operation.
+     */
     @Test
     void testMeteorSwarmState() throws InvalidTurnException, InvalidStateException, ComponentNotFoundException, EnergyException {
         state.rollDice(controller.getPlayerByID("player1"));
@@ -167,6 +208,8 @@ class MeteorSwarmStateTest {
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
         state.activateShield(controller.getPlayerByID("player2"), null, null);
+        assertThrows(InvalidStateException.class, () -> state.chooseBranch(controller.getPlayerByID("player1"), null));
+        state.currentQuit(controller.getPlayerByID("player2"));
     }
 
 }
