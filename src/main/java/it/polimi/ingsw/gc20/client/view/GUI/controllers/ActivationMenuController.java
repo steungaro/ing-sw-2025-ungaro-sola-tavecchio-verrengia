@@ -17,7 +17,19 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
-public class ActivationMenuController {
+public class ActivationMenuController implements MenuController.ContextDataReceiver {
+
+    @Override
+    public void setContextData(Map<String, Object> contextData) {
+        if (contextData.containsKey("activationType") && contextData.containsKey("message")) {
+            activationType = (ActivationType) contextData.get("activationType");
+            message = (String) contextData.get("message");
+            initializeData(activationType, message);
+        } else {
+            throw new IllegalArgumentException("Context data must contain activationType and message");
+        }
+
+    }
 
     public enum ActivationType {
         CANNONS {
@@ -69,6 +81,7 @@ public class ActivationMenuController {
     private ShipController shipController;
     private ViewShip ship;
     private String username;
+    private String message;
     private ActivationType activationType;
 
     private final List<Pair<Integer, Integer>> selectedComponents = new ArrayList<>();
