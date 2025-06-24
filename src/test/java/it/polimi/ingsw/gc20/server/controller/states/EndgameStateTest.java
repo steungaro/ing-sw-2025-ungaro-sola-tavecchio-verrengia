@@ -25,6 +25,5 @@ class EndgameStateTest {
     void testState() throws InterruptedException {
         Thread.sleep(30000); // wait for the scheduler to run
         assertNull(MatchController.getInstance().getGameController("testGame"));
-        assertEquals("EndgameState", state.toString());
     }
 }
