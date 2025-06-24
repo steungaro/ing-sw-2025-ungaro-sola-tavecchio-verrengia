@@ -187,6 +187,9 @@ public class MenuController implements GameModelListener {
      */
     @FXML
     private void showTemporaryView(String fxmlPath) {
+
+        saveCurrentStateToStack();
+
         if (!currentFrame.getChildren().isEmpty()) {
             Node currentView = currentFrame.getChildren().getFirst();
             viewStack.push(currentView);
@@ -240,13 +243,6 @@ public class MenuController implements GameModelListener {
         }
     }
 
-    /**
-     * Generic method to show any temporary view
-     * @param fxmlPath Path to the FXML file
-     */
-    public void showTemporaryMenu(String fxmlPath) {
-        showTemporaryView(fxmlPath);
-    }
 
     /**
      * Clear all views in the stack and return to the initial state
@@ -364,46 +360,22 @@ public class MenuController implements GameModelListener {
             Node currentView = currentFrame.getChildren().getFirst();
             viewStack.push(currentView);
         }
-    }
-
-
-    /**
-     * Configures the loaded menu controller with specific parameters
-     */
-    private void configureMenuController(Object controller, String menuType, Object... parameters) {
-        // TODO: check
-        switch (menuType) {
-            case "loseCrewMenu" -> {
-                if (controller instanceof LoseCrewMenuController && parameters.length > 0) {
-                    ((LoseCrewMenuController) controller).initializeWithCrewToLose((Integer) parameters[0]);
-                }
-            }
-            case "cargoMenu" -> {
-                if (controller instanceof CargoMenuController && parameters.length >= 4) {
-                    ((CargoMenuController) controller).initializeWithParameters(
-                            (String) parameters[0]
-                    );
-                }
-            }
-            case "idleMenu" -> {
-                if (controller instanceof IdleMenuController && parameters.length > 0) {
-                    ((IdleMenuController) controller).initializeWithMessage((String) parameters[0]);
-                }
-            }
-            default -> {
-                // No specific configuration needed
-            }
-        }
+        updateBackButtonVisibility();
     }
 
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
             guiView.displayErrorMessage("MenuController not initialized");
             return;
+        }
+
+        if (isTemporaryView) {
+            instance.saveCurrentStateToStack();
+            instance.showTemporaryView(contentFileName);
         }
 
         try {
