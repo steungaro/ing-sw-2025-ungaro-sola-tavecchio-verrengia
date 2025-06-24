@@ -140,7 +140,7 @@ public class FireManager {
             return;
         if(player.getShip().getFirstComponent(fire.getDirection(), check).getConnectors().get(fire.getDirection())==null)
             return;
-        if (fire.getFireType() != FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), check).getConnectors().get(fire.getDirection()) !=
+        if (fire.getFireType() == FireType.LIGHT_METEOR && player.getShip().getFirstComponent(fire.getDirection(), check).getConnectors().get(fire.getDirection()) ==
         ConnectorEnum.ZERO) {
             return;
         }
