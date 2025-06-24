@@ -402,16 +402,7 @@ public class MenuController implements GameModelListener {
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            Platform.runLater(() -> {
-                try {
-                    Thread.sleep(100); // Breve pausa
-                    loadContentInCurrentFrame(contentFileName, guiView, contextData);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    guiView.displayErrorMessage("MenuController initialization interrupted");
-                }
-            });
-
+            guiView.displayErrorMessage("MenuController not initialized");
             return;
         }
 
