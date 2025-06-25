@@ -31,9 +31,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private ViewShip playerShip;
     private ViewLobby currentLobby;
-    private GamePhase currentPhase;
     private String errorMessage;
     public boolean loggedIn;
     protected String username;
@@ -272,25 +270,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     /**
-     * Returns the map of ships, where the key is the username and the value is the ViewShip.
-     * This method provides access to all ships in the game.
-     *
-     * @return a map of usernames to their corresponding ViewShip objects
-     */
-    public Map<String, ViewShip> getShips() {
-        return ships;
-    }
-
-    /**
-     * Sets the map of ships in the game.
-     *
-     * @param ships a map of usernames to their corresponding ViewShip objects
-     */
-    public void setShips(Map<String, ViewShip> ships) {
-        this.ships = ships;
-    }
-
-    /**
      * Returns the ship associated with the given username.
      * This method retrieves the ViewShip for a specific player.
      *
@@ -448,7 +427,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     /**
-     * Prints the current adventure card being viewed.
+     * It prints the current adventure card being viewed.
      * This method displays the details of the current card in the console.
      * If no card is set, it prints a message indicating that there is no active card.
      */
@@ -525,20 +504,6 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     /**
-     * Updates the player ship in the model.
-     * This method sets the player's ship and notifies all listeners about the update.
-     *
-     * @param ship the ViewShip to set as the player's ship
-     */
-    public void updatePlayerShip(ViewShip ship) {
-        this.playerShip = ship;
-        LOGGER.fine("Player ship updated in model.");
-        for (GameModelListener listener : listeners) {
-            listener.onShipUpdated(this.playerShip);
-        }
-    }
-
-    /**
      * Updates the current lobby in the model.
      * This method sets the current lobby and notifies all listeners about the update.
      *
@@ -584,28 +549,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     // --- Getters ---
     /**
-     * Returns the player's ship.
-     * This method provides access to the ship of the player.
-     *
-     * @return the ViewShip representing the player's ship
-     */
-    public ViewShip getPlayerShip() { return playerShip; }
-
-    /**
      * Returns the current lobby.
      * This method provides access to the lobby in which the player is currently participating.
      *
      * @return the ViewLobby representing the current lobby
      */
     public ViewLobby getCurrentLobby() { return currentLobby; }
-
-    /**
-     * Returns the current game phase.
-     * This method provides access to the current phase of the game.
-     *
-     * @return the GamePhase representing the current phase
-     */
-    public GamePhase getCurrentPhase() { return currentPhase; }
 
     /**
      * Returns the game players.
