@@ -62,15 +62,5 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-
-        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="200" text="View Options" onAction="#handleViewOptions">
-            <font>
-                <Font size="16.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
     </HBox>
 </VBox>

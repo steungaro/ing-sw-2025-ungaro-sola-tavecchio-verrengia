@@ -102,12 +102,6 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         }
     }
 
-    @FXML
-    private void handleViewOptions() {
-        ClientGameModel.getInstance().setBusy();
-        // TODO Call the options menu
-    }
-
 
     private void showError(String message) {
         errorLabel.setText(message);
