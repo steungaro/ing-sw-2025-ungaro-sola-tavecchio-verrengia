@@ -26,6 +26,24 @@ public class AbandonedShipTest {
     static AbandonedShipState state;
     static AdventureCard card;
 
+    /**
+     * Sets up the test environment for the AbandonedShipState tests. This method initializes
+     * the necessary components, including the game controller, the adventure card, and the
+     * abandoned ship state. It also prepares the ships for all players with relevant components
+     * and configurations.
+     * <p>
+     * This setup is executed once before all tests in the class run. Throws an
+     * {@code InvalidStateException} if the state is not correctly initialized.
+     * <p>
+     * The method performs the following operations:
+     * - Initializes the adventure card with specific properties like crew, credits, and lost days.
+     * - Creates a game controller for a test game with players.
+     * - Creates a state of type AbandonedShipState using the controller and card.
+     * - Configures each player's ship with various components such as cannons, engines, batteries,
+     *   cabins, and cargo holds.
+     * - Ensures components are added at valid positions and have appropriate connector configurations.
+     * - Initializes astronauts for each ship.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException {
         //initialize the AdventureCard
@@ -141,6 +159,26 @@ public class AbandonedShipTest {
         }
     }
 
+    /**
+     * Tests various aspects of the {@code AbandonedShipState}, including the behavior of
+     * methods such as {@code endMove}, {@code acceptCard}, and {@code loseCrew}.
+     * This method ensures that the state transitions and operations conform to expected behavior.
+     * <p>
+     * It verifies:
+     * - The initial state of the {@code AbandonedShipState}, such as the current player.
+     * - Validation of player actions, including positional changes and credit updates, after
+     *   interacting with the adventure card.
+     * - The ability of a player to perform the {@code loseCrew} operation appropriately,
+     *   ensuring necessary conditions such as selecting valid cabins.
+     * - Proper handling of exceptions during invalid state transitions, invalid player turns,
+     *   empty cabin selections, or component discrepancies.
+     * <p>
+     * Exceptions handled during the test include:
+     * {@code InvalidTurnException}, {@code InvalidStateException},
+     * {@code EmptyCabinException}, and {@code ComponentNotFoundException}.
+     * <p>
+     * Any unexpected exceptions will cause the test to fail.
+     */
     @Test
     void testState() {
         // Test the initial state of the AbandonedShipState

@@ -25,6 +25,21 @@ class CombatZone1StateTest {
     static CombatZone1State state;
     static AdventureCard card;
 
+    /**
+     * Sets up the testing environment for the CombatZone1StateTest class.
+     * <p>
+     * This method initializes the necessary components and objects required for
+     * the tests. It creates an AdventureCard, configures its properties, and sets
+     * it as the active card in the game controller. It also builds ships for each
+     * in-game player with appropriate components, connectors, and configurations,
+     * ensuring one ship is intentionally invalid. Once the setup is complete, the
+     * testing state is initialized with a CombatZone1State instance.
+     *
+     * @throws InvalidStateException if an invalid state is encountered during setup
+     * @throws EmptyCabinException if a cabin is found to be empty when it should not be
+     * @throws CargoNotLoadable if cargo cannot be loaded onto the ship
+     * @throws CargoFullException if the cargo hold is full and cannot accommodate additional cargo
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException, EmptyCabinException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
@@ -167,6 +182,37 @@ class CombatZone1StateTest {
         state = new CombatZone1State(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the functionality of the CombatZone1State class, ensuring proper behavior in a combat scenario.
+     * <p>
+     * This method verifies the following:
+     * - Activation of cannons and proper assignment of cannon positions for specific players.
+     * - Correct functionality of engine activation for players and proper assignment of engine positions.
+     * - Unloading of a specific cargo type and verifying that the player's ship's cargo hold is properly emptied.
+     * - Loss of energy for a player as expected.
+     * - Proper transition to the next game state through move ending.
+     * - Dice rolling behavior for a player.
+     * - Activation of shields without any specified additional parameters.
+     * <p>
+     * Assertions are made to confirm:
+     * - Correct player positioning after certain actions.
+     * - Proper assignment of turns to the current player.
+     * - Successful emptying of cargo.
+     * - Correct energy manipulation.
+     * <p>
+     * This method uses multithreading (e.g., `Thread.sleep`) to simulate certain delays in state progression if applicable.
+     *
+     * @throws InvalidTurnException if a turn-based error occurs.
+     * @throws InvalidStateException if the application is in an invalid state.
+     * @throws InvalidEngineException if engine activation fails.
+     * @throws EnergyException if energy manipulation generates an invalid state.
+     * @throws InvalidCannonException if cannon configuration or activation fails.
+     * @throws ComponentNotFoundException if a required ship component is missing.
+     * @throws InvalidShipException if the ship being manipulated is considered invalid.
+     * @throws DieNotRolledException if dice rolling operations are attempted without rolling.
+     * @throws InvalidCargoException if invalid cargo operations are performed.
+     * @throws InterruptedException if the test thread execution is interrupted during a delay simulation.
+     */
     @Test
     void testCombatZone1State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException, InvalidCargoException, InterruptedException {
         List<Pair<Integer, Integer>> cannons = new ArrayList<>();
@@ -218,6 +264,22 @@ class CombatZone1StateTest {
         state.activateShield(controller.getPlayerByID("player1"), null, null);
     }
 
+    /**
+     * Tests the behavior of the `currentQuit` and `chooseBranch` methods when an invalid state
+     * is encountered during the branch selection process.
+     * <p>
+     * Verifies the following:
+     * - The `chooseBranch` method throws an `InvalidStateException` when attempting to choose
+     *   a branch in an incorrect game phase or state.
+     * - The `currentQuit` method is called after the exception is thrown to handle the player's
+     *   decision to quit the current state.
+     * <p>
+     * This ensures proper error handling and state transition when invalid operations are
+     * performed during branch selection.
+     * <p>
+     * Assertions:
+     * - Ensures that `InvalidStateException` is thrown as expected during branch selection.
+     */
     @Test
     void currentQuitChooseBranchInvalidTest(){
         assertThrows(InvalidStateException.class, ()->state.chooseBranch(controller.getPlayerByID("player1"), null));

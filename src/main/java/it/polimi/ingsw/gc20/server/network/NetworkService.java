@@ -1,6 +1,6 @@
 package it.polimi.ingsw.gc20.server.network;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.util.HashMap;
 import java.util.Map;

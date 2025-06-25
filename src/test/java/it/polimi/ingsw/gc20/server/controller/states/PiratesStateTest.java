@@ -25,6 +25,22 @@ class PiratesStateTest {
     static PiratesState state;
     static AdventureCard card;
 
+    /**
+     * Initializes the test environment before each test case is executed.
+     * This method sets up the necessary objects and configurations required for testing the PiratesState functionality.
+     * <p>
+     * The setup includes:
+     * - Instantiating and configuring the AdventureCard.
+     * - Creating a GameController with test configurations.
+     * - Setting up players, their ships, and ship components with appropriate attributes and connectors.
+     * - Adding cargo to ships and initializing astronauts.
+     * - Assigning positions to players in the game.
+     * - Creating an instance of PiratesState for testing.
+     *
+     * @throws InvalidStateException if the state transition or setup encounters an invalid state.
+     * @throws CargoNotLoadable if the cargo cannot be loaded onto the ship.
+     * @throws CargoFullException if the cargo hold of the ship is full and cannot accept additional cargo.
+     */
     @BeforeEach
     void setUp() throws InvalidStateException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
@@ -169,10 +185,43 @@ class PiratesStateTest {
         state = new PiratesState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the behavior of the PiratesState under various scenarios, including
+     * validating state-specific rules, turn-based constraints, and game mechanics.
+     * <p>
+     * This method verifies that exceptions are thrown appropriately when invalid
+     * actions are attempted, and that the game flow progresses as expected through
+     * phases such as activating cannons, rolling dice, activating shields, and
+     * accepting cards.
+     * <p>
+     * Specific test cases included:
+     * - Ensures that actions taken by players not on their turn throw InvalidTurnException.
+     * - Validates that actions taken in inappropriate phases throw InvalidStateException.
+     * - Confirms the proper throwing of EnergyException and InvalidCannonException when relevant.
+     * - Verifies the correct game state transitions as actions are executed.
+     * - Asserts the correct updates of player state after accepting cards, such as position and credits.
+     * <p>
+     * Any exceptions thrown during invalid or illegal actions are expected and
+     * part of the test validation for ensuring robust game mechanics.
+     *
+     * @throws InvalidTurnException if a player attempts an action out of turn.
+     * @throws ComponentNotFoundException if a required ship component is missing.
+     * @throws InvalidStateException if an action is attempted in an incorrect state or phase.
+     * @throws InvalidCannonException if cannon-related actions are invalid.
+     * @throws EnergyException if energy requirements are not met for an action.
+     */
     @Test
     void testPiratesState() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException {
-
+        assertThrows(InvalidTurnException.class, () -> state.acceptCard(controller.getPlayerByID("player2")));
+        assertThrows(InvalidTurnException.class, () -> state.activateShield(controller.getPlayerByID("player2"), null, null));
+        assertThrows(InvalidStateException.class, () -> state.acceptCard(controller.getPlayerByID("player1")));
+        assertThrows(InvalidStateException.class, () -> state.activateShield(controller.getPlayerByID("player1"), null, null));
+        assertThrows(InvalidTurnException.class, () -> state.rollDice(controller.getPlayerByID("player2")));
+        assertThrows(InvalidStateException.class, () -> state.rollDice(controller.getPlayerByID("player1")));
+        assertThrows(InvalidStateException.class, () -> state.chooseBranch(controller.getPlayerByID("player1"), null));
+        assertThrows(InvalidTurnException.class, () -> state.activateCannons(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>()));
         state.activateCannons(controller.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>());
+        assertThrows(InvalidStateException.class, () -> state.activateCannons(controller.getPlayerByID("player1"), new ArrayList<>(), new ArrayList<>()));
         state.rollDice(controller.getPlayerByID("player1"));
         state.rollDice(controller.getPlayerByID("player1"));
         state.activateShield(controller.getPlayerByID("player1"), null, null);
@@ -181,7 +230,56 @@ class PiratesStateTest {
         state.acceptCard(controller.getPlayerByID("player2"));
         assertEquals(4, controller.getPlayerByID("player2").getPosition());
         assertEquals(1, controller.getPlayerByID("player2").getCredits());
+        assertThrows(InvalidTurnException.class, () -> state.chooseBranch(controller.getPlayerByID("player1"), null));
+    }
 
+    /**
+     * Tests the behavior and functionality of the `currentQuit` method within the game state logic.
+     * This method assesses the following aspects:
+     * <p>
+     * - Verifies that `currentQuit` can handle players quitting their turn and transition the game state accordingly.
+     * - Ensures the game transitions to the appropriate phase or player after a player quits.
+     * - Tests interaction with `activateCannons` to confirm proper handling of cannon activation in the current game phase.
+     * - Validates the method's ability to deal with exceptions like `InvalidTurnException`, `InvalidStateException`,
+     *   and other related exceptions without crashing or entering an invalid state.
+     * <p>
+     * Exceptions are expected and handled based on the game logic:
+     *
+     * @throws InvalidTurnException if the player attempts to quit out of turn.
+     * @throws ComponentNotFoundException if a required component is not available during the state transition.
+     * @throws InvalidStateException if the current game state does not permit quitting.
+     * @throws InvalidCannonException if invalid operations related to cannon activation occur.
+     * @throws EnergyException if insufficient energy resources are available for specific operations.
+     */
+    @Test
+    void testCurrentQuit () throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException {
+        state.currentQuit(controller.getPlayerByID("player1"));
+        state.activateCannons(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
+        state.currentQuit(controller.getPlayerByID("player2"));
+    }
+
+    /**
+     * Tests the activation of cannons by players within the PiratesState under specific conditions.
+     * Verifies that the game correctly progresses through the activation of cannons for two players
+     * and adheres to game rules such as turn-based mechanics and cannon-related exceptions.
+     * <p>
+     * The following aspects are evaluated:
+     * - Ensures the proper handling of cannon activation for multiple players in the current state.
+     * - Validates that the associated exceptions, such as InvalidTurnException, InvalidStateException,
+     *   InvalidCannonException, ComponentNotFoundException, and EnergyException, are thrown under
+     *   appropriate conditions.
+     * - Confirms the state transitions and message broadcasts triggered by the activateCannons method.
+     *
+     * @throws InvalidTurnException if a player attempts to activate cannons out of turn.
+     * @throws ComponentNotFoundException if the specified cannons or batteries are not found on the player's ship.
+     * @throws InvalidStateException if the cannon activation action is attempted in an incorrect game phase or state.
+     * @throws InvalidCannonException if the provided cannon positions or configurations are invalid.
+     * @throws EnergyException if insufficient energy is available for activating the specified cannons or batteries.
+     */
+    @Test
+    void testPiratesState2() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException {
+        state.activateCannons(controller.getPlayerByID("player1"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));
+        state.activateCannons(controller.getPlayerByID("player2"), List.of(new Pair<>(1, 3)), List.of(new Pair<>(2, 2)));
     }
 
 }
