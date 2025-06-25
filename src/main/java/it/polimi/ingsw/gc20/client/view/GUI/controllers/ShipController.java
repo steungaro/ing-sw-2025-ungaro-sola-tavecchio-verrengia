@@ -335,11 +335,11 @@ public abstract class ShipController implements GameModelListener {
 
             if (clickArea != null) {
                 if (count == 1) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.3));
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 1, 0, 0.3));
                 } else if (count == 2) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0, 0, 0.4));
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.3));
                 } else if (count >= 3) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(0, 0, 1, 0.4));
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0, 0, 0.4));
                 } else {
                     clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 }

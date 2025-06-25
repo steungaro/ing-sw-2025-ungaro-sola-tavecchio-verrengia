@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
+import static java.lang.Math.min;
+
 public class ActivationMenuController implements MenuController.ContextDataReceiver {
 
     public enum ActivationType {
@@ -54,19 +56,15 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                Pair<Integer, Integer> shieldCoordinates = null;
-                Pair<Integer, Integer> batteryCoordinates = null;
-                if(primary!= null && !primary.isEmpty()) {
-                    shieldCoordinates = primary.getFirst();
+                for(int i = 0; i < min(primary.size(), batteries.size()); i++){
+                    Pair<Integer, Integer> shieldCoordinates = primary.get(i);
+                    Pair<Integer, Integer> batteryCoordinates = batteries.get(i);
+                    ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
                 }
-                if(batteries != null && !batteries.isEmpty()) {
-                    batteryCoordinates = batteries.getFirst();
-                }
-                ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().endMove(username);
+                ClientGameModel.getInstance().getClient().activateShield(username, null, null);
             }
         },
         BATTERY {
@@ -76,8 +74,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                if (batteries != null && !batteries.isEmpty()) {
-                    Pair<Integer, Integer> batteryCoordinates = batteries.getFirst();
+                for (Pair<Integer, Integer> batteryCoordinates : batteries) {
                     ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
                 }
             }
@@ -113,6 +110,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
+        shipController.enableCellClickHandler(this::selectComponent);
     }
 
     public void initializeData(ActivationType type, String message, int batteryNum) {
@@ -141,7 +139,6 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             Object controller = loader.getController();
             try {
                 this.shipController = (ShipController) controller;
-                shipController.enableCellClickHandler(this::selectComponent);
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
@@ -166,6 +163,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
     }
 
     private void updateHighlights() {
+        // TODO: fix
         if (shipController == null) {
             return;
         }
@@ -198,57 +196,42 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     @FXML
     private void handleActivate() {
-        List<Pair<Integer, Integer>> primary = new ArrayList<>();
-        List<Pair<Integer, Integer>> batteries = new ArrayList<>();
-
-        for (Pair<Integer, Integer> coords : selectedComponents) {
-            ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
-            if (comp == null) continue;
-
-            if (activationType == ActivationType.BATTERY) {
-                if (comp.isBattery()) {
-                    batteries.add(coords);
-                }
-            } else {
-                if (comp.isBattery()) {
-                    batteries.add(coords);
-                    continue;
-                }
-
-                if (activationType.matches(comp)) {
-                    primary.add(coords);
-                }
-            }
-        }
-
         try {
+            List<Pair<Integer, Integer>> primary = new ArrayList<>();
+            List<Pair<Integer, Integer>> batteries = new ArrayList<>();
+
+            separateComponentsByType(primary, batteries, activationType::matches);
+
             activationType.activate(username, primary, batteries);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
 
+    private void separateComponentsByType(List<Pair<Integer, Integer>> primary,
+                                        List<Pair<Integer, Integer>> batteries,
+                                        java.util.function.Predicate<ViewComponent> componentMatcher) {
+        for (Pair<Integer, Integer> coords : selectedComponents) {
+            ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
+            if (comp == null) continue;
+
+            if (comp.isBattery()) {
+                batteries.add(coords);
+            } else if (componentMatcher.test(comp)) {
+                primary.add(coords);
+            }
+        }
+    }
+
     @FXML
     private void handleSkip() {
         try {
-            switch (activationType) {
-                case CANNONS:
-                    ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
-                    break;
-                case ENGINES:
-                    ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
-                    break;
-                case SHIELDS:
-                    ClientGameModel.getInstance().getClient().activateShield(username, null, null);
-                    break;
-                case BATTERY:
-                    ClientGameModel.getInstance().getClient().loseEnergy(username, null);
-                    break;
-            }
+            activationType.skip(username);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
+
 
     private void showError(String message) {
         errorLabel.setText(message);
