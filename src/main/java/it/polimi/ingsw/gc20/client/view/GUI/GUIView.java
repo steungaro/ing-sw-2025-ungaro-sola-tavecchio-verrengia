@@ -408,6 +408,7 @@ public class GUIView extends ClientGameModel {
     @Override
     public void branchMenu() {
         Map<String, Object> contextData = new HashMap<>();
+        String message = "Your ship has split into two branches, please choose one to keep (last selected branch will be kept):";
         contextData.put("message", message);
         contextData.put("activationType", ActivationMenuController.ActivationType.BRANCH);
         showMenuContent(GuiState.BRANCH_MENU, contextData, false, false);
