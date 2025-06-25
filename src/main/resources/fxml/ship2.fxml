@@ -12,7 +12,7 @@
         <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="500" fitHeight="400">
             <Image url="@cardboard/cardboard-1b.jpg" />
         </ImageView>
-        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="500.0" maxWidth="700.0" prefHeight="400.0" prefWidth="600.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2">
+        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="500.0" maxWidth="700.0" prefHeight="400.0" prefWidth="600.0" vgap="2">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />

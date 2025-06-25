@@ -8,9 +8,7 @@
         <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="400" fitHeight="400">
             <Image url="@cardboard/cardboard-1.jpg"/>
         </ImageView>
-        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="1" maxHeight="500.0" maxWidth="600.0" prefHeight="400.0" prefWidth="500.0"
-                  style="-fx-border-color: white; -fx-border-width: 1px; -fx-background-color: rgba(255,255,255,0.1);"
-                  vgap="1">
+        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="1" maxHeight="500.0" maxWidth="600.0" prefHeight="400.0" prefWidth="500.0" vgap="1">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="20"/>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="20"/>
