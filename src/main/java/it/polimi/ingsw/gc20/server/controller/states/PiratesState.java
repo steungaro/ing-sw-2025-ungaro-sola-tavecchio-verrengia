@@ -341,11 +341,11 @@ public class PiratesState extends PlayingState {
 
     @Override
     public String createsShieldMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shield to activate.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line " + result + ", select the shield to activate.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it will hit.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + " side, roll the dice to see where it will hit.";
     }
 }

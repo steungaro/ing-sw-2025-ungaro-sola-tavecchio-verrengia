@@ -682,4 +682,8 @@ public abstract class State{
     public List<Planet> getPlanets() {
         return null;
     }
+
+    public boolean isEndgame() {
+        return false;
+    }
 }

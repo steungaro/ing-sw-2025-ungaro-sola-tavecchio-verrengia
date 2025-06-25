@@ -474,11 +474,11 @@ public class  CombatZone1State extends CargoState {
 
     @Override
     public String createsShieldMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shields to use.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line " + result + ", select the shields to use.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it will hit.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + " side, roll the dice to see where it will hit.";
     }
 }

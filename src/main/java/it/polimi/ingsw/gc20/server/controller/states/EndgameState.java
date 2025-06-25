@@ -47,4 +47,12 @@ public class EndgameState extends State {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         getController().getMessageManager().broadcastUpdate(new LeaderboardMessage(score));
     }
+
+    /**
+     * Checks if the current state is the endgame state.
+     * @return true, indicating that this is the endgame state.
+     */
+    public boolean isEndgame() {
+        return true;
+    }
 }
