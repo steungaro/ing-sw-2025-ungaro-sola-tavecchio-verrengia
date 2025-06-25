@@ -103,7 +103,7 @@ public class BranchMenu implements MenuState, GameModelListener{
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+        ClientGameModel.getInstance().setCurrentMenuState(this);
     }
 
     @Override
