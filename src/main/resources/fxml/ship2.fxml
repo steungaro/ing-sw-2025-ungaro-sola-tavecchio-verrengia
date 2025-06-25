@@ -7,12 +7,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
+<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" maxWidth="400" maxHeight="400" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
     <StackPane fx:id="shipContainer">
-        <ImageView fx:id="bgImage" preserveRatio="true">
+        <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="300" fitHeight="300">
             <Image url="@cardboard/cardboard-1b.jpg" />
         </ImageView>
-        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="300.0" maxWidth="300.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2">
+        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="300.0" maxWidth="300.0" prefHeight="300.0" prefWidth="300.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />

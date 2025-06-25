@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -74,6 +75,17 @@ public abstract class ShipController implements GameModelListener {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         ClientGameModel.getInstance().addListener(this);
         buildShipComponents(ship);
+
+        if (rootPane != null) {
+            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+                Platform.runLater(() -> rootPane.requestLayout());
+            });
+
+            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> {
+                Platform.runLater(() -> rootPane.requestLayout());
+            });
+        }
+
     }
 
     public void reloadShip() {
