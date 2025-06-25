@@ -24,6 +24,19 @@ public class CombatZone0Test {
     static CombatZone0State state;
     static AdventureCard card;
 
+    /**
+     * Sets up the initial test environment for the CombatZone0Test class.
+     * This method is executed once before all tests in the class. It initializes
+     * the game controller, creates an AdventureCard, and configures the ships of
+     * all players, including adding components and their respective connectors.
+     * <p>
+     * The method also establishes the initial state for the game by associating
+     * the game controller with a CombatZone0State and preparing the required game
+     * components to simulate a valid test scenario.
+     *
+     * @throws InvalidStateException if the initial setup encounters an invalid state.
+     * @throws EmptyCabinException if an attempt is made to access an empty cabin during setup.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
@@ -163,6 +176,31 @@ public class CombatZone0Test {
         state = new CombatZone0State(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the behavior of the CombatZone0State within the game.
+     * <p>
+     * This method verifies several aspects of the CombatZone0State, including the player's
+     * initial position, the activation of engines and cannons for the players in the game,
+     * and the effects of losing crew during the combat. Additionally, dice rolls and shield
+     * activations are tested to ensure proper game mechanics within the combat zone.
+     * <p>
+     * Assertions are made to verify that:
+     * - The initial position of the player is correct.
+     * - Engines and cannons are appropriately activated for the players.
+     * - Crew size is decremented correctly when a cabin is lost.
+     * - The current player state is accurate after operations.
+     * - Dice rolling and shield activation operate correctly without throwing errors.
+     *
+     * @throws InvalidTurnException if an operation is performed during an invalid turn.
+     * @throws InvalidStateException if the state of the game is inconsistent.
+     * @throws InvalidEngineException if engine activation encounters an error.
+     * @throws EnergyException if operations exceed the available energy resources.
+     * @throws EmptyCabinException if an action is performed on an unoccupied cabin.
+     * @throws InvalidCannonException if cannon activation encounters an error.
+     * @throws ComponentNotFoundException if a required component is missing.
+     * @throws InvalidShipException if a ship is initialized incorrectly.
+     * @throws DieNotRolledException if an operation requiring dice values is performed before rolling.
+     */
     @Test
     void testCombatZone0State() throws InvalidTurnException, InvalidStateException, InvalidEngineException, EnergyException, EmptyCabinException, InvalidCannonException, ComponentNotFoundException, InvalidShipException, DieNotRolledException {
         assertEquals(4, controller.getPlayerByID("player1").getPosition());
@@ -202,6 +240,18 @@ public class CombatZone0Test {
         state.activateShield(controller.getPlayerByID("player1"), null, null);
     }
 
+    /**
+     * Tests the behavior of the `currentQuit` and `chooseBranch` methods in scenarios
+     * where the player makes invalid branch selection attempts during the `VALIDATE_SHIP_PHASE`.
+     * <p>
+     * This test ensures that:
+     * - An `InvalidStateException` is thrown when a null branch is chosen.
+     * - The `currentQuit` method responds correctly to clean up or transition states
+     *   after an invalid branch selection attempt.
+     * <p>
+     * The test verifies the robustness of state transitions and exception handling
+     * within the `CombatZone0State` when the player attempts invalid operations.
+     */
     @Test
     void currentQuitChooseBranchInvalidTest(){
         assertThrows(InvalidStateException.class, ()->state.chooseBranch(controller.getPlayerByID("player1"), null));

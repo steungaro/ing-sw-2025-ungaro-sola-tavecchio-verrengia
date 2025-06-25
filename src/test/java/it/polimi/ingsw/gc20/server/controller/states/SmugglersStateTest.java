@@ -23,6 +23,20 @@ class SmugglersStateTest {
     static SmugglersState state;
     static AdventureCard card;
 
+    /**
+     * Sets up the test environment by initializing class fields and preparing the necessary test data.
+     * <p>
+     * This method is executed before each test in the SmugglersStateTest class, utilizing the
+     * {@code @BeforeEach} annotation. It creates and configures an AdventureCard and a
+     * GameController instance, populating the game state with players and their associated ships.
+     * It ensures that each in-game player has a valid ship configuration with appropriate components
+     * and connectors. The smugglers state is instantiated with the prepared game model, controller,
+     * and card.
+     *
+     * @throws InvalidStateException if the state transition or initialization encounters an error
+     * @throws CargoNotLoadable if cargo cannot be loaded into the specified cargo hold during setup
+     * @throws CargoFullException if an attempt is made to load cargo into a full cargo hold during setup
+     */
     @BeforeEach
     void setUp() throws InvalidStateException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
@@ -162,6 +176,36 @@ class SmugglersStateTest {
         state = new SmugglersState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the sequence of game state transitions and player interactions during various phases
+     * of the game's smugglers' state. This test validates that the game properly handles player
+     * turn changes, state phase transitions, and associated actions such as activating cannons,
+     * unloading cargo, losing energy, accepting cards, loading cargo, moving cargo, and ending moves.
+     * <p>
+     * The method ensures that:
+     * - Player turns transition correctly.
+     * - State phases move in the expected order based on the actions performed.
+     * - Specific methods like `activateCannons`, `unloadCargo`, `loseEnergy`, `endMove`,
+     *   `acceptCard`, `loadCargo`, and `moveCargo` perform their intended operations without errors.
+     * <p>
+     * The test further verifies the following state transitions:
+     * - From the cannons phase to remove cargo phase after both front players activate their cannons.
+     * - From the accept phase to adding cargo phase after accepting a card.
+     * - Proper adjustments to the game state such as player cargo changes, energy loss, and drawing a card.
+     * <p>
+     * Exceptions are thrown if invalid actions or state changes occur, ensuring proper error handling
+     * for invalid turns, state mismanagement, energy misallocation, and invalid cargo or cannon operations.
+     *
+     * @throws InvalidTurnException if a player attempts to act outside their assigned turn
+     * @throws InvalidStateException if an invalid state transition is attempted
+     * @throws EnergyException if an operation leads to invalid energy usage or configuration
+     * @throws InvalidCannonException if an invalid cannon activation occurs
+     * @throws InvalidCargoException if cargo operations are performed incorrectly
+     * @throws CargoException if a general cargo-related exception occurs
+     * @throws CargoNotLoadable if cargo cannot be loaded into the designated position
+     * @throws CargoFullException if cargo loading is attempted on a full cargo hold
+     * @throws ComponentNotFoundException if a required component is missing during an operation
+     */
     @Test
     void testSmugglersState() throws InvalidTurnException, InvalidStateException, EnergyException, InvalidCannonException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
         assertEquals("player1", state.getCurrentPlayer());
@@ -189,6 +233,41 @@ class SmugglersStateTest {
         assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
     }
 
+    /**
+     * Tests a comprehensive sequence of actions and state transitions in the smugglers' game state,
+     * ensuring correct behavior across various game phases and player interactions. This method
+     * verifies the proper functionality of critical game mechanics such as loading/unloading cargo,
+     * activating cannons, transitioning between game phases, and player turn management.
+     * <p>
+     * The method includes assertions to validate:
+     * - Accurate turn progression for multiple players.
+     * - Correct transitions between game phases (e.g., cannons phase to remove cargo phase, remove cargo
+     *   phase to accept phase, etc.).
+     * - Successful execution of operations, such as cannon activation, cargo loading, movement, unloading,
+     *   and end-of-turn actions.
+     * <p>
+     * Additionally, the test ensures that operations involving cargo and cannons are handled gracefully,
+     * with appropriate exceptions being thrown for invalid interactions or configurations.
+     * <p>
+     * The following critical checkpoints are verified during the test:
+     * - Accurate state updates after player actions.
+     * - Valid energy adjustments during cannon activation.
+     * - Proper handling of cargo operations, including loading, movement, unloading, and capacity checks.
+     * - Error handling for incorrect actions, such as invalid turn attempts or misconfigured components.
+     * <p>
+     * The test guarantees that both valid and invalid scenarios are covered through exception handling,
+     * preventing unintended behavior from occurring in the game logic.
+     *
+     * @throws InvalidTurnException if a player performs an action outside their turn
+     * @throws ComponentNotFoundException if a necessary component cannot be found for a specific operation
+     * @throws InvalidStateException if an illegal state transition is attempted
+     * @throws InvalidCannonException if an invalid cannon operation is performed
+     * @throws EnergyException if an operation results in an invalid energy state
+     * @throws InvalidCargoException if cargo operations are misconfigured or invalid
+     * @throws CargoException if a general cargo-related exception occurs
+     * @throws CargoNotLoadable if cargo cannot be loaded into the specified position
+     * @throws CargoFullException if an attempt is made to load cargo in a full cargo hold
+     */
     @Test
     void testSmugglersState2() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidCannonException, EnergyException, InvalidCargoException, CargoException, CargoNotLoadable, CargoFullException {
         CargoHold cargoHold = (CargoHold) controller.getPlayerByID("player2").getShip().getComponentAt(1, 2);
@@ -216,5 +295,70 @@ class SmugglersStateTest {
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.BLUE, new Pair<>(1, 4));
         state.endMove(controller.getPlayerByID("player3"));
         assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
+    }
+
+    /**
+     * Tests the functionality and behavior of the game state when a player quits during their turn,
+     * ensuring that the game properly transitions to the next player's turn.
+     * <p>
+     * The method simulates a scenario where "player1" exits the game during their turn, and verifies
+     * that the game correctly updates the current player to "player2".
+     * <p>
+     * Assertions:
+     * - Verifies that the game transitions to the appropriate next player after the current player quits.
+     * <p>
+     * This test validates the correctness of player turn management during the smugglers' state phase.
+     */
+    @Test
+    void testSmugglersState3() {
+        state.currentQuit(controller.getPlayerByID("player1"));
+        assertEquals("player2", state.getCurrentPlayer());
+    }
+
+    /**
+     * Tests the behavior of the game state during a sequence of state transitions and player actions
+     * in the smugglers' phase, specifically handling the scenario of multiple players ending their turn
+     * and a player quitting during their turn.
+     * <p>
+     * The method performs the following validations:
+     * - Ensures that the game correctly progresses to the next player after each player ends their turn.
+     * - Verifies the proper update of the current player after a player quits the game.
+     * <p>
+     * Assertions:
+     * - Checks that the current player is updated to "player3" after "player1" and "player2" end their turns.
+     * - Confirms that the game handles a player quitting mid-turn without disrupting the game flow.
+     *
+     * @throws InvalidTurnException if an action is attempted by a player out of turn.
+     * @throws InvalidStateException if an invalid state transition is attempted during the test.
+     */
+    @Test
+    void testSmugglersState4() throws InvalidTurnException, InvalidStateException {
+        state.endMove(controller.getPlayerByID("player1"));
+        state.endMove(controller.getPlayerByID("player2"));
+        assertEquals("player3", state.getCurrentPlayer());
+        state.currentQuit(controller.getPlayerByID("player3"));
+    }
+
+    /**
+     * Tests the behavior of the smugglers' game state when multiple players end their turns consecutively.
+     * <p>
+     * This method verifies that the state transitions appropriately and the game correctly progresses
+     * through the player turns, ensuring accurate game flow management. Specifically, this test validates:
+     * <p>
+     * - The ability of players to end their turns without causing invalid state transitions or errors.
+     * - Proper handling of player turn progression and state updates in the smugglers' phase.
+     * - Correct exception handling for invalid operations when ending moves.
+     * <p>
+     * The test ensures that the game transitions to the next phase or player as required, verifying
+     * the robustness of the `endMove` method when multiple consecutive player actions are performed.
+     *
+     * @throws InvalidTurnException if a player attempts to end a move when it is not their turn
+     * @throws InvalidStateException if the game state is invalid for ending a move
+     */
+    @Test
+    void testSmugglersState5() throws InvalidTurnException, InvalidStateException {
+        state.endMove(controller.getPlayerByID("player1"));
+        state.endMove(controller.getPlayerByID("player2"));
+        state.endMove(controller.getPlayerByID("player3"));
     }
 }

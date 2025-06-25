@@ -479,7 +479,7 @@ public class GameModel {
      * @return the calculated engine power based on the specified parameters
      * @throws EnergyException if there is not enough energy available in the batteries
      * @throws InvalidEngineException if an invalid engine configuration is encountered
-     * @throws IllegalArgumentException if the provided energy supply is insufficient to activate the engines
+     * @throws IllegalArgumentException if the provided energy supply is not enough to activate the engines
      */
     public int enginePower(Player p, int doubleEngines, List<Battery> energy) throws EnergyException, InvalidEngineException {
         int power;
@@ -817,7 +817,7 @@ public class GameModel {
     }
 
     public void createDemoShips(){
-        //load components.json into hashmap of all components where the key is the idcomponent of the component
+        //load components.json into the hashmap of all components where the key is the id component of the component
         Map<Integer, Component> components = new HashMap<>();
         ObjectMapper mapper = JsonMapper.builder()
                 .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)

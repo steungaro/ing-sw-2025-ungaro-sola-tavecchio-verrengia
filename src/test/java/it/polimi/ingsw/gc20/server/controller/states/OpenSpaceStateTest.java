@@ -7,7 +7,7 @@ import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import org.javatuples.Pair;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,11 +22,25 @@ class OpenSpaceStateTest {
     static OpenSpaceState state;
     static AdventureCard card;
 
-    @BeforeAll
-    static void setUp() throws InvalidStateException, EmptyCabinException {
+    /**
+     * Sets up the initial state required for testing the {@code OpenSpaceState}.
+     * <p>
+     * This method initializes the game controller, adventure card, and creates ships for the in-game players.
+     * It configures ship components with valid states and sets up their connectors. Additionally, it assigns ships
+     * to players and prepares the game state by initializing astronauts and setting player positions.
+     * <p>
+     * This method is executed before each test in the class to ensure a consistent testing environment. Any exceptions
+     * related to an invalid state or cabin initialization are handled by the respective exception definitions.
+     *
+     * @throws InvalidStateException if the state setup fails during initialization
+     * @throws EmptyCabinException if there is an issue with initializing a cabin component
+     */
+    @BeforeEach
+    void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
         card = new AdventureCard();
         controller = new GameController("testGame", "testGame", List.of("player1", "player2"), 2);
+        assertNotNull(controller.getModel());
         controller.getModel().setActiveCard(card);
         // build all the ships of the players one will be invalid
         StartingCabin start;
@@ -149,6 +163,24 @@ class OpenSpaceStateTest {
         state = new OpenSpaceState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the behavior of the {@code OpenSpaceState} during the engine activation and movement phase.
+     * <p>
+     * This test verifies:
+     * - The initial state of the current player.
+     * - The activation of engines for multiple players using specific engine and battery configurations.
+     * - The resulting board positions of the players after engine activations.
+     * <p>
+     * The method first asserts that the initial current player is correct. Then, it simulates engine activation using the
+     * {@code activateEngines} method for two players, with different configurations for engines and batteries. Finally,
+     * the test ensures the players' positions are updated as expected based on their respective activations.
+     *
+     * @throws InvalidTurnException if an attempt is made to activate engines outside the player's turn
+     * @throws ComponentNotFoundException if a specified component is not found during engine activation
+     * @throws InvalidStateException if the state is invalid for the given operation
+     * @throws InvalidEngineException if engine activation fails due to invalid parameters
+     * @throws EnergyException if insufficient energy is provided during engine activation
+     */
     @Test
     void testOpenSpaceState() throws InvalidTurnException, ComponentNotFoundException, InvalidStateException, InvalidEngineException, EnergyException {
         // Test the initial state of the OpenSpaceState
@@ -159,5 +191,26 @@ class OpenSpaceStateTest {
         state.activateEngines(controller.getPlayerByID("player2"), new ArrayList<>(), new ArrayList<>());
         assertEquals(8, controller.getPlayerByID("player1").getPosition());
         assertEquals(1, controller.getPlayerByID("player2").getPosition());
+    }
+
+
+    /**
+     * Tests the behavior of the {@code currentQuit} method in the {@code OpenSpaceState} class.
+     * <p>
+     * This method performs the following verifications:
+     * - Asserts the initial current player is "player1".
+     * - Simulates a quit action from the player identified by "player1".
+     * - Simulates a quit action from the player identified by "player2".
+     * <p>
+     * The {@code currentQuit} method internally attempts to activate player engines with empty configurations
+     * while gracefully handling potential exceptions such as {@code InvalidTurnException},
+     * {@code InvalidStateException}, {@code EnergyException}, {@code InvalidEngineException},
+     * and {@code ComponentNotFoundException}, which are caught and ignored.
+     */
+    @Test
+    void currentQuitTest(){
+        assertEquals("player1", state.getCurrentPlayer());
+        state.currentQuit(controller.getPlayerByID("player1"));
+        state.currentQuit(controller.getPlayerByID("player2"));
     }
 }

@@ -21,6 +21,22 @@ class EpidemicStateTest {
     static EpidemicState state;
     static AdventureCard card;
 
+    /**
+     * Initializes the test environment and sets up the necessary objects and configurations
+     * for the EpidemicStateTest class. This method is executed once before all test methods.
+     * <p>
+     * Specifically, this method performs the following tasks:
+     * - Initializes the AdventureCard and GameController instances.
+     * - Configures the GameController to manage a test game session with predefined players.
+     * - Builds and initializes ships for each player, adding components like cannons, engines,
+     *   cabins, and cargo holds in specified positions.
+     * - Assigns properties and connectors to various ship components to ensure valid configuration.
+     * - Assigns the prepared ships to the players in the game session.
+     * - Creates a new EpidemicState instance using the configured model, controller, and card objects.
+     *
+     * @throws InvalidStateException if an invalid state is encountered during setup.
+     * @throws EmptyCabinException if a cabin component is empty during setup.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException, EmptyCabinException {
         //initialize the AdventureCard
@@ -144,6 +160,20 @@ class EpidemicStateTest {
         state = new EpidemicState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Tests the behavior of the epidemic state in the game. This test verifies that:
+     * - The epidemic effect is applied to all players who are actively connected in the game.
+     * - Each affected player's ship has exactly 2 crew members remaining after the epidemic is applied.
+     * - The automatic action message associated with the epidemic state is correctly displayed.
+     * <p>
+     * The test iterates over the list of in-game players and checks:
+     * - If their username is in the list of connected players, their ship's crew count is reduced to 2.
+     * - The pre-defined epidemic automatic action message matches the expected text.
+     * <p>
+     * Assertions:
+     * - The ship's crew count is correctly modified for each affected player.
+     * - The epidemic automatic action message matches the expected result.
+     */
     @Test
     void epidemicStateTest() {
         // Test the automatic action

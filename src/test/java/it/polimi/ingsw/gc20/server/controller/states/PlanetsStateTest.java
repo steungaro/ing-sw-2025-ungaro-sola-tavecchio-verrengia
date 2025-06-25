@@ -24,6 +24,16 @@ class PlanetsStateTest {
     static PlanetsState state;
     static AdventureCard card;
 
+    /**
+     * Initializes the test environment for the PlanetsStateTest class by setting up
+     * the necessary game components and initializing an AdventureCard object, GameController,
+     * and game state. This method ensures the test setup accurately represents a valid game state
+     * with predefined configuration, player setup, ship components, and their connections.
+     *
+     * @throws InvalidStateException if the state is invalid during setup.
+     * @throws CargoNotLoadable if the cargo cannot be loaded into the ship.
+     * @throws CargoFullException if the cargo hold is full while attempting to load cargo.
+     */
     @BeforeEach
     void setUp() throws InvalidStateException, CargoNotLoadable, CargoFullException {
         //initialize the AdventureCard
@@ -170,8 +180,25 @@ class PlanetsStateTest {
         state = new PlanetsState(controller.getModel(), controller, card);
     }
 
+    /**
+     * Executes a series of game actions and validations to test the game's handling
+     * of cargo loading, moving, unloading, and player turn transitions in a controlled scenario.
+     * <p>
+     * The method simulates a player landing on a planet, interacting with cargo, and ending moves,
+     * ensuring correctness in game behavior and transitions between game states.
+     * Various operations like cargo loading, movement, unloading, and validation of player turns
+     * are performed, while assertions validate the expected outcomes.
+     *
+     * @throws InvalidTurnException if an action is performed out of turn.
+     * @throws InvalidStateException if an action is invoked in an invalid game state.
+     * @throws ComponentNotFoundException if referenced game components are not found.
+     * @throws CargoException if there's an issue with cargo operations.
+     * @throws CargoNotLoadable if the cargo cannot be loaded into the player's ship.
+     * @throws CargoFullException if the player's cargo hold is full.
+     * @throws InvalidCargoException if the cargo being moved or unloaded is invalid.
+     */
     @Test
-    void Test() throws InvalidTurnException, InvalidStateException, ComponentNotFoundException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+     void Test() throws InvalidTurnException, InvalidStateException, ComponentNotFoundException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         state.landOnPlanet(controller.getPlayerByID("player1"), 0);
         state.loadCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2));
         state.moveCargo(controller.getPlayerByID("player1"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));
@@ -181,6 +208,22 @@ class PlanetsStateTest {
         assertEquals("player2", state.getCurrentPlayer());
         state.endMove(controller.getPlayerByID("player2"));
         assertEquals(4, controller.getPlayerByID("player1").getPosition());
+    }
+
+    /**
+     * Tests the functionality of the {@code currentQuit} method in the {@code State} class.
+     * <p>
+     * This method verifies the behavior when the current player quits the game. Specifically, it ensures:
+     * - The {@code currentQuit} method is invoked with the correct player retrieved using their ID.
+     * - The current player is correctly updated to the next player after the quitting action.
+     * <p>
+     * Assertions:
+     * - Confirms that the current player is updated to "player2" after "player1" quits.
+     */
+    @Test
+    void testCurrentQuit(){
+        state.currentQuit(controller.getPlayerByID("player1"));
+        assertEquals("player2", state.getCurrentPlayer());
     }
 
 }

@@ -24,8 +24,8 @@ import java.util.logging.Logger;
  */
 public class HeartbeatService {
     private static final Logger LOGGER = Logger.getLogger(HeartbeatService.class.getName());
-    private static final long PING_INTERVAL_MS = 30000; // 10 seconds
-    private static final long TIMEOUT_MS = 90000; // 30 seconds
+    private static final long PING_INTERVAL_MS = 30000; // 30 seconds
+    private static final long TIMEOUT_MS = 90000; // 90 seconds
     private static final String BROADCAST = "__BROADCAST__";
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> scheduledFuture;

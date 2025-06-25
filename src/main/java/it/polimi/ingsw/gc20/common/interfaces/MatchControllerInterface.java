@@ -3,6 +3,9 @@ package it.polimi.ingsw.gc20.common.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+/**
+ * This interface defines the methods for managing lobbies in the game and allows multiple matches to be played simultaneously.
+ */
 public interface MatchControllerInterface extends Remote {
     /**
      * Allows a user to join a lobby by its ID.

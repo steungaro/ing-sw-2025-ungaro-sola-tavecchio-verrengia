@@ -1,7 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.managers;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.states.StatePhase;
 import it.polimi.ingsw.gc20.server.controller.states.State;

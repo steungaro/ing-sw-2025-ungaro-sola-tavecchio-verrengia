@@ -187,21 +187,6 @@ public class PiratesState extends PlayingState {
                 setStandbyMessage(getCurrentPlayer() + " is selecting the shield to activate.");
                 getController().getMessageManager().notifyPhaseChange(phase, this);
                 break;
-            case null:
-                //we go to the next player
-                nextPlayer();
-                if (getCurrentPlayer() == null) {
-                    getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
-                    getModel().getActiveCard().playCard();
-                    phase = StatePhase.DRAW_CARD_PHASE;
-                    getController().setState(new PreDrawState(getController()));
-                } else {
-                    //the next player needs to fight pirates
-                    phase = StatePhase.CANNONS_PHASE;
-                    setStandbyMessage(getCurrentPlayer() + " is activating cannons to fight the pirates.");
-                    getController().getMessageManager().notifyPhaseChange(phase, this);
-                }
-                break;
         }
         return result;
     }
@@ -289,7 +274,7 @@ public class PiratesState extends PlayingState {
     }
 
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException, InvalidShipException {
+    public void currentQuit(Player player) {
         if (phase == StatePhase.VALIDATE_SHIP_PHASE){
             try {
                 //we auto choose the branch
