@@ -17,6 +17,9 @@ public class TUI extends ClientGameModel {
     private static final Logger LOGGER = Logger.getLogger(TUI.class.getName());
     private static final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Constructor for the TUI class.
+     */
     public TUI() throws RemoteException {
         super();
         LOGGER.info("TUI created");
@@ -28,12 +31,17 @@ public class TUI extends ClientGameModel {
         System.out.println("\033[31mDisconnected from server.\033[0m");
     }
 
+    @Override
     public void init() {
         clearConsole();
         System.out.println("Welcome to Galaxy Trucker!");
         printLogo();
     }
 
+    /**
+     * Clears the console by printing escape sequences.
+     * This method is used to clear the console output in the TUI.
+     */
     public static void clearConsole() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
@@ -41,6 +49,10 @@ public class TUI extends ClientGameModel {
         System.out.println();
     }
 
+    /**
+     * Prints the logo of the game in the console.
+     * This method is used to display the game's logo when the TUI is initialized.
+     */
     private void printLogo() {
         System.out.println(" ██████╗  █████╗ ██╗      █████╗ ██╗  ██╗██╗   ██╗    ████████╗██████╗ ██╗   ██╗ ██████╗██╗  ██╗███████╗██████╗ ");
         System.out.println("██╔════╝ ██╔══██╗██║     ██╔══██╗╚██╗██╔╝╚██╗ ██╔╝    ╚══██╔══╝██╔══██╗██║   ██║██╔════╝██║ ██╔╝██╔════╝██╔══██╗");
@@ -50,27 +62,24 @@ public class TUI extends ClientGameModel {
         System.out.println(" ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝          ╚═╝   ╚═╝  ╚═╝ ╚═════╝  ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝");
     }
 
+    @Override
     public void shutdown() {
         System.out.println("Application shutting down.");
         client.stop();
         System.exit(0);
     }
 
-    public void wait(int seconds) {
-        try {
-            Thread.sleep(seconds * 1000L);
-        } catch (InterruptedException e) {
-            LOGGER.warning("Error while waiting: " + e.getMessage());
-        }
-    }
 
-    @SuppressWarnings("BusyWait")
+    /**
+     * Initializes the network connection for the TUI.
+     * It prompts the user to select a network type (RMI or Socket) and enter the server address and port.
+     * The method will keep retrying until a successful connection is established.
+     */
     public void initNetwork() {
         String[] networkTypes = {"RMI", "Socket"};
         int selectedIndex; // To track the currently highlighted menu option
 
         try {
-
             do {
                 System.out.println("Select network type:");
 
@@ -105,12 +114,6 @@ public class TUI extends ClientGameModel {
                 clearConsole();
 
                 System.out.println("\033[33mTrying " + networkTypes[selectedIndex] + " connection...\033[0m");
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
 
                 // Establish the connection based on user input
                 if (address.isBlank()) {
@@ -149,12 +152,18 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    /**
+     * Displays the view-related options menu for the TUI.
+     * This method allows the user to view the game board, a player's ship, or the current card.
+     * It also provides an option to go back to the main menu.
+     */
     public static void viewOptionsMenu() {
         clearConsole();
         System.out.println("\u001B[1mViewing options:\u001B[0m");
         System.out.println("1. View game board");
         System.out.println("2. View a player's ship");
         System.out.println("3. View current card");
+        System.out.println("4. View my ship");
         System.out.println("b. Back to the menu");
         System.out.print(" > ");
 
@@ -171,6 +180,7 @@ public class TUI extends ClientGameModel {
                 }
             }
             case "3" -> ClientGameModel.getInstance().printCurrentCard();
+            case "4" -> ClientGameModel.getInstance().printShip(ClientGameModel.getInstance().getUsername());
             case "b" -> {
             }
             default -> {
@@ -200,95 +210,117 @@ public class TUI extends ClientGameModel {
         }
     }
 
+    @Override
     public void branchMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new BranchMenu());
     }
 
+    @Override
     public void buildingMenu(List<ViewAdventureCard> adventureCards) {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(adventureCards));
     }
 
+    @Override
     public void inLobbyMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new InLobbyMenu());
     }
 
+    @Override
     public void cannonsMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new CannonsMenu(message));
     }
 
+    @Override
     public void cardAcceptanceMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new CardAcceptanceMenu(message));
     }
 
+    @Override
     public void engineMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new EngineMenu(message));
     }
 
+    @Override
     public void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing) {
         Map<CargoColor, Integer> cargoMap = new HashMap<>();
         cargoToGain.forEach(cargoColor -> cargoMap.put(cargoColor, cargoMap.getOrDefault(cargoColor, 0) + 1));
         ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(message, cargoToLose, cargoMap, losing));
     }
 
+    @Override
     public void planetMenu(List<Planet> planets) {
         ClientGameModel.getInstance().setCurrentMenuState(new PlanetMenu(planets));
     }
 
+    @Override
     public void populateShipMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new PopulateShipMenu());
     }
 
+    @Override
     public void validationMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new ValidationMenu());
     }
 
+    @Override
     public void automaticAction(String message) {
         clearConsole();
         ClientGameModel.getInstance().printBoard();
         System.out.println(message);
     }
 
+    @Override
     public void mainMenuState() {
         ClientGameModel.getInstance().setCurrentMenuState(new MainMenu());
     }
 
+    @Override
     public void AssemblingStateMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 
+    @Override
     public void shieldsMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new ShieldsMenu(message));
     }
 
+    @Override
     public void rollDiceMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new RollDiceMenu(message));
     }
 
+    @Override
     public void cargoMenu(int cargoNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new CargoMenu(null, cargoNum, new HashMap<>(), true));
     }
 
+    @Override
     public void loseCrewMenu(int crewNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new LoseCrewMenu(crewNum));
     }
 
+    @Override
     public void removeBatteryMenu(int batteryNum) {
         ClientGameModel.getInstance().setCurrentMenuState(new LoseEnergyMenu(batteryNum));
     }
 
+    @Override
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
         ClientGameModel.getInstance().setCurrentMenuState(new EndGameMenu(leaderBoard));
     }
 
+    @Override
     public void idleMenu(String message) {
         ClientGameModel.getInstance().setCurrentMenuState(new IdleMenu(message));
     }
 
+    @Override
     public void displayErrorMessage(String errorMessage) {
         clearConsole();
         ClientGameModel.getInstance().getCurrentMenuState().displayMenu(errorMessage);
     }
 
+    @Override
     public void keepPlayingMenu() {
         ClientGameModel.getInstance().setCurrentMenuStateNoClear(new KeepPlayingMenu());
     }
@@ -314,7 +346,6 @@ public class TUI extends ClientGameModel {
         inputThread.start();
         // add a shutdown hook to ensure the application can be closed gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(inputThread::interrupt));
-        wait(1);
     }
 
     @Override

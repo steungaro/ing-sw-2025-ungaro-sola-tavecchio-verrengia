@@ -583,42 +583,236 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     }
 
     // --- Getters ---
+    /**
+     * Returns the player's ship.
+     * This method provides access to the ship of the player.
+     *
+     * @return the ViewShip representing the player's ship
+     */
     public ViewShip getPlayerShip() { return playerShip; }
+
+    /**
+     * Returns the current lobby.
+     * This method provides access to the lobby in which the player is currently participating.
+     *
+     * @return the ViewLobby representing the current lobby
+     */
     public ViewLobby getCurrentLobby() { return currentLobby; }
+
+    /**
+     * Returns the current game phase.
+     * This method provides access to the current phase of the game.
+     *
+     * @return the GamePhase representing the current phase
+     */
     public GamePhase getCurrentPhase() { return currentPhase; }
+
+    /**
+     * Returns the game players.
+     *
+     * @return an array of ViewPlayer objects representing the players in the game
+     */
     public ViewPlayer[] getPlayers() {
         return board.players;
     }
+
+    /**
+     * Returns the error message.
+     * This method provides access to the last error message set in the model.
+     *
+     * @return the error message as a String
+     */
     public String getErrorMessage() { return errorMessage; }
 
-
+    /**
+     * Returns the client associated with this game model.
+     * This method provides access to the client that is used for communication with the server.
+     *
+     * @return the Client instance associated with this game model
+     */
     public Client getClient() {
         return client;
     }
 
+    /**
+     * Shuts down the game model.
+     */
     public abstract void shutdown();
+
+    /**
+     * This method is called whenever a branching menu is needed.
+     */
     public abstract void branchMenu();
+
+    /**
+     * Displays the building menu with the given list of adventure cards (viewed deck)
+     *
+     * @param cards the list of ViewAdventureCard objects to display in the building menu
+     */
     public abstract void buildingMenu(List<ViewAdventureCard> cards);
+
+    /**
+     * Displays the cannon menu with the given message.
+     * This method is used to show options related to cannons in the game.
+     *
+     * @param message the message to display in the cannon menu
+     */
     public abstract void cannonsMenu(String message);
+
+    /**
+     * Displays the card acceptance menu with the given message.
+     * This method is used to prompt the player for card acceptance decisions.
+     *
+     * @param message the message to display in the card acceptance menu
+     */
     public abstract void cardAcceptanceMenu(String message);
+
+    /**
+     * Displays the cargo menu with the given message, cargo to lose, and cargo to gain.
+     * This method is used to manage cargo-related actions in the game.
+     *
+     * @param message the message to display in the cargo menu
+     * @param cargoToLose the amount of cargo to lose
+     * @param cargoToGain the list of CargoColor objects representing the cargo to gain
+     * @param losing whether the player is losing cargo
+     */
     public abstract void cargoMenu(String message, int cargoToLose, List<CargoColor> cargoToGain, boolean losing);
+
+    /**
+     * Displays the engine menu with the given message.
+     * This method is used to show options related to the ship's engine activation in the game.
+     *
+     * @param message the message to display in the engine menu
+     */
     public abstract void engineMenu(String message);
+
+    /**
+     * Displays the menu of a player in a lobby.
+     */
     public abstract void inLobbyMenu();
+
+    /**
+     * Displays the main menu state.
+     * This method is used to show the main menu options to the player.
+     */
     public abstract void mainMenuState();
+
+    /**
+     * Displays the planet menu with the given list of planets.
+     * This method is used to show options related to planets in the game.
+     *
+     * @param planets the list of Planet objects to display in the planet menu
+     */
     public abstract void planetMenu(List<Planet> planets);
+
+    /**
+     * Displays the populating ship menu.
+     * This method is used to add aliens to the ship.
+     */
     public abstract void populateShipMenu();
+
+    /**
+     * Displays the automatic action menu with the given message.
+     * This method is used to let the player know that an automatic action is being performed.
+     *
+     * @param message the message to display in the automatic action menu
+     */
     public abstract void automaticAction(String message);
+
+    /**
+     * Displays the validation menu.
+     * This method is used to validate the player's ship.
+     */
     public abstract void validationMenu();
+
+    /**
+     * Initializes the game model.
+     * This method is called to set up the initial state of the game model.
+     * It should be implemented by subclasses to perform any necessary initialization.
+     */
     public abstract void init();
+
+    /**
+     * Displays the shields-menu with the given message.
+     * This method is used to show options related to the shields' activation in the game.
+     *
+     * @param message the message to display in the shields-menu
+     */
     public abstract void shieldsMenu(String message);
+
+    /**
+     * Displays the roll dice menu with the given message.
+     * This method is used to prompt the player to roll the dice in the game.
+     *
+     * @param message the message to display in the roll dice menu
+     */
     public abstract void rollDiceMenu(String message);
+
+    /**
+     * Displays the cargo menu with the given cargo number.
+     * This method is used to manage cargo-related actions in the game.
+     *
+     * @param cargoNum the number of cargo items to display in the menu
+     */
     public abstract void cargoMenu(int cargoNum);
+
+    /**
+     * Displays the lose-crew menu with the given crew number.
+     * This method is used to prompt the player about losing crew members in the game.
+     *
+     * @param crewNum the number of crew members to display in the menu
+     */
     public abstract void loseCrewMenu(int crewNum);
+
+    /**
+     * Displays the battery menu with the given battery number.
+     * This method is used to manage battery-related actions in the game.
+     *
+     * @param batteryNum the number of batteries to display in the menu
+     */
     public abstract void removeBatteryMenu(int batteryNum);
+
+    /**
+     * Displays the assembling state menu.
+     * This method is used to show the building options for the ship's components.
+     */
     public abstract void AssemblingStateMenu();
+
+    /**
+     * Displays the leader board menu with the given leader board data.
+     * This method is used to show the final scores of players in the game.
+     *
+     * @param leaderBoard a map containing player usernames and their scores
+     */
     public abstract void leaderBoardMenu(Map<String, Integer> leaderBoard);
+
+    /**
+     * Displays the login successful message with the given username.
+     * This method is used to notify the player that they have successfully logged in.
+     *
+     * @param username the username of the player who logged in
+     */
     public abstract void loginSuccessful(String username);
+
+    /**
+     * Displays the login failed message with the given username.
+     * This method is used to notify the player that their login attempt has failed.
+     *
+     * @param username the username of the player who attempted to log in
+     */
     public abstract void loginFailed(String username);
+
+    /**
+     * Displays the idle menu with the given message.
+     * This method is used to let the player know that it's not their turn, and they can wait for the next action.
+     *
+     * @param message the message to display in the idle menu
+     */
     public abstract void idleMenu(String message);
+
+    /**
+     * Displays the keep playing menu.
+     * This method is used to prompt the player to decide whether they want to continue playing or not.
+     */
     public abstract void keepPlayingMenu();
 }
