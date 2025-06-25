@@ -17,19 +17,20 @@
         </font>
     </Label>
 
-    <Label fx:id="messageLabel" textFill="WHITE" wrapText="true">
+    <Label fx:id="messageLabel" textFill="#ecf0f1" wrapText="true">
         <font>
             <Font size="14.0" />
         </font>
     </Label>
 
-    <Label fx:id="errorLabel" contentDisplay="CENTER" textAlignment="CENTER" textFill="RED" visible="false">
+    <Label fx:id="errorLabel" contentDisplay="CENTER" textAlignment="CENTER" textFill="#e74c3c" visible="false">
         <font>
             <Font size="14.0" />
         </font>
     </Label>
+    
     <ScrollPane fx:id="DeckPanel"
-                style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;"
+                style="-fx-background-color: #34495e; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);"
                 VBox.vgrow="ALWAYS"
                 fitToWidth="true"
                 fitToHeight="true">

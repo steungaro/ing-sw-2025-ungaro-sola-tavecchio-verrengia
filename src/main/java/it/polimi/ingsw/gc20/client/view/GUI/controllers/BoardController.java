@@ -22,23 +22,9 @@ public abstract class BoardController implements GameModelListener {
     protected List<Circle> circles = new ArrayList<>();
     protected List<Label> circleLabels = new ArrayList<>();
 
-    @FXML protected Label playersInfoLabel;
-    @FXML protected Label gameStateLabel;
-    @FXML protected Label remainingTimeLabel;
-
     @FXML
     public void initialize() {
         ClientGameModel.getInstance().addListener(this);
-        if (playersInfoLabel != null) {
-            playersInfoLabel.setText("Players: N/A");
-        }
-        if (gameStateLabel != null) {
-            gameStateLabel.setText("Game State: N/A");
-        }
-        if (remainingTimeLabel != null) {
-            remainingTimeLabel.setText("Remaining Time: N/A");
-        }
-
         updateBoardDisplay(ClientGameModel.getInstance().getBoard());
     }
 
@@ -81,12 +67,10 @@ public abstract class BoardController implements GameModelListener {
         }
     }
 
+
     public void updateBoardDisplay(ViewBoard newBoard) {
         if (newBoard == null) {
             System.err.println("BoardController: updateBoardDisplay with null newBoard");
-            if (playersInfoLabel != null) playersInfoLabel.setText("Players: N/A");
-            if (gameStateLabel != null) gameStateLabel.setText("Game State: N/A");
-            if (remainingTimeLabel != null) remainingTimeLabel.setText("");
             return;
         }
 
@@ -98,39 +82,10 @@ public abstract class BoardController implements GameModelListener {
         for(ViewPlayer player : playerPositions) {
             if (player != null && player.position >= 0 && player.position < circles.size()) {
                 setPlayerPosition(player.position, player.playerColor);
-                setNumberInCircle(player.position, player.credits);
-                if (circleLabels.size() > player.position) {
-                    circleLabels.get(player.position).setText(player.username);
-                }
-            }
-        }
-
-        if (playersInfoLabel != null) {
-            if (newBoard.players != null && newBoard.players.length > 0) {
-                String playersText = Arrays.stream(newBoard.players)
-                        .filter(p -> p != null && p.username != null)
-                        .map(p -> p.username + (p.position==1 ? " (Leader)" : ""))
-                        .collect(Collectors.joining("\n"));
-                playersInfoLabel.setText("Players:\n" + playersText);
-            } else {
-                playersInfoLabel.setText("Players: N/A");
-            }
-        }
-
-        if (gameStateLabel != null) {
-            gameStateLabel.setText((newBoard.assemblingState ? "Assembling" : "Adventure"));
-        }
-
-        if (remainingTimeLabel != null) {
-            if (newBoard.timeStampOfLastHourglassRotation > 0) {
-                remainingTimeLabel.setText("Remaining Time: " + newBoard.timeStampOfLastHourglassRotation);
-                remainingTimeLabel.setVisible(true);
-            } else {
-                remainingTimeLabel.setText("");
-                remainingTimeLabel.setVisible(false);
             }
         }
     }
+
     @Override
     public void onShipUpdated(ViewShip ship) {
         // ignore
