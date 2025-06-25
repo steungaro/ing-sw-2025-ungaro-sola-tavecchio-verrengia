@@ -23,12 +23,7 @@
         </font>
     </Label>
 
-    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
-        <Label text="Your ship:" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
+    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
         <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
     </VBox>
 

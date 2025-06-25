@@ -33,8 +33,6 @@
                 VBox.vgrow="ALWAYS"
                 fitToWidth="true"
                 fitToHeight="true">
-        <content>
-            <AnchorPane minHeight="0.0" minWidth="0.0" />
-        </content>
+        <AnchorPane minHeight="0.0" minWidth="0.0"/>
     </ScrollPane>
 </VBox>

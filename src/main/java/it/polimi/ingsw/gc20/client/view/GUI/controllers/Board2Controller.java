@@ -121,11 +121,17 @@ public class Board2Controller extends BoardController {
             return;
         }
 
-        double originalContentWidth = 800.0;
+        double originalContentWidth = 600.0;
         double originalContentHeight = 330.0;
-        double scaleX = newPaneWidth / originalContentWidth;
-        double scaleY = newPaneHeight / originalContentHeight;
+        
+        double maxAllowedWidth = Math.min(newPaneWidth, 700.0);
+        double maxAllowedHeight = Math.min(newPaneHeight, 400.0);
+        
+        double scaleX = maxAllowedWidth / originalContentWidth;
+        double scaleY = maxAllowedHeight / originalContentHeight;
         double scaleFactor = Math.min(scaleX, scaleY);
+        
+        scaleFactor = Math.min(scaleFactor, 1.2);
 
         if (Double.isInfinite(scaleFactor) || Double.isNaN(scaleFactor) || scaleFactor <= 0) {
             scaleFactor = 1.0;
@@ -141,7 +147,7 @@ public class Board2Controller extends BoardController {
         double offsetX = (newPaneWidth - scaledContentActualWidth) / 2;
         double offsetY = (newPaneHeight - scaledContentActualHeight) / 2;
 
-        scalableContent.setLayoutX(offsetX);
-        scalableContent.setLayoutY(offsetY);
+        scalableContent.setLayoutX(Math.max(0, offsetX));
+        scalableContent.setLayoutY(Math.max(0, offsetY));
     }
 }

@@ -24,15 +24,12 @@
             </font>
         </Label>
 
-        <!-- Decorative bar -->
-        <Separator prefWidth="250" style="-fx-background: linear-gradient(to right, transparent, #3498db, transparent); -fx-pref-height: 3;" />
     </VBox>
 
     <!-- Message container with elegant border -->
     <VBox alignment="CENTER" spacing="15"
           style="-fx-background-color: #333344;
                  -fx-background-radius: 10;
-                 -fx-border-color: #34495e;
                  -fx-border-radius: 10;
                  -fx-border-width: 2;">
         <padding>
