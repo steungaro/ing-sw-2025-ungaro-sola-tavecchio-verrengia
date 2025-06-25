@@ -58,7 +58,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateShield(username, null, null);
+                ClientGameModel.getInstance().getClient().endMove(username);
             }
         },
         BATTERY {

@@ -12,6 +12,7 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -713,31 +714,55 @@ public class MenuController implements GameModelListener {
 
     private void printCurrentCard(ViewAdventureCard currentCard) {
         Platform.runLater(() -> {
-            if (currentCard != null && currentCard.id != 0) {
-                String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
-                String currentText = serverMessages.getText();
-                if (currentText.equals("Waiting for server messages...")) {
-                    serverMessages.setText(cardInfo);
-                } else {
-                    serverMessages.setText(currentText + "\n" + cardInfo);
+            try {
+                if (currentCard != null && currentCard.id != 0) {
+                    String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
+                    String currentText = serverMessages.getText();
+                    if (currentText.equals("Waiting for server messages...")) {
+                        serverMessages.setText(cardInfo);
+                    } else {
+                        serverMessages.setText(currentText + "\n" + cardInfo);
+                    }
+
+                    javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
+
+                    imageView.setPreserveRatio(true);
+                    imageView.setSmooth(true);
+                    imageView.setCache(true);
+
+                    imageView.setFitWidth(drawnCard.getWidth() - 20);
+
+                    drawnCard.getChildren().clear();
+                    drawnCard.getChildren().add(imageView);
+                    drawnCard.setAlignment(Pos.CENTER);
+
+                    drawnCard.setVisible(true);
                 }
-                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
-
-                imageView.setFitWidth(200);
-                imageView.setFitHeight(300);
-                imageView.setPreserveRatio(true);
-
-                drawnCard.getChildren().clear();
-                drawnCard.getChildren().add(imageView);
-
+            } catch (Exception e) {
+                System.err.println("Error loading image: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
 
     private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {
-        String series = (viewAdventureCard.id > 20) ? "II" : "I";
-        int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
-        String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
-        return new javafx.scene.image.Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        try {
+            String series = (viewAdventureCard.id > 20) ? "II" : "I";
+            int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
+            String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
+
+            java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                System.err.println("Img file not found : " + imagePath);
+                return null;
+            }
+
+            return new javafx.scene.image.Image(imageStream);
+        } catch (Exception e) {
+            System.err.println("Error loading img: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }

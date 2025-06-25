@@ -16,6 +16,6 @@ public record ShieldPhaseMessage(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().shieldsMenu(message);
+            ClientGameModel.getInstance().shieldsMenu(message);
     }
 }

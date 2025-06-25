@@ -213,7 +213,7 @@ public class GUIView extends ClientGameModel {
                 try {
                     ((BoardController) controller).updateBoardDisplay(newBoard);
                 } catch (ClassCastException e) {
-                    displayErrorMessage("Error: Current controller is not a BoardController." + e.getMessage());
+                    //  displayErrorMessage("Error: Current controller is not a BoardController." + e.getMessage());
                 } catch (NullPointerException e) {
                     displayErrorMessage("Error: Current scene or root is null." + e.getMessage());
                 }
