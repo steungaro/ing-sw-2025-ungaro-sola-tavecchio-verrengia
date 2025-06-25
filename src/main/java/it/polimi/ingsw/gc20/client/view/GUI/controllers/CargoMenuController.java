@@ -149,7 +149,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
 
     private void handleLoadCargo(int row, int col) {
         Pair<Integer, Integer> coords = new Pair<>(row, col);
-
         try {
             ClientGameModel.getInstance().getClient().loadCargo(username, currentCargo, coords);
         } catch (RemoteException e) {

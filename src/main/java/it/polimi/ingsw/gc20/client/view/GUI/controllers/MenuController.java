@@ -224,7 +224,7 @@ public class MenuController implements GameModelListener {
             try{
                 gameModel.getClient().acceptCard(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
+                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -237,7 +237,7 @@ public class MenuController implements GameModelListener {
             try {
                 ClientGameModel.getInstance().getClient().endMove(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
+                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -370,7 +370,7 @@ public class MenuController implements GameModelListener {
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView) {
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
             guiView.displayErrorMessage("MenuController not initialized");
@@ -381,6 +381,8 @@ public class MenuController implements GameModelListener {
             instance.saveCurrentStateToStack();
             instance.showTemporaryView(contentFileName);
         }
+
+        instance.setAcceptableButtonVisibility(acceptable);
 
         try {
             if (contentFileName == null || contentFileName.trim().isEmpty()) {

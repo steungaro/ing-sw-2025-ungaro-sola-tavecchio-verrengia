@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
+<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
     <StackPane fx:id="shipContainer">
         <ImageView fx:id="bgImage" preserveRatio="true">
             <Image url="@cardboard/cardboard-1b.jpg" />

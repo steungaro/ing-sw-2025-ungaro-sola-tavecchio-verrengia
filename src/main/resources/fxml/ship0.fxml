@@ -3,8 +3,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="rootPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
-    <StackPane fx:id="shipContainer">
+<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">    <StackPane fx:id="shipContainer">
         <ImageView fx:id="bgImage" preserveRatio="true">
             <Image url="@cardboard/cardboard-1.jpg"/>
         </ImageView>

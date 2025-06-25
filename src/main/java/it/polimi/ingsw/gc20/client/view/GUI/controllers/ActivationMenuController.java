@@ -30,7 +30,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+                ClientGameModel.getInstance().getClient().activateCannons(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         ENGINES {
@@ -44,7 +44,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         SHIELDS {
