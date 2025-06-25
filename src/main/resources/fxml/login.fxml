@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="30" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.LoginController">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label text="Login Menu" textFill="WHITE">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+    <Label fx:id="errorLabel" contentDisplay="CENTER" text="An error occured while connecting to server, please try again." textAlignment="CENTER" textFill="RED" visible="false">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" maxWidth="400" spacing="15" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+        <Label text="Username:" textFill="WHITE">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Label>
+
+        <TextField fx:id="usernameField" maxWidth="300" promptText="choose your username">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </TextField>
+    </VBox>
+
+    <Button fx:id="loginButton" prefHeight="50" prefWidth="200" text="Log in">
+        <font>
+            <Font size="18.0" />
+        </font>
+        <style>
+            -fx-background-color: #4a7eb3;
+            -fx-text-fill: white;
+        </style>
+    </Button>
+</VBox>

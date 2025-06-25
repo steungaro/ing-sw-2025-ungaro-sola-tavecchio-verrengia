@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="mainContainer" alignment="CENTER" spacing="20.0" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.CardAcceptanceController">
+    <effect>
+        <DropShadow color="#00000080" height="10.0" radius="4.5" width="10.0" />
+    </effect>
+    <children>
+        <Label alignment="CENTER" style="-fx-font-weight: bold; -fx-text-fill: white;" text="Card Acceptance">            <font>
+                <Font name="System Bold" size="26.0" />
+            </font>
+            <effect>
+                <DropShadow color="#0000008f" height="5.0" radius="2.0" width="5.0" />
+            </effect>
+        </Label>
+
+        <!-- ImageView per visualizzare la carta -->
+        <ImageView fx:id="cardImageView" fitHeight="200.0" fitWidth="150.0" preserveRatio="true">
+            <effect>
+                <DropShadow color="#00000080" height="8.0" radius="3.5" width="8.0" />
+            </effect>
+        </ImageView>
+
+        <Label fx:id="messageLabel" alignment="CENTER" style="-fx-text-fill: #e0e0e0;" text="Do you want to accept this card?" wrapText="true">
+            <font>
+                <Font size="18.0" />
+            </font>
+            <padding>
+                <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+            </padding>
+        </Label>
+        <HBox alignment="CENTER" spacing="25.0">
+            <children>
+                <Button fx:id="acceptButton" mnemonicParsing="false" onAction="#handleAccept" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #43a047, #2e7d32); -fx-text-fill: white; -fx-background-radius: 5;" text="Accept">
+                    <font>
+                        <Font name="System Bold" size="15.0" />
+                    </font>
+                    <effect>
+                        <DropShadow color="#00000080" height="8.0" radius="3.5" width="8.0" />
+                    </effect>
+                </Button>
+                <Button fx:id="rejectButton" mnemonicParsing="false" onAction="#handleReject" prefHeight="45.0" prefWidth="130.0" style="-fx-background-color: linear-gradient(to bottom, #e53935, #c62828); -fx-text-fill: white; -fx-background-radius: 5;" text="Reject">
+                    <font>
+                        <Font name="System Bold" size="15.0" />
+                    </font>
+                    <effect>
+                        <DropShadow color="#00000080" height="8.0" radius="3.5" width="8.0" />
+                    </effect>
+                </Button>
+            </children>
+            <padding>
+                <Insets bottom="15.0" top="10.0" />
+            </padding>
+        </HBox>
+    </children>
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+</VBox>

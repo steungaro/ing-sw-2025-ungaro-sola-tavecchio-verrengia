@@ -1,5 +1,7 @@
 package it.polimi.ingsw.gc20.server.model.ship;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.UpdateShipMessage;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.components.*;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -12,14 +14,13 @@ public abstract class Ship {
 
 
     protected final Set<Component> waste;
-    protected Integer singleEngines;
-    protected final Integer doubleCannons;
-    protected Integer doubleEngines;
-    protected Integer doubleCannonsPower;
-    protected Float singleCannonsPower;
-    protected Integer totalEnergy;
+    protected int singleEngines;
+    protected int doubleEngines;
+    protected int doubleCannonsPower;
+    protected float singleCannonsPower;
+    protected int totalEnergy;
     protected final Map<CargoColor, Integer> cargos;
-    protected Integer astronauts;
+    protected int astronauts;
     protected Tile[][] table;
     /**
      * Default constructor. Initializes default ship values.
@@ -27,13 +28,21 @@ public abstract class Ship {
     public Ship() {
         waste = new HashSet<>();
         singleEngines = 0;
-        doubleCannons = 0;
         doubleEngines = 0;
         doubleCannonsPower = 0;
         singleCannonsPower = 0f;
         totalEnergy = 0;
         cargos = new HashMap<>();
         astronauts = 0;
+    }
+
+
+    public float getSingleCannonsPower() {
+        return singleCannonsPower;
+    }
+
+    public int getSingleEngines() {
+        return singleEngines;
     }
 
     /**
@@ -45,7 +54,9 @@ public abstract class Ship {
     public void addComponent(Component c, int row, int col) throws InvalidTileException {
         if (row >= 0 && row < getRows() && col >= 0 && col < getCols()) {
             setComponentAt( c, row, col);
-            c.updateParameter(this, 1);
+            if (this.isNormal() || !c.isLifeSupport()){
+                c.updateParameter(this, 1);
+            }
             c.setTile(table[row][col]);
         } else {
             throw new InvalidTileException("Position not valid");
@@ -56,13 +67,13 @@ public abstract class Ship {
      * Gets the total number of rows in the ship grid
      * @return Number of rows
      */
-    public abstract Integer getRows();
+    public abstract int getRows();
 
     /**
      * Get the number of columns in this ship
      * @return number of columns
      */
-    public abstract Integer getCols();
+    public abstract int getCols();
 
     /**
      * Gets the component at the specified position
@@ -81,16 +92,17 @@ public abstract class Ship {
     protected abstract void setComponentAt(Component c, int row, int col) throws InvalidTileException;
 
     /**
-     * Function that determines the total firepower of the ship
-     * it is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half-power)
-     * the user will select one by one the cannons he wants to use (single cannons automatically selected) every time he selects a cannon the power of the ship will be recalculated
-     * it also checks if the ship has the necessary number of batteries
+     * Function that determines the total firepower of the ship.
+     * It is the sum of single cannons power and double cannons power based on their orientation (cannons facing north have full power, others have half-power).
+     * The user will select one by one the cannons he wants to use (single cannons automatically selected) every time he selects a cannon, the power of the ship will be recalculated.
+     * It also checks if the ship has the necessary number of batteries.
+     *
      * @param cannons Set<Component>: the double cannons the user wants to activate
      * @return power
      * @throws EnergyException if the number of cannons is greater than the total energy of the ship
      * @throws InvalidCannonException if a cannon is a single cannon
      */
-    public float firePower(Set<Cannon> cannons, Integer energies) throws EnergyException, InvalidCannonException {
+    public float firePower(Set<Cannon> cannons, int energies) throws EnergyException, InvalidCannonException {
         if (cannons == null) {
             return singleCannonsPower;
         }
@@ -101,7 +113,7 @@ public abstract class Ship {
             if (cannon.getPower() == 1){
                 throw new InvalidCannonException("cannot select single cannon");
             }
-            if (cannon.getOrientation() == Direction.UP)
+            if (cannon.getRotation() == Direction.UP)
                 power += cannon.getPower();
             else {
                 power += cannon.getPower() / 2;
@@ -115,7 +127,7 @@ public abstract class Ship {
      * @return power_of_the_ship
      * @throws IllegalArgumentException if the number of double engines activated is greater than the total number of double engines
      */
-    public Integer enginePower(Integer doubleEnginesActivated) throws InvalidEngineException {
+    public int enginePower(int doubleEnginesActivated) throws InvalidEngineException {
         if (doubleEnginesActivated > doubleEngines) {
             throw new InvalidEngineException("not enough double engines");
         }
@@ -126,7 +138,7 @@ public abstract class Ship {
      * Gets the total energy available from batteries
      * @return Total energy
      */
-    public Integer getTotalEnergy() {
+    public int getTotalEnergy() {
         return totalEnergy;
     }
 
@@ -134,7 +146,7 @@ public abstract class Ship {
      * Gets the total number of astronauts in the ship
      * @return Crew count
      */
-    public Integer crew() {
+    public int crew() {
         return astronauts;
     }
 
@@ -142,17 +154,17 @@ public abstract class Ship {
     /**
      * @return the number of astronauts
      */
-    public Integer getAstronauts() {
+    public int getAstronauts() {
         return astronauts;
     }
 
     /**
      * Function that gets the first component of the ship from a certain direction to determine what component will be hit
      * @param d Direction: the direction from which the component will be hit
-     * @param n Integer: row or column of the component ATTENTION it is the row or colum of the ship
+     * @param n int: row or column of the component ATTENTION it is the row or colum of the ship
      * @return component_hit
      */
-    public Component getFirstComponent(Direction d, Integer n) {
+    public Component getFirstComponent(Direction d, int n) {
         int rows = getRows(), cols = getCols();
         if ((d == Direction.UP || d == Direction.DOWN) && (n < 0 || n >= cols)) {
             return null;
@@ -196,7 +208,7 @@ public abstract class Ship {
      * @param d Direction: the direction from which the ship is being attacked
      * @return if the side is shielded
      */
-    public Boolean getShield(Direction d) {
+    public boolean getShield(Direction d) {
         //parse throws the component of the ship until it finds a shield that covers the direction or until all pieces are checked
         int rows = getRows();
         int cols = getCols();
@@ -218,7 +230,7 @@ public abstract class Ship {
      * @param n Row/column index to check
      * @return List of cannons pointing in that direction
      */
-    public List<Cannon> getCannons(Direction d, Integer n) {
+    public List<Cannon> getCannons(Direction d, int n) {
         int cols = getCols();
         int rows = getRows();
         List<Cannon> cannons = new ArrayList<>();
@@ -226,7 +238,7 @@ public abstract class Ship {
             for(int row = 0; row < rows; row++){
                 Component component = getComponentAt(row, n);
                 if(component != null && component.isCannon()) {
-                    if (((Cannon) component).getOrientation() == d){
+                    if (component.getRotation() == d){
                         cannons.add((Cannon) component);
                     }
                 }
@@ -247,7 +259,7 @@ public abstract class Ship {
      * Counts all connectors that are exposed to space (not connected to another component)
      * @return Number of exposed connectors
      */
-    public Integer getAllExposed() {
+    public int getAllExposed() {
         int rows = getRows();
         int cols = getCols();
         int exposedConnectors = 0;
@@ -383,19 +395,23 @@ public abstract class Ship {
     public boolean isValid(int startRow, int startCol) {
         int rows = getRows();
         int cols = getCols();
+        // initialize the visited array to keep track of visited components
         boolean[][] visited = new boolean[rows][cols];
 
+        // initialize queue for the component search
         Queue<int[]> queue = new LinkedList<>();
+        // start from the coordinates passed as arguments
         queue.add(new int[]{startRow, startCol});
-        visited[startRow][startCol] = true;
 
+        // do while there are components in the queue
         while (!queue.isEmpty()) {
+            // save the coordinates of the component to check
             int[] current = queue.poll();
             int i = current[0];
             int j = current[1];
             Component component = getComponentAt(i, j);
-
-            if (component == null) continue;
+            // if the component is null, continue to the next iteration
+            if (component == null) return false;
 
             // Check connections in all four directions
             Map<Direction, ConnectorEnum> connectors = component.getConnectors();
@@ -403,10 +419,6 @@ public abstract class Ship {
                 Direction dir = entry.getKey();
                 ConnectorEnum connector = entry.getValue();
 
-                // Skip if there's no connector in this direction
-                if (connector == null || connector == ConnectorEnum.ZERO) {
-                    continue;
-                }
 
                 // Calculate adjacent cell coordinates
                 int adjRow = i, adjCol = j;
@@ -427,6 +439,26 @@ public abstract class Ship {
                         break;
                 }
 
+                // Skip if there's no connector in this direction
+                if (connector == null || connector == ConnectorEnum.ZERO) {
+                    if(component.isCannon() && component.getRotation() == dir) {
+                        //if it's a cannon, we need to check if it has a component in the direction of the cannon
+                        if(getComponentAt(adjRow, adjCol) != null) {
+                            System.out.println("Cannon has a component in the direction of the cannon at the coordinates " + adjRow + ", " + adjCol);
+                            return false;
+                        }
+
+                    } else if (component.isEngine() && ((Engine) component).getOrientation() == dir) {
+                        //if it's an engine, we need to check if it has a component in the direction of the engine
+                        if(getComponentAt(adjRow, adjCol) != null) {
+                            System.out.println("Engine has a component in the direction of the engine at the coordinates " + adjRow + ", " + adjCol);
+                            return false;
+                        }
+                    } else {
+                        continue; // No connector, skip to the next direction
+                    }
+                }
+
                 // Check if the adjacent cell is within bounds and has a component
                 Component adjComponent = getComponentAt(adjRow, adjCol);
                 if (adjRow >= 0 && adjRow < rows && adjCol >= 0 && adjCol < cols && adjComponent != null) {
@@ -435,18 +467,20 @@ public abstract class Ship {
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
                             queue.add(new int[]{adjRow, adjCol});
-                            visited[adjRow][adjCol] = true;
                         }else{
+                            System.out.println("Invalid connection found at coordinates: " + adjRow + ", " + adjCol);
                             return false;
                         }
                     }
                 }
             }
+            visited[i][j] = true; // Mark the current component as visited
         }
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Component component = getComponentAt(i, j);
                 if (component != null && !visited[i][j]) {
+                    System.out.println("Unconnected component found at coordinates: " + i + ", " + j);
                     return false; // Found an unconnected component
                 }
             }
@@ -484,7 +518,7 @@ public abstract class Ship {
      * @param c Component to destroy
      * @return True if the ship remains valid after removal
      */
-    public Boolean killComponent(Component c) throws ComponentNotFoundException {
+    public boolean killComponent(Component c) throws ComponentNotFoundException {
         if (c == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
@@ -492,7 +526,9 @@ public abstract class Ship {
         if (position == null) {
             throw new ComponentNotFoundException("Component not found in ship");
         }
-        c.updateParameter(this, -1);
+        if (this.isNormal() || !c.isLifeSupport()) {
+            c.updateParameter(this, -1);
+        }
         try {
             table[position[0]][position[1]].removeComponent();
             waste.add(c);
@@ -592,14 +628,14 @@ public abstract class Ship {
                 if(c!= null && c.isCabin()){
                     for (int k = 0; k < 4; k++) {
                         if (c.getConnectors().get(Direction.values()[k]) != ConnectorEnum.ZERO) {
-                            if (k == 0) { // take left
-                                adj = getComponentAt(i, j - 1);
-                            } else if (k == 1) { // take up
+                            if (k == 0) { // take up
                                 adj = getComponentAt(i - 1, j);
-                            } else if (k == 2) { // take right
-                                adj = getComponentAt(i, j + 1);
-                            } else { // take down
+                            } else if (k == 1) { // take left
+                                adj = getComponentAt(i , j - 1 );
+                            } else if (k == 2) { // take down
                                 adj = getComponentAt(i + 1, j);
+                            } else { // take right
+                                adj = getComponentAt(i, j + 1);
                             }
                             if (adj != null) {
                                 if (adj.isCabin()) {
@@ -678,5 +714,43 @@ public abstract class Ship {
         return AlienColor.NONE; //default implementation
     }
 
+    /**
+     * Creates an UpdateShipMessage from the ship's state
+     * @param username Username of the player
+     * @param ship Ship to create the message from
+     * @param action Action performed on the ship
+     * @return UpdateShipMessage containing the ship's state
+     */
+    public static UpdateShipMessage messageFromShip(String username, Ship ship, String action) {
+        ViewComponent[][] components = new ViewComponent[5][7];
+        List<ViewComponent> waste = ship.getWaste() == null ? new ArrayList<>() :
+                ship.getWaste().stream()
+                        .filter(Objects::nonNull)
+                        .map(Component::createViewComponent)
+                        .toList();
 
+        for (int i = 0; i < ship.getRows(); i++) {
+            for (int j = 0; j < ship.getCols(); j++) {
+                Component component = ship.getComponentAt(i, j);
+                if (component == null) {
+                    components[i][j + (ship.isNormal()? 0: 1)] = null;
+                } else {
+                    components[i][j + (ship.isNormal()? 0: 1)] = component.createViewComponent();
+                }
+            }
+        }
+        ViewComponent[] booked = new ViewComponent[2];
+        if (ship.isNormal()){
+            NormalShip normalShip = (NormalShip) ship;
+            for (int i = 0; i < normalShip.getBooked().size(); i++) {
+                if (normalShip.getBooked().get(i) != null) {
+                    booked[i] = normalShip.getBooked().get(i).createViewComponent();
+                } else {
+                    booked[i] = null;
+                }
+            }
+        }
+
+        return new UpdateShipMessage(username, components, action, ship.getSingleCannonsPower(), ship.getSingleEngines(), ship.getAstronauts(), ship.getAliens(), !ship.isNormal(), ship.isValid(), booked, waste);
+    }
 }

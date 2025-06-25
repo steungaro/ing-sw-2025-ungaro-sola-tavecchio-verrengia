@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="500.0" prefWidth="600.0" spacing="20" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.RollDiceMenuController">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Label fx:id="messageLabel" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+        <font>
+            <Font name="System Bold" size="24.0" />
+        </font>
+    </Label>
+
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 30; -fx-background-radius: 10;">
+        <Label text="Ready to test your luck?" textFill="WHITE">
+            <font>
+                <Font size="18.0" />
+            </font>
+        </Label>
+
+        <Button fx:id="rollDiceButton" onAction="#handleRollDice" prefHeight="60" prefWidth="250" text="Roll the Dice">
+            <font>
+                <Font size="18.0" />
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+    </VBox>
+
+    <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true">
+        <font>
+            <Font size="14.0" />
+        </font>
+    </Label>
+</VBox>

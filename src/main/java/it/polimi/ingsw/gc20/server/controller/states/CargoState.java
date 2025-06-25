@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.server.model.components.CargoHold;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -15,73 +16,50 @@ import java.util.List;
 
 public abstract class CargoState extends PlayingState {
 
+    /**
+     * Constructs a CargoState object, which is a specific state in the game where players can
+     * load and unload cargo. This state is initialized with the provided game model and controller.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     */
     public CargoState(GameModel model, GameController controller) {
         super(model, controller);
     }
 
-    /**
-     * This method is used to load a cargo from a cargo hold to the player's cargo hold
-     * @param player the player who is loading the cargo
-     * @param loaded the color of the cargo to be loaded
-     * @param chTo the cargo hold to which the cargo is loaded
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new InvalidTurnException("It's not your turn");
-        }
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws CargoNotLoadable, CargoFullException, InvalidStateException, CargoException, InvalidTurnException, ComponentNotFoundException {
         getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
     }
 
-    /**
-     * This method is used to unload a cargo from the player's cargo hold
-     * @param player the player who is unloading the cargo
-     * @param unloaded the color of the cargo to be unloaded
-     * @param ch the cargo hold from which the cargo is unloaded
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new IllegalArgumentException("It's not your turn");
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException,  InvalidStateException, InvalidCargoException, ComponentNotFoundException{
+        try {
+            getModel().moveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
+        } catch (CargoNotLoadable | CargoFullException _) {
+            //ignore this exception, we are unloading the cargo
         }
-        getModel().MoveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
     }
 
-    /**
-     * This method is used to move a cargo from one cargo hold to another
-     * @param player the player who is moving the cargo
-     * @param loaded the color of the cargo to be moved
-     * @param chFrom the cargo hold from which the cargo is moved
-     * @param chTo the cargo hold to which the cargo is moved
-     * @throws InvalidTurnException if it's not the player's turn
-     */
     @Override
-    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
-        if(!player.getUsername().equals(getCurrentPlayer())){
-            throw new IllegalArgumentException("It's not your turn");
-        }
-        getModel().MoveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
+    public void moveCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chFrom, Pair<Integer, Integer> chTo) throws InvalidTurnException, InvalidStateException, InvalidCargoException, CargoNotLoadable, CargoFullException, ComponentNotFoundException {
+        getModel().moveCargo(player, loaded, Translator.getComponentAt(player, chFrom, CargoHold.class), Translator.getComponentAt(player, chTo, CargoHold.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "moved cargo"));
     }
 
-    /**
-     * This method is used to lose energy from the player's ship when not having cargo
-     * @param player the player who is losing energy
-     * @param battery the battery to be lost
-     * @throws InvalidTurnException if it's not the player's turn
-     * @throws IllegalStateException if the player has cargo available
-     */
     @Override
-    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws IllegalStateException, InvalidTurnException, EnergyException {
+    public void loseEnergy(Player player, Pair<Integer, Integer> battery) throws InvalidStateException, InvalidTurnException, EnergyException, ComponentNotFoundException {
         if (!player.getUsername().equals(getCurrentPlayer())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
         }
         if (player.getShip().getCargo().values().stream().mapToInt(v -> v).sum() != 0) {
-            throw new IllegalStateException("Cannot lose energy if having cargo available");
+            throw new InvalidStateException("Cannot lose energy if having cargo available. Please unload your cargo first.");
         }
         List<Battery> batteries = new ArrayList<>();
         batteries.add(Translator.getComponentAt(player, battery, Battery.class));
         getModel().removeEnergy(player, batteries);
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "lost energy"));
     }
 }

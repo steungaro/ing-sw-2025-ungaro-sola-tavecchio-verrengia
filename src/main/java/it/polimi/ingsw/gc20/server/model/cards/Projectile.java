@@ -6,58 +6,70 @@ import it.polimi.ingsw.gc20.server.model.components.Direction;
 import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+import java.io.Serializable;
+
 /**
- * @author GC20
+ * The Projectile class represents a projectile in the game that can be fired at a target ship.
+ * It includes attributes for the direction of the projectile and the type of fire it corresponds to.
+ * The class provides methods for setting and retrieving these attributes, as well as a method to handle firing at a ship.
  */
-public class Projectile {
+public class Projectile implements Serializable {
     private Direction direction;
     private FireType fireType;
 
     /**
-     * Default constructor
+     * Default constructor for the Projectile class.
+     * Initializes a new instance of the Projectile with default settings for its attributes.
      */
     public Projectile() {
     }
 
 
     /**
-     * @param direction is the direction of the projectile
+     * Sets the direction of the projectile.
+     *
+     * @param direction the direction to be set for the projectile, represented as an instance of the Direction enum
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
 
     /**
-     * @param fireType type of the projectile
+     * Sets the fire type for the projectile.
+     *
+     * @param fireType the type of fire to be set for the projectile,
+     *                 represented as an instance of the FireType enum
      */
     public void setFireType(FireType fireType) {
         this.fireType = fireType;
     }
 
     /**
-     * @return the direction of the projectile
+     * Retrieves the direction of the projectile.
+     *
+     * @return the direction of the projectile, represented as an instance of the Direction enum
      */
     public Direction getDirection() {
         return direction;
     }
 
     /**
-     * @return the type of the projectile
+     * Retrieves the fire type associated with the projectile.
+     *
+     * @return the FireType of the projectile, represented as an instance of the FireType enum
      */
     public FireType getFireType() {
         return fireType;
     }
 
     /**
-     * @param s ship fired at
-     * @param diceResult result of the dice
-     * @implNote ships cannot resist a heavy fire
-     * @throws InvalidShipException if the ship is invalid
-     * @see Ship
-     * @apiNote Controller must ask getCannons (for HeavyMeteor) to know whether a cannon is active or not, then it must invoke Fire if and only if the given cannons(s) cannot protect the ship catch the exception and ask the player to validate the ship
-     * @apiNote Controller must ask getShields and getFirstComponent (for LightMeteor) to know whether a shield is active or not or if the component has connectors exposed, then it must invoke Fire if and only if the given shields(s) cannot protect the ship catch the exception and ask the player to validate the ship
-     * @apiNote Controller must activate Fire without any checks (for HeavyFire)
-     * @apiNote Controller must ask getShields (for LightFire) to know whether a shield is active or not, then it must invoke Fire if and only if the given shield(s) cannot protect the ship, catch the exception and ask the player to validate the ship
+     * Fires the projectile at a specified ship, attempting to target and destroy a specific component
+     * of the ship, based on its type, direction, and dice result. Throws an exception
+     * if the target component cannot be successfully destroyed or if the ship is invalid for the operation.
+     *
+     * @param s the target ship at which the projectile is fired, represented as an instance of the Ship class
+     * @param diceResult the result of the dice roll used to calculate the target component
+     * @throws InvalidShipException if the ship is invalid after the firing operation
      */
     public void Fire(Ship s, int diceResult) throws InvalidShipException {
         try {
@@ -77,7 +89,7 @@ public class Projectile {
                 }
             }
         } catch (ComponentNotFoundException _) {
-            //this should never happen
+            //this should never happen because the controller checks this before firing
         }
     }
 

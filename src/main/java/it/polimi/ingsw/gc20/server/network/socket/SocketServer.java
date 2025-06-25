@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.server.network.socket;
 import it.polimi.ingsw.gc20.server.network.NetworkService;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.Server;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,21 +14,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+/**
+ * The SocketServer class implements the Server interface and provides a socket-based
+ * server implementation for handling client connections and communication.
+ * It manages client authentication, connection handling, and client registration.
+ */
 public class SocketServer implements Server {
     private static final Logger LOGGER = Logger.getLogger(SocketServer.class.getName());
     private ServerSocket serverSocket;
     private final List<ClientHandler> clients = new CopyOnWriteArrayList<>();
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private boolean running;
-    private static final int DEFAULT_PORT = 8080;
+    private final int port;
     private final SocketAuthService authService = new SocketAuthService(this);
+
+    /**
+     * Constructs a SocketServer with the specified port.
+     *
+     * @param port the port on which the server will listen for incoming connections
+     */
+    public SocketServer(int port) {
+        this.port = port;
+        this.running = false;
+    }
 
     @Override
     public void start() {
         try {
-            serverSocket = new ServerSocket(DEFAULT_PORT);
+            serverSocket = new ServerSocket(port);
             running = true;
-            LOGGER.info("Socket server set up on port: " + DEFAULT_PORT);
+            LOGGER.info("Socket server set up on port: " + port);
 
             // Thread to accept connections
             new Thread(this::acceptConnections).start();
@@ -38,6 +52,10 @@ public class SocketServer implements Server {
         }
     }
 
+    /**
+     * Accepts incoming client connections and handles them through the authService.
+     * Each new connection is processed in a separate thread.
+     */
     private void acceptConnections() {
         while (running) {
             try {

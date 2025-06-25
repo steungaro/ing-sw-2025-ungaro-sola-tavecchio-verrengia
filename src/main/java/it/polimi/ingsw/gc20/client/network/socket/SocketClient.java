@@ -1,8 +1,9 @@
 package it.polimi.ingsw.gc20.client.network.socket;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.client.view.common.View;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.toserver.Pong;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.game.*;
 import it.polimi.ingsw.gc20.common.message_protocol.toserver.lobby.*;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
@@ -14,9 +15,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * SocketClient is a client that connects to a server using sockets.
+ * It implements the Client interface and provides methods to send and receive messages.
+ */
 public class SocketClient implements Client {
     private final String serverAddress;
     private final int serverPort;
@@ -28,6 +34,13 @@ public class SocketClient implements Client {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    /**
+     * Constructor for SocketClient.
+     * Initializes the client with the server address and port.
+     *
+     * @param serverAddress The address of the server to connect to.
+     * @param serverPort    The port of the server to connect to.
+     */
     public SocketClient(String serverAddress, int serverPort) {
         this.serverPort = serverPort;
         this.serverAddress = serverAddress;
@@ -61,6 +74,10 @@ public class SocketClient implements Client {
         LOGGER.info("Socket client stopped.");
     }
 
+    /**
+     * Receives messages from the server and updates the client game model.
+     * This method runs in a loop until the client is stopped or disconnected.
+     */
     public void receiveMessages() {
         while (running) {
             try {
@@ -73,9 +90,8 @@ public class SocketClient implements Client {
                 // Receive the message
                 Message message = (Message) in.readObject();
 
-                View.getInstance().updateView(message);
+                ClientGameModel.getInstance().updateView(message);
             } catch (IOException | ClassNotFoundException e) {
-                LOGGER.warning("Error while receiving messages: " + e.getMessage());
                 disconnect();
             }
         }
@@ -112,15 +128,30 @@ public class SocketClient implements Client {
         return serverPort;
     }
 
+    @Override
+    public void pong(String username) {
+        try {
+            out.writeObject(new Pong(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while sending pong: " + e.getMessage());
+        }
+    }
 
+
+    /**
+     * Connects to the server using the specified address and port.
+     * Initializes input and output streams for communication.
+     */
     private void connectToServer() {
         try {
             // Create a socket connection to the server
             socket = new Socket(serverAddress, serverPort);
             LOGGER.info("Connected to server at " + serverAddress + ":" + serverPort);
             // Start a thread to handle incoming messages
-            in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
+            out.flush();
+            in = new ObjectInputStream(socket.getInputStream());
             Thread messageReceiverThread = new Thread(() -> {
                 try {
                     receiveMessages();
@@ -137,6 +168,10 @@ public class SocketClient implements Client {
         }
     }
 
+    /**
+     * Disconnects the client from the server and closes the input/output streams and socket.
+     * This method is called when the client is stopped or when an error occurs.
+     */
     private void disconnect() {
         try {
             if (!running) return;
@@ -149,15 +184,6 @@ public class SocketClient implements Client {
         }
     }
 
-    @Override
-    public void killGame(String username) {
-        try {
-            out.writeObject(new EndGameMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while killing game: " + e.getMessage());
-        }
-    }
 
     @Override
     public void takeComponentFromUnviewed(String username, int index) {
@@ -270,16 +296,6 @@ public class SocketClient implements Client {
     }
 
     @Override
-    public void validateShip(String username) {
-        try {
-            out.writeObject(new ValidateShipMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while validating ship: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try {
             out.writeObject(new RemoveComponentMessage(username, coordinates));
@@ -296,16 +312,6 @@ public class SocketClient implements Client {
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while adding alien: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void readyToFly(String username) {
-        try {
-            out.writeObject(new ReadyToFlyMessage(username));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while readying to fly: " + e.getMessage());
         }
     }
 
@@ -400,22 +406,22 @@ public class SocketClient implements Client {
     }
 
     @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
-        try {
-            out.writeObject(new ShootEnemyMessage(username, cannons, batteries));
-            out.flush();
-        } catch (IOException e) {
-            LOGGER.warning("Error while shooting enemy: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void giveUp(String username) {
         try {
             out.writeObject(new GiveUpMessage(username));
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while giving up: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        try {
+            out.writeObject(new LoseEnergyMessage(username, coordinates));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while losing energy: " + e.getMessage());
         }
     }
 
@@ -452,7 +458,7 @@ public class SocketClient implements Client {
     @Override
     public void joinLobby(String id, String user) {
         try {
-            out.writeObject(new JoinLobbyMessage(id, user));
+            out.writeObject(new JoinLobbyMessage(user, id));
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while joining lobby: " + e.getMessage());
@@ -486,6 +492,26 @@ public class SocketClient implements Client {
             out.flush();
         } catch (IOException e) {
             LOGGER.warning("Error while starting lobby: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void killLobby(String username) {
+        try {
+            out.writeObject(new KillLobbyMessage(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while killing lobby: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        try {
+            out.writeObject(new LobbyListRequest(username));
+            out.flush();
+        } catch (IOException e) {
+            LOGGER.warning("Error while getting lobbies: " + e.getMessage());
         }
     }
 }

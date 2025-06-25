@@ -13,12 +13,32 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Implements a Remote Method Invocation (RMI) service for managing game operations,
+ * allowing remote clients to perform various actions in a distributed game environment.
+ * This class communicates with a backend queue handler to enqueue game-related messages
+ * that will be processed by the system.
+ * <p>
+ * This service is intended to act as a bridge between the client and server, ensuring
+ * all game actions are handled in a thread-safe manner through enqueuing and message processing.
+ * It extends UnicastRemoteObject to support remote communication.
+ */
 public class RMIGameControllerService extends UnicastRemoteObject implements GameControllerInterface {
     private static final Logger LOGGER = Logger.getLogger(RMIGameControllerService.class.getName());
     private final QueueHandler queueHandler;
     @Serial
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructs an instance of the RMIGameControllerService class.
+     * <p>
+     * This constructor initializes the RMIGameControllerService by invoking the superclass
+     * constructor from UnicastRemoteObject and retrieves the singleton instance of the
+     * QueueHandler. The instance of QueueHandler will be used to manage and process
+     * messages related to the game controller's operations.
+     *
+     * @throws RemoteException if an error occurs while exporting the remote object.
+     */
     public RMIGameControllerService() throws RemoteException {
         super();
         this.queueHandler = QueueHandler.getInstance();
@@ -28,6 +48,12 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     public void giveUp(String username) throws RemoteException {
         LOGGER.fine("Received RMI call: giveUp from " + username);
         queueHandler.enqueue(new GiveUpMessage(username));
+    }
+
+    @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        LOGGER.fine("Received RMI call: loseEnergy from " + username);
+        queueHandler.enqueue(new LoseEnergyMessage(username, coordinates));
     }
 
     @Override
@@ -96,11 +122,6 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
         queueHandler.enqueue(new TurnHourglassMessage(username));
     }
 
-    @Override
-    public void validateShip(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: validateShip from " + username);
-        queueHandler.enqueue(new ValidateShipMessage(username));
-    }
 
     @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
@@ -112,12 +133,6 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     public void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) throws RemoteException {
         LOGGER.fine("Received RMI call: addAlien from " + username);
         queueHandler.enqueue(new AddAlienMessage(username, cabin, color));
-    }
-
-    @Override
-    public void readyToFly(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: readyToFly from " + username);
-        queueHandler.enqueue(new ReadyToFlyMessage(username));
     }
 
     @Override
@@ -174,14 +189,6 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
         queueHandler.enqueue(new EndMoveMessage(username));
     }
 
-
-    @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-        LOGGER.fine("Received RMI call: shootEnemy from " + username);
-        queueHandler.enqueue(new ShootEnemyMessage(username, cannons, batteries));
-    }
-
-
     @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) throws RemoteException {
         LOGGER.fine("Received RMI call: activateEngines from " + username);
@@ -199,11 +206,5 @@ public class RMIGameControllerService extends UnicastRemoteObject implements Gam
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) throws RemoteException {
         LOGGER.fine("Received RMI call: activateCannons from " + username);
         queueHandler.enqueue(new ActivateDoubleCannonsMessage(username, cannons, batteries));
-    }
-
-    @Override
-    public void killGame(String username) throws RemoteException {
-        LOGGER.fine("Received RMI call: endGame from " + username);
-        queueHandler.enqueue(new EndGameMessage(username));
     }
 }

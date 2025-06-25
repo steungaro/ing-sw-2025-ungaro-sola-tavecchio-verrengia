@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -12,6 +13,17 @@ import org.javatuples.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the state of the game when a Planets card is played.
+ * The player can:
+ * - land on a planet
+ *      + load cargo from the planet to the player's cargo hold
+ *      + unload cargo from the player's cargo hold
+ *      + move cargo from one cargo hold to another
+ *      + end the move
+ * - discard the card (end the move)
+ * if any player does not accept the card, or if the card has been played, a new card is drawn
+ */
 @SuppressWarnings("unused") // dynamically created by Cards
 public class PlanetsState extends CargoState {
     private final List<Planet> planets;
@@ -19,10 +31,18 @@ public class PlanetsState extends CargoState {
     private String landedPlayer;
     private int landedPlanetIndex;
     private final List<Player> playersToMove;
+    private List<CargoColor> reward;
+
     /**
-     * Default constructor
+     * Constructs a PlanetsState object. This initializes the state with the provided
+     * game model, controller, and adventure card, setting the planets, lost days,
+     * and initial phase to LAND_ON_PLANET. It also configures the standby message
+     * for the current player and notifies the message manager of the phase change.
+     *
+     * @param model      the game model that provides the data structure and logic for the game
+     * @param controller the game controller that manages game flow and interactions
+     * @param card       the adventure card associated with this game state
      */
-    @SuppressWarnings("unused") // dynamically created by Cards
     public PlanetsState(GameModel model, GameController controller, AdventureCard card) {
         super(model, controller);
         this.planets = card.getPlanets();
@@ -30,87 +50,117 @@ public class PlanetsState extends CargoState {
         this.landedPlayer = null;
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();
+        phase = StatePhase.LAND_ON_PLANET;
+        setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet.");
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
-    public String toString() {
-        return "PlanetsState{" +
-                "planets=" + planets +
-                ", lostDays=" + lostDays +
-                ", landedPlayer='" + landedPlayer + '\'' +
-                ", landedPlanetIndex=" + landedPlanetIndex +
-                '}';
-    }
-
-
-
-    /**
-     * Accepts a planet card and lands on the planet
-     * @param player is the player that wants to land on the planet
-     * @param planetIndex is the index of the planet card in the player's hand
-     * @throws IllegalStateException if the game is not in the planet phase
-     * @throws InvalidTurnException if it is not the player's turn
-     */
-    @Override
-    public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException {
+    public void landOnPlanet(Player player, int planetIndex) throws InvalidTurnException, InvalidStateException {
         if (!getCurrentPlayer().equals(player.getUsername())) {
-            throw new InvalidTurnException("It's not your turn");
+            throw new InvalidTurnException("It's not your turn!");
+        }
+        if (phase != StatePhase.LAND_ON_PLANET) {
+            throw new InvalidStateException("You can't land on a planet unless you are in the planet phase.");
         }
         if (planets.get(planetIndex).getAvailable()) {
             planets.get(planetIndex).setAvailable(false);
             landedPlayer = player.getUsername();
             landedPlanetIndex = planetIndex;
             playersToMove.add(player);
+            phase = StatePhase.ADD_CARGO;
+            reward = planets.get(landedPlanetIndex).getReward();
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo from the planet.");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
-            throw new IllegalStateException("The planet is not available");
+            throw new InvalidStateException("The planet is not available.");
         }
     }
 
     @Override
-    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException {
+    public void loadCargo(Player player, CargoColor loaded, Pair<Integer, Integer> chTo) throws ComponentNotFoundException, InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidStateException {
+        //check if the player is on the planet
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't load cargo unless you are on the planet");
+            throw new InvalidTurnException("You can't load cargo unless you are on the planet.");
+        }
+        //check if the planet is available
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't load cargo unless you are on the planet.");
         }
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
             super.loadCargo(player, loaded, chTo);
         } else {
-            throw new IllegalStateException("You can't load this cargo, it's not in the reward");
+            throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
-    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void unloadCargo(Player player, CargoColor unloaded, Pair<Integer, Integer> ch) throws ComponentNotFoundException, InvalidTurnException, InvalidCargoException, InvalidStateException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't unload cargo unless you are on the planet");
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet.");
+        }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't unload cargo unless you are on the planet.");
         }
         super.unloadCargo(player, unloaded, ch);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
-    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws InvalidTurnException, CargoException, CargoNotLoadable, CargoFullException, InvalidCargoException {
+    public void moveCargo(Player player, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) throws ComponentNotFoundException, InvalidTurnException, InvalidStateException, CargoNotLoadable, CargoFullException, InvalidCargoException {
         if (!player.getUsername().equals(landedPlayer)) {
-            throw new IllegalArgumentException("You can't move cargo unless you are on the planet");
+            throw new InvalidTurnException("You can't move cargo unless you are on the planet.");
+        }
+        if (phase != StatePhase.ADD_CARGO) {
+            throw new InvalidStateException("You can't move cargo unless you are on the planet.");
         }
         super.moveCargo(player, cargo, from, to);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
     public void endMove(Player player) throws InvalidTurnException {
-        if (!player.getUsername().equals(landedPlayer)) {
-            throw new InvalidTurnException("It's not your turn");
+        if (!player.getUsername().equals(getCurrentPlayer())) {
+            throw new InvalidTurnException("It's not your turn!");
         }
         landedPlayer = null;
         landedPlanetIndex = -1;
+
         nextPlayer();
         if (getCurrentPlayer() == null) {
             playersToMove.reversed().forEach(p -> getModel().movePlayer(p, -lostDays));
+            for (Player p : getModel().getInGamePlayers()) {
+                getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
+            }
+            getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage() );
+            phase = StatePhase.DRAW_CARD_PHASE;
+            getController().getActiveCard().playCard();
             getController().setState(new PreDrawState(getController()));
+        } else {
+            phase = StatePhase.LAND_ON_PLANET;
+            setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet.");
+            getController().getMessageManager().notifyPhaseChange(phase, this);
         }
     }
 
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
-        endMove(player);
+    public void currentQuit(Player player){
+        try {
+            endMove(player);
+        } catch (InvalidTurnException _) {
+            // This exception should never be thrown here, as the player is the current player
+        }
+    }
+
+    @Override
+    public List<Planet> getPlanets() {
+        return planets;
+    }
+
+    @Override
+    public List<CargoColor> cargoReward() {
+        return reward;
     }
 }

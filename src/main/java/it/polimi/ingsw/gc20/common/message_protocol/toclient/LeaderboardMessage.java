@@ -1,9 +1,14 @@
 package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.util.Map;
 
+/**
+ * This message is sent to the client to inform them about the current leaderboard.
+ * It contains a map of player names and their corresponding scores.
+ */
 public record LeaderboardMessage(
         Map<String, Integer> leaderboard
 ) implements Message {
@@ -14,6 +19,6 @@ public record LeaderboardMessage(
 
     @Override
     public void handleMessage() {
-        //TODO
+        ClientGameModel.getInstance().leaderBoardMenu(leaderboard);
     }
 }

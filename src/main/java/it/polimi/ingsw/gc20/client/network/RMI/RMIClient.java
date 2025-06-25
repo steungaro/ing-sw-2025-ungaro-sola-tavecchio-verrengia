@@ -1,10 +1,10 @@
 package it.polimi.ingsw.gc20.client.network.RMI;
 
 import it.polimi.ingsw.gc20.client.network.common.Client;
-import it.polimi.ingsw.gc20.client.view.common.View;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.common.interfaces.AuthInterface;
 import it.polimi.ingsw.gc20.common.interfaces.GameControllerInterface;
 import it.polimi.ingsw.gc20.common.interfaces.MatchControllerInterface;
-import it.polimi.ingsw.gc20.common.interfaces.RMIAuthInterface;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import org.javatuples.Pair;
@@ -13,37 +13,53 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * RMIClient is a client implementation that connects to a remote server using RMI (Remote Method Invocation).
+ * It provides methods to interact with the server for authentication, game control, and match management.
+ */
 public class RMIClient implements Client {
     private final String serverAddress;
     private final int port;
 
-    private RMIAuthInterface authService;
+    private AuthInterface authService;
     private GameControllerInterface gameService;
     private MatchControllerInterface matchService;
-
-    private Registry registry;
 
     private boolean connected = false;
 
     private final Logger LOGGER = Logger.getLogger(RMIClient.class.getName());
 
+    /**
+     * Constructor for RMIClient.
+     *
+     * @param serverAddress The address of the RMI server.
+     * @param port          The port on which the RMI server is listening to.
+     */
     public RMIClient(String serverAddress, int port) {
         this.serverAddress = serverAddress;
         this.port = port;
     }
 
     @Override
+    public void pong(String username) {
+        try {
+            authService.pong(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during pong back: " + e.getMessage());
+        }
+    }
+
+    @Override
     public void start() {
         try {
             // Look up the registry
-            registry = LocateRegistry.getRegistry(serverAddress, port);
+            Registry registry = LocateRegistry.getRegistry(serverAddress, port);
 
             // Look up the remote services
-            authService = (RMIAuthInterface) registry.lookup("AuthService");
+            authService = (AuthInterface) registry.lookup("AuthService");
             gameService = (GameControllerInterface) registry.lookup("GameService");
             matchService = (MatchControllerInterface) registry.lookup("MatchService");
 
@@ -60,34 +76,16 @@ public class RMIClient implements Client {
         if (!connected) return;
 
         try {
-            boolean result = authService.login(username);
-            if (result) {
-                // Register the view with the server
-                registry.rebind("View " + username, UnicastRemoteObject.exportObject(View.getInstance(), 0));
-                if (authService.setView(username)) {
-                    LOGGER.info("Successfully logged in as: " + username);
-                } else {
-                    LOGGER.warning("Failed to login for user: " + username);
-                }
-            }
-        } catch (RemoteException e) {
+            ClientGameModel.getInstance().loggedIn = authService.login(username, ClientGameModel.getInstance());
+        } catch (Exception e) {
             LOGGER.warning("Error during login: " + e.getMessage());
         }
     }
 
     @Override
     public void stop() {
-        try {
-            if (registry != null) {
-                registry.unbind("AuthService");
-                registry.unbind("GameService");
-                registry.unbind("MatchService");
-            }
-            connected = false;
-            LOGGER.info("Disconnected from RMI server.");
-        } catch (RemoteException | NotBoundException e) {
-            LOGGER.warning("Error while stopping RMI client: " + e.getMessage());
-        }
+        connected = false;
+        LOGGER.info("Disconnected from RMI server.");
     }
 
     @Override
@@ -111,14 +109,6 @@ public class RMIClient implements Client {
         return port;
     }
 
-    @Override
-    public void killGame(String username) {
-        try {
-            gameService.killGame(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during killing game: " + e.getMessage());
-        }
-    }
 
     @Override
     public void takeComponentFromUnviewed(String username, int index)  {
@@ -220,15 +210,6 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void validateShip(String username)  {
-        try {
-            gameService.validateShip(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during validating ship: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates)  {
         try {
             gameService.removeComponentFromShip(username, coordinates);
@@ -243,15 +224,6 @@ public class RMIClient implements Client {
             gameService.addAlien(username, color, cabin);
         } catch (RemoteException e) {
             LOGGER.warning("Error during adding alien: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void readyToFly(String username)  {
-        try {
-            gameService.readyToFly(username);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during ready to fly: " + e.getMessage());
         }
     }
 
@@ -337,20 +309,20 @@ public class RMIClient implements Client {
     }
 
     @Override
-    public void shootEnemy(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries)  {
-        try {
-            gameService.shootEnemy(username, cannons, batteries);
-        } catch (RemoteException e) {
-            LOGGER.warning("Error during shooting enemy: " + e.getMessage());
-        }
-    }
-
-    @Override
     public void giveUp(String username)  {
         try {
             gameService.giveUp(username);
         } catch (RemoteException e) {
             LOGGER.warning("Error during giving up: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
+        try {
+            gameService.loseEnergy(username, coordinates);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during losing energy: " + e.getMessage());
         }
     }
 
@@ -414,6 +386,25 @@ public class RMIClient implements Client {
             matchService.startLobby(id);
         } catch (RemoteException e) {
             LOGGER.warning("Error during starting lobby: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void killLobby(String username)  {
+        try {
+            matchService.killLobby(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during killing lobby: " + e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void getLobbies(String username) throws RemoteException {
+        try {
+            matchService.getLobbies(username);
+        } catch (RemoteException e) {
+            LOGGER.warning("Error during getting lobbies: " + e.getMessage());
         }
     }
 }

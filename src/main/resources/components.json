@@ -1,7 +1,7 @@
 [
     {
       "type": "Battery",
-      "ID": "0",
+      "IDComponent": "0",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -13,7 +13,7 @@
     },
     {
       "type": "Battery",
-      "ID": "1",
+      "IDComponent": "1",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -25,7 +25,7 @@
     },
     {
       "type": "Battery",
-      "ID": "2",
+      "IDComponent": "2",
       "connectors": {
         "UP": "U",
         "DOWN": "S",
@@ -37,7 +37,7 @@
     },
     {
       "type": "Battery",
-      "ID": "3",
+      "IDComponent": "3",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -49,7 +49,7 @@
     },
     {
       "type": "Battery",
-      "ID": "4",
+      "IDComponent": "4",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -61,7 +61,7 @@
     },
     {
       "type": "Battery",
-      "ID": "5",
+      "IDComponent": "5",
       "connectors": {
         "UP": "U",
         "DOWN": "S",
@@ -73,7 +73,7 @@
     },
     {
       "type": "Battery",
-      "ID": "6",
+      "IDComponent": "6",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -85,7 +85,7 @@
     },
     {
       "type": "Battery",
-      "ID": "7",
+      "IDComponent": "7",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -97,7 +97,7 @@
     },
     {
       "type": "Battery",
-      "ID": "8",
+      "IDComponent": "8",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -109,7 +109,7 @@
     },
     {
       "type": "Battery",
-      "ID": "9",
+      "IDComponent": "9",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -121,7 +121,7 @@
     },
     {
       "type": "Battery",
-      "ID": "10",
+      "IDComponent": "10",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -133,7 +133,7 @@
     },
     {
       "type": "Battery",
-      "ID": "11",
+      "IDComponent": "11",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -145,7 +145,7 @@
     },
     {
       "type": "Battery",
-      "ID": "12",
+      "IDComponent": "12",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -157,7 +157,7 @@
     },
     {
       "type": "Battery",
-      "ID": "13",
+      "IDComponent": "13",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -169,7 +169,7 @@
     },
     {
       "type": "Battery",
-      "ID": "14",
+      "IDComponent": "14",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -181,7 +181,7 @@
     },
     {
       "type": "Battery",
-      "ID": "15",
+      "IDComponent": "15",
       "connectors": {
         "UP": "D",
         "DOWN": "S",
@@ -193,7 +193,7 @@
     },
     {
       "type": "Battery",
-      "ID": "16",
+      "IDComponent": "16",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -207,7 +207,7 @@
 
     {
       "type": "CargoHold",
-      "ID": "17",
+      "IDComponent": "17",
       "connectors": {
         "UP" : "D",
         "DOWN" : "U",
@@ -219,7 +219,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "18",
+      "IDComponent": "18",
       "connectors": {
         "UP": "D",
         "DOWN": "U",
@@ -231,7 +231,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "19",
+      "IDComponent": "19",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -243,7 +243,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "20",
+      "IDComponent": "20",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -255,7 +255,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "21",
+      "IDComponent": "21",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -267,7 +267,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "22",
+      "IDComponent": "22",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -279,7 +279,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "23",
+      "IDComponent": "23",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -291,7 +291,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "24",
+      "IDComponent": "24",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -303,7 +303,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "25",
+      "IDComponent": "25",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -315,7 +315,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "26",
+      "IDComponent": "26",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -327,7 +327,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "27",
+      "IDComponent": "27",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -339,7 +339,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "28",
+      "IDComponent": "28",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -351,7 +351,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "29",
+      "IDComponent": "29",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -363,7 +363,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "30",
+      "IDComponent": "30",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -375,7 +375,7 @@
     },
     {
       "type": "CargoHold",
-      "ID": "31",
+      "IDComponent": "31",
       "connectors": {
         "UP": "D",
         "DOWN": "S",
@@ -389,7 +389,7 @@
 
     {
       "type": "Cabin",
-      "ID": "32",
+      "IDComponent": "32",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -399,7 +399,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "33",
+      "IDComponent": "33",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -409,7 +409,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "34",
+      "IDComponent": "34",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -419,7 +419,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "35",
+      "IDComponent": "35",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -429,7 +429,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "36",
+      "IDComponent": "36",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -439,7 +439,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "37",
+      "IDComponent": "37",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -449,7 +449,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "38",
+      "IDComponent": "38",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -459,7 +459,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "39",
+      "IDComponent": "39",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -469,7 +469,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "40",
+      "IDComponent": "40",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -479,7 +479,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "41",
+      "IDComponent": "41",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -489,7 +489,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "42",
+      "IDComponent": "42",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -499,7 +499,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "43",
+      "IDComponent": "43",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -509,7 +509,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "44",
+      "IDComponent": "44",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -519,7 +519,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "45",
+      "IDComponent": "45",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -529,7 +529,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "46",
+      "IDComponent": "46",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -539,7 +539,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "47",
+      "IDComponent": "47",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -549,7 +549,7 @@
     },
     {
       "type": "Cabin",
-      "ID": "48",
+      "IDComponent": "48",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -561,7 +561,7 @@
 
     {
       "type": "Pipes",
-        "ID": "49",
+        "IDComponent": "49",
       "connectors": {
             "UP": "U",
             "DOWN": "ZERO",
@@ -571,7 +571,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "50",
+      "IDComponent": "50",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -581,7 +581,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "51",
+      "IDComponent": "51",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -591,7 +591,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "52",
+      "IDComponent": "52",
       "connectors": {
         "UP": "S",
         "DOWN": "D",
@@ -601,7 +601,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "53",
+      "IDComponent": "53",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -611,7 +611,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "54",
+      "IDComponent": "54",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -621,7 +621,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "55",
+      "IDComponent": "55",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -631,7 +631,7 @@
     },
     {
       "type": "Pipes",
-      "ID": "56",
+      "IDComponent": "56",
       "connectors": {
         "UP": "U",
         "DOWN": "D",
@@ -643,7 +643,7 @@
 
     {
       "type": "SpecialCargoHold",
-      "ID": "57",
+      "IDComponent": "57",
       "connectors": {
           "UP": "ZERO",
           "DOWN": "S",
@@ -655,7 +655,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "58",
+      "IDComponent": "58",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -667,7 +667,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "59",
+      "IDComponent": "59",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -679,7 +679,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "60",
+      "IDComponent": "60",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -691,7 +691,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "61",
+      "IDComponent": "61",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -703,7 +703,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "62",
+      "IDComponent": "62",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -715,7 +715,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "63",
+      "IDComponent": "63",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -727,7 +727,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "64",
+      "IDComponent": "64",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -739,7 +739,7 @@
     },
     {
       "type": "SpecialCargoHold",
-      "ID": "65",
+      "IDComponent": "65",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -753,7 +753,7 @@
 
     {
       "type": "Engine",
-        "ID": "66",
+        "IDComponent": "66",
       "connectors": {
             "UP": "ZERO",
             "DOWN": "ZERO",
@@ -764,7 +764,7 @@
     },
     {
       "type": "Engine",
-      "ID": "67",
+      "IDComponent": "67",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -775,7 +775,7 @@
     },
     {
       "type": "Engine",
-      "ID": "68",
+      "IDComponent": "68",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -786,7 +786,7 @@
     },
     {
       "type": "Engine",
-      "ID": "69",
+      "IDComponent": "69",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -797,7 +797,7 @@
     },
     {
       "type": "Engine",
-      "ID": "70",
+      "IDComponent": "70",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -808,7 +808,7 @@
     },
     {
       "type": "Engine",
-      "ID": "71",
+      "IDComponent": "71",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -819,7 +819,7 @@
     },
     {
       "type": "Engine",
-      "ID": "72",
+      "IDComponent": "72",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -830,7 +830,7 @@
     },
     {
       "type": "Engine",
-      "ID": "73",
+      "IDComponent": "73",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -841,7 +841,7 @@
     },
     {
       "type": "Engine",
-      "ID": "74",
+      "IDComponent": "74",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -852,7 +852,7 @@
     },
     {
       "type": "Engine",
-      "ID": "75",
+      "IDComponent": "75",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -863,7 +863,7 @@
     },
     {
       "type": "Engine",
-      "ID": "76",
+      "IDComponent": "76",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -874,7 +874,7 @@
     },
     {
       "type": "Engine",
-      "ID": "77",
+      "IDComponent": "77",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -885,7 +885,7 @@
     },
     {
       "type": "Engine",
-      "ID": "78",
+      "IDComponent": "78",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -896,7 +896,7 @@
     },
     {
       "type": "Engine",
-      "ID": "79",
+      "IDComponent": "79",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -907,7 +907,7 @@
     },
     {
       "type": "Engine",
-      "ID": "80",
+      "IDComponent": "80",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -918,7 +918,7 @@
     },
     {
       "type": "Engine",
-      "ID": "81",
+      "IDComponent": "81",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -929,7 +929,7 @@
     },
     {
       "type": "Engine",
-      "ID": "82",
+      "IDComponent": "82",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -940,7 +940,7 @@
     },
     {
       "type": "Engine",
-      "ID": "83",
+      "IDComponent": "83",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -951,7 +951,7 @@
     },
     {
       "type": "Engine",
-      "ID": "84",
+      "IDComponent": "84",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -962,7 +962,7 @@
     },
     {
       "type": "Engine",
-      "ID": "85",
+      "IDComponent": "85",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -973,7 +973,7 @@
     },
     {
       "type": "Engine",
-      "ID": "86",
+      "IDComponent": "86",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -984,7 +984,7 @@
     },
     {
       "type": "Engine",
-      "ID": "87",
+      "IDComponent": "87",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -995,7 +995,7 @@
     },
     {
       "type": "Engine",
-      "ID": "88",
+      "IDComponent": "88",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1006,7 +1006,7 @@
     },
     {
       "type": "Engine",
-      "ID": "89",
+      "IDComponent": "89",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1017,7 +1017,7 @@
     },
     {
       "type": "Engine",
-      "ID": "90",
+      "IDComponent": "90",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -1028,7 +1028,7 @@
     },
     {
       "type": "Engine",
-      "ID": "91",
+      "IDComponent": "91",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1039,7 +1039,7 @@
     },
     {
       "type": "Engine",
-      "ID": "92",
+      "IDComponent": "92",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1050,7 +1050,7 @@
     },
     {
       "type": "Engine",
-      "ID": "93",
+      "IDComponent": "93",
       "connectors": {
         "UP": "U",
         "DOWN": "ZERO",
@@ -1061,7 +1061,7 @@
     },
     {
       "type": "Engine",
-      "ID": "94",
+      "IDComponent": "94",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1072,7 +1072,7 @@
     },
     {
       "type": "Engine",
-      "ID": "95",
+      "IDComponent": "95",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1085,7 +1085,7 @@
 
     {
       "type": "Cannon",
-      "ID": "96",
+      "IDComponent": "96",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1096,7 +1096,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "97",
+      "IDComponent": "97",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1107,7 +1107,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "98",
+      "IDComponent": "98",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1118,7 +1118,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "99",
+      "IDComponent": "99",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1129,7 +1129,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "100",
+      "IDComponent": "100",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1140,7 +1140,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "101",
+      "IDComponent": "101",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1151,7 +1151,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "102",
+      "IDComponent": "102",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1162,7 +1162,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "103",
+      "IDComponent": "103",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1173,7 +1173,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "104",
+      "IDComponent": "104",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1184,7 +1184,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "105",
+      "IDComponent": "105",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1195,7 +1195,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "106",
+      "IDComponent": "106",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1206,7 +1206,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "107",
+      "IDComponent": "107",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1217,7 +1217,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "108",
+      "IDComponent": "108",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1228,7 +1228,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "109",
+      "IDComponent": "109",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1239,7 +1239,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "110",
+      "IDComponent": "110",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1250,7 +1250,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "111",
+      "IDComponent": "111",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1261,7 +1261,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "112",
+      "IDComponent": "112",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1272,7 +1272,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "113",
+      "IDComponent": "113",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1283,7 +1283,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "114",
+      "IDComponent": "114",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1294,7 +1294,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "115",
+      "IDComponent": "115",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1305,7 +1305,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "116",
+      "IDComponent": "116",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1316,7 +1316,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "117",
+      "IDComponent": "117",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1327,7 +1327,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "118",
+      "IDComponent": "118",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1338,7 +1338,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "119",
+      "IDComponent": "119",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1349,7 +1349,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "120",
+      "IDComponent": "120",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1363,7 +1363,7 @@
 
     {
       "type": "Cannon",
-      "ID": "121",
+      "IDComponent": "121",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1374,7 +1374,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "122",
+      "IDComponent": "122",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1385,7 +1385,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "123",
+      "IDComponent": "123",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1396,7 +1396,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "124",
+      "IDComponent": "124",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1407,7 +1407,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "125",
+      "IDComponent": "125",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1418,7 +1418,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "126",
+      "IDComponent": "126",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1429,7 +1429,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "127",
+      "IDComponent": "127",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1440,7 +1440,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "128",
+      "IDComponent": "128",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1451,7 +1451,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "129",
+      "IDComponent": "129",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1462,7 +1462,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "130",
+      "IDComponent": "130",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1473,7 +1473,7 @@
     },
     {
       "type": "Cannon",
-      "ID": "131",
+      "IDComponent": "131",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1486,7 +1486,7 @@
 
     {
       "type": "LifeSupport",
-      "ID": "132",
+      "IDComponent": "132",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1497,7 +1497,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "133",
+      "IDComponent": "133",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1508,7 +1508,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "134",
+      "IDComponent": "134",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1519,7 +1519,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "135",
+      "IDComponent": "135",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1530,7 +1530,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "136",
+      "IDComponent": "136",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1541,7 +1541,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "137",
+      "IDComponent": "137",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1552,7 +1552,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "138",
+      "IDComponent": "138",
       "connectors": {
         "UP": "S",
         "DOWN": "ZERO",
@@ -1563,7 +1563,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "139",
+      "IDComponent": "139",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1574,7 +1574,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "140",
+      "IDComponent": "140",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1585,7 +1585,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "141",
+      "IDComponent": "141",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1596,7 +1596,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "142",
+      "IDComponent": "142",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "ZERO",
@@ -1607,7 +1607,7 @@
     },
     {
       "type": "LifeSupport",
-      "ID": "143",
+      "IDComponent": "143",
       "connectors": {
         "UP": "D",
         "DOWN": "ZERO",
@@ -1621,7 +1621,7 @@
 
     {
       "type": "Shield",
-      "ID": "144",
+      "IDComponent": "144",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1632,7 +1632,7 @@
     },
     {
       "type": "Shield",
-      "ID": "145",
+      "IDComponent": "145",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -1643,7 +1643,7 @@
     },
     {
       "type": "Shield",
-      "ID": "146",
+      "IDComponent": "146",
       "connectors": {
         "UP": "D",
         "DOWN": "D",
@@ -1654,7 +1654,7 @@
     },
     {
       "type": "Shield",
-      "ID": "147",
+      "IDComponent": "147",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "U",
@@ -1665,7 +1665,7 @@
     },
     {
       "type": "Shield",
-      "ID": "148",
+      "IDComponent": "148",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",
@@ -1676,7 +1676,7 @@
     },
     {
       "type": "Shield",
-      "ID": "149",
+      "IDComponent": "149",
       "connectors": {
         "UP": "S",
         "DOWN": "S",
@@ -1687,7 +1687,7 @@
     },
     {
       "type": "Shield",
-      "ID": "150",
+      "IDComponent": "150",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "S",
@@ -1698,7 +1698,7 @@
     },
     {
       "type": "Shield",
-      "ID": "151",
+      "IDComponent": "151",
       "connectors": {
         "UP": "ZERO",
         "DOWN": "D",

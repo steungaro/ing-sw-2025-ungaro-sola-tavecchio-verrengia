@@ -2,6 +2,7 @@ package it.polimi.ingsw.gc20.server.model.gamesets;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import it.polimi.ingsw.gc20.server.exceptions.HourglassException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidIndexException;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
@@ -11,7 +12,8 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- * @author GC20
+ * Represents a normal board for the game, extending the base {@link Board} class.
+ * This class manages the decks of adventure cards, the game spaces, and the hourglass timer.
  */
 public class NormalBoard extends Board {
     private final List<AdventureCard> firstVisible;
@@ -33,7 +35,12 @@ public class NormalBoard extends Board {
         this.hourglass = new Hourglass(90);
     }
 
-    /** function that merges the decks and shuffles them
+    /**
+     * Merges multiple decks of AdventureCard objects into a single deck and performs shuffling.
+     * This method combines the four card collections: firstVisible, secondVisible, thirdVisible,
+     * and invisible into one unified deck. It then shuffles the resulting deck to randomize the card
+     * order. Additionally, it ensures that the first card in the deck is always a level 2 card by
+     * swapping the first level 2 card it encounters with the card at the top of the deck.
      */
     @Override
     public void mergeDecks() {
@@ -46,7 +53,7 @@ public class NormalBoard extends Board {
 
         //shuffling
         Collections.shuffle(deck);
-        //first card is always a level 2 card
+        //the first card is always a level 2 card
         for (int i=0; i<deck.size(); i++){
             if (deck.get(i).getLevel() == 2){
                 Collections.swap(deck, 0, i);
@@ -56,12 +63,15 @@ public class NormalBoard extends Board {
         this.setDeck(deck);
     }
 
-    /** function that peek the numDeck deck and returns it
-     * @param numDeck the deck to peek
-     * @return List<AdventureCard>
-     * @throws InvalidIndexException if numDeck is not 1, 2 or 3
+    /**
+     * Returns a visible deck of adventure cards based on the deck number provided.
+     * The method allows access to one of the first three visible decks.
+     *
+     * @param numDeck the number of the deck to peek at; it should be 1, 2, or 3
+     * @return a list of AdventureCard objects representing the specified visible deck
+     * @throws InvalidIndexException if the numDeck parameter is not 1, 2, or 3
      */
-    public List<AdventureCard> peekDeck(Integer numDeck) throws InvalidIndexException {
+    public List<AdventureCard> peekDeck(int numDeck) throws InvalidIndexException {
         return switch (numDeck) {
             case 1 -> this.firstVisible;
             case 2 -> this.secondVisible;
@@ -70,16 +80,31 @@ public class NormalBoard extends Board {
         };
     }
 
-    /** function that creates the decks
-     *
+    /**
+     * Creates and initializes the decks required for the game.
+     * <p>
+     * This method reads card data from a JSON file and organizes the cards into
+     * two distinct groups: level 1 cards (including level 0) and level 2 cards.
+     * Each group of cards is shuffled randomly. The shuffled cards are then
+     * assigned to four decks: firstVisible, secondVisible, thirdVisible, and
+     * invisible, ensuring each deck contains a mix of level 1 and level 2 cards.
+     * <p>
+     * The card distribution follows these rules:
+     * - The decks each receive two level 2 cards and one level 1 card.
+     * <p>
+     * This method handles exceptions that may occur during file reading and logs
+     * errors appropriately.
      */
+    @Override
     public void createDeck() {
         List<AdventureCard> level1Cards = new ArrayList<>();
         List<AdventureCard> level2Cards = new ArrayList<>();
         List<AdventureCard> cards = new ArrayList<>();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper mapper = JsonMapper.builder()
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .build();
+
         try {
             cards = Arrays.asList(mapper.readValue(getClass().getResourceAsStream("/cards.json"), AdventureCard[].class));
         } catch (Exception e) {
@@ -121,12 +146,16 @@ public class NormalBoard extends Board {
 
     }
 
-    /** getter function for one of the four decks
-     * @param numDeck the deck to get
-     * @return List<AdventureCard>
-     * @throws InvalidIndexException if numDeck is not 1, 2, 3 or 4
+    /**
+     * Returns a deck of adventure cards based on the specified deck number.
+     * This method provides access to one of four existing decks: three visible decks (1, 2, or 3)
+     * or the fourth invisible deck. An exception is thrown if an invalid deck number is provided.
+     *
+     * @param numDeck the number of the deck to retrieve; it should be 1, 2, 3, or 4
+     * @return a list of AdventureCard objects representing the specified deck
+     * @throws InvalidIndexException if the numDeck parameter is not 1, 2, 3, or 4
      */
-    public List<AdventureCard> getDeck(Integer numDeck) throws InvalidIndexException {
+    public List<AdventureCard> getDeck(int numDeck) throws InvalidIndexException {
         return switch (numDeck) {
             case 1 -> this.firstVisible;
             case 2 -> this.secondVisible;
@@ -136,8 +165,15 @@ public class NormalBoard extends Board {
         };
     }
 
-    /** Function that turns the hourglass, to be used every time a player turns the hourglass except for the first time (which is done at the beginning of the game)
-     * @throws HourglassException if the hourglass is already turned 3 times or if the remaining time is not 0
+    /**
+     * Turns the hourglass.
+     * <p>
+     * The hourglass can only be turned under the following conditions:
+     * - The remaining time of the current countdown is 0.
+     * - The hourglass has been turned fewer than 2 times.
+     *
+     * @throws HourglassException if the remaining time is not zero, or the hourglass
+     *         has already been turned two times
      */
     public void turnHourglass() throws HourglassException {
         if (this.hourglass.getRemainingTime() == 0 && this.hourglass.getTurned() < 2) {
@@ -147,35 +183,52 @@ public class NormalBoard extends Board {
         }
     }
 
-    /** Function that returns the remaining time
-     * @return The number of seconds left of the current turn
+    /**
+     * Returns the remaining time of the hourglass in seconds.
+     * The value corresponds to the time left until the hourglass runs out.
+     *
+     * @return the remaining time in seconds
      */
     public int getRemainingTime() {
         return this.hourglass.getRemainingTime();
     }
 
-    /** Function that returns the total remaining time
-     * @return int is the number of seconds left
+    /**
+     * Calculates the total remaining time for the game.
+     * The value is determined based on the hourglass's total period,
+     * the elapsed time, and the number of times the hourglass can be turned.
+     *
+     * @return the total remaining time in seconds
      */
     public int getTotalRemainingTime() {
         return 3 * this.hourglass.getPeriod() - this.hourglass.getTotalElapsed();
     }
 
-    /**
-     * Function that stops the hourglass
-     */
-    public void stopHourglass() {
-        this.hourglass.stopCountdown();
-    }
 
     /**
-     * Function that starts the hourglass. This function is meant to be called only once per match, at the beginning of the game.
+     * Initializes the countdown for the hourglass.
+     * This method delegates the initialization process to the hourglass instance,
+     * setting up the internal countdown mechanism.
      */
     public void initCountdown (){
         this.hourglass.initCountdown();
     }
 
+    /**
+     * Returns the number of times the hourglass has been turned.
+     *
+     * @return the count of turns performed on the hourglass
+     */
     public int getTurnedHourglass() {
         return this.hourglass.getTurned();
+    }
+
+    /**
+     * Retrieves the timestamp associated with the hourglass object's most recent countdown start.
+     *
+     * @return the timestamp of the most recent countdown start, represented as a long value
+     */
+    public long getHourglassTimestamp() {
+        return this.hourglass.getTimestamp();
     }
 }

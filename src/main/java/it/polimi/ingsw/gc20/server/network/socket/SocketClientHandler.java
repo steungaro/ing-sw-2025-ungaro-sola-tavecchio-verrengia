@@ -1,9 +1,10 @@
 package it.polimi.ingsw.gc20.server.network.socket;
 
+import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
 import it.polimi.ingsw.gc20.server.network.common.QueueHandler;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,29 +15,23 @@ import java.util.logging.Logger;
 public class SocketClientHandler implements ClientHandler {
     private static final Logger LOGGER = Logger.getLogger(SocketClientHandler.class.getName());
     private final Socket clientSocket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
+    private final ObjectInputStream in;
+    private final ObjectOutputStream out;
     private final String username;
     private boolean connected = true;
 
-    public SocketClientHandler(String username, Socket clientSocket) {
+    public SocketClientHandler(String username, Socket clientSocket, ObjectInputStream in, ObjectOutputStream out) {
         this.clientSocket = clientSocket;
         this.username = username;
-        try {
-            // Creating input and output streams (output first to avoid deadlock)
-            out = new ObjectOutputStream(clientSocket.getOutputStream());
-            in = new ObjectInputStream(clientSocket.getInputStream());
-        } catch (IOException e) {
-            LOGGER.severe("Error while initializing streams: " + e.getMessage());
-            disconnect();
-        }
+        this.in = in;
+        this.out = out;
+        LOGGER.info("ClientHandler created for user: " + username);
     }
 
     /**
      * Function to handle incoming requests from the client.
      * This method runs in a separate thread looping to handle incoming messages.
      */
-    @Override
     public void handleRequests() {
         try {
             // Loop to handle incoming messages
@@ -45,7 +40,7 @@ public class SocketClientHandler implements ClientHandler {
                 processMessage(message);
             }
         } catch (IOException | ClassNotFoundException e) {
-            LOGGER.warning("Error while handling request: " + e.getMessage());
+            LOGGER.info("Error while handling request, user disconnected: " + e.getMessage());
             disconnect();
         }
     }
@@ -63,7 +58,7 @@ public class SocketClientHandler implements ClientHandler {
      * @return True if the client is connected, false otherwise.
      */
     @Override
-    public Boolean isConnected() {
+    public boolean isConnected() {
         return connected;
     }
 
@@ -95,7 +90,12 @@ public class SocketClientHandler implements ClientHandler {
         connected = false;
         try {
             if (in != null) in.close();
-            MatchController.getInstance().getGameControllerForPlayer(username).disconnectPlayer(username);
+            GameController gameController = MatchController.getInstance().getGameControllerForPlayer(username);
+            if (gameController != null) {
+                gameController.disconnectPlayer(username);
+            } else {
+                MatchController.getInstance().leaveLobby(username);
+            }
             if (out != null) out.close();
             if (clientSocket != null && !clientSocket.isClosed())
                 clientSocket.close();
