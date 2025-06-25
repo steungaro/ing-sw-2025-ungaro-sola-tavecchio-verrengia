@@ -249,7 +249,8 @@ public class MenuController implements GameModelListener {
     }
 
     private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
-        saveCurrentStateToStack();
+        if (viewStack == null)
+            saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
 
