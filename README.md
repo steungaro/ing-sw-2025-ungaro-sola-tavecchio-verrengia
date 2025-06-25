@@ -75,6 +75,6 @@ java -jar client-tui.jar
 ## Server
 
 You can connect remotely to our server to play Galaxy Trucker. As RMI support is limited by our Provider, only Socket connection type is available. 
-You can reach it at:
+Run the TUI or GUI JAR file and provide the following address when prompt:
 - IP: 129.152.16.203
 - Port: 25565
