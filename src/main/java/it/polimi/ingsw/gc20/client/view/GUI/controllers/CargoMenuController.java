@@ -194,7 +194,7 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
             }
         } else if (contextData.size()==4){
             if(contextData.containsKey("message") && contextData.containsKey("cargoToLose") && contextData.containsKey("cargoToGain") && contextData.containsKey("losing")) {
-                losing = (boolean) contextData.get("losing") ? 2 : 1;
+                losing = (boolean) contextData.get("losing") ? 1 : 2;
                 String message = (String) contextData.get("message");
                 cargoToGain = (List<CargoColor>) contextData.get("cargoToGain");
                 cargoToLose = (int) contextData.get("cargoToLose");
