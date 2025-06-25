@@ -1,5 +1,4 @@
 package it.polimi.ingsw.gc20.client.view.TUI;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 
 import java.rmi.RemoteException;
 
