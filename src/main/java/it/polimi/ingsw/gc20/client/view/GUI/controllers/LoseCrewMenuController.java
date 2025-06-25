@@ -72,9 +72,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     }
 
     private void selectCabin(int row, int col) {
-        int cabinRow = row - 5;
-        int cabinCol = col - (ship.isLearner ? 5 : 4);
-        cabins.add(new Pair<>(cabinRow, cabinCol));
+        cabins.add(new Pair<>(row, col));
         if (shipController != null) {
             shipController.highlightSelectedCabins(cabins);
         }

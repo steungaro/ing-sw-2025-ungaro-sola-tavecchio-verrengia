@@ -71,7 +71,6 @@ public class GUIView extends ClientGameModel {
     private Stage peekDecksStage;
     private PeekDecksController peekDecksController;
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
-    private final ObjectProperty<ViewBoard> boardProperty = new SimpleObjectProperty<>();
     private static Stage primaryStage;
 
     public GUIView() throws RemoteException {
@@ -81,13 +80,6 @@ public class GUIView extends ClientGameModel {
                 Platform.runLater(() -> {
                     handleGuiStateChange(oldValue, newValue);
                 });
-            }
-        });
-
-
-        boardProperty.addListener((observable, oldBoard, newBoard) -> {
-            if (newBoard != null) {
-                notifyCurrentBoardController(newBoard);
             }
         });
     }
@@ -206,21 +198,6 @@ public class GUIView extends ClientGameModel {
         }
     }
 
-    private void notifyCurrentBoardController(ViewBoard newBoard) {
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                try {
-                    ((BoardController) controller).updateBoardDisplay(newBoard);
-                } catch (ClassCastException e) {
-                    //  displayErrorMessage("Error: Current controller is not a BoardController." + e.getMessage());
-                } catch (NullPointerException e) {
-                    displayErrorMessage("Error: Current scene or root is null." + e.getMessage());
-                }
-            }
-        });
-    }
-
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
@@ -262,12 +239,6 @@ public class GUIView extends ClientGameModel {
                 displayErrorMessage("Error processing server message: " + e.getMessage());
             }
         });
-    }
-
-    @Override
-    public void setBoard(ViewBoard board) {
-        this.board = board;
-        this.boardProperty.set(board);
     }
 
     @Override

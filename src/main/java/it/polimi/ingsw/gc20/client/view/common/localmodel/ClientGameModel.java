@@ -174,6 +174,10 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
 
     public void setBoard(ViewBoard board) {
         this.board = board;
+        for (GameModelListener listener : listeners) {
+            listener.onBoardUpdated(this.board);
+        }
+
     }
 
     public Map<String, ViewShip> getShips() {

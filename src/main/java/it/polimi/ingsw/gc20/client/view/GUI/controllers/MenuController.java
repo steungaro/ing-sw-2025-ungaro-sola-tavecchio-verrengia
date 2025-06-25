@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -460,6 +461,8 @@ public class MenuController implements GameModelListener {
             }
             // TODO -> understand what type of content is expected
 
+            // Save container if is boa
+
             container.getChildren().add(content);
             configureController(loader.getController(), contentType, player);
 
@@ -696,7 +699,7 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-        // TODO: decide what to do
+        // ignore
     }
 
     @Override
@@ -707,6 +710,11 @@ public class MenuController implements GameModelListener {
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         printCurrentCard(currentCard);
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // ignore
     }
 
     private void printCurrentCard(ViewAdventureCard currentCard) {

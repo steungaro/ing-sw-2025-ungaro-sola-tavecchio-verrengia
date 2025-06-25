@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
@@ -509,6 +510,11 @@ public abstract class ShipController implements GameModelListener {
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         // ignore
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }
 

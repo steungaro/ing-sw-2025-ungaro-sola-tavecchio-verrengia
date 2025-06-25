@@ -1,8 +1,13 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
@@ -12,7 +17,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
-public abstract class BoardController {
+public abstract class BoardController implements GameModelListener {
 
     protected List<Circle> circles = new ArrayList<>();
     protected List<Label> circleLabels = new ArrayList<>();
@@ -124,5 +129,35 @@ public abstract class BoardController {
                 remainingTimeLabel.setVisible(false);
             }
         }
+    }
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        // ignore
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        // ignore
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        // ignore
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        // ignore
+    }
+
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        updateBoardDisplay(board);
     }
 }
