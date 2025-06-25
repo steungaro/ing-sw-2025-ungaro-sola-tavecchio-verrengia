@@ -52,23 +52,12 @@ public abstract class ShipController implements GameModelListener {
     @FXML protected GridPane componentsGrid;
 
     protected final Map<String, Integer> gridComponents = new HashMap<>();
+    protected boolean shouldLoadComponentStats = true;
 
-    public void updateStatisticBoard(ViewPlayer player) {
-        if (player != null) {
-            if(playerColorLabel!=null) {
-                playerColorLabel.setText("Color: " + (player.playerColor != null ? player.playerColor.name() : "N/A"));
-            }
-            if(usernameLabel!=null) {
-                usernameLabel.setText("Username: " + player.username);
-            }
-            if(creditsLabel!=null) {
-                creditsLabel.setText("Credits: " + player.credits);
-            }
-            if(inGameLabel!=null) {
-                inGameLabel.setText("In Game: " + (player.inGame ? "Yes" : "No"));
-            }
-        }
+    public void setShouldLoadComponentStats(boolean shouldLoad) {
+        this.shouldLoadComponentStats = shouldLoad;
     }
+
 
     @FXML
     protected void initialize() {
@@ -110,16 +99,37 @@ public abstract class ShipController implements GameModelListener {
 
         GridPane parent = (GridPane) targetCell.getParent();
         parent.getChildren().remove(targetCell);
-        StackPane layeredPane = new StackPane(); // This pane will be the cell in the grid
+        StackPane layeredPane = new StackPane();
 
         String imagePath = "/fxml/tiles/" + componentId + ".jpg";
-        try {
-            Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
-            targetCell.setImage(componentImage);
-            if (comp.rotComp >= 0 && comp.rotComp <= 3) {
-                targetCell.setRotate(comp.rotComp * 90);
-            }
 
+        Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        targetCell.setImage(componentImage);
+        if (comp.rotComp >= 0 && comp.rotComp <= 3) {
+            targetCell.setRotate(comp.rotComp * 90);
+        }
+
+        if(!loadCompInfo(targetCell, layeredPane, row, col, componentId, comp, parent, cellId))
+            return false;
+
+        gridComponents.put(cellId, componentId);
+        return true;
+    }
+
+    private boolean loadCompInfo(ImageView targetCell, StackPane layeredPane, int row, int col, int componentId, ViewComponent comp, GridPane parent, String cellId) {
+        if (!shouldLoadComponentStats) {
+            layeredPane.getChildren().add(targetCell);
+            layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            GridPane.setFillWidth(layeredPane, true);
+            GridPane.setFillHeight(layeredPane, true);
+            GridPane.setHgrow(layeredPane, Priority.ALWAYS);
+            GridPane.setVgrow(layeredPane, Priority.ALWAYS);
+            parent.add(layeredPane, col, row);
+            return true;
+        }
+
+
+        try {
             layeredPane.getChildren().add(targetCell);
             if (comp.isCabin()) {
                 setComponentProp(layeredPane, (ViewCabin) comp);
@@ -129,7 +139,6 @@ public abstract class ShipController implements GameModelListener {
                 setComponentProp(layeredPane, (ViewCargoHold) comp);
             }
 
-            // Make sure the layered pane fills the cell
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
             GridPane.setFillHeight(layeredPane, true);
@@ -137,8 +146,6 @@ public abstract class ShipController implements GameModelListener {
             GridPane.setVgrow(layeredPane, Priority.ALWAYS);
 
             parent.add(layeredPane, col, row);
-
-            gridComponents.put(cellId, componentId);
             return true;
         } catch (Exception e) {
             System.err.println("Error uploading the image: " + e.getMessage());
@@ -417,74 +424,6 @@ public abstract class ShipController implements GameModelListener {
                 }
             }
         }
-    }
-
-    public void enableMultipleCellClickHandler(MultipleCellClickHandler handler) {
-        Set<int[]> selectedCells = new HashSet<>();
-        Map<Rectangle, int[]> rectToCoordinates = new HashMap<>();
-
-        for (int row = 0; row < getRows(); row++) {
-            for (int col = 0; col < getCols(); col++) {
-                ImageView cell = getImageViewAt(row, col);
-                if (cell != null) {
-                    Rectangle clickArea = new Rectangle();
-                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                    clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
-                    clickArea.setStrokeWidth(2);
-                    clickArea.setOpacity(0.7);
-
-                    clickArea.widthProperty().bind(
-                            componentsGrid.widthProperty().divide(getCols()).subtract(getCols())
-                    );
-                    clickArea.heightProperty().bind(
-                            componentsGrid.heightProperty().divide(getRows()).subtract(getRows())
-                    );
-
-                    int[] coordinates = new int[]{row, col};
-                    rectToCoordinates.put(clickArea, coordinates);
-
-                    clickArea.setOnMouseClicked(_ -> {
-                        if (selectedCells.contains(coordinates)) {
-                            selectedCells.remove(coordinates);
-                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                        } else {
-                            selectedCells.add(coordinates);
-                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.2));
-                        }
-                    });
-
-                    clickArea.setOnMouseEntered(_ -> {
-                        if (!selectedCells.contains(coordinates)) {
-                            clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.1));
-                        }
-                        clickArea.setCursor(javafx.scene.Cursor.HAND);
-                    });
-
-                    clickArea.setOnMouseExited(_ -> {
-                        if (!selectedCells.contains(coordinates)) {
-                            clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                        }
-                        clickArea.setCursor(javafx.scene.Cursor.DEFAULT);
-                    });
-
-                    componentsGrid.add(clickArea, col, row);
-                    GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
-                    GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
-
-                    String cellId = getRows() + "_" + getCols();
-                    cellClickAreas.put(cellId, clickArea);
-                }
-            }
-        }
-
-        Runnable finalizeSelection = () -> {
-            List<int[]> selected = new ArrayList<>(selectedCells);
-            handler.onCellsClicked(selected);
-        };
-    }
-
-    public interface MultipleCellClickHandler {
-        void onCellsClicked(List<int[]> coordinates);
     }
 
     protected abstract int getRows();

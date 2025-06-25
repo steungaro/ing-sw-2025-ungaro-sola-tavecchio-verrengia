@@ -72,6 +72,7 @@ public class MenuController implements GameModelListener {
     private ViewPlayer[] players;
     private static MenuController currentInstance;
     private final Stack<Node> viewStack = new Stack<>();
+    private DisplayContext currentDisplayContext = DisplayContext.MAIN_VIEW;
 
     public enum ContentType {
         SHIP, BOARD
@@ -236,7 +237,6 @@ public class MenuController implements GameModelListener {
             }
         }
     }
-
 
     /**
      * Clear all views in the stack and return to the initial state
@@ -436,6 +436,7 @@ public class MenuController implements GameModelListener {
     private void loadFXMLInContainer(StackPane container, String fxmlPath, 
                                    DisplayContext context, ContentType contentType, 
                                    ViewPlayer player) {
+        this.currentDisplayContext = context;
         try {
             if (!fxmlPath.startsWith("/")) {
                 fxmlPath = "/" + fxmlPath + ".fxml";
@@ -609,6 +610,8 @@ public class MenuController implements GameModelListener {
             case SHIP -> {
                 try{
                     ShipController shipController = (ShipController) controller;
+                    shipController.setShouldLoadComponentStats(currentDisplayContext != DisplayContext.THUMBNAIL);
+
                     if(player != null) {
                         shipController.buildShipComponents(gameModel.getShip(player.username));
                     }
