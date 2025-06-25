@@ -499,7 +499,7 @@ public class GUIView extends ClientGameModel {
      * Shows beginner interface for learner players and advanced interface for experienced players.
      */
     @Override
-    public void AssemblingStateMenu() {
+    public void assemblingStateMenu() {
         ViewShip playerShip = null;
         if (ClientGameModel.getInstance() != null && ClientGameModel.getInstance().getUsername() != null) {
             playerShip = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
