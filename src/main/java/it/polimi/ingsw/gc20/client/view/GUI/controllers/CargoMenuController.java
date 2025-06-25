@@ -8,6 +8,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 import org.javatuples.Pair;
 
 import java.io.IOException;
@@ -20,6 +23,7 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
+    @FXML private Pane toLoadPane;
     private String username;
     private ViewShip ship;
     private ShipController shipController;
@@ -35,7 +39,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
 
-
         loadShipView();
     }
 
@@ -43,17 +46,65 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         messageLabel.setText(message);
 
         if(losing==1){
+            toLoadPane.setVisible(false);
             for (int i = 0; i < cargoToLose; i++) {
                 shipController.enableCellClickHandler(this::handleUnloadCargo);
             }
         } else if(losing==2){
-            for (CargoColor cargoColor : cargoToGain) {
-                currentCargo = cargoColor;
-                shipController.enableCellClickHandler(this::handleLoadCargo);
-            }
+            createCargoBoxes();
         } else {
             showError("Invalid operation, please try again.");
         }
+    }
+
+    private void createCargoBoxes() {
+        toLoadPane.getChildren().clear();
+        
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(10);
+        flowPane.setVgap(10);
+        flowPane.prefWidthProperty().bind(toLoadPane.widthProperty());
+        flowPane.prefHeightProperty().bind(toLoadPane.heightProperty());
+        
+        for (CargoColor cargo : cargoToGain) {
+            Rectangle box = new Rectangle(50, 50);
+            box.setFill(getColorFromCargoColor(cargo));
+            box.setStroke(Color.WHITE);
+            box.setStrokeWidth(2);
+            
+            box.setOnMouseEntered(e -> box.setStroke(Color.YELLOW));
+            box.setOnMouseExited(e -> box.setStroke(Color.WHITE));
+            
+            box.setOnMouseClicked(e -> {
+                currentCargo = cargo;
+                shipController.enableCellClickHandler(this::handleLoadCargo);
+                
+                toLoadPane.getChildren().forEach(node -> {
+                    if (node instanceof FlowPane) {
+                        ((FlowPane) node).getChildren().forEach(child -> {
+                            if (child instanceof Rectangle) {
+                                ((Rectangle) child).setStroke(Color.WHITE);
+                            }
+                        });
+                    }
+                });
+                box.setStroke(Color.LIME);
+            });
+            
+            flowPane.getChildren().add(box);
+        }
+        
+        toLoadPane.getChildren().add(flowPane);
+    }
+    
+    private Color getColorFromCargoColor(CargoColor cargoColor) {
+        return switch (cargoColor) {
+            case RED -> Color.RED;
+            case YELLOW -> Color.YELLOW;
+            case BLUE -> Color.BLUE;
+            case GREEN -> Color.GREEN;
+            default -> Color.GRAY;
+        };
     }
 
     private void loadShipView() {
