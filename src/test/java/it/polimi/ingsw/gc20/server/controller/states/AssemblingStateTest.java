@@ -56,7 +56,6 @@ public class AssemblingStateTest {
     void constructorTest() throws NoSuchFieldException, IllegalAccessException {
         state = new AssemblingState(controller.getModel(), controller);
 
-        // Accesso ai campi privati con reflection
         Field assembledField = AssemblingState.class.getDeclaredField("assembled");
         assembledField.setAccessible(true);
         Map<Player, Boolean> assembled = (Map<Player, Boolean>) assembledField.get(state);
