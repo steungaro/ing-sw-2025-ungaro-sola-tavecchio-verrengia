@@ -319,27 +319,29 @@ public abstract class ShipController implements GameModelListener {
         Map<org.javatuples.Pair<Integer, Integer>, Long> counts = selectedCabins.stream()
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
 
-        // Reset all highlights
         for (Rectangle rect : cellClickAreas.values()) {
             rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
         }
 
-        // Apply new highlights
         for (Map.Entry<org.javatuples.Pair<Integer, Integer>, Long> entry : counts.entrySet()) {
             org.javatuples.Pair<Integer, Integer> cabinCoords = entry.getKey();
             Long count = entry.getValue();
 
-            int gridRow = cabinCoords.getValue0() + 5;
-            int gridCol = cabinCoords.getValue1() + (ship.isLearner ? 5 : 4);
+            int gridRow = cabinCoords.getValue0();
+            int gridCol = cabinCoords.getValue1();
 
             String cellId = gridRow + "_" + gridCol;
             Rectangle clickArea = cellClickAreas.get(cellId);
 
             if (clickArea != null) {
                 if (count == 1) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.3)); // Green for 1 selection
-                } else if (count >= 2) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.4)); // Orange for 2+ selections
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.3));
+                } else if (count == 2) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0, 0, 0.4));
+                } else if (count >= 3) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(0, 0, 1, 0.4));
+                } else {
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
         }

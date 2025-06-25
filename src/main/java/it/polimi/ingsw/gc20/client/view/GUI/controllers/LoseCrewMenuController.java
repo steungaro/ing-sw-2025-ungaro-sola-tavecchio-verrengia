@@ -38,6 +38,9 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         crewToLoseLabel.setText("You need to lose " + crewToLose + " crew members!");
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
+        for(int i = 0; i < crewToLose; i++) {
+            shipController.enableCellClickHandler(this::selectCabin);
+        }
     }
 
     private void loadShipView() {
@@ -59,13 +62,6 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             shipController = (ShipController) loader.getController();
-
-            if (shipController != null) {
-                shipController.buildShipComponents(ship);
-                shipController.enableCellClickHandler(this::selectCabin);
-            } else {
-                showError("Error, ship controller not found.");
-            }
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
@@ -81,7 +77,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     @FXML
     private void handleUndo() {
         if (!cabins.isEmpty()) {
-            cabins.removeLast();
+            cabins.clear();
             if (shipController != null) {
                 shipController.highlightSelectedCabins(cabins);
             }
@@ -91,9 +87,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     @FXML
     private void handleContinue() {
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().loseCrew(username, cabins);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
