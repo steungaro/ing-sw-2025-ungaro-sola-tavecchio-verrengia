@@ -1,6 +1,6 @@
 # Galaxy Trucker
 
-This project is a software implementation of the board game "Galaxy Trucker," developed for the Software Engineering Final Project course (Academic Year 2024-2025). It includes a client-server architecture, adhering to the game's rules and specified technical requirements.
+This project is a software implementation of the board game "Galaxy Trucker", developed for the Software Engineering Final Project course (Academic Year 2024-2025). It includes a client-server architecture, adhering to the game's rules and specified technical requirements.
 
   
 
