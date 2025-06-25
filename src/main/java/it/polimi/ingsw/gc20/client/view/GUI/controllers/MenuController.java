@@ -62,9 +62,7 @@ public class MenuController implements GameModelListener {
     @FXML private Label player3Name;
     @FXML private Label player4Name;
     @FXML public Button backButton;
-    @FXML public Button button2;
-    @FXML public Button button3;
-    @FXML public Button button4;
+    @FXML public Button quitButton;
     @FXML private Label serverMessages;
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
@@ -116,10 +114,6 @@ public class MenuController implements GameModelListener {
         }
 
         updateBackButtonVisibility();
-
-        button2.setVisible(false);
-        button3.setVisible(false);
-        button4.setVisible(false);
 
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
@@ -767,5 +761,28 @@ public class MenuController implements GameModelListener {
             return null;
         }
 
+    }
+
+    @FXML
+    public void quit(){
+        if (gameModel.getClient() != null) {
+            try {
+                ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Platform.exit();
+    }
+
+    @FXML
+    public void endTurn(){
+        if (gameModel.getClient() != null) {
+            try {
+                gameModel.getClient().endMove(gameModel.getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

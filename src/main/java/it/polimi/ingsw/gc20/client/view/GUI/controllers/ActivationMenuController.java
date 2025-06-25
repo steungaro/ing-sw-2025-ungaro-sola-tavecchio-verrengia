@@ -54,7 +54,15 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateShield(username, primary.getFirst(), batteries.getFirst());
+                Pair<Integer, Integer> shieldCoordinates = null;
+                Pair<Integer, Integer> batteryCoordinates = null;
+                if(primary!= null && !primary.isEmpty()) {
+                    shieldCoordinates = primary.getFirst();
+                }
+                if(batteries != null && !batteries.isEmpty()) {
+                    batteryCoordinates = batteries.getFirst();
+                }
+                ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
             }
             @Override
             public void skip(String username) throws RemoteException {
