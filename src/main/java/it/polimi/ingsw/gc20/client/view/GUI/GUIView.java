@@ -37,7 +37,7 @@ public class GUIView extends ClientGameModel {
         BUILDING_PHASE("buildingPhase"),
         BUILDING_PHASE0("buildingPhase0"),
         BUILDING_PHASE2("buildingPhase2"),
-        BRANCH_MENU("branchMenu"),
+        BRANCH_MENU("validationMenu"),
         VALIDATION_MENU("validationMenu"),
         POPULATE_SHIP_MENU("populateShipMenu"),
         ROLL_DICE_MENU("rollDiceMenu"),
@@ -407,7 +407,10 @@ public class GUIView extends ClientGameModel {
 
     @Override
     public void branchMenu() {
-        showMenuContent(GuiState.BRANCH_MENU);
+        Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
+        contextData.put("activationType", ActivationMenuController.ActivationType.BRANCH);
+        showMenuContent(GuiState.BRANCH_MENU, contextData, false, false);
     }
 
 

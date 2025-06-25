@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -19,6 +20,8 @@ import java.util.*;
 import static java.lang.Math.min;
 
 public class ActivationMenuController implements MenuController.ContextDataReceiver {
+
+    @FXML public Button skipButton;
 
     public enum ActivationType {
         CANNONS {
@@ -74,7 +77,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                for (Pair<Integer, Integer> batteryCoordinates : batteries) {
+                for (Pair<Integer, Integer> batteryCoordinates : primary) {
                     ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
                 }
             }
@@ -82,6 +85,21 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             public void skip(String username) throws RemoteException {
                 ClientGameModel.getInstance().getClient().endMove(username);
             }
+        },
+        BRANCH{
+            @Override
+            public boolean matches(ViewComponent component) {
+                return true;
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().chooseBranch(username, primary.getLast());
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().chooseBranch(username, null);
+            }
+
         };
 
         public abstract boolean matches(ViewComponent component);
@@ -117,6 +135,9 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         this.activationType = type;
         titleLabel.setText(type.toString() + " Activation");
         messageLabel.setText(message);
+
+        if(activationType == ActivationType.BRANCH)
+            skipButton.setVisible(false);
     }
 
     private void loadShipView() {
@@ -214,11 +235,10 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         for (Pair<Integer, Integer> coords : selectedComponents) {
             ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
             if (comp == null) continue;
-
-            if (comp.isBattery()) {
-                batteries.add(coords);
-            } else if (componentMatcher.test(comp)) {
+            if (componentMatcher.test(comp)) {
                 primary.add(coords);
+            } else if (comp.isBattery()) {
+                batteries.add(coords);
             }
         }
     }

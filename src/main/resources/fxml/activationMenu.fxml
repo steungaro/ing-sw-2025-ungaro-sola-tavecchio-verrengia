@@ -54,7 +54,7 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button onAction="#handleSkip" prefHeight="50" prefWidth="200" text="Skip">
+        <Button fx:id="skipButton" onAction="#handleSkip" prefHeight="50" prefWidth="200" text="Skip">
             <font>
                 <Font size="18.0" />
             </font>
