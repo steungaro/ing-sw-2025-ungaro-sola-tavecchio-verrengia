@@ -219,7 +219,6 @@ public class MenuController implements GameModelListener {
             try{
                 gameModel.getClient().acceptCard(
                         ClientGameModel.getInstance().getUsername());
-                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -232,7 +231,6 @@ public class MenuController implements GameModelListener {
             try {
                 ClientGameModel.getInstance().getClient().endMove(
                         ClientGameModel.getInstance().getUsername());
-                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -656,35 +654,6 @@ public class MenuController implements GameModelListener {
             case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
                          "/fxml/board0.fxml" : "/fxml/board2.fxml";
         };
-    }
-
-    /**
-     * Static method to load ship in other controllers
-     */
-    public static void loadShipInContainer(StackPane container, ViewPlayer player, 
-                                         DisplayContext context) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(ContentType.SHIP);
-        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.SHIP, player);
-    }
-
-    /**
-     * Static method to load board in other controllers
-     */
-    public static void loadBoardInContainer(StackPane container, DisplayContext context) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(ContentType.BOARD);
-        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.BOARD, null);
-    }
-
-    /**
-     * Generic static method for any content
-     */
-    public static void loadContentInContainer(StackPane container, ContentType contentType, 
-                                            DisplayContext context, ViewPlayer player) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(contentType);
-        controller.loadFXMLInContainer(container, fxmlPath, context, contentType, player);
     }
 
     @Override
