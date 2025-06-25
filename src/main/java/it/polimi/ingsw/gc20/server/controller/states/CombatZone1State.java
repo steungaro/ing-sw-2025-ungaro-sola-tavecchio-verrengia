@@ -329,6 +329,10 @@ public class  CombatZone1State extends CargoState {
             setStandbyMessage(getCurrentPlayer() + " is removing cargo.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
+
+        if (lostCargo == 0) {
+            endMove(player);
+        }
     }
 
     @Override
@@ -371,6 +375,10 @@ public class  CombatZone1State extends CargoState {
             lostCargo = 0;
         }
         getController().getMessageManager().notifyPhaseChange(phase, this);
+
+        if (lostCargo == 0) {
+            endMove(player);
+        }
     }
 
     @Override

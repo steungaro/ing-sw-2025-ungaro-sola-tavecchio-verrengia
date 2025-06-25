@@ -83,6 +83,10 @@ public class SmugglersState extends CargoState {
         if (player.getShip().getTotalEnergy() == 0) {
             currentLostCargo = 0;
         }
+
+        if (currentLostCargo == 0) {
+            endMove(player);
+        }
     }
 
     @Override
@@ -129,6 +133,11 @@ public class SmugglersState extends CargoState {
             setStandbyMessage("Waiting for " + getCurrentPlayer() + " to choose a battery to lose energy from.");
         }
         getController().getMessageManager().notifyPhaseChange(phase, this);
+
+        if (currentLostCargo == 0 && phase == StatePhase.REMOVE_CARGO) {
+            //if the player has no more cargo to lose, end the move
+            endMove(player);
+        }
     }
 
     @Override
