@@ -3,11 +3,12 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">    <StackPane fx:id="shipContainer">
-        <ImageView fx:id="bgImage" preserveRatio="true">
+<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" maxWidth="600" maxHeight="500" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship0Controller">
+    <StackPane fx:id="shipContainer">
+        <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="400" fitHeight="400">
             <Image url="@cardboard/cardboard-1.jpg"/>
         </ImageView>
-        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="1"
+        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="1" maxHeight="500.0" maxWidth="600.0" prefHeight="400.0" prefWidth="500.0"
                   style="-fx-border-color: white; -fx-border-width: 1px; -fx-background-color: rgba(255,255,255,0.1);"
                   vgap="1">
             <columnConstraints>
@@ -25,7 +26,6 @@
                 <RowConstraints percentHeight="20.0" vgrow="ALWAYS"/>
                 <RowConstraints percentHeight="20.0" vgrow="ALWAYS"/>
             </rowConstraints>
-
 
             <!-- Row 0 - All cells perfectly responsive -->
             <ImageView fx:id="imageCell_0_0" GridPane.columnIndex="0" GridPane.fillHeight="true"

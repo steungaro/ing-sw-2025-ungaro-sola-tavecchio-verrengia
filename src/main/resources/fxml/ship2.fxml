@@ -7,12 +7,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" maxWidth="400" maxHeight="400" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
+<StackPane fx:id="rootPane" prefWidth="300" prefHeight="300" maxWidth="700" maxHeight="500" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Ship2Controller">
     <StackPane fx:id="shipContainer">
-        <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="300" fitHeight="300">
+        <ImageView fx:id="bgImage" preserveRatio="true" fitWidth="500" fitHeight="400">
             <Image url="@cardboard/cardboard-1b.jpg" />
         </ImageView>
-        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="300.0" maxWidth="300.0" prefHeight="300.0" prefWidth="300.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2">
+        <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" maxHeight="500.0" maxWidth="700.0" prefHeight="400.0" prefWidth="600.0" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2">
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
                 <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
@@ -37,8 +37,8 @@
             <ImageView fx:id="imageCell_0_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_0_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_0_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_0_5" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_0_6" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_0_5" GridPane.columnIndex="5" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_0_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
 
             <!-- Row 1 -->
             <ImageView fx:id="imageCell_1_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
@@ -46,8 +46,8 @@
             <ImageView fx:id="imageCell_1_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_1_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_1_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_1_5" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_1_6" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_1_5" GridPane.columnIndex="5" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_1_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
 
             <!-- Row 2 -->
             <ImageView fx:id="imageCell_2_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
@@ -55,8 +55,8 @@
             <ImageView fx:id="imageCell_2_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_2_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_2_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_2_5" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_2_6" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_2_5" GridPane.columnIndex="5" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_2_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
 
             <!-- Row 3 -->
             <ImageView fx:id="imageCell_3_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
@@ -64,8 +64,8 @@
             <ImageView fx:id="imageCell_3_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_3_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_3_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_3_5" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_3_6" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_3_5" GridPane.columnIndex="5" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_3_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
 
             <!-- Row 4 -->
             <ImageView fx:id="imageCell_4_0" GridPane.columnIndex="0" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
@@ -73,8 +73,8 @@
             <ImageView fx:id="imageCell_4_2" GridPane.columnIndex="2" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_4_3" GridPane.columnIndex="3" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
             <ImageView fx:id="imageCell_4_4" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_4_5" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
-            <ImageView fx:id="imageCell_4_6" GridPane.columnIndex="4" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_4_5" GridPane.columnIndex="5" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
+            <ImageView fx:id="imageCell_4_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
         </GridPane>
     </StackPane>
 </StackPane>

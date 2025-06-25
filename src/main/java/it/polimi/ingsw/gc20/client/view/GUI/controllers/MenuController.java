@@ -373,7 +373,8 @@ public class MenuController implements GameModelListener {
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            guiView.displayErrorMessage("MenuController not initialized");
+            // guiView.displayErrorMessage("MenuController not initialized");
+            // ignore this error, it can happen if the controller is not ready yet
             return;
         }
 
