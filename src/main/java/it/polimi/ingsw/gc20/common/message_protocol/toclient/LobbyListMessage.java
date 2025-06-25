@@ -2,12 +2,15 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This message is sent to the client to provide a list of available lobbies.
+ */
 public record LobbyListMessage(
     List<LobbyInfo> lobbies
 ) implements Message {

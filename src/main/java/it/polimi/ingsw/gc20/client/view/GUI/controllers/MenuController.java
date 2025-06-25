@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -62,9 +63,7 @@ public class MenuController implements GameModelListener {
     @FXML private Label player3Name;
     @FXML private Label player4Name;
     @FXML public Button backButton;
-    @FXML public Button button2;
-    @FXML public Button button3;
-    @FXML public Button button4;
+    @FXML public Button quitButton;
     @FXML private Label serverMessages;
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
@@ -116,10 +115,6 @@ public class MenuController implements GameModelListener {
         }
 
         updateBackButtonVisibility();
-
-        button2.setVisible(false);
-        button3.setVisible(false);
-        button4.setVisible(false);
 
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
@@ -224,7 +219,7 @@ public class MenuController implements GameModelListener {
             try{
                 gameModel.getClient().acceptCard(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
+                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -237,7 +232,7 @@ public class MenuController implements GameModelListener {
             try {
                 ClientGameModel.getInstance().getClient().endMove(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
+                setAcceptableButtonVisibility(false);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -370,10 +365,11 @@ public class MenuController implements GameModelListener {
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView) {
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            guiView.displayErrorMessage("MenuController not initialized");
+            // guiView.displayErrorMessage("MenuController not initialized");
+            // ignore this error, it can happen if the controller is not ready yet
             return;
         }
 
@@ -381,6 +377,8 @@ public class MenuController implements GameModelListener {
             instance.saveCurrentStateToStack();
             instance.showTemporaryView(contentFileName);
         }
+
+        instance.setAcceptableButtonVisibility(acceptable);
 
         try {
             if (contentFileName == null || contentFileName.trim().isEmpty()) {
@@ -462,6 +460,8 @@ public class MenuController implements GameModelListener {
                 content = wrapper;
             }
             // TODO -> understand what type of content is expected
+
+            // Save container if is boa
 
             container.getChildren().add(content);
             configureController(loader.getController(), contentType, player);
@@ -699,7 +699,7 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-        // TODO: decide what to do
+        // ignore
     }
 
     @Override
@@ -710,6 +710,11 @@ public class MenuController implements GameModelListener {
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         printCurrentCard(currentCard);
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // ignore
     }
 
     private void printCurrentCard(ViewAdventureCard currentCard) {
@@ -764,5 +769,28 @@ public class MenuController implements GameModelListener {
             return null;
         }
 
+    }
+
+    @FXML
+    public void quit(){
+        if (gameModel.getClient() != null) {
+            try {
+                ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Platform.exit();
+    }
+
+    @FXML
+    public void endTurn(){
+        if (gameModel.getClient() != null) {
+            try {
+                gameModel.getClient().endMove(gameModel.getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

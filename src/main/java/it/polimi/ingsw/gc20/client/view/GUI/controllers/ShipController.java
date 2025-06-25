@@ -4,9 +4,11 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -74,6 +76,17 @@ public abstract class ShipController implements GameModelListener {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         ClientGameModel.getInstance().addListener(this);
         buildShipComponents(ship);
+
+        if (rootPane != null) {
+            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+                Platform.runLater(() -> rootPane.requestLayout());
+            });
+
+            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> {
+                Platform.runLater(() -> rootPane.requestLayout());
+            });
+        }
+
     }
 
     public void reloadShip() {
@@ -306,27 +319,29 @@ public abstract class ShipController implements GameModelListener {
         Map<org.javatuples.Pair<Integer, Integer>, Long> counts = selectedCabins.stream()
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
 
-        // Reset all highlights
         for (Rectangle rect : cellClickAreas.values()) {
             rect.setFill(javafx.scene.paint.Color.TRANSPARENT);
         }
 
-        // Apply new highlights
         for (Map.Entry<org.javatuples.Pair<Integer, Integer>, Long> entry : counts.entrySet()) {
             org.javatuples.Pair<Integer, Integer> cabinCoords = entry.getKey();
             Long count = entry.getValue();
 
-            int gridRow = cabinCoords.getValue0() + 5;
-            int gridCol = cabinCoords.getValue1() + (ship.isLearner ? 5 : 4);
+            int gridRow = cabinCoords.getValue0();
+            int gridCol = cabinCoords.getValue1();
 
             String cellId = gridRow + "_" + gridCol;
             Rectangle clickArea = cellClickAreas.get(cellId);
 
             if (clickArea != null) {
                 if (count == 1) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(0, 1, 0, 0.3)); // Green for 1 selection
-                } else if (count >= 2) {
-                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.4)); // Orange for 2+ selections
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0.5, 0, 0.3));
+                } else if (count == 2) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(1, 0, 0, 0.4));
+                } else if (count >= 3) {
+                    clickArea.setFill(javafx.scene.paint.Color.color(0, 0, 1, 0.4));
+                } else {
+                    clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 }
             }
         }
@@ -497,6 +512,11 @@ public abstract class ShipController implements GameModelListener {
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         // ignore
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }
 

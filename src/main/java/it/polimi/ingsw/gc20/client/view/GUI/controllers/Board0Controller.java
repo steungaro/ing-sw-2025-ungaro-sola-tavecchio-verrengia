@@ -1,5 +1,9 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -107,9 +111,15 @@ public class Board0Controller extends BoardController {
 
         double originalContentWidth = 600.0;
         double originalContentHeight = 330.0;
-        double scaleX = newPaneWidth / originalContentWidth;
-        double scaleY = newPaneHeight / originalContentHeight;
+        
+        double maxAllowedWidth = Math.min(newPaneWidth, 700.0);
+        double maxAllowedHeight = Math.min(newPaneHeight, 400.0);
+        
+        double scaleX = maxAllowedWidth / originalContentWidth;
+        double scaleY = maxAllowedHeight / originalContentHeight;
         double scaleFactor = Math.min(scaleX, scaleY);
+        
+        scaleFactor = Math.min(scaleFactor, 1.2);
 
         if (Double.isInfinite(scaleFactor) || Double.isNaN(scaleFactor) || scaleFactor <= 0) {
             scaleFactor = 1.0;
@@ -125,7 +135,7 @@ public class Board0Controller extends BoardController {
         double offsetX = (newPaneWidth - scaledContentActualWidth) / 2;
         double offsetY = (newPaneHeight - scaledContentActualHeight) / 2;
 
-        scalableContent.setLayoutX(offsetX);
-        scalableContent.setLayoutY(offsetY);
+        scalableContent.setLayoutX(Math.max(0, offsetX));
+        scalableContent.setLayoutY(Math.max(0, offsetY));
     }
 }

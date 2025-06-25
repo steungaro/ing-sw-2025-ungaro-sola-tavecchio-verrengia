@@ -2,11 +2,16 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 import java.util.Arrays;
 
+/**
+ * This message is sent to the client to update the player's information.
+ * It contains the username of the player, the number of credits added,
+ * whether the player is in-game, their color, and their position on the board.
+ */
 public record PlayerUpdateMessage(
         String username, // The username of the receiving client (broadcast to all clients)
         int creditsAdded,

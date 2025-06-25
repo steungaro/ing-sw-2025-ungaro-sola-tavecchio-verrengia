@@ -3,15 +3,15 @@ package it.polimi.ingsw.gc20.common.message_protocol.toclient;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
-import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
-import it.polimi.ingsw.gc20.server.model.components.Component;
-import it.polimi.ingsw.gc20.server.model.ship.NormalShip;
-import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
 import java.util.List;
 
+/**
+ * This message is sent to the client to update the ship of a player.
+ * It contains the components of the ship, the action performed, and other relevant information.
+ */
 public record UpdateShipMessage(
         String username,
         ViewComponent[][] components,

@@ -33,17 +33,11 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
     @FXML
     private Label errorLabel;
 
-    @FXML
-    private Pane shipPane;
-
-    private ViewShip ship;
     private List<Planet> planets;
     private String username;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
-        ship = ClientGameModel.getInstance().getShip(username);
-        loadShipView();
         setupPlanetListView();
     }
 
@@ -108,30 +102,6 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
         return square;
     }
 
-
-    private void loadShipView() {
-        try {
-            if (ship == null) {
-                showError("Error, ship not found: " + username);
-                return;
-            }
-
-            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent shipView = loader.load();
-
-            shipPane.getChildren().clear();
-            shipPane.getChildren().add(shipView);
-
-            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
-            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
-
-        } catch (IOException e) {
-            showError("Error uploading ship: " + e.getMessage());
-        }
-    }
-
     @FXML
     private void handleLandOnPlanet() {
         Planet selectedPlanet = planetsListView.getSelectionModel().getSelectedItem();
@@ -157,11 +127,6 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
         }
-    }
-
-    @FXML
-    private void handleViewOptions() {
-        // TODO
     }
 
     private void showError(String message) {

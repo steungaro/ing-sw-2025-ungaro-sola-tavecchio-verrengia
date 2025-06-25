@@ -8,8 +8,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-@SuppressWarnings("unused")
+/**
+ * Interface for the GameController, which handles the game logic and player interactions.
+ * This interface is used for remote method invocation (RMI) to allow clients to interact with the game server.
+ */
 public interface GameControllerInterface extends Remote {
 
     // Ship assembly

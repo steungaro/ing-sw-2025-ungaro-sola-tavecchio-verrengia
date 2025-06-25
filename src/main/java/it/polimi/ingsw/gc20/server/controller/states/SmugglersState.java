@@ -227,7 +227,7 @@ public class SmugglersState extends CargoState {
     }
 
     @Override
-    public void currentQuit(Player player) throws InvalidTurnException {
+    public void currentQuit(Player player) {
         //if the player is in the cannon phase, if he quit, we go to the next player
         if (phase == StatePhase.CANNONS_PHASE || phase == StatePhase.REMOVE_CARGO || phase == StatePhase.BATTERY_PHASE) {
             nextPlayer();

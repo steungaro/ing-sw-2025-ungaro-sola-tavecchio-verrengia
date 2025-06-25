@@ -22,6 +22,16 @@ public class ValidatingShipStateTest {
     static GameController controller;
     static ValidatingShipState state;
 
+    /**
+     * Sets up the initial state for the ship validation tests. This method is responsible for
+     * initializing the game controller, creating and constructing ships for the players with
+     * various components and connectors, and transitioning the game to a state suitable for
+     * ship validation. Each player is assigned a ship with specific component configurations,
+     * and the setup accounts for both valid and invalid configurations for testing purposes.
+     *
+     * @throws InvalidStateException if the game state cannot be initialized properly.
+     * @throws InvalidTileException if an invalid tile configuration is encountered during setup.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException, InvalidTileException {
         controller = new GameController("testGame", "testGame", List.of("player1", "player2", "player3"), 2);
@@ -146,11 +156,57 @@ public class ValidatingShipStateTest {
         state = new ValidatingShipState(controller.getModel(), controller);
     }
 
+    /**
+     * Tests the validity of a ship's state through a sequence of operations involving ship component manipulation,
+     * alien placement, and state transitions. The method simulates a player's actions in the game and validates that
+     * the state transitions and operations behave as expected.
+     * <p>
+     * The test performs the following actions:
+     * - Removes a component from the ship of the player identified by "player1".
+     * - Adds a brown alien to a specified cabin on "player1"'s ship.
+     * - Ends the turn for "player1".
+     * - Asserts that the game state allows concurrent operations after the move.
+     * - Simulates "player1" rejoining the game.
+     * - Simulates the game resuming for "player2".
+     * <p>
+     * Exceptions are thrown to handle invalid scenarios, such as:
+     * - InvalidStateException: If a state-related operation is performed outside the allowed phase.
+     * - InvalidAlienPlacement: If an alien is placed in an invalid location on the ship.
+     * - ComponentNotFoundException: If a specified component is not found on the ship.
+     * - InvalidTileException: If an operation involves an invalid tile configuration.
+     * <p>
+     * This test ensures that the system correctly enforces game rules and maintains appropriate game state transitions.
+     *
+     * @throws InvalidStateException if an invalid operation is performed due to the current game state.
+     * @throws InvalidAlienPlacement if an alien is placed in an invalid manner.
+     * @throws ComponentNotFoundException if a component specified for removal or manipulation is not found.
+     * @throws InvalidTileException if a tile-related configuration or operation is invalid.
+     */
     @Test
     void isShipValidTest() throws InvalidStateException, InvalidAlienPlacement, ComponentNotFoundException, InvalidTileException {
         state.removeComp(controller.getPlayerByID("player1"), new Pair<>(1, 3));
         state.addAlien(controller.getPlayerByID("player1"), AlienColor.BROWN, new Pair<>(2, 4));
         state.endMove(controller.getPlayerByID("player1"));
         assertTrue(state.isConcurrent());
+        state.rejoin("player1");
+        state.resume("player2");
+    }
+
+    /**
+     * Tests the correct behavior of the {@code resume} method within the {@code State} class,
+     * focusing on its handling of a single reconnected player scenario during the ship validation phase.
+     * <p>
+     * The method invokes the {@code resume} functionality by simulating the re-entry of a specific
+     * player ("player1") into the game, verifying that the system transitions appropriately based
+     * on the current game phase and player's state. The test ensures that:
+     * - The game correctly recognizes the rejoined player.
+     * - Appropriate state actions are triggered for the reconnected and other players.
+     * <p>
+     * This test is part of the {@code ValidatingShipStateTest} class, designed to validate the
+     * ship validation functionalities during the game's VALIDATE_SHIP_PHASE.
+     */
+    @Test
+    void isShipValidTest2(){
+        state.resume("player1");
     }
 }

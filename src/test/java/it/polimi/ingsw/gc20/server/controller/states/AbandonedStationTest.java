@@ -24,6 +24,14 @@ public class AbandonedStationTest {
     static AbandonedStationState state;
     static AdventureCard card;
 
+    /**
+     * Sets up the testing environment for the AbandonedStationTest class.
+     * Initializes necessary objects and the game state, including players, ships,
+     * ship components, and the active adventure card. This method is executed
+     * before all tests and ensures a consistent environment for testing.
+     *
+     * @throws InvalidStateException If the initial state is invalid during setup.
+     */
     @BeforeAll
     static void setUp() throws InvalidStateException {
         //initialize the AdventureCard
@@ -152,6 +160,26 @@ public class AbandonedStationTest {
         }
     }
 
+    /**
+     * Tests the behavior and state transitions of the AbandonedStation game state under specific
+     * scenarios involving player actions such as quitting, card acceptance, cargo operations,
+     * and moving.
+     * <p>
+     * This method performs the following validations and operations:
+     * <p>
+     * - Invokes the `currentQuit` method for one player, transitioning state as required.
+     * - Simulates another player accepting the active adventure card, ensuring proper state
+     *   progression and validation of prerequisites such as crew requirements.
+     * - Performs cargo loading, unloading, and movement actions while ensuring the correct
+     *   state phase (`ADD_CARGO`) is enforced.
+     * - Sets a new position for the active player and verifies the state transition using
+     *   `endMove`.
+     * - Asserts that the final position of the player aligns with the expected outcome, ensuring
+     *   proper handling of state effects and positioning mechanisms.
+     * <p>
+     * Exceptions are caught during the test to safeguard against unexpected errors, and the
+     * test fails if any exception is thrown or if the assertions do not match the expected results.
+     */
     @Test
     void testAbandonedStationState() {
         try {

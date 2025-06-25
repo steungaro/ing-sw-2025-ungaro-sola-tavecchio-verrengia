@@ -6,7 +6,7 @@ import it.polimi.ingsw.gc20.client.network.NetworkManager;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.beans.property.ObjectProperty;
@@ -71,7 +71,6 @@ public class GUIView extends ClientGameModel {
     private Stage peekDecksStage;
     private PeekDecksController peekDecksController;
     private final ObjectProperty<GuiState> currentGuiStateProperty = new SimpleObjectProperty<>();
-    private final ObjectProperty<ViewBoard> boardProperty = new SimpleObjectProperty<>();
     private static Stage primaryStage;
 
     public GUIView() throws RemoteException {
@@ -81,13 +80,6 @@ public class GUIView extends ClientGameModel {
                 Platform.runLater(() -> {
                     handleGuiStateChange(oldValue, newValue);
                 });
-            }
-        });
-
-
-        boardProperty.addListener((observable, oldBoard, newBoard) -> {
-            if (newBoard != null) {
-                notifyCurrentBoardController(newBoard);
             }
         });
     }
@@ -120,21 +112,21 @@ public class GUIView extends ClientGameModel {
         currentGuiStateProperty.set(newState);
     }
 
-    private void showMenuContent(GuiState contentState, Map<String, Object> contextData, boolean isTemporary) {
+    private void showMenuContent(GuiState contentState, Map<String, Object> contextData, boolean isTemporary, boolean acceptable) {
         Platform.runLater(() -> {
             if (getCurrentGuiState() == GuiState.MENU) {
-                MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData, isTemporary);
+                MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData, isTemporary, acceptable);
             } else {
                 setCurrentGuiState(GuiState.MENU);
                 Platform.runLater(() ->
-                        MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData, isTemporary)
+                        MenuController.loadContentInCurrentFrame(contentState.getFxmlFileName(), this, contextData, isTemporary, acceptable)
                 );
             }
         });
     }
 
     private void showMenuContent(GuiState contentState) {
-        showMenuContent(contentState, null, false);
+        showMenuContent(contentState, null, false, false);
     }
 
     @Override
@@ -206,21 +198,6 @@ public class GUIView extends ClientGameModel {
         }
     }
 
-    private void notifyCurrentBoardController(ViewBoard newBoard) {
-        Platform.runLater(() -> {
-            if (primaryStage != null && primaryStage.getScene() != null && primaryStage.getScene().getRoot() != null) {
-                Object controller = primaryStage.getScene().getRoot().getUserData();
-                try {
-                    ((BoardController) controller).updateBoardDisplay(newBoard);
-                } catch (ClassCastException e) {
-                    //  displayErrorMessage("Error: Current controller is not a BoardController." + e.getMessage());
-                } catch (NullPointerException e) {
-                    displayErrorMessage("Error: Current scene or root is null." + e.getMessage());
-                }
-            }
-        });
-    }
-
     public boolean setupConnection(String ipAddress, int port, boolean isRMI) {
         String clientType = isRMI ? "RMI" : "Socket";
 
@@ -265,12 +242,6 @@ public class GUIView extends ClientGameModel {
     }
 
     @Override
-    public void setBoard(ViewBoard board) {
-        this.board = board;
-        this.boardProperty.set(board);
-    }
-
-    @Override
     public void mainMenuState(){
         setCurrentGuiState(GuiState.MAIN_MENU);
     }
@@ -280,7 +251,7 @@ public class GUIView extends ClientGameModel {
     public void planetMenu(List<Planet> planets) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("planets", planets);
-        showMenuContent(GuiState.PLANET_MENU, contextData, false);
+        showMenuContent(GuiState.PLANET_MENU, contextData, false, false);
     }
 
     @Override
@@ -305,7 +276,7 @@ public class GUIView extends ClientGameModel {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
         contextData.put("activationType", ActivationMenuController.ActivationType.SHIELDS);
-        showMenuContent(GuiState.SHIELDS_MENU, contextData, false);
+        showMenuContent(GuiState.SHIELDS_MENU, contextData, false, false);
     }
 
 
@@ -313,14 +284,14 @@ public class GUIView extends ClientGameModel {
     public void rollDiceMenu(String message) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
-        showMenuContent(GuiState.ROLL_DICE_MENU, contextData, false);
+        showMenuContent(GuiState.ROLL_DICE_MENU, contextData, false, false);
     }
 
     @Override
     public void cargoMenu(int cargoNum) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("cargoNum", cargoNum);
-        showMenuContent(GuiState.CARGO_MENU, contextData, false);
+        showMenuContent(GuiState.CARGO_MENU, contextData, false, false);
     }
 
 
@@ -328,7 +299,7 @@ public class GUIView extends ClientGameModel {
     public void loseCrewMenu(int crewNum) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("crewNum", crewNum);
-        showMenuContent(GuiState.LOSE_CREW_MENU, contextData, false);
+        showMenuContent(GuiState.LOSE_CREW_MENU, contextData, false, false);
     }
 
 
@@ -337,7 +308,7 @@ public class GUIView extends ClientGameModel {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("activationTyper", ActivationMenuController.ActivationType.BATTERY);
         contextData.put("batteryNum", batteryNum);
-        showMenuContent(GuiState.LOSE_ENERGY_MENU, contextData, false);
+        showMenuContent(GuiState.LOSE_ENERGY_MENU, contextData, false, false);
     }
 
 
@@ -359,7 +330,7 @@ public class GUIView extends ClientGameModel {
     public void leaderBoardMenu(Map<String, Integer> leaderBoard) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("leaderBoard", leaderBoard);
-        showMenuContent(GuiState.LEADER_BOARD_MENU, contextData, false);
+        showMenuContent(GuiState.LEADER_BOARD_MENU, contextData, false, false);
     }
 
 
@@ -401,7 +372,7 @@ public class GUIView extends ClientGameModel {
     public void idleMenu(String message) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
-        showMenuContent(GuiState.IDLE_MENU, contextData, false);
+        showMenuContent(GuiState.IDLE_MENU, contextData, false, false);
     }
 
 
@@ -444,7 +415,7 @@ public class GUIView extends ClientGameModel {
     public void buildingMenu(List<ViewAdventureCard> cards) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("cards", cards);
-        showMenuContent(GuiState.PEEK_DECKS, contextData, true);
+        showMenuContent(GuiState.PEEK_DECKS, contextData, true, false);
     }
 
     @Override
@@ -452,14 +423,14 @@ public class GUIView extends ClientGameModel {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
         contextData.put("activationType", ActivationMenuController.ActivationType.CANNONS);
-        showMenuContent(GuiState.CANNONS_MENU, contextData, false);
+        showMenuContent(GuiState.CANNONS_MENU, contextData, false, false);
     }
 
 
     @Override
     public void cardAcceptanceMenu(String message) {
         Map<String, Object> contextData = new HashMap<>();
-        showMenuContent(GuiState.AUTOMATIC_ACTION, contextData, false);
+        showMenuContent(GuiState.AUTOMATIC_ACTION, contextData, false, true);
     }
 
 
@@ -470,7 +441,7 @@ public class GUIView extends ClientGameModel {
         contextData.put("cargoToLose", cargoToLose);
         contextData.put("cargoToGain", cargoToGain);
         contextData.put("losing", losing);
-        showMenuContent(GuiState.CARGO_MENU, contextData, false);
+        showMenuContent(GuiState.CARGO_MENU, contextData, false, false);
     }
 
 
@@ -479,7 +450,7 @@ public class GUIView extends ClientGameModel {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
         contextData.put("activationType", ActivationMenuController.ActivationType.ENGINES);
-        showMenuContent(GuiState.ENGINE_MENU, contextData, false);
+        showMenuContent(GuiState.ENGINE_MENU, contextData, false, false);
     }
 
 
@@ -487,7 +458,7 @@ public class GUIView extends ClientGameModel {
     public void automaticAction(String message) {
         Map<String, Object> contextData = new HashMap<>();
         contextData.put("message", message);
-        showMenuContent(GuiState.AUTOMATIC_ACTION, contextData, false);
+        showMenuContent(GuiState.AUTOMATIC_ACTION, contextData, false, false);
     }
 
 

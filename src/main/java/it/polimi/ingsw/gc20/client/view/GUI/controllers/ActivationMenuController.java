@@ -30,7 +30,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+                ClientGameModel.getInstance().getClient().activateCannons(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         ENGINES {
@@ -44,7 +44,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         SHIELDS {
@@ -54,7 +54,15 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateShield(username, primary.getFirst(), batteries.getFirst());
+                Pair<Integer, Integer> shieldCoordinates = null;
+                Pair<Integer, Integer> batteryCoordinates = null;
+                if(primary!= null && !primary.isEmpty()) {
+                    shieldCoordinates = primary.getFirst();
+                }
+                if(batteries != null && !batteries.isEmpty()) {
+                    batteryCoordinates = batteries.getFirst();
+                }
+                ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
             }
             @Override
             public void skip(String username) throws RemoteException {
@@ -75,7 +83,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().loseEnergy(username, null);
+                ClientGameModel.getInstance().getClient().endMove(username);
             }
         };
 
@@ -152,7 +160,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
     @FXML
     private void handleUndo() {
         if (!selectedComponents.isEmpty()) {
-            selectedComponents.removeLast();
+            selectedComponents.clear();
             updateHighlights();
         }
     }

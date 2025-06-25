@@ -16,6 +16,10 @@ import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * RMIClient is a client implementation that connects to a remote server using RMI (Remote Method Invocation).
+ * It provides methods to interact with the server for authentication, game control, and match management.
+ */
 public class RMIClient implements Client {
     private final String serverAddress;
     private final int port;
@@ -28,6 +32,12 @@ public class RMIClient implements Client {
 
     private final Logger LOGGER = Logger.getLogger(RMIClient.class.getName());
 
+    /**
+     * Constructor for RMIClient.
+     *
+     * @param serverAddress The address of the RMI server.
+     * @param port          The port on which the RMI server is listening to.
+     */
     public RMIClient(String serverAddress, int port) {
         this.serverAddress = serverAddress;
         this.port = port;

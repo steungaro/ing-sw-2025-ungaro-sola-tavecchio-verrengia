@@ -73,12 +73,7 @@
             <Region VBox.vgrow="ALWAYS" />
 
             <VBox spacing="10.0">
-                <Button fx:id="activateComponentButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="ACTIVATE COMPONENT">
-                    <font>
-                        <Font size="10.0" />
-                    </font>
-                </Button>
-                <Button fx:id="endTurnButtonLeft" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="END TURN">
+                <Button onAction="#endTurn"  mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="END TURN">
                     <font>
                         <Font size="10.0" />
                     </font>
@@ -127,17 +122,7 @@
                         <Font size="10.0" />
                     </font>
                 </Button>
-                <Button fx:id="button2" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="BUTTON 2">
-                    <font>
-                        <Font size="10.0" />
-                    </font>
-                </Button>
-                <Button fx:id="button3" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="BUTTON 3">
-                    <font>
-                        <Font size="10.0" />
-                    </font>
-                </Button>
-                <Button fx:id="button4" mnemonicParsing="false" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="BUTTON 4">
+                <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quit" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="GIVE UP">
                     <font>
                         <Font size="10.0" />
                     </font>

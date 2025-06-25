@@ -16,6 +16,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StardustStateTest {
 
+    /**
+     * Tests the functionality of the automatic action performed by the StardustState
+     * class using the specified Stardust adventure card. This method simulates the
+     * effects of the Stardust card on the game state and verifies the correct behavior.
+     * <p>
+     * This test method performs the following:
+     * - Initializes a game controller with a test game and players.
+     * - Sets up the initial positions of players and assigns ships with components.
+     * - Configures connectors for each ship component to ensure validity.
+     * - Constructs and activates the StardustState to simulate the Stardust effect.
+     * - Asserts each player's new position after the Stardust action, accounting for
+     *   exposed components on their ships.
+     * - Validates the game's transition to the DRAW_CARD_PHASE state after completing
+     *   the Stardust action.
+     *
+     * @throws InvalidStateException If the method encounters an invalid state during execution.
+     */
     @Test
     void automaticAction() throws InvalidStateException {
         Map<String, Integer> playerPositions = new HashMap<>();

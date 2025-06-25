@@ -9,7 +9,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import java.rmi.RemoteException;
@@ -22,6 +22,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 
+/**
+ * Abstract class representing the client-side game model.
+ * It handles the game state, player actions, and communication with the server.
+ * This class is designed to be extended by specific implementations for different game modes or interfaces.
+ */
 public abstract class ClientGameModel extends UnicastRemoteObject implements ViewInterface {
     private static final Logger LOGGER = Logger.getLogger(ClientGameModel.class.getName());
     private static ClientGameModel instance;
@@ -44,6 +49,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
     private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
 
+    /**
+     * Constructor for the ClientGameModel.
+     * Initializes the game model with default values and prepares it for use.
+     *
+     * @throws RemoteException if there is an issue with remote method invocation
+     */
     public ClientGameModel() throws RemoteException {
         super();
         // Initialize the default state if necessary
@@ -52,6 +63,13 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         this.client = null;
         this.ships = new HashMap<>();
     }
+
+    /**
+     * Returns the current adventure card being viewed.
+     * If no card is set, it returns a default empty card representation.
+     *
+     * @return the current adventure card or an empty card if none is set
+     */
     public ViewAdventureCard getCurrentCard() {
         if (currentCard == null) {
             return new ViewAdventureCard(
@@ -77,6 +95,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         return currentCard;
     }
 
+    /**
+     * Sets the current adventure card being viewed.
+     * This method updates the current card and notifies listeners about the change.
+     *
+     * @param currentCard the new adventure card to set as the current card
+     */
     public void setCurrentCard(ViewAdventureCard currentCard) {
         this.currentCard = currentCard;
         for (GameModelListener listener : listeners) {
@@ -84,12 +108,29 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Returns the current menu state of the game model.
+     * This method is used to retrieve the current state of the menu being displayed to the user.
+     *
+     * @return the current MenuState
+     */
     public MenuState getCurrentMenuState() {
         return currentMenuState;
     }
+
+    /**
+     * Sets the model to a busy state, indicating that it is currently processing an operation.
+     * This method is typically used to prevent new screen updates on the TUI while an operation is in progress.
+     */
     public void setBusy() {
         busy = true;
     }
+
+    /**
+     * Sets the model to a free state, allowing it to process new menu states.
+     * If there are any queued menu states, it processes them in order.
+     * This method is typically called after an operation is completed to allow the TUI to update.
+     */
     public void setFree(){
         busy = false;
         while (!menuStateQueue.isEmpty()) {
@@ -100,6 +141,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             }
         }
     }
+
     /**
      * Sets the current menu state and displays it if the model is not busy.
      * If the model is busy, the new state is added to a queue to be processed later.
@@ -141,26 +183,61 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Displays an error message to the user.
+     * This method is abstract and should be implemented by subclasses to provide specific error handling.
+     *
+     * @param message the error message to display
+     */
     public abstract void displayErrorMessage(String message);
 
+    /**
+     * Sets the list of lobbies available in the game.
+     * This method updates the lobby list and notifies all observers about the change.
+     *
+     * @param lobbyList the new list of lobbies to set
+     */
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = new ArrayList<>(lobbyList);
         notifyLobbyListObservers();
         LOGGER.fine("Lobby list updated in model.");
     }
 
+    /**
+     * Returns the list of lobbies available in the game.
+     * This method provides access to the current list of lobbies.
+     *
+     * @return the list of ViewLobby objects representing the available lobbies
+     */
     public List<ViewLobby> getLobbyList() {
         return lobbyList;
     }
 
+    /**
+     * Returns the username of the player.
+     * This method provides access to the player's username.
+     *
+     * @return the username of the player
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Returns the component currently held in hand.
+     *
+     * @return the ViewComponent currently in hand, or null if none is held
+     */
     public ViewComponent getComponentInHand() {
         return componentInHand;
     }
 
+    /**
+     * Sets the component currently held in hand.
+     * This method updates the component in the hand and notifies all listeners about the change.
+     *
+     * @param componentInHand the ViewComponent to set as the current component in hand
+     */
     public void setComponentInHand(ViewComponent componentInHand) {
         this.componentInHand = componentInHand;
         LOGGER.fine("Component in hand updated in model.");
@@ -168,26 +245,69 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             listener.onComponentInHandUpdated(this.componentInHand);
         }
     }
+
+    /**
+     * Returns the game board.
+     * This method provides access to the current game board.
+     *
+     * @return the ViewBoard representing the game board
+     */
     public ViewBoard getBoard() {
         return board;
     }
 
+
+    /**
+     * Sets the game board.
+     * This method updates the game board and notifies all listeners about the change.
+     *
+     * @param board the ViewBoard to set as the current game board
+     */
     public void setBoard(ViewBoard board) {
         this.board = board;
+        for (GameModelListener listener : listeners) {
+            listener.onBoardUpdated(this.board);
+        }
+
     }
 
+    /**
+     * Returns the map of ships, where the key is the username and the value is the ViewShip.
+     * This method provides access to all ships in the game.
+     *
+     * @return a map of usernames to their corresponding ViewShip objects
+     */
     public Map<String, ViewShip> getShips() {
         return ships;
     }
 
+    /**
+     * Sets the map of ships in the game.
+     *
+     * @param ships a map of usernames to their corresponding ViewShip objects
+     */
     public void setShips(Map<String, ViewShip> ships) {
         this.ships = ships;
     }
 
+    /**
+     * Returns the ship associated with the given username.
+     * This method retrieves the ViewShip for a specific player.
+     *
+     * @param username the username of the player whose ship is to be retrieved
+     * @return the ViewShip associated with the given username, or null if not found
+     */
     public ViewShip getShip (String username) {
         return ships.get(username);
     }
 
+    /**
+     * Sets the ship for a specific player.
+     * This method updates the ship for the given username and notifies all listeners about the change.
+     *
+     * @param username the username of the player whose ship is to be set
+     * @param ship the ViewShip to set for the player
+     */
     public void setShip (String username, ViewShip ship) {
         ships.put(username, ship);
         for (GameModelListener listener : listeners) {
@@ -195,40 +315,83 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Sends a ping to the server to check connectivity.
+     * This method is used to keep the connection alive and ensure the server is responsive.
+     */
     public void ping() {
         client.pong(username);
     }
 
+    /**
+     * Adds a listener to the game model.
+     * This method allows other components to listen for changes in the game model.
+     *
+     * @param listener the GameModelListener to add
+     */
     public void addListener(GameModelListener listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
+    /**
+     * Adds a lobby list listener to the game model.
+     * This method allows listeners to be notified when the lobby list changes.
+     *
+     * @param observer the LobbyListListener to add
+     */
     public void addLobbyListObserver(LobbyListObserver observer) {
         if (!lobbyListObservers.contains(observer)) {
             lobbyListObservers.add(observer);
         }
     }
 
+    /**
+     * Removes a lobby list listener from the game model.
+     * This method allows listeners to stop receiving notifications about lobby list changes.
+     *
+     * @param listener the LobbyListListener to remove
+     */
     public void removeListener(GameModelListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * Notifies all lobby list observers that the lobby list has changed.
+     */
     protected void notifyLobbyListObservers() {
         for (LobbyListObserver observer : lobbyListObservers) {
             observer.onLobbyListChanged();
         }
     }
 
+    /**
+     * Returns the singleton instance of ClientGameModel.
+     * This method provides access to the single instance of the game model.
+     *
+     * @return the singleton instance of ClientGameModel
+     */
     public static ClientGameModel getInstance() {
         return instance;
     }
 
+    /**
+     * Sets the singleton instance of ClientGameModel.
+     * This method is used to initialize the game model instance.
+     *
+     * @param instance the ClientGameModel instance to set
+     */
     public static void setInstance(ClientGameModel instance) {
         ClientGameModel.instance = instance;
     }
 
+    /**
+     * Prints the ship of the player with the given username.
+     * This method retrieves the ship from the map and prints its details. It's used in TUI to display the player's ship.
+     *
+     * @param username the username of the player whose ship is to be printed
+     */
     public void printShip(String username) {
         ViewShip ship = ships.get(username);
         if (ship != null) {
@@ -238,6 +401,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Prints the current game board.
+     * This method displays the state of the game board in the console.
+     * If no board is set, it logs a warning message.
+     */
     public void printBoard() {
         if (board != null) {
             System.out.println(board);
@@ -246,6 +414,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Prints the adventure cards in a formatted line.
+     * This method displays the adventure cards in a grid-like format, with a maximum of 10 cards per row.
+     *
+     * @param cards the list of ViewAdventureCard objects to print
+     */
     public void printCardsInLine(List<ViewAdventureCard> cards) {
         if (cards == null || cards.isEmpty()) {
             return;
@@ -273,6 +447,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         System.out.println(finalResult);
     }
 
+    /**
+     * Prints the current adventure card being viewed.
+     * This method displays the details of the current card in the console.
+     * If no card is set, it prints a message indicating that there is no active card.
+     */
     public void printCurrentCard() {
         if (currentCard != null) {
             System.out.println(currentCard);
@@ -281,6 +460,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Prints the viewed pile of components.
+     * This method retrieves the viewed pile from the board and prints its components in a formatted line.
+     * If no components are present, it prints a message indicating that there are no components.
+     */
     public void printViewedPile(){
         if (board != null) {
             List<ViewComponent> comps = board.viewedPile;
@@ -295,6 +479,13 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Prints the components in a formatted line.
+     * This method displays the components in a grid-like format, with a maximum of 10 parts per row.
+     *
+     * @param components the list of ViewComponent objects to print
+     * @return a string representation of the components formatted in lines
+     */
     public String printComponentsInLine(List<ViewComponent> components) {
         if (components == null || components.isEmpty()) {
             return "";
@@ -333,6 +524,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         });
     }
 
+    /**
+     * Updates the player ship in the model.
+     * This method sets the player's ship and notifies all listeners about the update.
+     *
+     * @param ship the ViewShip to set as the player's ship
+     */
     public void updatePlayerShip(ViewShip ship) {
         this.playerShip = ship;
         LOGGER.fine("Player ship updated in model.");
@@ -341,6 +538,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Updates the current lobby in the model.
+     * This method sets the current lobby and notifies all listeners about the update.
+     *
+     * @param lobby the ViewLobby to set as the current lobby
+     */
     public void updateLobby(ViewLobby lobby) {
         this.currentLobby = lobby;
         LOGGER.fine("Lobby updated in model: " + (lobby != null ? lobby.getID() : "null"));
@@ -349,6 +552,12 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Sets an error message in the model.
+     * This method updates the error message and notifies all listeners about the error.
+     *
+     * @param message the error message to set
+     */
     public void setErrorMessage(String message) {
         this.errorMessage = message;
         LOGGER.warning("Error message set in model: " + message);
@@ -357,8 +566,18 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    /**
+     * Abstract method for logging in the player.
+     * This method should be implemented by subclasses to handle the login process.
+     */
     public abstract void login();
 
+    /**
+     * Sets the username of the player.
+     * This method updates the username and notifies all listeners about the change.
+     *
+     * @param username the username to set for the player
+     */
     public void setUsername(String username){
         this.username = username;
     }

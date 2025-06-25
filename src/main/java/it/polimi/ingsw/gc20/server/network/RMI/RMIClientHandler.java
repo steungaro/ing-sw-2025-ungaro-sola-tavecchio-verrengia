@@ -3,7 +3,7 @@ package it.polimi.ingsw.gc20.server.network.RMI;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.controller.MatchController;
 import it.polimi.ingsw.gc20.server.network.common.ClientHandler;
-import it.polimi.ingsw.gc20.common.message_protocol.toserver.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 
 import java.rmi.ConnectException;
