@@ -9,7 +9,6 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -71,7 +70,7 @@ public class MenuController implements GameModelListener {
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
     private static MenuController currentInstance;
-    private final Stack<Node> viewStack = new Stack<>();
+    private Node viewStack = null;
     private DisplayContext currentDisplayContext = DisplayContext.MAIN_VIEW;
 
     public enum ContentType {
@@ -189,7 +188,7 @@ public class MenuController implements GameModelListener {
 
         if (!currentFrame.getChildren().isEmpty()) {
             Node currentView = currentFrame.getChildren().getFirst();
-            viewStack.push(currentView);
+            viewStack = currentView;
             currentView.setVisible(false);
         }
 
@@ -202,13 +201,10 @@ public class MenuController implements GameModelListener {
      * Returns to the previous view in the stack
      */
     @FXML
-    private void returnToPreviousView() {
-        currentFrame.getChildren().clear();
-
-        if (!viewStack.isEmpty()) {
-            Node previousView = viewStack.pop();
-            previousView.setVisible(true);
-            currentFrame.getChildren().add(previousView);
+    private void returnToPreviousView(){
+        if (viewStack!= null) {
+            currentFrame.getChildren().clear();
+            currentFrame.getChildren().add(viewStack);
             currentContentType = null;
         }
         updateBackButtonVisibility();
@@ -239,24 +235,6 @@ public class MenuController implements GameModelListener {
     }
 
     /**
-     * Clear all views in the stack and return to the initial state
-     */
-    public void clearViewStack() {
-        currentFrame.getChildren().clear();
-        viewStack.clear();
-
-        initializeCurrentFrame();
-    }
-
-    /**
-     * Check if there are temporary views in the stack
-     * @return true if there are views in the stack
-     */
-    public boolean hasTemporaryViews() {
-        return !viewStack.isEmpty();
-    }
-
-    /**
      * Makes a ship container clickable and sets up the click handler
      */
     private void makeShipContainerClickable(StackPane shipContainer, ViewPlayer player) {
@@ -271,10 +249,6 @@ public class MenuController implements GameModelListener {
     }
 
     private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
-        if (hasTemporaryViews()) {
-            showTemporaryView(getFXMLPath(ContentType.SHIP));
-            return;
-        }
         saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
@@ -354,8 +328,7 @@ public class MenuController implements GameModelListener {
 
     private void saveCurrentStateToStack() {
         if (!currentFrame.getChildren().isEmpty()) {
-            Node currentView = currentFrame.getChildren().getFirst();
-            viewStack.push(currentView);
+            viewStack = currentFrame.getChildren().getFirst();
         }
         updateBackButtonVisibility();
     }
@@ -367,13 +340,8 @@ public class MenuController implements GameModelListener {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
             // guiView.displayErrorMessage("MenuController not initialized");
-            // ignore this error, it can happen if the controller is not ready yet
+            // ignore this error, it can happen if the controller is not ready yet (case
             return;
-        }
-
-        if (isTemporaryView) {
-            instance.saveCurrentStateToStack();
-            instance.showTemporaryView(contentFileName);
         }
 
         instance.setAcceptableButtonVisibility(acceptable);
@@ -416,6 +384,10 @@ public class MenuController implements GameModelListener {
 
             instance.currentFrame.getChildren().clear();
             instance.currentFrame.getChildren().add(content);
+
+            if (!isTemporaryView) {
+                instance.saveCurrentStateToStack();
+            }
 
         } catch (IOException e) {
             System.err.println("Error loading menu: " + e.getMessage());
