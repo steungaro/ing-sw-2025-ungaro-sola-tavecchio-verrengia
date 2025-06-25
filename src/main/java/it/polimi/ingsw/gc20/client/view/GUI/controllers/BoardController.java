@@ -28,6 +28,7 @@ public abstract class BoardController implements GameModelListener {
 
     @FXML
     public void initialize() {
+        ClientGameModel.getInstance().addListener(this);
         if (playersInfoLabel != null) {
             playersInfoLabel.setText("Players: N/A");
         }
