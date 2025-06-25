@@ -776,7 +776,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      * Displays the assembling state menu.
      * This method is used to show the building options for the ship's components.
      */
-    public abstract void AssemblingStateMenu();
+    public abstract void assemblingStateMenu();
 
     /**
      * Displays the leader board menu with the given leader board data.

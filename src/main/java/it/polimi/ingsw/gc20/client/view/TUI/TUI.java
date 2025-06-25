@@ -275,7 +275,7 @@ public class TUI extends ClientGameModel {
     }
 
     @Override
-    public void AssemblingStateMenu() {
+    public void assemblingStateMenu() {
         ClientGameModel.getInstance().setCurrentMenuState(new BuildingMenu(null));
     }
 

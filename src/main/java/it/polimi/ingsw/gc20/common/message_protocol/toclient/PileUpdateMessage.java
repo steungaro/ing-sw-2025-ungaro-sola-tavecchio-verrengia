@@ -47,7 +47,7 @@ public record PileUpdateMessage(
     }
     @Override
     public void handleMessage() {
-            ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
+        ViewBoard viewBoard = ClientGameModel.getInstance().getBoard();
         viewBoard.unviewedPile = unviewedSize;
         viewBoard.viewedPile = viewed;
          if (ClientGameModel.getInstance().getCurrentMenuState() != null) {
