@@ -29,7 +29,7 @@
         </font>
     </Label>
 
-    <VBox fx:id="toLoadPanel" alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
+    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
         <Label text="Cargo to load:" textFill="WHITE">
             <font>
                 <Font size="16.0" />
@@ -38,12 +38,16 @@
         <Pane fx:id="toLoadPane" prefHeight="250" prefWidth="500" />
     </VBox>
 
-    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-background-radius: 10;">
-        <Pane fx:id="shipPane" prefHeight="250" prefWidth="500" />
-    </VBox>
+    <HBox alignment="CENTER" spacing="20" style="-fx-background-color: #333344; -fx-background-radius: 10; -fx-padding: 20;">
+        <Pane fx:id="shipPane" prefHeight="250" prefWidth="400" />
+        <VBox fx:id="cargoBoxPane" alignment="TOP_CENTER" spacing="10" prefWidth="100" visible="false">
+            <Label text="Available Cargo:" textFill="WHITE" style="-fx-font-size: 12px;" />
+            <VBox fx:id="cargoContainer" spacing="5" alignment="CENTER" />
+        </VBox>
+    </HBox>
 
     <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="moveButton" onAction="#moveCargo" prefHeight="50" prefWidth="150" text="Move cargo">
+        <Button onAction="#moveCargo" prefHeight="50" prefWidth="150" text="Move cargo">
             <font>
                 <Font size="14.0" />
             </font>
@@ -52,7 +56,7 @@
                 -fx-text-fill: white;
             </style>
         </Button>
-        <Button fx:id="endTurnButton" onAction="#handleEndTurn" prefHeight="50" prefWidth="150" text="End turn">
+        <Button onAction="#handleEndTurn" prefHeight="50" prefWidth="150" text="End turn">
             <font>
                 <Font size="14.0" />
             </font>
