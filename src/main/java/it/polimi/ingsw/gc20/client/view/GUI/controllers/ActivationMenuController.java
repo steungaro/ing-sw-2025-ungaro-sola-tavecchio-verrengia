@@ -160,7 +160,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
     @FXML
     private void handleUndo() {
         if (!selectedComponents.isEmpty()) {
-            selectedComponents.removeLast();
+            selectedComponents.clear();
             updateHighlights();
         }
     }
