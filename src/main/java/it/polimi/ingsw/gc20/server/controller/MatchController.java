@@ -3,6 +3,7 @@ package it.polimi.ingsw.gc20.server.controller;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.ErrorMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyListMessage;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.LobbyMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.Shutdown;
 import it.polimi.ingsw.gc20.server.exceptions.FullLobbyException;
 import it.polimi.ingsw.gc20.server.exceptions.InvalidStateException;
 import it.polimi.ingsw.gc20.server.exceptions.LobbyException;
@@ -235,6 +236,13 @@ public class MatchController implements MatchControllerInterface {
      */
     public void endGame(String id) {
         games.removeIf(g -> g.getGameID().equals(id));
+        playersInGames.entrySet().stream()
+                .filter(e -> e.getValue().getGameID().equals(id))
+                .forEach(e -> {
+                    NetworkService.getInstance().sendToClient(e.getKey(), new Shutdown());
+                    NetworkService.getInstance().getClient(e.getKey()).disconnect();
+                    NetworkService.getInstance().removeClient(e.getKey());
+                });
         playersInGames.entrySet().removeIf(e -> e.getValue().getGameID().equals(id));
     }
 
