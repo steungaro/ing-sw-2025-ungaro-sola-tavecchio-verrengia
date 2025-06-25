@@ -41,8 +41,8 @@ public abstract class BoardController {
             Circle circle = circles.get(circleIndex);
             if (circle != null && playerColor != null) {
                 Color fxColor = switch (playerColor) {
-                    case RED -> Color.RED;
                     case BLUE -> Color.BLUE;
+                    case RED -> Color.RED;
                     case GREEN -> Color.GREEN;
                     case YELLOW -> Color.YELLOW;
                 };
