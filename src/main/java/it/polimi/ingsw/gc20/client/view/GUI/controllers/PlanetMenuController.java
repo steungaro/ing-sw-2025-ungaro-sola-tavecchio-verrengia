@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PlanetMenuController implements MenuController.ContextDataReceiver {
+public class PlanetMenuController implements MenuController.ContextDataReceiver, BindCleanUp {
     @FXML
     private HBox planetsContainer;
 
@@ -170,5 +170,73 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
         } else {
             showError("No planets data provided");
         }
+    }
+
+    public void cleanup() {
+        System.out.println("PlanetMenuController: Starting cleanup...");
+
+        if (planetsContainer != null) {
+            for (javafx.scene.Node node : planetsContainer.getChildren()) {
+                try {
+                    VBox planetContainer = (VBox) node;
+                    planetContainer.setOnMouseClicked(null);
+                    planetContainer.setOnMouseEntered(null);
+                    planetContainer.setOnMouseExited(null);
+
+                    for (javafx.scene.Node child : planetContainer.getChildren()) {
+                        if (child.getClass().equals(VBox.class)) {
+                            try {
+                                VBox cargoContainer = (VBox) child;
+                                for (javafx.scene.Node cargoChild : cargoContainer.getChildren()) {
+                                    if (cargoChild.getClass().equals(HBox.class)) {
+                                        try {
+                                            HBox cargoSquares = (HBox) cargoChild;
+                                            for (javafx.scene.Node square : cargoSquares.getChildren()) {
+                                                try {
+                                                    Rectangle rect = (Rectangle) square;
+                                                    rect.setFill(null);
+                                                    rect.setStroke(null);
+                                                } catch (Exception e) {
+                                                    System.err.println("Error cleaning up cargo square: " + e.getMessage());
+                                                }
+                                            }
+                                            cargoSquares.getChildren().clear();
+                                        } catch (Exception e) {
+                                            System.err.println("Error cleaning up cargo squares container: " + e.getMessage());
+                                        }
+                                    }
+                                }
+                                cargoContainer.getChildren().clear();
+                            } catch (Exception e) {
+                                System.err.println("Error cleaning up cargo container: " + e.getMessage());
+                            }
+                        }
+                    }
+
+                    planetContainer.getChildren().clear();
+                } catch (Exception e) {
+                    System.err.println("Error cleaning up planet container: " + e.getMessage());
+                }
+            }
+            planetsContainer.getChildren().clear();
+        }
+
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        if (planets != null) {
+            planets.clear();
+            planets = null;
+        }
+
+        username = null;
+        selectedPlanet = null;
+        selectedPlanetBox = null;
+        planetsContainer = null;
+        errorLabel = null;
+
+        System.out.println("PlanetMenuController: Cleanup completed");
     }
 }

@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ShipController implements GameModelListener {
+public abstract class ShipController implements GameModelListener, BindCleanUp {
     public String playerUsername;
     protected ViewShip ship;
 
@@ -493,5 +493,109 @@ private void addCargoBox(StackPane parent, double[] relativePos, String type) {
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
+    }
+
+    public void cleanup() {
+        System.out.println("ShipController: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+        }
+
+        if (componentsGrid != null) {
+            for (javafx.scene.Node node : componentsGrid.getChildren()) {
+                try {
+                    StackPane stackPane = (StackPane) node;
+                    for (javafx.scene.Node child : stackPane.getChildren()) {
+                        if (child.getClass().equals(ImageView.class)) {
+                            try {
+                                ImageView imageView = (ImageView) child;
+                                imageView.setImage(null);
+                                imageView.setRotate(0);
+                            } catch (Exception e) {
+                                System.err.println("Error cleaning up ImageView: " + e.getMessage());
+                            }
+                        } else if (child.getClass().equals(javafx.scene.layout.HBox.class)) {
+                            try {
+                                javafx.scene.layout.HBox hbox = (javafx.scene.layout.HBox) child;
+                                hbox.getChildren().clear();
+                            } catch (Exception e) {
+                                System.err.println("Error cleaning up HBox: " + e.getMessage());
+                            }
+                        } else if (child.getClass().equals(Rectangle.class)) {
+                            try {
+                                Rectangle rect = (Rectangle) child;
+                                rect.setFill(null);
+                                rect.setStroke(null);
+                                rect.widthProperty().unbind();
+                                rect.heightProperty().unbind();
+                                rect.translateXProperty().unbind();
+                                rect.translateYProperty().unbind();
+                                rect.setOnMouseEntered(null);
+                                rect.setOnMouseExited(null);
+                                rect.setOnMouseClicked(null);
+                            } catch (Exception e) {
+                                System.err.println("Error cleaning up Rectangle: " + e.getMessage());
+                            }
+                        }
+                    }
+                    stackPane.getChildren().clear();
+                } catch (Exception e) {
+                    if (node.getClass().equals(Rectangle.class)) {
+                        try {
+                            Rectangle rect = (Rectangle) node;
+                            rect.setFill(null);
+                            rect.setStroke(null);
+                            rect.widthProperty().unbind();
+                            rect.heightProperty().unbind();
+                            rect.setOnMouseEntered(null);
+                            rect.setOnMouseExited(null);
+                            rect.setOnMouseClicked(null);
+                        } catch (Exception rectEx) {
+                            System.err.println("Error cleaning up click area Rectangle: " + rectEx.getMessage());
+                        }
+                    }
+                }
+            }
+            componentsGrid.getChildren().clear();
+        }
+
+        if (rootPane != null) {
+            rootPane.widthProperty().removeListener((obs, oldVal, newVal) -> Platform.runLater(() -> rootPane.requestLayout()));
+            rootPane.heightProperty().removeListener((obs, oldVal, newVal) -> Platform.runLater(() -> rootPane.requestLayout()));
+        }
+
+        if (cellClickAreas != null) {
+            for (Rectangle rect : cellClickAreas.values()) {
+                try {
+                    rect.setFill(null);
+                    rect.setStroke(null);
+                    rect.widthProperty().unbind();
+                    rect.heightProperty().unbind();
+                    rect.setOnMouseEntered(null);
+                    rect.setOnMouseExited(null);
+                    rect.setOnMouseClicked(null);
+                } catch (Exception e) {
+                    System.err.println("Error cleaning up cell click area: " + e.getMessage());
+                }
+            }
+            cellClickAreas.clear();
+        }
+
+        if (gridComponents != null) {
+            gridComponents.clear();
+        }
+
+        playerUsername = null;
+        ship = null;
+        playerColorLabel = null;
+        usernameLabel = null;
+        creditsLabel = null;
+        inGameLabel = null;
+        rootPane = null;
+        componentsGrid = null;
+
+        System.out.println("ShipController: Cleanup completed");
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,10 +10,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
+import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.util.Map;
 
-public class AutomaticActionController implements MenuController.ContextDataReceiver{
+public class AutomaticActionController implements MenuController.ContextDataReceiver, BindCleanUp {
 
     @FXML
     public Pane shipPane;
@@ -25,6 +27,7 @@ public class AutomaticActionController implements MenuController.ContextDataRece
 
     private String username;
     private ViewShip ship;
+    private ShipController shipController;
 
 
     @FXML
@@ -63,7 +66,7 @@ public class AutomaticActionController implements MenuController.ContextDataRece
 
             Object controller = loader.getController();
             try {
-                ShipController shipController = (ShipController) controller;
+                shipController = (ShipController) controller;
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
@@ -106,4 +109,105 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             initializeWithMessage(message);
         }
     }
+
+    @Override
+    public void cleanup() {
+        System.out.println("AutomaticActionController: Starting cleanup...");
+
+        if (shipController != null) {
+            try{
+                ((BindCleanUp) shipController).cleanup();
+                System.out.println("AutomaticActionController: ShipController cleaned up");
+            } catch (ClassCastException e){
+                System.err.println("AutomaticActionController: ShipController does not implement BindCleanUp, skipping cleanup");
+            } catch (Exception e) {
+                System.err.println("Error during ShipController cleanup: " + e.getMessage());
+            }
+
+            try{
+                ClientGameModel gameModel = ClientGameModel.getInstance();
+                if (gameModel != null) {
+                    gameModel.removeListener((GameModelListener) shipController);
+                    System.out.println("AutomaticActionController: ShipController removed from GameModel listeners");
+                }
+            } catch (ClassCastException e) {
+                System.err.println("AutomaticActionController: ShipController does not implement GameModelListener, skipping removal");
+            } catch (Exception e) {
+                System.err.println("Error removing ShipController from GameModel listeners: " + e.getMessage());
+            }
+
+            shipController = null;
+        }
+
+        if (shipPane != null && !shipPane.getChildren().isEmpty()) {
+            for (javafx.scene.Node child : shipPane.getChildren()) {
+                unbindNodeProperties(child);
+            }
+
+            shipPane.getChildren().clear();
+            System.out.println("AutomaticActionController: ShipPane cleared and unbound");
+        }
+
+        ship = null;
+        username = null;
+
+        if (titleLabel != null) {
+            titleLabel.setText("");
+        }
+        if (messageLabel != null) {
+            messageLabel.setText("");
+        }
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        System.out.println("AutomaticActionController: Cleanup completed");
+    }
+
+    private void unbindNodeProperties(javafx.scene.Node node) {
+        if (node == null) return;
+
+        try {
+            try{
+                Region region = (Region) node;
+                region.prefWidthProperty().unbind();
+                region.prefHeightProperty().unbind();
+                region.minWidthProperty().unbind();
+                region.minHeightProperty().unbind();
+                region.maxWidthProperty().unbind();
+                region.maxHeightProperty().unbind();
+            } catch (ClassCastException e) {
+                // If the node is not a Region, we skip this part
+            }
+
+            try{
+                Pane pane = (Pane) node;
+                pane.prefWidthProperty().unbind();
+                pane.prefHeightProperty().unbind();
+
+                for (javafx.scene.Node child : pane.getChildren()) {
+                    unbindNodeProperties(child);
+                }
+            } catch (ClassCastException e) {
+                // If the node is not a Pane, we skip this part
+            }
+
+            try {
+                javafx.scene.image.ImageView imageView = (javafx.scene.image.ImageView) node;
+                imageView.fitWidthProperty().unbind();
+                imageView.fitHeightProperty().unbind();
+            } catch (ClassCastException e) {
+                // If the node is not an ImageView, we skip this part
+            }
+
+            node.setOnMouseClicked(null);
+            node.setOnMouseEntered(null);
+            node.setOnMouseExited(null);
+
+        } catch (Exception e) {
+            System.err.println("Error unbinding node properties: " + e.getMessage());
+        }
+    }
+
 }

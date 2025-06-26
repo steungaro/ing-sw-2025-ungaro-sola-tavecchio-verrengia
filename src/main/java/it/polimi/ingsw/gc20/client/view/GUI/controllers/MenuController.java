@@ -229,6 +229,11 @@ public class MenuController implements GameModelListener {
             if (currentController instanceof GameModelListener) {
                 ClientGameModel.getInstance().removeListener((GameModelListener) currentController);
             }
+
+            if (currentController instanceof BindCleanUp) {
+                ((BindCleanUp) currentController).cleanup();
+            }
+
         }
     }
 
@@ -325,6 +330,7 @@ public class MenuController implements GameModelListener {
             }
 
             saveCurrentStateToStack();
+            closeCurrentControllerListeners();
 
             Parent content = FXMLLoader.load(fxmlUrl);
             try{
@@ -447,8 +453,8 @@ public class MenuController implements GameModelListener {
      * Generic method to load any type of FXML content into a container
      */
     private void loadFXMLInContainer(StackPane container, String fxmlPath,
-                                   DisplayContext context, ContentType contentType,
-                                   ViewPlayer player) {
+                                     DisplayContext context, ContentType contentType,
+                                     ViewPlayer player) {
         this.currentDisplayContext = context;
         try {
             if (!fxmlPath.startsWith("/")) {
@@ -460,9 +466,19 @@ public class MenuController implements GameModelListener {
                 System.err.println("FXML file not found: " + fxmlPath);
                 return;
             }
+
+            if (!container.getChildren().isEmpty()) {
+                Node oldContent = container.getChildren().getFirst();
+                Object oldController = oldContent.getUserData();
+                if (oldController instanceof BindCleanUp) {
+                    ((BindCleanUp) oldController).cleanup();
+                }
+            }
+
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(fxmlUrl);
             Node content = loader.load();
+            Object controller = loader.getController();
 
             if (content instanceof StackPane contentPane) {
                 configureGenericSizing(container, contentPane, context, contentType);
@@ -472,8 +488,13 @@ public class MenuController implements GameModelListener {
                 content = wrapper;
             }
 
+            if (controller != null) {
+                content.setUserData(controller);
+            }
+
+            container.getChildren().clear();
             container.getChildren().add(content);
-            configureController(loader.getController(), contentType, player);
+            configureController(controller, contentType, player);
 
         } catch (IOException e) {
             e.printStackTrace();

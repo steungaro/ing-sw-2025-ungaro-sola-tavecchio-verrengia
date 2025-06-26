@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoseCrewMenuController implements MenuController.ContextDataReceiver, GameModelListener {
+public class LoseCrewMenuController implements MenuController.ContextDataReceiver, GameModelListener, BindCleanUp {
     @FXML
     private Label crewToLoseLabel;
 
@@ -152,5 +152,60 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
+    }
+
+    public void cleanup() {
+        System.out.println("LoseCrewMenuController: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+        }
+
+        if (shipController != null) {
+            try {
+                shipController.cleanup();
+            } catch (Exception e) {
+                System.err.println("Error cleaning up ship controller: " + e.getMessage());
+            }
+            shipController = null;
+        }
+
+        if (shipPane != null) {
+            shipPane.getChildren().clear();
+            if (shipPane.getChildren().size() > 0) {
+                Parent shipView = (Parent) shipPane.getChildren().get(0);
+                if (shipView != null) {
+                    try {
+                        Pane shipPaneTyped = (Pane) shipView;
+                        shipPaneTyped.prefWidthProperty().unbind();
+                        shipPaneTyped.prefHeightProperty().unbind();
+                    } catch (Exception e) {
+                        System.err.println("Error unbinding ship pane properties: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        if (crewToLoseLabel != null) {
+            crewToLoseLabel.setText("");
+        }
+
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        if (cabins != null) {
+            cabins.clear();
+        }
+
+        username = null;
+        ship = null;
+        crewToLoseLabel = null;
+        errorLabel = null;
+        shipPane = null;
+
+        System.out.println("LoseCrewMenuController: Cleanup completed");
     }
 }

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -146,5 +147,91 @@ public class Board2Controller extends BoardController {
 
         scalableContent.setLayoutX(Math.max(0, offsetX));
         scalableContent.setLayoutY(Math.max(0, offsetY));
+    }
+
+    @Override
+    public void cleanup() {
+        System.out.println("Board2Controller: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+        }
+
+        if (circleLabels != null) {
+            for (Label label : circleLabels) {
+                if (label != null) {
+                    label.layoutXProperty().unbind();
+                    label.layoutYProperty().unbind();
+                    label.setOnMouseClicked(null);
+                    label.setOnMouseEntered(null);
+                    label.setOnMouseExited(null);
+                }
+            }
+            circleLabels.clear();
+        }
+
+        if (circles != null) {
+            for (Circle circle : circles) {
+                if (circle != null) {
+                    circle.setOnMouseClicked(null);
+                    circle.setOnMouseEntered(null);
+                    circle.setOnMouseExited(null);
+                    try {
+                        circle.parentProperty().removeListener((obs, oldParent, newParent) -> {});
+                    } catch (Exception e) {
+                        System.err.println("Error removing parent listener: " + e.getMessage());
+                    }
+                }
+            }
+            circles.clear();
+        }
+
+        if (rootPane != null) {
+            try {
+                rootPane.sceneProperty().removeListener((obs, oldScene, newScene) -> {});
+                rootPane.widthProperty().removeListener((obs, oldVal, newVal) -> {});
+                rootPane.heightProperty().removeListener((obs, oldVal, newVal) -> {});
+            } catch (Exception e) {
+                System.err.println("Error removing rootPane listeners: " + e.getMessage());
+            }
+        }
+
+        if (scalableContent != null) {
+            scalableContent.getTransforms().clear();
+            scalableContent.getChildren().clear();
+            scalableContent.setLayoutX(0);
+            scalableContent.setLayoutY(0);
+        }
+
+        circle0 = null;
+        circle1 = null;
+        circle2 = null;
+        circle3 = null;
+        circle4 = null;
+        circle5 = null;
+        circle6 = null;
+        circle7 = null;
+        circle8 = null;
+        circle9 = null;
+        circle10 = null;
+        circle11 = null;
+        circle12 = null;
+        circle13 = null;
+        circle14 = null;
+        circle15 = null;
+        circle16 = null;
+        circle17 = null;
+        circle18 = null;
+        circle19 = null;
+        circle20 = null;
+        circle21 = null;
+        circle22 = null;
+        circle23 = null;
+
+        rootPane = null;
+        scalableContent = null;
+
+        System.out.println("Board2Controller: Cleanup completed");
     }
 }

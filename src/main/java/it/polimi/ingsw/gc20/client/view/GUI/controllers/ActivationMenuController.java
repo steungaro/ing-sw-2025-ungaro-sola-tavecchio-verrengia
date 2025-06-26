@@ -24,9 +24,87 @@ import java.util.*;
 
 import static java.lang.Math.min;
 
-public class ActivationMenuController implements MenuController.ContextDataReceiver, GameModelListener {
+public class ActivationMenuController implements MenuController.ContextDataReceiver, GameModelListener, BindCleanUp {
 
     @FXML public Button skipButton;
+
+    @Override
+    public void cleanup() {
+        System.out.println("ActivationMenuController: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+            System.out.println("ActivationMenuController: Removed from GameModel listeners");
+        }
+
+        if (shipPane != null && !shipPane.getChildren().isEmpty()) {
+            for (javafx.scene.Node child : shipPane.getChildren()) {
+                unbindNodeProperties(child);
+            }
+
+            shipPane.getChildren().clear();
+            System.out.println("ActivationMenuController: ShipPane cleared and unbound");
+        }
+
+        if (selectedComponents != null) {
+            selectedComponents.clear();
+        }
+
+        ship = null;
+        username = null;
+        activationType = null;
+
+        if (titleLabel != null) {
+            titleLabel.setText("");
+        }
+        if (messageLabel != null) {
+            messageLabel.setText("");
+        }
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        System.out.println("ActivationMenuController: Cleanup completed");
+    }
+
+    private void unbindNodeProperties(javafx.scene.Node node) {
+        if (node == null) return;
+
+        try {
+            if (node instanceof Region region) {
+                region.prefWidthProperty().unbind();
+                region.prefHeightProperty().unbind();
+                region.minWidthProperty().unbind();
+                region.minHeightProperty().unbind();
+                region.maxWidthProperty().unbind();
+                region.maxHeightProperty().unbind();
+            }
+
+            if (node instanceof Pane pane) {
+                pane.prefWidthProperty().unbind();
+                pane.prefHeightProperty().unbind();
+
+                for (javafx.scene.Node child : pane.getChildren()) {
+                    unbindNodeProperties(child);
+                }
+            }
+
+            if (node instanceof ImageView imageView) {
+                imageView.fitWidthProperty().unbind();
+                imageView.fitHeightProperty().unbind();
+            }
+
+            node.setOnMouseClicked(null);
+            node.setOnMouseEntered(null);
+            node.setOnMouseExited(null);
+
+        } catch (Exception e) {
+            System.err.println("Error unbinding node properties: " + e.getMessage());
+        }
+    }
+
 
     public enum ActivationType {
         CANNONS {

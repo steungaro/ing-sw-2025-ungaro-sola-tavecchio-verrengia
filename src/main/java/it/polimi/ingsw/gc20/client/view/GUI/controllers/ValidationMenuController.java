@@ -167,4 +167,61 @@ public class ValidationMenuController implements GameModelListener {
     public void onBoardUpdated(ViewBoard board) {
         //
     }
+
+
+    public void cleanup() {
+        System.out.println("ValidationMenuController: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+        }
+
+        if (shipPane != null) {
+            if (shipPane.getChildren().size() > 0) {
+                try {
+                    Parent shipView = (Parent) shipPane.getChildren().get(0);
+                    if (shipView != null) {
+                        try {
+                            Pane shipPaneTyped = (Pane) shipView;
+                            shipPaneTyped.prefWidthProperty().unbind();
+                            shipPaneTyped.prefHeightProperty().unbind();
+                            shipPaneTyped.setMaxWidth(Region.USE_PREF_SIZE);
+                            shipPaneTyped.setMaxHeight(Region.USE_PREF_SIZE);
+
+                            try {
+                                StackPane stackPane = (StackPane) shipPaneTyped;
+                                stackPane.setAlignment(null);
+                            } catch (Exception e) {
+                                System.err.println("Error resetting StackPane alignment: " + e.getMessage());
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Error unbinding ship pane properties: " + e.getMessage());
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error accessing ship view: " + e.getMessage());
+                }
+            }
+            shipPane.getChildren().clear();
+        }
+
+        if (validationStatusLabel != null) {
+            validationStatusLabel.setText("");
+            validationStatusLabel.setStyle("");
+        }
+
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        username = null;
+        ship = null;
+        validationStatusLabel = null;
+        shipPane = null;
+        errorLabel = null;
+
+        System.out.println("ValidationMenuController: Cleanup completed");
+    }
 }

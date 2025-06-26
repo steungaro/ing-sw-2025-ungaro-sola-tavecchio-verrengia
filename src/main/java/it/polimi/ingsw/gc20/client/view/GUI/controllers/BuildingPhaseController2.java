@@ -425,4 +425,101 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             }
         }
     }
+
+    @Override
+    public void cleanup() {
+        System.out.println("BuildingPhaseController2: Starting cleanup...");
+
+        if (rootPane != null) {
+            try {
+                rootPane.layoutBoundsProperty().removeListener((_, _, newBounds) -> {});
+            } catch (Exception e) {
+                System.err.println("Error removing rootPane listener: " + e.getMessage());
+            }
+        }
+
+        if (bgImage != null) {
+            bgImage.setImage(null);
+            bgImage.setFitWidth(0);
+            bgImage.setFitHeight(0);
+        }
+
+        if (componentsGrid != null) {
+            componentsGrid.setPrefSize(0, 0);
+            componentsGrid.setMaxSize(0, 0);
+            componentsGrid.setMinSize(0, 0);
+        }
+
+        if (bookedGrid != null) {
+            bookedGrid.getChildren().clear();
+            bookedGrid.setPrefSize(0, 0);
+            bookedGrid.setMaxSize(0, 0);
+            bookedGrid.setMinSize(0, 0);
+            bookedGrid.setTranslateX(0);
+            bookedGrid.setTranslateY(0);
+        }
+
+        if (imageBooked_0 != null) {
+            imageBooked_0.setImage(null);
+            imageBooked_0.setFitWidth(0);
+            imageBooked_0.setFitHeight(0);
+            imageBooked_0.fitWidthProperty().unbind();
+            imageBooked_0.fitHeightProperty().unbind();
+            imageBooked_0.setOnMouseClicked(null);
+            imageBooked_0.setOnMouseEntered(null);
+            imageBooked_0.setOnMouseExited(null);
+        }
+
+        if (imageBooked_1 != null) {
+            imageBooked_1.setImage(null);
+            imageBooked_1.setFitWidth(0);
+            imageBooked_1.setFitHeight(0);
+
+            imageBooked_1.fitWidthProperty().unbind();
+            imageBooked_1.fitHeightProperty().unbind();
+            imageBooked_1.setOnMouseClicked(null);
+            imageBooked_1.setOnMouseEntered(null);
+            imageBooked_1.setOnMouseExited(null);
+        }
+
+        imageCell_0_0 = null;
+        imageCell_0_1 = null;
+        imageCell_0_2 = null;
+        imageCell_0_3 = null;
+        imageCell_0_4 = null;
+        imageCell_0_5 = null;
+        imageCell_0_6 = null;
+        imageCell_1_0 = null;
+        imageCell_1_1 = null;
+        imageCell_1_2 = null;
+        imageCell_1_3 = null;
+        imageCell_1_4 = null;
+        imageCell_1_5 = null;
+        imageCell_1_6 = null;
+        imageCell_2_0 = null;
+        imageCell_2_1 = null;
+        imageCell_2_2 = null;
+        imageCell_2_3 = null;
+        imageCell_2_4 = null;
+        imageCell_2_5 = null;
+        imageCell_2_6 = null;
+        imageCell_3_0 = null;
+        imageCell_3_1 = null;
+        imageCell_3_2 = null;
+        imageCell_3_3 = null;
+        imageCell_3_4 = null;
+        imageCell_3_5 = null;
+        imageCell_3_6 = null;
+        imageCell_4_0 = null;
+        imageCell_4_1 = null;
+        imageCell_4_2 = null;
+        imageCell_4_3 = null;
+        imageCell_4_4 = null;
+        imageCell_4_5 = null;
+        imageCell_4_6 = null;
+        imageBooked_0 = null;
+        imageBooked_1 = null;
+
+        System.out.println("BuildingPhaseController2: Cleanup completed");
+    }
 }
