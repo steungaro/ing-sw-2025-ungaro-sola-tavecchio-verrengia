@@ -1,11 +1,16 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -16,7 +21,11 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 
-public class ActivationMenuController implements MenuController.ContextDataReceiver {
+import static java.lang.Math.min;
+
+public class ActivationMenuController implements MenuController.ContextDataReceiver, GameModelListener {
+
+    @FXML public Button skipButton;
 
     public enum ActivationType {
         CANNONS {
@@ -30,7 +39,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
+                ClientGameModel.getInstance().getClient().activateCannons(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         ENGINES {
@@ -44,7 +53,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
+                ClientGameModel.getInstance().getClient().activateEngines(username, new ArrayList<>(), new ArrayList<>());
             }
         },
         SHIELDS {
@@ -54,7 +63,11 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                ClientGameModel.getInstance().getClient().activateShield(username, primary.getFirst(), batteries.getFirst());
+                for(int i = 0; i < min(primary.size(), batteries.size()); i++){
+                    Pair<Integer, Integer> shieldCoordinates = primary.get(i);
+                    Pair<Integer, Integer> batteryCoordinates = batteries.get(i);
+                    ClientGameModel.getInstance().getClient().activateShield(username, shieldCoordinates, batteryCoordinates);
+                }
             }
             @Override
             public void skip(String username) throws RemoteException {
@@ -68,15 +81,29 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
             @Override
             public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
-                if (batteries != null && !batteries.isEmpty()) {
-                    Pair<Integer, Integer> batteryCoordinates = batteries.getFirst();
+                for (Pair<Integer, Integer> batteryCoordinates : primary) {
                     ClientGameModel.getInstance().getClient().loseEnergy(username, batteryCoordinates);
                 }
             }
             @Override
             public void skip(String username) throws RemoteException {
-                ClientGameModel.getInstance().getClient().loseEnergy(username, null);
+                ClientGameModel.getInstance().getClient().endMove(username);
             }
+        },
+        BRANCH{
+            @Override
+            public boolean matches(ViewComponent component) {
+                return true;
+            }
+            @Override
+            public void activate(String username, List<Pair<Integer, Integer>> primary, List<Pair<Integer, Integer>> batteries) throws RemoteException {
+                ClientGameModel.getInstance().getClient().chooseBranch(username, primary.getLast());
+            }
+            @Override
+            public void skip(String username) throws RemoteException {
+                ClientGameModel.getInstance().getClient().chooseBranch(username, null);
+            }
+
         };
 
         public abstract boolean matches(ViewComponent component);
@@ -105,12 +132,16 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
+        shipController.enableCellClickHandler(this::selectComponent);
     }
 
     public void initializeData(ActivationType type, String message, int batteryNum) {
         this.activationType = type;
         titleLabel.setText(type.toString() + " Activation");
         messageLabel.setText(message);
+
+        if(activationType == ActivationType.BRANCH)
+            skipButton.setVisible(false);
     }
 
     private void loadShipView() {
@@ -133,7 +164,6 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             Object controller = loader.getController();
             try {
                 this.shipController = (ShipController) controller;
-                shipController.enableCellClickHandler(this::selectComponent);
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
@@ -152,12 +182,13 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
     @FXML
     private void handleUndo() {
         if (!selectedComponents.isEmpty()) {
-            selectedComponents.removeLast();
+            selectedComponents.clear();
             updateHighlights();
         }
     }
 
     private void updateHighlights() {
+        // TODO: fix
         if (shipController == null) {
             return;
         }
@@ -190,57 +221,41 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     @FXML
     private void handleActivate() {
-        List<Pair<Integer, Integer>> primary = new ArrayList<>();
-        List<Pair<Integer, Integer>> batteries = new ArrayList<>();
-
-        for (Pair<Integer, Integer> coords : selectedComponents) {
-            ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
-            if (comp == null) continue;
-
-            if (activationType == ActivationType.BATTERY) {
-                if (comp.isBattery()) {
-                    batteries.add(coords);
-                }
-            } else {
-                if (comp.isBattery()) {
-                    batteries.add(coords);
-                    continue;
-                }
-
-                if (activationType.matches(comp)) {
-                    primary.add(coords);
-                }
-            }
-        }
-
         try {
+            List<Pair<Integer, Integer>> primary = new ArrayList<>();
+            List<Pair<Integer, Integer>> batteries = new ArrayList<>();
+
+            separateComponentsByType(primary, batteries, activationType::matches);
+
             activationType.activate(username, primary, batteries);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
 
+    private void separateComponentsByType(List<Pair<Integer, Integer>> primary,
+                                        List<Pair<Integer, Integer>> batteries,
+                                        java.util.function.Predicate<ViewComponent> componentMatcher) {
+        for (Pair<Integer, Integer> coords : selectedComponents) {
+            ViewComponent comp = ship.getComponent(coords.getValue0(), coords.getValue1());
+            if (comp == null) continue;
+            if (componentMatcher.test(comp)) {
+                primary.add(coords);
+            } else if (comp.isBattery()) {
+                batteries.add(coords);
+            }
+        }
+    }
+
     @FXML
     private void handleSkip() {
         try {
-            switch (activationType) {
-                case CANNONS:
-                    ClientGameModel.getInstance().getClient().activateCannons(username, null, null);
-                    break;
-                case ENGINES:
-                    ClientGameModel.getInstance().getClient().activateEngines(username, null, null);
-                    break;
-                case SHIELDS:
-                    ClientGameModel.getInstance().getClient().activateShield(username, null, null);
-                    break;
-                case BATTERY:
-                    ClientGameModel.getInstance().getClient().loseEnergy(username, null);
-                    break;
-            }
+            activationType.skip(username);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
     }
+
 
     private void showError(String message) {
         errorLabel.setText(message);
@@ -264,6 +279,35 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         else {
             throw new IllegalArgumentException("Context data must contain activationType and message");
         }
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
 
     }
 }

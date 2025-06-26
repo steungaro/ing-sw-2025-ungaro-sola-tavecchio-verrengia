@@ -33,12 +33,7 @@
         </font>
     </Label>
 
-    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 20; -fx-background-radius: 10;">
-        <Label text="Your ship:" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
+    <VBox alignment="CENTER" style="-fx-background-color: #333344; -fx-background-radius: 10;">
         <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
     </VBox>
 
@@ -59,16 +54,6 @@
             </font>
             <style>
                 -fx-background-color: #ff6b6b;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-
-        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="200" text="View Options" onAction="#handleViewOptions">
-            <font>
-                <Font size="16.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
                 -fx-text-fill: white;
             </style>
         </Button>

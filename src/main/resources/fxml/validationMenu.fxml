@@ -23,41 +23,14 @@
         </font>
     </Label>
 
-    <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #333344; -fx-padding: 10; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
-        <Label text="Your ship:" textFill="WHITE">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
+    <VBox alignment="CENTER" style="-fx-background-color: #333344; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
         <Label text="press on any component to remove them" textFill="WHITE">
             <font>
                 <Font size="14.0" />
             </font>
         </Label>
-        <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
+        <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" maxHeight="400" maxWidth="600"/>
     </VBox>
-
-    <HBox alignment="CENTER" spacing="20">
-        <Button fx:id="validateButton" onAction="#handleValidateShip" prefHeight="50" prefWidth="200" text="Validate Ship">
-            <font>
-                <Font size="16.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-
-        <Button fx:id="viewOptionsButton" onAction="#handleViewOptions" prefHeight="50" prefWidth="200" text="View Options">
-            <font>
-                <Font size="16.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
-    </HBox>
 
     <Label fx:id="errorLabel" textFill="RED" visible="false" wrapText="true">
         <font>

@@ -1,57 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
 
-<VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.IdleMenuController"
-      spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="600.0" prefWidth="700.0">
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="30"
+      style="-fx-background-color: #222233;"
+      xmlns="http://javafx.com/javafx/17.0.12"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.IdleMenuController">
 
     <padding>
-        <Insets bottom="20" left="20" right="20" top="20" />
+        <Insets bottom="40" left="40" right="40" top="40" />
     </padding>
 
-    <Label text="Game Paused" textFill="WHITE">
-        <font>
-            <Font name="System Bold" size="24.0" />
-        </font>
-    </Label>
-
-    <Label fx:id="messageLabel" wrapText="true" textFill="WHITE">
-        <font>
-            <Font size="18.0" />
-        </font>
-    </Label>
-
-    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344; -fx-padding: 30; -fx-background-radius: 10;">
-        <Label text="What would you like to do?" textFill="WHITE">
+    <!-- Title container with shadow effect -->
+    <VBox alignment="CENTER" spacing="15">
+        <Label text=" GAME Stopped " textFill="#ecf0f1" alignment="CENTER">
             <font>
-                <Font size="16.0" />
+                <Font name="System Bold" size="28.0" />
             </font>
         </Label>
 
-        <Button fx:id="viewOptionsButton" prefHeight="50" prefWidth="250" text="View Game Options" onAction="#handleViewOptions">
-            <font>
-                <Font size="16.0" />
-            </font>
-            <style>
-                -fx-background-color: #4a7eb3;
-                -fx-text-fill: white;
-            </style>
-        </Button>
+    </VBox>
 
-        <Button fx:id="quitButton" prefHeight="50" prefWidth="250" text="Quit Game" onAction="#handleQuitGame">
+    <!-- Message container with elegant border -->
+    <VBox alignment="CENTER" spacing="15"
+          style="-fx-background-color: #333344;
+                 -fx-background-radius: 10;
+                 -fx-border-radius: 10;
+                 -fx-border-width: 2;">
+        <padding>
+            <Insets bottom="25" left="30" right="30" top="25" />
+        </padding>
+
+        <Label fx:id="messageLabel" textFill="#ecf0f1" wrapText="true" textAlignment="CENTER"
+               maxWidth="500">
             <font>
-                <Font size="16.0" />
+                <Font name="System" size="16.0" />
             </font>
-            <style>
-                -fx-background-color: #b34a4a;
-                -fx-text-fill: white;
-            </style>
-        </Button>
+        </Label>
+    </VBox>
+
+    <!-- Animated waiting indicator -->
+    <VBox alignment="CENTER" spacing="15">
+        <Label text="Please wait..." textFill="#95a5a6" opacity="0.9">
+            <font>
+                <Font name="System Italic" size="14.0" />
+            </font>
+        </Label>
+
+        <!-- Animated dots for loading -->
+        <HBox alignment="CENTER" spacing="10">
+            <Label fx:id="dot1" text="●" textFill="#3498db">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+            <Label fx:id="dot2" text="●" textFill="#2ecc71">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+            <Label fx:id="dot3" text="●" textFill="#e74c3c">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+            <Label fx:id="dot4" text="●" textFill="#f39c12">
+                <font>
+                    <Font size="14.0" />
+                </font>
+            </Label>
+        </HBox>
     </VBox>
 </VBox>

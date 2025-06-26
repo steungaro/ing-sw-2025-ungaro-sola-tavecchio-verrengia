@@ -264,6 +264,7 @@ public class  CombatZone1State extends CargoState {
     private void fireProjectile(Player player) {
         try {
             manager.fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             //check if we finished shooting
             finishManager();
         } catch (InvalidShipException e) {
@@ -329,6 +330,10 @@ public class  CombatZone1State extends CargoState {
             setStandbyMessage(getCurrentPlayer() + " is removing cargo.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         }
+
+        if (lostCargo == 0) {
+            endMove(player);
+        }
     }
 
     @Override
@@ -371,6 +376,10 @@ public class  CombatZone1State extends CargoState {
             lostCargo = 0;
         }
         getController().getMessageManager().notifyPhaseChange(phase, this);
+
+        if (lostCargo == 0) {
+            endMove(player);
+        }
     }
 
     @Override
@@ -474,11 +483,11 @@ public class  CombatZone1State extends CargoState {
 
     @Override
     public String createsShieldMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line" + result + ", select the shields to use.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side at line " + result + ", select the shields to use.";
     }
 
     @Override
     public String createsRollDiceMessage() {
-        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + "side, roll the dice to see where it will hit.";
+        return "A " + manager.getFirstProjectile().getFireType() + " is coming from the " + manager.getFirstDirection().getDirection() + " side, roll the dice to see where it will hit.";
     }
 }

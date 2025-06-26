@@ -2,29 +2,24 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.*;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class BuildingPhaseController implements GameModelListener {
 
@@ -50,22 +45,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     protected StackPane rootPane;
 
     @FXML
-    protected Label playerColorLabel;
-
-    @FXML
-    protected Label usernameLabel;
-
-    @FXML
-    protected Label creditsLabel;
-
-    @FXML
-    protected Label inGameLabel;
-
-    @FXML
     protected GridPane componentsGrid;
-
-    @FXML
-    private ListView<ViewPlayer> otherPlayersShipsList;
 
     @FXML
     protected GridPane bookedGrid;
@@ -783,7 +763,8 @@ public abstract class BuildingPhaseController implements GameModelListener {
         this.cellClickHandler = null;
         System.out.println("Placing mode deactivated");
 
-        componentsGrid.getChildren().removeIf(node -> node instanceof Rectangle);
+        componentsGrid.getChildren().removeIf(node ->
+                node.getClass().equals(javafx.scene.shape.Rectangle.class));
     }
 
     protected abstract int getRows();
@@ -823,8 +804,11 @@ public abstract class BuildingPhaseController implements GameModelListener {
             java.util.List<javafx.scene.Node> nodesToRemove = new java.util.ArrayList<>();
 
             for (javafx.scene.Node node : bookedGrid.getChildren()) {
-                if (node instanceof Rectangle) {
-                    nodesToRemove.add(node);
+                try{
+                    Rectangle rect = (Rectangle) node;
+                    nodesToRemove.add(rect);
+                } catch (ClassCastException e) {
+                    // Ignore nodes that are not rectangles
                 }
             }
             bookedGrid.getChildren().removeAll(nodesToRemove);
@@ -857,5 +841,15 @@ public abstract class BuildingPhaseController implements GameModelListener {
     @Override
     public void onErrorMessageReceived(String message) {
         // Ignore
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        // ignore
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        // ignore
     }
 }

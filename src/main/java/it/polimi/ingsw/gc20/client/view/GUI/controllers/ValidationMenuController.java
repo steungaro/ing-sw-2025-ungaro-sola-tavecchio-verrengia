@@ -1,28 +1,33 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class ValidationMenuController {
+public class ValidationMenuController implements GameModelListener {
 
     @FXML
     private Label validationStatusLabel;
 
     @FXML
     private Pane shipPane;
-
-    @FXML
-    private Button validateButton;
 
     @FXML
     private Label errorLabel;
@@ -45,11 +50,9 @@ public class ValidationMenuController {
         if (isValid) {
             validationStatusLabel.setText("Ship is already valid! Wait for other players before going to the next phase.");
             validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;");
-            validateButton.setDisable(true);
         } else {
             validationStatusLabel.setText("Ship is not valid");
             validationStatusLabel.setStyle("-fx-text-fill: #ff6b6b;"); // Red text
-            validateButton.setDisable(false);
         }
     }
 
@@ -68,16 +71,36 @@ public class ValidationMenuController {
             shipPane.getChildren().clear();
             shipPane.getChildren().add(shipView);
 
-            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
-            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+            shipPane.applyCss();
+            shipPane.layout();
 
-            Object controller = loader.getController();
-            if (controller instanceof ShipController shipController) {
-                shipController.enableCellClickHandler(this::selectComponentToRemove);
-            } else {
-                showError("Unable to get the ship controller");
+            Pane shipPaneTyped = (Pane) shipView;
+
+            shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
+            shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
+
+            shipPaneTyped.prefWidthProperty().bind(shipPane.widthProperty());
+            shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
+
+            try{
+                ((StackPane)shipPaneTyped).setAlignment(javafx.geometry.Pos.CENTER);
+            } catch (ClassCastException e) {
+                showError("Error casting shipPaneTyped to StackPane: " + e.getMessage());
             }
 
+            Platform.runLater(() -> {
+                shipPane.requestLayout();
+                shipPaneTyped.requestLayout();
+            });
+
+            Object controller = loader.getController();
+
+            try{
+                ShipController shipController = (ShipController) controller;
+                shipController.enableCellClickHandler(this::selectComponentToRemove);
+            } catch (ClassCastException e) {
+                showError("Unable to get the ship controller");
+            }
         } catch (IOException e) {
             showError("Error while loading the ship view: " + e.getMessage());
         }
@@ -113,5 +136,35 @@ public class ValidationMenuController {
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+        //
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+        //
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+        //
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        //
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        //
     }
 }

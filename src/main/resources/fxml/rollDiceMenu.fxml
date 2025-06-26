@@ -24,7 +24,7 @@
             </font>
         </Label>
 
-        <Button fx:id="rollDiceButton" onAction="#handleRollDice" prefHeight="60" prefWidth="250" text="Roll the Dice">
+        <Button  onAction="#handleRollDice" prefHeight="60" prefWidth="250" text="Roll the Dice">
             <font>
                 <Font size="18.0" />
             </font>

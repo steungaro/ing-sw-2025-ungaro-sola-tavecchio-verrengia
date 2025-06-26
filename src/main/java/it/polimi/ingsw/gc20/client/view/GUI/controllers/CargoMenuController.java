@@ -1,6 +1,12 @@
+
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -9,6 +15,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 import org.javatuples.Pair;
 
 import java.io.IOException;
@@ -16,11 +26,14 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ArrayList;
 
-public class CargoMenuController implements MenuController.ContextDataReceiver {
+public class CargoMenuController implements MenuController.ContextDataReceiver, GameModelListener {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
+    @FXML private VBox cargoBoxPane;
+    @FXML private VBox cargoContainer;
     private String username;
     private ViewShip ship;
     private ShipController shipController;
@@ -36,7 +49,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
 
-
         loadShipView();
     }
 
@@ -44,17 +56,58 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         messageLabel.setText(message);
 
         if(losing==1){
+            cargoBoxPane.setVisible(false);
             for (int i = 0; i < cargoToLose; i++) {
                 shipController.enableCellClickHandler(this::handleUnloadCargo);
             }
         } else if(losing==2){
-            for (CargoColor cargoColor : cargoToGain) {
-                currentCargo = cargoColor;
-                shipController.enableCellClickHandler(this::handleLoadCargo);
-            }
+            createCargoBoxes();
         } else {
             showError("Invalid operation, please try again.");
         }
+    }
+
+    private void createCargoBoxes() {
+        cargoContainer.getChildren().clear();
+        cargoBoxPane.setVisible(true);
+
+        List<CargoColor> availableCargo = new ArrayList<>(cargoToGain);
+
+        for (CargoColor cargo : availableCargo) {
+            Rectangle box = new Rectangle(40, 40);
+            box.setFill(getColorFromCargoColor(cargo));
+            box.setStroke(Color.WHITE);
+            box.setStrokeWidth(2);
+
+            VBox.setMargin(box, new javafx.geometry.Insets(2, 2, 2, 2));
+
+            box.setOnMouseEntered(e -> box.setStroke(Color.YELLOW));
+            box.setOnMouseExited(e -> box.setStroke(Color.WHITE));
+
+            box.setOnMouseClicked(e -> {
+                currentCargo = cargo;
+                shipController.enableCellClickHandler(this::handleLoadCargo);
+
+                cargoContainer.getChildren().forEach(node -> {
+                    if (node instanceof Rectangle) {
+                        ((Rectangle) node).setStroke(Color.WHITE);
+                    }
+                });
+                box.setStroke(Color.LIME);
+            });
+
+            cargoContainer.getChildren().add(box);
+        }
+    }
+
+    private Color getColorFromCargoColor(CargoColor cargoColor) {
+        return switch (cargoColor) {
+            case RED -> Color.RED;
+            case YELLOW -> Color.YELLOW;
+            case BLUE -> Color.BLUE;
+            case GREEN -> Color.GREEN;
+            default -> Color.GRAY;
+        };
     }
 
     private void loadShipView() {
@@ -150,12 +203,37 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
 
     private void handleLoadCargo(int row, int col) {
         Pair<Integer, Integer> coords = new Pair<>(row, col);
-
         try {
             ClientGameModel.getInstance().getClient().loadCargo(username, currentCargo, coords);
+
+            removeUsedCargo(currentCargo);
+
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
+    }
+
+    private void removeUsedCargo(CargoColor usedCargo) {
+        cargoToGain.remove(usedCargo);
+
+        cargoContainer.getChildren().removeIf(node -> {
+            try{
+                Rectangle rect = (Rectangle) node;
+                Color rectColor = (Color) rect.getFill();
+                Color cargoColor = getColorFromCargoColor(usedCargo);
+                return rectColor.equals(cargoColor);
+            }
+             catch (ClassCastException e) {
+                // Ignore nodes that are not rectangles
+            }
+            return false;
+        });
+
+        if (cargoToGain.isEmpty()) {
+            cargoBoxPane.setVisible(false);
+        }
+
+        currentCargo = null;
     }
 
     @FXML
@@ -195,13 +273,43 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
             }
         } else if (contextData.size()==4){
             if(contextData.containsKey("message") && contextData.containsKey("cargoToLose") && contextData.containsKey("cargoToGain") && contextData.containsKey("losing")) {
-                losing = (boolean) contextData.get("losing") ? 2 : 1;
+                losing = (boolean) contextData.get("losing") ? 1 : 2;
                 String message = (String) contextData.get("message");
-                cargoToGain = (List<CargoColor>) contextData.get("cargoToGain");
+                cargoToGain = new ArrayList<>((List<CargoColor>) contextData.get("cargoToGain"));
                 cargoToLose = (int) contextData.get("cargoToLose");
 
                 initializeWithParameters(message);
             }
         }
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }

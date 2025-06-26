@@ -19,6 +19,6 @@ public record AssemblingMessage(
     @Override
     public void handleMessage() {
         ClientGameModel.getInstance().setComponentInHand(component);
-        ClientGameModel.getInstance().AssemblingStateMenu();
+        ClientGameModel.getInstance().assemblingStateMenu();
     }
 }

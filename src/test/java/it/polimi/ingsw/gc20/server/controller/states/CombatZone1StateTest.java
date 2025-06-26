@@ -254,7 +254,6 @@ class CombatZone1StateTest {
 
 
         state.loseEnergy(controller.getPlayerByID("player1"), new Pair<>(2, 2));
-        state.endMove(controller.getPlayerByID("player1"));
         Thread.sleep(5000);
 
         assertEquals("player1", state.getCurrentPlayer());

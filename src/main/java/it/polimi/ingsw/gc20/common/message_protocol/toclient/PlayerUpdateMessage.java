@@ -39,11 +39,13 @@ public record PlayerUpdateMessage(
 
         if (targetPlayer != null) {
             // Update the player's information in the game model
-            targetPlayer.credits = targetPlayer.credits + creditsAdded;
-            targetPlayer.inGame = inGame;
-            targetPlayer.playerColor = color;
-            targetPlayer.position = posInBoard;
-
+            model.setPlayerInfo(
+                    targetPlayer.username,
+                    creditsAdded,
+                    inGame,
+                    color,
+                    posInBoard
+            );
         }
         else{
             // If the player is not found, message error

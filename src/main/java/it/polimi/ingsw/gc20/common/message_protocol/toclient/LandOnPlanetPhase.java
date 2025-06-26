@@ -20,6 +20,6 @@ public record LandOnPlanetPhase(
 
     @Override
     public void handleMessage() {
-        ClientGameModel.getInstance().planetMenu(planets);
+            ClientGameModel.getInstance().planetMenu(planets);
     }
 }

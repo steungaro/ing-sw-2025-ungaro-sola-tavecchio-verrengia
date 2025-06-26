@@ -10,8 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -28,73 +26,92 @@ import java.util.Map;
 
 public class PlanetMenuController implements MenuController.ContextDataReceiver {
     @FXML
-    private ListView<Planet> planetsListView;
+    private HBox planetsContainer;
 
     @FXML
     private Label errorLabel;
 
-    @FXML
-    private Pane shipPane;
-
-    private ViewShip ship;
     private List<Planet> planets;
     private String username;
+    private Planet selectedPlanet;
+    private VBox selectedPlanetBox;
 
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
-        ship = ClientGameModel.getInstance().getShip(username);
-        loadShipView();
-        setupPlanetListView();
     }
 
     public void initializeWithPlanets(List<Planet> planets) {
         this.planets = planets;
-        planetsListView.getItems().clear();
-        planetsListView.getItems().addAll(planets);
+        setupPlanetsDisplay();
     }
 
-    private void setupPlanetListView() {
-        planetsListView.setCellFactory(listView -> new ListCell<Planet>() {
-            @Override
-            protected void updateItem(Planet planet, boolean empty) {
-                super.updateItem(planet, empty);
+    private void setupPlanetsDisplay() {
+        planetsContainer.getChildren().clear();
+        planetsContainer.setSpacing(10);
+        planetsContainer.setPadding(new Insets(10));
 
-                if (empty || planet == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    VBox planetContainer = new VBox(5);
-                    planetContainer.setPadding(new Insets(8, 10, 8, 10));
+        for (int i = 0; i < planets.size(); i++) {
+            Planet planet = planets.get(i);
+            VBox planetBox = createPlanetBox(planet, i + 1);
+            planetsContainer.getChildren().add(planetBox);
+        }
+    }
 
-                    // Planet name label
-                    int planetNumber = planetsListView.getItems().indexOf(planet) + 1;
-                    Label planetNameLabel = new Label("Planet " + planetNumber + (planet.getAvailable() ? " (Available)" : " (Not Available)"));
-                    planetNameLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+    private VBox createPlanetBox(Planet planet, int planetNumber) {
+        VBox planetContainer = new VBox(5);
+        planetContainer.setPadding(new Insets(10));
+        planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
+        planetContainer.setMinWidth(150);
 
-                    // Cargo display
-                    HBox cargoContainer = new HBox(3);
-                    Label cargoLabel = new Label("Cargos: ");
-                    cargoLabel.setFont(Font.font("System", 12));
-                    cargoContainer.getChildren().add(cargoLabel);
+        Label planetNameLabel = new Label("Planet " + planetNumber +
+            (planet.getAvailable() ? "\n(Available)" : "\n(Not Available)"));
+        planetNameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        planetNameLabel.setTextFill(Color.WHITE);
+        planetNameLabel.setWrapText(true);
 
-                    // Add colored squares for each cargo
-                    if (planet.getReward() != null && !planet.getReward().isEmpty()) {
-                        for (CargoColor cargo : planet.getReward()) {
-                            Rectangle cargoSquare = createCargoSquare(cargo);
-                            cargoContainer.getChildren().add(cargoSquare);
-                        }
-                    }
+        VBox cargoContainer = new VBox(3);
+        Label cargoLabel = new Label("Cargos:");
+        cargoLabel.setFont(Font.font("System", 10));
+        cargoLabel.setTextFill(Color.web("#80ffaa"));
+        
+        HBox cargoSquares = new HBox(2);
+        
+        if (planet.getReward() != null && !planet.getReward().isEmpty()) {
+            for (CargoColor cargo : planet.getReward()) {
+                Rectangle cargoSquare = createCargoSquare(cargo);
+                cargoSquares.getChildren().add(cargoSquare);
+            }
+        }
 
-                    planetContainer.getChildren().addAll(planetNameLabel, cargoContainer);
-                    setGraphic(planetContainer);
-                    setText(null);
-                }
+        cargoContainer.getChildren().addAll(cargoLabel, cargoSquares);
+        planetContainer.getChildren().addAll(planetNameLabel, cargoContainer);
+
+        planetContainer.setOnMouseClicked(event -> selectPlanet(planet, planetContainer));
+
+        planetContainer.setOnMouseEntered(event -> 
+            planetContainer.setStyle("-fx-border-color: #80ffaa; -fx-border-width: 3; -fx-background-color: #3e4f5e; -fx-background-radius: 8;"));
+        
+        planetContainer.setOnMouseExited(event -> {
+            if (selectedPlanetBox != planetContainer) {
+                planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
             }
         });
+
+        return planetContainer;
+    }
+
+    private void selectPlanet(Planet planet, VBox planetBox) {
+        if (selectedPlanetBox != null) {
+            selectedPlanetBox.setStyle("-fx-border-color: #CCCCCC; -fx-border-width: 1; -fx-background-color: #FAFAFA;");
+        }
+        
+        selectedPlanet = planet;
+        selectedPlanetBox = planetBox;
+        planetBox.setStyle("-fx-border-color: #0078D4; -fx-border-width: 2; -fx-background-color: #E6F3FF;");
     }
 
     private Rectangle createCargoSquare(CargoColor cargo) {
-        Rectangle square = new Rectangle(16, 16);
+        Rectangle square = new Rectangle(14, 14);
         square.setStroke(Color.DARKGRAY);
         square.setStrokeWidth(1);
 
@@ -108,33 +125,8 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
         return square;
     }
 
-
-    private void loadShipView() {
-        try {
-            if (ship == null) {
-                showError("Error, ship not found: " + username);
-                return;
-            }
-
-            String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            Parent shipView = loader.load();
-
-            shipPane.getChildren().clear();
-            shipPane.getChildren().add(shipView);
-
-            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
-            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
-
-        } catch (IOException e) {
-            showError("Error uploading ship: " + e.getMessage());
-        }
-    }
-
     @FXML
     private void handleLandOnPlanet() {
-        Planet selectedPlanet = planetsListView.getSelectionModel().getSelectedItem();
         if (selectedPlanet == null) {
             showError("Please select a planet to land on");
             return;
@@ -157,11 +149,6 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
         }
-    }
-
-    @FXML
-    private void handleViewOptions() {
-        // TODO
     }
 
     private void showError(String message) {

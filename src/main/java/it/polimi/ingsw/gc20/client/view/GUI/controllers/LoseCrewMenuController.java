@@ -1,6 +1,11 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class LoseCrewMenuController implements MenuController.ContextDataReceiver {
+public class LoseCrewMenuController implements MenuController.ContextDataReceiver, GameModelListener {
     @FXML
     private Label crewToLoseLabel;
 
@@ -38,6 +43,9 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         crewToLoseLabel.setText("You need to lose " + crewToLose + " crew members!");
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
+        for(int i = 0; i < crewToLose; i++) {
+            shipController.enableCellClickHandler(this::selectCabin);
+        }
     }
 
     private void loadShipView() {
@@ -59,22 +67,13 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
             ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
 
             shipController = (ShipController) loader.getController();
-
-            if (shipController != null) {
-                shipController.buildShipComponents(ship);
-                shipController.enableCellClickHandler(this::selectCabin);
-            } else {
-                showError("Error, ship controller not found.");
-            }
         } catch (IOException e) {
             showError("Error uploading ship: " + e.getMessage());
         }
     }
 
     private void selectCabin(int row, int col) {
-        int cabinRow = row - 5;
-        int cabinCol = col - (ship.isLearner ? 5 : 4);
-        cabins.add(new Pair<>(cabinRow, cabinCol));
+        cabins.add(new Pair<>(row, col));
         if (shipController != null) {
             shipController.highlightSelectedCabins(cabins);
         }
@@ -83,7 +82,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     @FXML
     private void handleUndo() {
         if (!cabins.isEmpty()) {
-            cabins.removeLast();
+            cabins.clear();
             if (shipController != null) {
                 shipController.highlightSelectedCabins(cabins);
             }
@@ -93,19 +92,11 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     @FXML
     private void handleContinue() {
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().loseCrew(username, cabins);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
             ClientGameModel.getInstance().setFree();
         }
-    }
-
-    @FXML
-    private void handleViewOptions() {
-        ClientGameModel.getInstance().setBusy();
-        // TODO Call the options menu
     }
 
 
@@ -122,5 +113,35 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         } else {
             showError("No crew to lose data provided.");
         }
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }

@@ -20,11 +20,8 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
-    private GUIView guiView;
-
     @FXML
     public void initialize() {
-        guiView = (GUIView) ClientGameModel.getInstance();
 
         loginButton.setOnAction(event -> handleLogin());
     }
@@ -41,7 +38,9 @@ public class LoginController {
         ClientGameModel.getInstance().login();
     }
 
-    public Labeled getErrorLabel() {
-        return errorLabel;
+    public void setErrorLabel(String errorMessage) {
+        errorLabel.setText(errorMessage);
+        errorLabel.setVisible(true);
+        return;
     }
 }

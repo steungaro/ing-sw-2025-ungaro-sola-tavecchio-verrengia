@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -38,7 +39,11 @@ public class CargoMenu implements MenuState, GameModelListener {
     public void displayMenu() {
         ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mCargo Menu\u001B[0m");
-        System.out.println(message);
+        if (message == null || message.isEmpty()) {
+            System.out.println("You can now manage your cargo.");
+        } else {
+            System.out.println("\u001B[31m" + message + "\u001B[0m");
+        }
         if (losing) {
             System.out.println("You have to lose \u001B[31m" + cargoToLose + "\u001B[0m cargo.");
             System.out.println("1. Lose cargo");
@@ -288,7 +293,7 @@ public class CargoMenu implements MenuState, GameModelListener {
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+        ClientGameModel.getInstance().setCurrentMenuState(this);
     }
 
     @Override
@@ -309,5 +314,10 @@ public class CargoMenu implements MenuState, GameModelListener {
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         // ignore
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }

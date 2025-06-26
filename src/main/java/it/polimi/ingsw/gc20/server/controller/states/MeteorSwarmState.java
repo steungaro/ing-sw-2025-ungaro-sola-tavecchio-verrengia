@@ -68,10 +68,11 @@ public class MeteorSwarmState extends PlayingState {
             } else {
                 fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
             }
-            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
+
             // activate the cannons of the current player
             //fire the projectile
             fireManagerMap.get(player).fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated cannons"));
             //go to the next player
             nextPlayer();
             //if all the player has received this projectile
@@ -171,8 +172,9 @@ public class MeteorSwarmState extends PlayingState {
         try {
             //activate the shield
             fireManagerMap.get(player).activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
+
             fireManagerMap.get(player).fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             nextPlayer();
             //if all the player has received this projectile
             if (getCurrentPlayer() == null) {
@@ -220,9 +222,9 @@ public class MeteorSwarmState extends PlayingState {
             //if there is no next player, we set the current player to the first player
             RestartTurn();
         } else {
-            if (phase == StatePhase.CANNONS_PHASE) {
+            if (phaseSave == StatePhase.CANNONS_PHASE) {
                 NotifyDefensiveCannon();
-            } else if (phase == StatePhase.SELECT_SHIELD) {
+            } else if (phaseSave == StatePhase.SELECT_SHIELD) {
                 notifyDefensiveShield();
             }
             //if there is a next player, we modify the state to the correct phase, memorized in the phase attribute
@@ -236,10 +238,14 @@ public class MeteorSwarmState extends PlayingState {
         //if we are in the cannon phase or in the shield phase, we skip the turn of the player
         //if we are in the validate ship phase we auto choose the branch
         if (phase == StatePhase.ROLL_DICE_PHASE) {
-            try {
-                rollDice(player);
-            }catch (InvalidTurnException | InvalidStateException e) {
-                //cannot happen
+            nextPlayer();
+            if (getCurrentPlayer() == null) {
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
+                phase = StatePhase.DRAW_CARD_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            } else {
+                getController().getMessageManager().notifyPhaseChange(phase, this);
             }
         } else if (phase == StatePhase.CANNONS_PHASE || phase== StatePhase.SELECT_SHIELD) {
             phaseSave = phase;

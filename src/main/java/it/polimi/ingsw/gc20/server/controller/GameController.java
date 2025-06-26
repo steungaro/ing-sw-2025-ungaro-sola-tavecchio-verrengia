@@ -308,6 +308,11 @@ public class GameController implements GameControllerInterface {
         try{
             // Find player with matching username
             if (connectedPlayers.contains(username)) {
+                if(state.isEndgame()){
+                    connectedPlayers.remove(username);
+                    disconnectedPlayers.add(username);
+                    return;
+                }
                 if (state.getCurrentPlayer() != null) {
                     if(state.getCurrentPlayer().equals(username)) {
                         state.currentQuit(getPlayerByID(username));
@@ -363,6 +368,11 @@ public class GameController implements GameControllerInterface {
                     state.rejoin(username);
                 }
             } else {
+                if(state.isEndgame()){
+                    connectedPlayers.add(username);
+                    state.getScore();
+                    return;
+                }
                 pendingPlayers.add(username);
                 for (Player p:  getPlayers()){
                     getMessageManager().sendToPlayer(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init all ship"));

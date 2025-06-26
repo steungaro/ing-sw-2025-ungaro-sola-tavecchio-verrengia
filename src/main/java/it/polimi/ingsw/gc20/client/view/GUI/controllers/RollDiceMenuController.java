@@ -29,12 +29,9 @@ public class RollDiceMenuController implements MenuController.ContextDataReceive
     @FXML
     private void handleRollDice() {
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().rollDice(username);
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 

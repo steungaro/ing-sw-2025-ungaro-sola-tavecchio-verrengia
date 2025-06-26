@@ -4,6 +4,7 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import org.javatuples.Pair;
@@ -102,7 +103,7 @@ public class BranchMenu implements MenuState, GameModelListener{
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        ClientGameModel.getInstance().setCurrentMenuStateNoClear(this);
+        ClientGameModel.getInstance().setCurrentMenuState(this);
     }
 
     @Override
@@ -113,6 +114,11 @@ public class BranchMenu implements MenuState, GameModelListener{
 
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+        // ignore
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
         // ignore
     }
 

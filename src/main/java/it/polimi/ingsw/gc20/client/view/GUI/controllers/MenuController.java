@@ -6,12 +6,13 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
@@ -61,9 +62,7 @@ public class MenuController implements GameModelListener {
     @FXML private Label player3Name;
     @FXML private Label player4Name;
     @FXML public Button backButton;
-    @FXML public Button button2;
-    @FXML public Button button3;
-    @FXML public Button button4;
+    @FXML public Button quitButton;
     @FXML private Label serverMessages;
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
@@ -71,7 +70,8 @@ public class MenuController implements GameModelListener {
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
     private static MenuController currentInstance;
-    private final Stack<Node> viewStack = new Stack<>();
+    private Node viewStack = null;
+    private DisplayContext currentDisplayContext = DisplayContext.MAIN_VIEW;
 
     public enum ContentType {
         SHIP, BOARD
@@ -81,7 +81,7 @@ public class MenuController implements GameModelListener {
     public void initialize() {
         gameModel = ClientGameModel.getInstance();
         players = gameModel.getPlayers();
-        
+
         loadPlayerShips();
         loadPlayerNames();
         printCurrentCard(gameModel.getCurrentCard());
@@ -116,10 +116,6 @@ public class MenuController implements GameModelListener {
 
         updateBackButtonVisibility();
 
-        button2.setVisible(false);
-        button3.setVisible(false);
-        button4.setVisible(false);
-
         ViewAdventureCard currentCard = gameModel.getCurrentCard();
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
         drawnCard.setVisible(isCardDrawn);
@@ -146,6 +142,7 @@ public class MenuController implements GameModelListener {
      * Loads player names in the sidebar
      */
     private void loadPlayerNames() {
+        players = gameModel.getPlayers();
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) continue;
 
@@ -158,7 +155,12 @@ public class MenuController implements GameModelListener {
             };
 
             if (playerNameLabel != null) {
-                playerNameLabel.setText(players[i].username);
+                if (players[i].username.equals(gameModel.getUsername())){
+                    playerNameLabel.setText(players[i].username + " (You) $" + players[i].credits);
+                }
+                else {
+                    playerNameLabel.setText(players[i].username);
+                }
             }
         }
     }
@@ -187,14 +189,17 @@ public class MenuController implements GameModelListener {
      */
     @FXML
     private void showTemporaryView(String fxmlPath) {
+
+        saveCurrentStateToStack();
+
         if (!currentFrame.getChildren().isEmpty()) {
             Node currentView = currentFrame.getChildren().getFirst();
-            viewStack.push(currentView);
+            viewStack = currentView;
             currentView.setVisible(false);
         }
 
         loadMenuInCurrentFrame(fxmlPath);
-        
+
         backButton.setVisible(true);
     }
 
@@ -202,16 +207,29 @@ public class MenuController implements GameModelListener {
      * Returns to the previous view in the stack
      */
     @FXML
-    private void returnToPreviousView() {
-        currentFrame.getChildren().clear();
-
-        if (!viewStack.isEmpty()) {
-            Node previousView = viewStack.pop();
-            previousView.setVisible(true);
-            currentFrame.getChildren().add(previousView);
+    private void returnToPreviousView(){
+        closeCurrentControllerListeners();
+        
+        if (viewStack!= null) {
+            currentFrame.getChildren().clear();
+            currentFrame.getChildren().add(viewStack);
             currentContentType = null;
         }
         updateBackButtonVisibility();
+    }
+
+    /**
+     * Helper method to close listeners for the current controller
+     */
+    private void closeCurrentControllerListeners() {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentContent = currentFrame.getChildren().getFirst();
+            Object currentController = currentContent.getUserData();
+            
+            if (currentController instanceof GameModelListener) {
+                ClientGameModel.getInstance().removeListener((GameModelListener) currentController);
+            }
+        }
     }
 
     @FXML
@@ -220,7 +238,6 @@ public class MenuController implements GameModelListener {
             try{
                 gameModel.getClient().acceptCard(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -233,37 +250,10 @@ public class MenuController implements GameModelListener {
             try {
                 ClientGameModel.getInstance().getClient().endMove(
                         ClientGameModel.getInstance().getUsername());
-                hideAcceptableButtons();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    /**
-     * Generic method to show any temporary view
-     * @param fxmlPath Path to the FXML file
-     */
-    public void showTemporaryMenu(String fxmlPath) {
-        showTemporaryView(fxmlPath);
-    }
-
-    /**
-     * Clear all views in the stack and return to the initial state
-     */
-    public void clearViewStack() {
-        currentFrame.getChildren().clear();
-        viewStack.clear();
-
-        initializeCurrentFrame();
-    }
-
-    /**
-     * Check if there are temporary views in the stack
-     * @return true if there are views in the stack
-     */
-    public boolean hasTemporaryViews() {
-        return !viewStack.isEmpty();
     }
 
     /**
@@ -281,11 +271,8 @@ public class MenuController implements GameModelListener {
     }
 
     private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
-        if (hasTemporaryViews()) {
-            showTemporaryView(getFXMLPath(ContentType.SHIP));
-            return;
-        }
-        saveCurrentStateToStack();
+        if (viewStack == null)
+            saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
 
@@ -340,11 +327,14 @@ public class MenuController implements GameModelListener {
             saveCurrentStateToStack();
 
             Parent content = FXMLLoader.load(fxmlUrl);
-            if (content instanceof Region region) {
+            try{
+                Region region = (Region) content;
                 region.prefWidthProperty().bind(currentFrame.widthProperty());
                 region.prefHeightProperty().bind(currentFrame.heightProperty());
                 region.setMaxWidth(Region.USE_PREF_SIZE);
                 region.setMaxHeight(Region.USE_PREF_SIZE);
+            } catch (ClassCastException e) {
+                System.err.println("Content is not a Region, cannot bind size: " + e.getMessage());
             }
 
             currentFrame.getChildren().clear();
@@ -361,50 +351,21 @@ public class MenuController implements GameModelListener {
 
     private void saveCurrentStateToStack() {
         if (!currentFrame.getChildren().isEmpty()) {
-            Node currentView = currentFrame.getChildren().getFirst();
-            viewStack.push(currentView);
+            viewStack = currentFrame.getChildren().getFirst();
         }
-    }
-
-
-    /**
-     * Configures the loaded menu controller with specific parameters
-     */
-    private void configureMenuController(Object controller, String menuType, Object... parameters) {
-        // TODO: check
-        switch (menuType) {
-            case "loseCrewMenu" -> {
-                if (controller instanceof LoseCrewMenuController && parameters.length > 0) {
-                    ((LoseCrewMenuController) controller).initializeWithCrewToLose((Integer) parameters[0]);
-                }
-            }
-            case "cargoMenu" -> {
-                if (controller instanceof CargoMenuController && parameters.length >= 4) {
-                    ((CargoMenuController) controller).initializeWithParameters(
-                            (String) parameters[0]
-                    );
-                }
-            }
-            case "idleMenu" -> {
-                if (controller instanceof IdleMenuController && parameters.length > 0) {
-                    ((IdleMenuController) controller).initializeWithMessage((String) parameters[0]);
-                }
-            }
-            default -> {
-                // No specific configuration needed
-            }
-        }
+        updateBackButtonVisibility();
     }
 
     /**
      * Static method with parameters support
      */
-    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData) {
+    public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            guiView.displayErrorMessage("MenuController not initialized");
             return;
         }
+
+        instance.setAcceptableButtonVisibility(acceptable);
 
         try {
             if (contentFileName == null || contentFileName.trim().isEmpty()) {
@@ -420,27 +381,54 @@ public class MenuController implements GameModelListener {
                 return;
             }
 
+            instance.closeCurrentControllerListeners();
+
             FXMLLoader loader = new FXMLLoader(fxmlResource);
             Parent content = loader.load();
             Object controller = loader.getController();
+
+            if (controller != null) {
+                content.setUserData(controller);
+
+                try {
+                    ((ContextDataReceiver) controller).setContextData(contextData);
+                } catch (ClassCastException e) {
+                    // ignore
+                }
+
+                if (controller instanceof GameModelListener) {
+                    ClientGameModel.getInstance().addListener((GameModelListener) controller);
+                }
+            }
 
             if (controller != null && contextData != null) {
                 try {
                     ((ContextDataReceiver) controller).setContextData(contextData);
                 } catch (ClassCastException e) {
                     guiView.displayErrorMessage("Unable to obtain the context data receiver: " + e.getMessage());
+                    System.out.println("Unable to obtain the context data receiver: " + e.getMessage());
                 }
             }
 
-            if (content instanceof Region region) {
+            try{
+                Region region = (Region) content;
                 region.prefWidthProperty().bind(instance.currentFrame.widthProperty());
                 region.prefHeightProperty().bind(instance.currentFrame.heightProperty());
                 region.setMaxWidth(Region.USE_PREF_SIZE);
                 region.setMaxHeight(Region.USE_PREF_SIZE);
+            } catch (ClassCastException e) {
+                System.err.println("Content is not a Region, cannot bind size: " + e.getMessage());
             }
 
             instance.currentFrame.getChildren().clear();
             instance.currentFrame.getChildren().add(content);
+
+            if (!isTemporaryView) {
+                instance.saveCurrentStateToStack();
+                instance.currentContentType = ContentType.SHIP;
+            } else {
+                instance.updateBackButtonVisibility();
+            }
 
         } catch (IOException e) {
             System.err.println("Error loading menu: " + e.getMessage());
@@ -458,9 +446,10 @@ public class MenuController implements GameModelListener {
     /**
      * Generic method to load any type of FXML content into a container
      */
-    private void loadFXMLInContainer(StackPane container, String fxmlPath, 
-                                   DisplayContext context, ContentType contentType, 
+    private void loadFXMLInContainer(StackPane container, String fxmlPath,
+                                   DisplayContext context, ContentType contentType,
                                    ViewPlayer player) {
+        this.currentDisplayContext = context;
         try {
             if (!fxmlPath.startsWith("/")) {
                 fxmlPath = "/" + fxmlPath + ".fxml";
@@ -495,13 +484,13 @@ public class MenuController implements GameModelListener {
     /**
      * Unified method to configure sizing for any element
      */
-    private void configureGenericSizing(StackPane container, StackPane element, 
+    private void configureGenericSizing(StackPane container, StackPane element,
                                       DisplayContext context, ContentType contentType) {
         DisplayConfig config = getDisplayConfig(context, contentType);
-        
+
         element.prefWidthProperty().unbind();
         element.prefHeightProperty().unbind();
-        
+
         if (context == DisplayContext.THUMBNAIL) {
             configureThumbnailSizing(container, element, config);
         } else {
@@ -517,7 +506,7 @@ public class MenuController implements GameModelListener {
         element.setMinHeight(config.minHeight);
         element.setMaxWidth(config.maxWidth);
         element.setMaxHeight(config.maxHeight);
-        
+
         element.prefWidthProperty().bind(
             container.widthProperty()
                 .multiply(config.widthMultiplier)
@@ -528,15 +517,15 @@ public class MenuController implements GameModelListener {
                 .multiply(config.heightMultiplier)
                 .subtract(config.padding)
         );
-        
+
         Platform.runLater(() -> {
             double containerWidth = container.getWidth();
             double containerHeight = container.getHeight();
-            
+
             if (containerWidth > 0 && containerHeight > 0) {
                 double calculatedWidth = containerWidth * config.widthMultiplier - config.padding;
                 double calculatedHeight = containerHeight * config.heightMultiplier - config.padding;
-                
+
                 if (calculatedWidth < config.minWidth || calculatedHeight < config.minHeight) {
                     element.prefWidthProperty().unbind();
                     element.prefHeightProperty().unbind();
@@ -555,19 +544,19 @@ public class MenuController implements GameModelListener {
         element.setMinHeight(config.minHeight);
         element.setMaxWidth(config.maxWidth);
         element.setMaxHeight(config.maxHeight);
-        
+
         container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             if (newWidth.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
         });
-        
+
         container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             if (newHeight.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
         });
-        
+
         Platform.runLater(() -> updateElementSizeSafely(container, element, config));
     }
 
@@ -594,14 +583,14 @@ public class MenuController implements GameModelListener {
     private void updateElementSizeSafely(StackPane container, StackPane element, DisplayConfig config) {
         double containerWidth = container.getWidth();
         double containerHeight = container.getHeight();
-        
+
         if (containerWidth <= 0 || containerHeight <= 0) return;
-        
+
         double availableWidth = containerWidth - config.padding;
         double availableHeight = containerHeight - config.padding;
-        
+
         double targetWidth, targetHeight;
-        
+
         if (availableWidth / availableHeight > config.aspectRatio) {
             targetHeight = availableHeight;
             targetWidth = targetHeight * config.aspectRatio;
@@ -609,50 +598,61 @@ public class MenuController implements GameModelListener {
             targetWidth = availableWidth;
             targetHeight = targetWidth / config.aspectRatio;
         }
-        
+
         targetWidth = Math.max(config.minWidth, Math.min(targetWidth, config.maxWidth));
         targetHeight = Math.max(config.minHeight, Math.min(targetHeight, config.maxHeight));
-        
+
         element.prefWidthProperty().unbind();
         element.prefHeightProperty().unbind();
-        
+
         element.setPrefWidth(targetWidth);
         element.setPrefHeight(targetHeight);
         element.setMaxWidth(targetWidth);
         element.setMaxHeight(targetHeight);
     }
 
-    /**
-     * Configures the controller of the loaded content
-     */
-    private void configureController(Object controller, ContentType contentType, 
+    private void configureController(Object controller, ContentType contentType,
                                    ViewPlayer player) {
         switch (contentType) {
             case SHIP -> {
-                if (controller instanceof ShipController shipController && player != null) {
-                    shipController.buildShipComponents(gameModel.getShip(player.username));
-                    shipController.updateStatisticBoard(player);
+                try{
+                    ShipController shipController = (ShipController) controller;
+                    shipController.setShouldLoadComponentStats(currentDisplayContext != DisplayContext.THUMBNAIL);
+
+                    if(player != null) {
+                        shipController.buildShipComponents(gameModel.getShip(player.username));
+                    }
+                } catch (ClassCastException e) {
+                    System.err.println("Controller is not a ShipController: " + e.getMessage());
                 }
             }
             case BOARD -> {
-                if (controller instanceof BoardController boardController) {
+                try {
+                    BoardController boardController = (BoardController) controller;
                     boardController.updateBoardDisplay(gameModel.getBoard());
+                    try{
+                        ClientGameModel.getInstance().addListener((GameModelListener) boardController);
+                    } catch (ClassCastException e) {
+                        System.err.println("Controller is not a GameModelListener: " + e.getMessage());
+                    }
+                } catch (ClassCastException e) {
+                    System.err.println("Controller is not a BoardController: " + e.getMessage());
                 }
             }
         }
     }
 
     /**
-     * Initializes currentFrame with current player's ship
+     * Initializes the currentFrame with the current player's ship
      */
     private void initializeCurrentFrame() {
         ViewPlayer currentPlayer = Arrays.stream(gameModel.getPlayers())
                 .filter(p -> p != null && p.username.equals(gameModel.getUsername()))
                 .findFirst().orElse(null);
-        
+
         if (currentPlayer != null) {
             String fxmlPath = getFXMLPath(ContentType.SHIP);
-            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
+            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
                               ContentType.SHIP, currentPlayer);
         }
         currentContentType = ContentType.SHIP;
@@ -664,45 +664,16 @@ public class MenuController implements GameModelListener {
      */
     private String getFXMLPath(ContentType contentType) {
         return switch (contentType) {
-            case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+            case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ?
                         "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
-            case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+            case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ?
                          "/fxml/board0.fxml" : "/fxml/board2.fxml";
         };
     }
 
-    /**
-     * Static method to load ship in other controllers
-     */
-    public static void loadShipInContainer(StackPane container, ViewPlayer player, 
-                                         DisplayContext context) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(ContentType.SHIP);
-        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.SHIP, player);
-    }
-
-    /**
-     * Static method to load board in other controllers
-     */
-    public static void loadBoardInContainer(StackPane container, DisplayContext context) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(ContentType.BOARD);
-        controller.loadFXMLInContainer(container, fxmlPath, context, ContentType.BOARD, null);
-    }
-
-    /**
-     * Generic static method for any content
-     */
-    public static void loadContentInContainer(StackPane container, ContentType contentType, 
-                                            DisplayContext context, ViewPlayer player) {
-        MenuController controller = new MenuController();
-        String fxmlPath = controller.getFXMLPath(contentType);
-        controller.loadFXMLInContainer(container, fxmlPath, context, contentType, player);
-    }
-
     @Override
     public void onShipUpdated(ViewShip ship) {
-        // TODO
+        loadPlayerShips();
     }
 
     @Override
@@ -712,7 +683,7 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onErrorMessageReceived(String message) {
-        // TODO: decide what to do
+        // ignore
     }
 
     @Override
@@ -725,33 +696,85 @@ public class MenuController implements GameModelListener {
         printCurrentCard(currentCard);
     }
 
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+        loadPlayerNames();
+    }
+
     private void printCurrentCard(ViewAdventureCard currentCard) {
         Platform.runLater(() -> {
-            if (currentCard != null && currentCard.id != 0) {
-                String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
-                String currentText = serverMessages.getText();
-                if (currentText.equals("Waiting for server messages...")) {
-                    serverMessages.setText(cardInfo);
-                } else {
-                    serverMessages.setText(currentText + "\n" + cardInfo);
+            try {
+                if (currentCard != null && currentCard.id != 0) {
+                    String cardInfo = "Drawn card: " + currentCard.getClass().getSimpleName();
+                    String currentText = serverMessages.getText();
+                    if (currentText.equals("Waiting for server messages...")) {
+                        serverMessages.setText(cardInfo);
+                    } else {
+                        serverMessages.setText(currentText + "\n" + cardInfo);
+                    }
+
+                    javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
+
+                    imageView.setPreserveRatio(true);
+                    imageView.setSmooth(true);
+                    imageView.setCache(true);
+
+                    imageView.setFitWidth(drawnCard.getWidth() - 20);
+
+                    drawnCard.getChildren().clear();
+                    drawnCard.getChildren().add(imageView);
+                    drawnCard.setAlignment(Pos.CENTER);
+
+                    drawnCard.setVisible(true);
                 }
-                javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(getImage(currentCard));
-
-                imageView.setFitWidth(200);
-                imageView.setFitHeight(300);
-                imageView.setPreserveRatio(true);
-
-                drawnCard.getChildren().clear();
-                drawnCard.getChildren().add(imageView);
-
+            } catch (Exception e) {
+                System.err.println("Error loading image: " + e.getMessage());
+                e.printStackTrace();
             }
         });
     }
 
     private javafx.scene.image.Image getImage(ViewAdventureCard viewAdventureCard) {
-        String series = (viewAdventureCard.id > 20) ? "II" : "I";
-        int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
-        String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
-        return new javafx.scene.image.Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
+        try {
+            String series = (viewAdventureCard.id > 20) ? "II" : "I";
+            int adjustedId = (viewAdventureCard.id > 20) ? (viewAdventureCard.id - 20) : viewAdventureCard.id;
+            String imagePath = "/fxml/cards/GT-cards_" + series + "_IT_0" + adjustedId + ".jpg";
+
+            java.io.InputStream imageStream = getClass().getResourceAsStream(imagePath);
+            if (imageStream == null) {
+                System.err.println("Img file not found : " + imagePath);
+                return null;
+            }
+
+            return new javafx.scene.image.Image(imageStream);
+        } catch (Exception e) {
+            System.err.println("Error loading img: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    @FXML
+    public void quit(){
+        if (gameModel.getClient() != null) {
+            try {
+                ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        Platform.exit();
+    }
+
+    @FXML
+    public void endTurn(){
+        if (gameModel.getClient() != null) {
+            try {
+                gameModel.getClient().endMove(gameModel.getUsername());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -268,21 +268,28 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         if (bookedGrid != null) {
             System.out.println("booked components interaction enabled.");
 
+            bookedGrid.getChildren().removeIf(node ->
+                    node.getClass().equals(javafx.scene.shape.Rectangle.class));
+
             for (int i = 0; i < 2; i++) {
                 if(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).getBooked(i) == null)
                     continue;
+            
                 Rectangle clickArea = new Rectangle();
                 clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
                 clickArea.setStrokeWidth(2);
                 clickArea.setOpacity(0.7);
 
-                clickArea.widthProperty().bind(
-                        bookedGrid.widthProperty().divide(getCols()).subtract(2)
-                );
-                clickArea.heightProperty().bind(
-                        componentsGrid.heightProperty().divide(getRows()).subtract(1)
-                );
+                ImageView imageView = i == 0 ? imageBooked_0 : imageBooked_1;
+                if (imageView != null) {
+                    clickArea.widthProperty().bind(
+                        imageView.fitWidthProperty()
+                    );
+                    clickArea.heightProperty().bind(
+                        imageView.fitHeightProperty()
+                    );
+                }
 
                 final int index = i;
                 clickArea.setOnMouseClicked(_ -> {
@@ -304,6 +311,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
                 bookedGrid.add(clickArea, i, 0);
                 GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
                 GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                GridPane.setMargin(clickArea, new javafx.geometry.Insets(2));
             }
         } else {
             System.err.println("bookedComponentsPane is null. Cannot enable interaction.");
