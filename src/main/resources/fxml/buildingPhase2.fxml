@@ -124,6 +124,9 @@
                                 </padding>
                             </VBox>
                         </ScrollPane>
+                  <BorderPane.margin>
+                     <Insets left="10.0" />
+                  </BorderPane.margin>
                     </VBox>
                 </left>
                 <center>
