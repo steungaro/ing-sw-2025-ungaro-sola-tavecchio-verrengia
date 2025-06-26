@@ -169,15 +169,19 @@ public abstract class ShipController implements GameModelListener {
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
 
-            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.TOP_LEFT);
-            StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.BOTTOM_LEFT);
+            javafx.scene.layout.HBox batteryContainer = new javafx.scene.layout.HBox(5); // 5 pixel di spacing
+            batteryContainer.setAlignment(Pos.CENTER);
+            batteryContainer.getChildren().addAll(batteryIcon, batteryLabel);
 
-            layeredPane.getChildren().addAll(batteryLabel, batteryIcon);
-        } catch (Exception e) {
-            System.err.println("Unable to load battery image: " + e.getMessage());
-            layeredPane.getChildren().add(batteryLabel);
-        }
+            StackPane.setAlignment(batteryContainer, Pos.CENTER);
+            layeredPane.getChildren().add(batteryContainer);
+        
+    } catch (Exception e) {
+        System.err.println("Unable to load battery image: " + e.getMessage());
+        StackPane.setAlignment(batteryLabel, Pos.CENTER);
+        layeredPane.getChildren().add(batteryLabel);
     }
+}
 
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
@@ -205,12 +209,16 @@ public abstract class ShipController implements GameModelListener {
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
 
-                layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
-                StackPane.setAlignment(astronautsLabel, Pos.CENTER_LEFT);
-                StackPane.setAlignment(astronautIcon, Pos.CENTER_RIGHT);
+                javafx.scene.layout.HBox astronautContainer = new javafx.scene.layout.HBox(5);
+                astronautContainer.setAlignment(Pos.CENTER);
+                astronautContainer.getChildren().addAll(astronautIcon, astronautsLabel);
+
+                StackPane.setAlignment(astronautContainer, Pos.CENTER);
+                layeredPane.getChildren().add(astronautContainer);
 
             } catch (Exception e) {
                 System.err.println("Unable to load astronaut image: " + e.getMessage());
+                StackPane.setAlignment(astronautsLabel, Pos.CENTER);
                 layeredPane.getChildren().add(astronautsLabel);
             }
         }
@@ -235,61 +243,88 @@ public abstract class ShipController implements GameModelListener {
     }
 
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        List<double[]> coordinates = comp.getSize() == 2 ? cargoCord2 : cargoCord3;
-        int index = 0;
+    List<double[]> coordinates;
+    
+    if (comp.getSize() == 1) {
+        coordinates = List.of(
+            new double[]{0.5, 0.5}
+        );
+    } else if (comp.getSize() == 2) {
+        coordinates = List.of(
+            new double[]{0.5, 0.5 - 0.2},
+            new double[]{0.5, 0.5 + 0.2}
+        );
+    } else {
+        coordinates = List.of(
+            new double[]{0.5 - 0.2, 0.5},
+            new double[]{0.5 + 0.2, 0.5 - 0.2},
+            new double[]{0.5 + 0.2, 0.5 + 0.2}
+        );
+    }
+    
+    int index = 0;
+    
+    for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
+        addCargoBox(layeredPane, coordinates.get(index), "red");
+    }
+    for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
+        addCargoBox(layeredPane, coordinates.get(index), "green");
+    }
+    for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
+        addCargoBox(layeredPane, coordinates.get(index), "blue");
+    }
+    for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
+        addCargoBox(layeredPane, coordinates.get(index), "yellow");
+    }
+    for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
+        addCargoBox(layeredPane, coordinates.get(index), "empty");
+    }
+}
 
-        // Create cargo boxes with relative positioning
-        for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "red");
+private void addCargoBox(StackPane parent, double[] relativePos, String type) {
+    Rectangle box = new Rectangle();
+
+    box.widthProperty().bind(parent.widthProperty().multiply(0.15));
+    box.heightProperty().bind(parent.heightProperty().multiply(0.15));
+
+    switch (type) {
+        case "red" -> {
+            box.setFill(javafx.scene.paint.Color.RED);
+            box.setStroke(javafx.scene.paint.Color.DARKRED);
         }
-        for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "green");
+        case "green" -> {
+            box.setFill(javafx.scene.paint.Color.LIME);
+            box.setStroke(javafx.scene.paint.Color.DARKGREEN);
         }
-        for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "blue");
+        case "blue" -> {
+            box.setFill(javafx.scene.paint.Color.BLUE);
+            box.setStroke(javafx.scene.paint.Color.DARKBLUE);
         }
-        for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "yellow");
+        case "yellow" -> {
+            box.setFill(javafx.scene.paint.Color.YELLOW);
+            box.setStroke(javafx.scene.paint.Color.ORANGE);
         }
-        for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "empty");
+        case "empty" -> {
+            box.setFill(javafx.scene.paint.Color.TRANSPARENT);
+            box.setStroke(javafx.scene.paint.Color.WHITE);
+            box.setStrokeWidth(2);
+            box.getStrokeDashArray().addAll(3.0, 3.0);
         }
     }
 
-    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
-        Rectangle box = new Rectangle();
-
-        // Bind size to parent for scaling
-        box.widthProperty().bind(parent.widthProperty().multiply(0.15));
-        box.heightProperty().bind(parent.heightProperty().multiply(0.15));
-
-        // Set color based on type
-        switch (type) {
-            case "red" -> box.setFill(javafx.scene.paint.Color.RED);
-            case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
-            case "blue" -> box.setFill(javafx.scene.paint.Color.BLUE);
-            case "yellow" -> box.setFill(javafx.scene.paint.Color.YELLOW);
-            case "empty" -> {
-                box.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                box.setStroke(javafx.scene.paint.Color.WHITE);
-                box.setStrokeWidth(1);
-                box.getStrokeDashArray().addAll(5.0, 5.0);
-            }
-        }
-
-        box.setStroke(javafx.scene.paint.Color.BLACK);
-        box.setStrokeWidth(1);
-
-        // Position using binding for responsive layout
-        box.translateXProperty().bind(
-                parent.widthProperty().multiply(relativePos[0] - 0.5)
-        );
-        box.translateYProperty().bind(
-                parent.heightProperty().multiply(relativePos[1] - 0.5)
-        );
-
-        parent.getChildren().add(box);
+    if (!type.equals("empty")) {
+        box.setStrokeWidth(1.5);
     }
+
+    box.translateXProperty().bind(
+            parent.widthProperty().multiply(relativePos[0] - 0.5)
+    );
+    box.translateYProperty().bind(
+            parent.heightProperty().multiply(relativePos[1] - 0.5)
+    );
+
+    parent.getChildren().add(box);
+}
 
     public void clearAllComponents() {
         componentsGrid.getChildren().clear();
@@ -457,4 +492,3 @@ public abstract class ShipController implements GameModelListener {
 
     }
 }
-
