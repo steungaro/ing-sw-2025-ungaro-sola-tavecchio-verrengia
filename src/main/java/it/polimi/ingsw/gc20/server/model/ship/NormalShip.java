@@ -413,18 +413,16 @@ public class NormalShip extends Ship {
      * @throws InvalidAlienPlacement if an alien of the same color is already present on the ship
      */
     public void addAlien(AlienColor alien, Cabin c) throws InvalidAlienPlacement {
-        c.setAlien(alien);
         if (alien == AlienColor.BROWN){
             if (brownAlien) {
                 throw new InvalidAlienPlacement("Brown alien already present");
             }
-            brownAlien = true;
         } else {
             if (purpleAlien) {
                 throw new InvalidAlienPlacement("Purple alien already present");
             }
-            purpleAlien = true;
         }
+        c.setAlien(alien);
     }
 
     /**
