@@ -76,6 +76,9 @@ public class ValidationMenuController implements GameModelListener {
 
             Pane shipPaneTyped = (Pane) shipView;
 
+            shipPaneTyped.setMinWidth(150);
+            shipPaneTyped.setMinHeight(120);
+        
             shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
             shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
 
@@ -83,7 +86,9 @@ public class ValidationMenuController implements GameModelListener {
             shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
 
             try{
-                ((StackPane)shipPaneTyped).setAlignment(javafx.geometry.Pos.CENTER);
+                StackPane stackPane = (StackPane)shipPaneTyped;
+                stackPane.setAlignment(javafx.geometry.Pos.CENTER);
+            
             } catch (ClassCastException e) {
                 showError("Error casting shipPaneTyped to StackPane: " + e.getMessage());
             }
@@ -103,15 +108,6 @@ public class ValidationMenuController implements GameModelListener {
             }
         } catch (IOException e) {
             showError("Error while loading the ship view: " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleValidateShip() {
-        try {
-            updateValidationStatus();
-        } catch (Exception e) {
-            showError("Connection error: " + e.getMessage());
         }
     }
 
