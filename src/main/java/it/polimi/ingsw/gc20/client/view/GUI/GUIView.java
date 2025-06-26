@@ -30,7 +30,7 @@ import java.util.HashMap;
  * user interaction handling, and real-time game state visualization.
  * 
  * <p>The class manages the complete user interface lifecycle from initial connection setup through
- * gameplay phases including building, navigation, and combat. It utilizes JavaFX Scene management
+ * gameplay phases including building, navigation, and combat. It uses JavaFX Scene management
  * with FXML-based views and implements the Observer pattern to respond to game state changes.</p>
  * 
  * <p>Key features include:
@@ -727,7 +727,7 @@ public class GUIView extends ClientGameModel {
     }
 
     /**
-     * Initiates the login process by transitioning to login state and sending login request.
+     * Initiates the login process by transitioning to login-state and sending a login request.
      * Uses the currently stored username for the login attempt.
      */
     @Override
