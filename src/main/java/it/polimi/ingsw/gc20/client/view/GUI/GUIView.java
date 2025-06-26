@@ -670,6 +670,7 @@ public class GUIView extends ClientGameModel {
     @Override
     public void cardAcceptanceMenu(String message) {
         Map<String, Object> contextData = new HashMap<>();
+        contextData.put("message", message);
         showMenuContent(GuiState.AUTOMATIC_ACTION, contextData, false, true);
     }
 
