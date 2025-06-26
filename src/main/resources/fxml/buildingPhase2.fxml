@@ -142,7 +142,7 @@
                 <ImageView fx:id="bgImage" fitHeight="250.0" preserveRatio="true">
                     <Image url="@cardboard/cardboard-1b.jpg" />
                 </ImageView>
-                <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" prefHeight="380.0" prefWidth="340.0" style="-fx-border-color: white; -fx-border-width: 2px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
+                <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" prefHeight="380.0" prefWidth="340.0" vgap="2" BorderPane.alignment="CENTER">
                     <columnConstraints>
                         <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
                         <ColumnConstraints hgrow="ALWAYS" percentWidth="14.3" />
@@ -207,7 +207,7 @@
                     <ImageView fx:id="imageCell_4_6" GridPane.columnIndex="6" GridPane.fillHeight="true" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
                 </GridPane>
 
-                <GridPane fx:id="bookedGrid" alignment="CENTER" hgap="2" style="-fx-border-color: white; -fx-border-width: 3px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
+                <GridPane fx:id="bookedGrid" alignment="CENTER" hgap="2" vgap="2" BorderPane.alignment="CENTER">
                     <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
