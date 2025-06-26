@@ -18,6 +18,10 @@ public record AddCargoMessage(
         return "Add cargo";
     }
 
+    public List<CargoColor> getReward() {
+        return reward;
+    }
+
     @Override
     public void handleMessage() {
         System.out.println(reward);
