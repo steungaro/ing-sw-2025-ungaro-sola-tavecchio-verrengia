@@ -321,7 +321,7 @@ public class GUIView extends ClientGameModel {
             }
 
             if ("menu".equals(fileName)) {
-                primaryStage.setFullScreen(true);
+                primaryStage.setMaximized(true);
             }
 
 
