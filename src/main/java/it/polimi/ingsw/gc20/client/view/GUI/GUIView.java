@@ -154,9 +154,9 @@ public class GUIView extends ClientGameModel {
      */
     public GUIView() throws RemoteException {
         super();
-        currentGuiStateProperty.addListener((_, oldValue, newValue) -> {
+        currentGuiStateProperty.addListener((_, _, newValue) -> {
             if (newValue != null) {
-                Platform.runLater(() -> handleGuiStateChange(oldValue, newValue));
+                Platform.runLater(() -> handleGuiStateChange(newValue));
             }
         });
     }
@@ -166,10 +166,9 @@ public class GUIView extends ClientGameModel {
      * This method is called automatically when the GUI state changes and ensures
      * that scene transitions only occur when necessary to avoid redundant loads.
      *
-     * @param oldState the previous GUI state (maybe null)
      * @param newState the new GUI state to transition to
      */
-    private void handleGuiStateChange(GuiState oldState, GuiState newState) {
+    private void handleGuiStateChange(GuiState newState) {
         if (primaryStage == null) {
             System.err.println("primaryStage not initialized: " + newState.getFxmlFileName());
             return;
@@ -181,10 +180,6 @@ public class GUIView extends ClientGameModel {
                 primaryStage.getScene().getRoot().getId().equals(newState.getFxmlFileName())) {
             return;
         }
-
-        System.out.println("GUI State changed from " +
-                (oldState != null ? oldState.name() : "null") +
-                " to " + newState.name());
         showScene(newState.getFxmlFileName());
     }
 
