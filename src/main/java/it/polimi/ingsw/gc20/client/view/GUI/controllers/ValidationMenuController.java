@@ -25,9 +25,6 @@ public class ValidationMenuController {
     private Pane shipPane;
 
     @FXML
-    private Button validateButton;
-
-    @FXML
     private Label errorLabel;
 
     private String username;
@@ -48,11 +45,9 @@ public class ValidationMenuController {
         if (isValid) {
             validationStatusLabel.setText("Ship is already valid! Wait for other players before going to the next phase.");
             validationStatusLabel.setStyle("-fx-text-fill: #80ffaa;");
-            validateButton.setDisable(true);
         } else {
             validationStatusLabel.setText("Ship is not valid");
             validationStatusLabel.setStyle("-fx-text-fill: #ff6b6b;"); // Red text
-            validateButton.setDisable(false);
         }
     }
 

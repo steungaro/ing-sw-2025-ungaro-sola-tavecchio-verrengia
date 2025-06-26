@@ -18,7 +18,7 @@
                <Label text="Building phase" textFill="WHITE">
                    <font>
                        <Font name="System Bold" size="20.0" />
-                   </font>
+                   </font>llo
                </Label>
            </HBox>
       </top>
@@ -147,7 +147,7 @@
               <ImageView fx:id="bgImage" fitHeight="250.0" preserveRatio="true">
                   <Image url="@cardboard/cardboard-1.jpg" />
               </ImageView>
-              <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" prefHeight="380.0" prefWidth="340.0" style="-fx-border-color: white; -fx-border-width: 2px; -fx-background-color: rgba(255,255,255,0.1); -fx-grid-lines-visible: true" vgap="2" BorderPane.alignment="CENTER">
+              <GridPane fx:id="componentsGrid" alignment="CENTER" hgap="2" prefHeight="380.0" prefWidth="340.0" vgap="2" BorderPane.alignment="CENTER">
                   <columnConstraints>
                       <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
                       <ColumnConstraints hgrow="ALWAYS" percentWidth="20" />
