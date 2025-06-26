@@ -417,31 +417,14 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             return;
         }
         ClientGameModel model = ClientGameModel.getInstance();
-        int maxIndex = model.getBoard().unviewedPile - 1;
-
-        TextInputDialog dialog = new TextInputDialog("0");
-        dialog.setTitle("Take Covered Component");
-        dialog.setHeaderText("Select a component from the covered deck");
-        dialog.setContentText("Enter index (0 to " + maxIndex + "):");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(indexStr -> {
-            try {
-                int index = Integer.parseInt(indexStr);
-                if (index >= 0 && index <= maxIndex) {
-                    String username = model.getUsername();
-                    model.getClient().takeComponentFromUnviewed(username, index);
-                    updateComponentInHand();
-
-                } else {
-                    showError("Invalid index. Please enter a number between 0 and " + maxIndex);
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid number");
-            } catch (Exception e) {
-                showError("Error taking component: " + e.getMessage());
-            }
-        });
+        String username = model.getUsername();
+        try {
+            model.getClient().takeComponentFromUnviewed(username, 0);
+        } catch (RemoteException e) {
+            showError("Error taking component from covered deck: " + e.getMessage());
+            return;
+        }
+        updateComponentInHand();
     }
 
     protected void updateComponentInHand() {
