@@ -320,6 +320,11 @@ public class GUIView extends ClientGameModel {
                 primaryStage.setScene(newScene);
             }
 
+            if ("menu".equals(fileName)) {
+                primaryStage.setFullScreen(true);
+            }
+
+
             primaryStage.setTitle("Galaxy Trucker");
             root.setId(fileName);
         } catch (IOException e) {
