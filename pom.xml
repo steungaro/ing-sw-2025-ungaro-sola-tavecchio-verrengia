@@ -167,6 +167,27 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+            <!-- JavaFX Maven Plugin for running JavaFX applications -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>it.polimi.ingsw.gc20.client.view.GUI.GUIApplication</mainClass>
+                    <commandlineArgs>-Dprism.verbose=true</commandlineArgs>
+                    <jvmArgs>
+                        <jvmArg>-Dprism.order=sw</jvmArg>
+                        <jvmArg>-Dprism.allowhidpi=false</jvmArg>
+                        <jvmArg>-Djava.awt.headless=false</jvmArg>
+                        <jvmArg>-Dprism.verbose=true</jvmArg>
+                        <jvmArg>-Dprism.forceGPU=false</jvmArg>
+                        <jvmArg>-Dprism.vsync=false</jvmArg>
+                        <!-- macOS specific arguments -->
+                        <jvmArg>-XstartOnFirstThread</jvmArg>
+                        <jvmArg>-Djava.library.path=/System/Library/Frameworks/JavaVM.framework/Frameworks</jvmArg>
+                    </jvmArgs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
