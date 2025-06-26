@@ -91,8 +91,7 @@ public class PlanetsState extends CargoState {
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't load cargo unless you are on the planet.");
         }
-        if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
-            planets.get(landedPlanetIndex).getReward().remove(loaded);
+        if (reward.contains(loaded)) {
             reward.remove(loaded);
             getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));

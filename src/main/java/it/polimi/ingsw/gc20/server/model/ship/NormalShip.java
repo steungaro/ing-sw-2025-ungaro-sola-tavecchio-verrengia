@@ -417,10 +417,12 @@ public class NormalShip extends Ship {
             if (brownAlien) {
                 throw new InvalidAlienPlacement("Brown alien already present");
             }
+            brownAlien = true;
         } else {
             if (purpleAlien) {
                 throw new InvalidAlienPlacement("Purple alien already present");
             }
+            purpleAlien = true;
         }
         c.setAlien(alien);
     }
