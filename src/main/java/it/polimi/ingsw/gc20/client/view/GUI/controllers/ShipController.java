@@ -506,7 +506,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     }
 
     public void cleanup() {
-        System.out.println("ShipController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -601,8 +600,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         inGameLabel = null;
         rootPane = null;
         componentsGrid = null;
-
-        System.out.println("ShipController: Cleanup completed");
     }
 
     protected abstract boolean checkIsValid(int row,int col);

@@ -83,7 +83,7 @@ public class Board2Controller extends BoardController {
                 try{
                     ((Group) newParent).getChildren().add(label);
                 } catch (ClassCastException e) {
-                    System.err.println("Error: Parent of circle is not a Group. Cannot add label.");
+                    System.err.println("Error casting newParent to Group: " + e.getMessage());
                 }
             });
             if (scalableContent != null && circle.getParent() == scalableContent) {
@@ -151,7 +151,6 @@ public class Board2Controller extends BoardController {
 
     @Override
     public void cleanup() {
-        System.out.println("Board2Controller: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -231,7 +230,5 @@ public class Board2Controller extends BoardController {
 
         rootPane = null;
         scalableContent = null;
-
-        System.out.println("Board2Controller: Cleanup completed");
     }
 }

@@ -64,7 +64,6 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
     }
 
     public void cleanup() {
-        System.out.println("LeaderBoardMenuController: Starting cleanup...");
 
         if (scoreboardContainer != null) {
             for (javafx.scene.Node node : scoreboardContainer.getChildren()) {
@@ -106,7 +105,5 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
         winnersLabel = null;
         scoreboardContainer = null;
         disconnectionLabel = null;
-
-        System.out.println("LeaderBoardMenuController: Cleanup completed");
     }
 }

@@ -234,8 +234,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             enableGridInteraction(this::handleCellClick);
             enableUncoveredComponentsInteraction(this::handleUncoveredClick);
             enableBookedComponentsInteraction(this::handleBookedClick);
-        } else {
-            System.out.println("No component in hand to place");
         }
     }
 
@@ -260,7 +258,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
 
     public void enableBookedToHandInteraction(BookedToHandClickHandler handler) {
         if (bookedGrid != null) {
-            System.out.println("booked components interaction enabled.");
 
             bookedGrid.getChildren().removeIf(node ->
                     node.getClass().equals(javafx.scene.shape.Rectangle.class));
@@ -422,7 +419,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
 
     @Override
     public void cleanup() {
-        System.out.println("BuildingPhaseController2: Starting cleanup...");
 
         if (rootPane != null) {
             try {
@@ -513,7 +509,5 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         imageCell_4_6 = null;
         imageBooked_0 = null;
         imageBooked_1 = null;
-
-        System.out.println("BuildingPhaseController2: Cleanup completed");
     }
 }

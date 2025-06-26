@@ -160,7 +160,6 @@ public class ValidationMenuController implements GameModelListener {
 
 
     public void cleanup() {
-        System.out.println("ValidationMenuController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -211,7 +210,5 @@ public class ValidationMenuController implements GameModelListener {
         validationStatusLabel = null;
         shipPane = null;
         errorLabel = null;
-
-        System.out.println("ValidationMenuController: Cleanup completed");
     }
 }

@@ -428,7 +428,7 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             enableGridInteraction(this::handleCellClick);
             enableUncoveredComponentsInteraction(this::handleUncoveredClick);
         } else {
-            System.out.println("No component in hand to place");
+            System.err.println("No component in hand to place");
         }
     }
 
@@ -445,7 +445,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
                 }
             });
             uncoveredComponentsPane.setCursor(Cursor.HAND);
-            System.out.println("Uncovered components interaction enabled.");
         } else {
             System.err.println("uncoveredComponentsPane is null. Cannot enable interaction.");
         }
@@ -453,7 +452,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
 
     public void enableGridInteraction(ShipController.CellClickHandler handler) {
         this.cellClickHandler = handler;
-        System.out.println("Placing mode activated");
 
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
@@ -567,9 +565,7 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
                 showError("Error adding component to viewed pile: " + e.getMessage());
             }
         } else {
-            if (!placementModeActive) {
-                System.out.println("Uncovered components pane clicked, but placement mode is not active.");
-            } else if (ClientGameModel.getInstance().getComponentInHand() == null) {
+            if (placementModeActive && ClientGameModel.getInstance().getComponentInHand() == null) {
                 Platform.runLater(() -> showError("No component in hand to add to viewed pile."));
             }
         }
@@ -580,13 +576,11 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             uncoveredComponentsPane.setOnMouseClicked(null);
             uncoveredComponentsPane.setCursor(Cursor.DEFAULT);
             uncoveredComponentsPane.setStyle("-fx-border-color: #444; -fx-border-width: 1;");
-            System.out.println("Uncovered components interaction deactivated.");
         }
     }
 
     public void disableGridInteraction() {
         this.cellClickHandler = null;
-        System.out.println("Placing mode deactivated");
 
         componentsGrid.getChildren().removeIf(node ->
                 node.getClass().equals(javafx.scene.shape.Rectangle.class));

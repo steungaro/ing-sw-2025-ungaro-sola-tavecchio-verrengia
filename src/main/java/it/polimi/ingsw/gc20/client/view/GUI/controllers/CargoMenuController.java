@@ -313,7 +313,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
     }
 
     public void cleanup() {
-        System.out.println("CargoMenuController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -391,7 +390,5 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         shipPane = null;
         cargoBoxPane = null;
         cargoContainer = null;
-
-        System.out.println("CargoMenuController: Cleanup completed");
     }
 }

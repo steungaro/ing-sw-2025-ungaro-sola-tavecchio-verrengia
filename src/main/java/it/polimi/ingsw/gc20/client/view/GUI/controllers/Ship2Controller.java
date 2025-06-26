@@ -144,7 +144,6 @@ public class Ship2Controller extends ShipController{
 
     @Override
     public void cleanup() {
-        System.out.println("Ship2Controller: Starting cleanup...");
 
         super.cleanup();
 
@@ -172,8 +171,6 @@ public class Ship2Controller extends ShipController{
         imageCell_4_0 = null; imageCell_4_1 = null; imageCell_4_2 = null; imageCell_4_3 = null;
         imageCell_4_4 = null; imageCell_4_5 = null; imageCell_4_6 = null;
         bgImage = null;
-
-        System.out.println("Ship2Controller: Cleanup completed");
     }
 
     @Override

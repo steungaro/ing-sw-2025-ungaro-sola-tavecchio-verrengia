@@ -202,11 +202,10 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
 
     @Override
     public void cleanup() {
-        System.out.println("BuildingPhaseController0: Starting cleanup...");
 
         if (rootPane != null) {
             try {
-                rootPane.layoutBoundsProperty().removeListener((_, _, newBounds) -> {});
+                rootPane.layoutBoundsProperty().removeListener((_, _, _) -> {});
             } catch (Exception e) {
                 System.err.println("Error removing rootPane listener: " + e.getMessage());
             }
@@ -249,7 +248,5 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
         imageCell_4_2 = null;
         imageCell_4_3 = null;
         imageCell_4_4 = null;
-
-        System.out.println("BuildingPhaseController0: Cleanup completed");
     }
 }
