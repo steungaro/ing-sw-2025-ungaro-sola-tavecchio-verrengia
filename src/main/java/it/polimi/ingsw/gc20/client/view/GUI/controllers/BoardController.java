@@ -13,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
@@ -53,15 +52,6 @@ public abstract class BoardController implements GameModelListener, BindCleanUp 
             Label label = circleLabels.get(circleIndex);
             if (label != null) {
                 label.setText("");
-            }
-        }
-    }
-
-    public void setNumberInCircle(int circleIndex, int number) {
-        if (circleIndex >= 0 && circleIndex < circleLabels.size()) {
-            Label label = circleLabels.get(circleIndex);
-            if (label != null) {
-                label.setText(String.valueOf(number));
             }
         }
     }

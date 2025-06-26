@@ -52,6 +52,10 @@ public class InLobbyController {
         startPeriodicUpdates();
     }
 
+    public void showError(String message) {
+        waitingMessageLabel.setText(message);
+    }
+
     public void initLobbyData(ViewLobby lobby, String username) {
         if (lobby != null) {
             this.currentLobby = lobby;
@@ -143,7 +147,7 @@ public class InLobbyController {
             ClientGameModel.getInstance().getClient().startLobby(currentUsername);
             ((GUIView)ClientGameModel.getInstance()).showScene("game");
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Error starting game: " + e.getMessage());
         }
     }
 
@@ -154,7 +158,7 @@ public class InLobbyController {
             ClientGameModel.getInstance().getClient().leaveLobby(currentUsername);
             ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Error leaving lobby: " + e.getMessage());
         }
     }
 
@@ -167,7 +171,7 @@ public class InLobbyController {
             ClientGameModel.getInstance().getClient().killLobby(currentUsername);
             ((GUIView)ClientGameModel.getInstance()).showScene("login");
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Error killing lobby: " + e.getMessage());
         }
     }
 }

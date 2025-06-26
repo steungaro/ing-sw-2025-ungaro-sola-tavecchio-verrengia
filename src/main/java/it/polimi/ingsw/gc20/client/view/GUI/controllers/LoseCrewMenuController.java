@@ -197,8 +197,8 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
 
         if (shipPane != null) {
             shipPane.getChildren().clear();
-            if (shipPane.getChildren().size() > 0) {
-                Parent shipView = (Parent) shipPane.getChildren().get(0);
+            if (!shipPane.getChildren().isEmpty()) {
+                Parent shipView = (Parent) shipPane.getChildren().getFirst();
                 if (shipView != null) {
                     try {
                         Pane shipPaneTyped = (Pane) shipView;
@@ -220,9 +220,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
             errorLabel.setVisible(false);
         }
 
-        if (cabins != null) {
-            cabins.clear();
-        }
+        cabins.clear();
 
         username = null;
         ship = null;

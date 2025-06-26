@@ -20,8 +20,6 @@ public class IdleMenuController implements MenuController.ContextDataReceiver {
     @FXML
     private Label dot4;
 
-    private Timeline loadingAnimation;
-
     public void initialize() {
         startLoadingAnimation();
     }
@@ -62,11 +60,5 @@ public class IdleMenuController implements MenuController.ContextDataReceiver {
         fade.setAutoReverse(true);
         fade.setDelay(Duration.seconds(delay));
         return fade;
-    }
-
-    public void stopAnimation() {
-        if (loadingAnimation != null) {
-            loadingAnimation.stop();
-        }
     }
 }

@@ -72,7 +72,7 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 6, 0, 0, 2);"
         );
         
-        cardContainer.setOnMouseEntered(e -> {
+        cardContainer.setOnMouseEntered(_ -> {
             cardContainer.setStyle(
                 "-fx-background-color: #3c4a5e; " +
                 "-fx-background-radius: 8; " +
@@ -81,7 +81,7 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
             );
         });
         
-        cardContainer.setOnMouseExited(e -> {
+        cardContainer.setOnMouseExited(_ -> {
             cardContainer.setStyle(
                 "-fx-background-color: #333344; " +
                 "-fx-background-radius: 8; " +

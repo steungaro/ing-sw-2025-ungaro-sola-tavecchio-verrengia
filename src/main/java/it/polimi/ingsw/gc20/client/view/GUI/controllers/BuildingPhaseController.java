@@ -36,9 +36,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
     protected VBox uncoveredComponentsPane;
 
     @FXML
-    private HBox nonLearnerButtonsContainer;
-
-    @FXML
     protected ImageView bgImage;
 
     @FXML
@@ -63,12 +60,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
     public void initialize() {
         String myUsername = ClientGameModel.getInstance().getUsername();
         this.currentPlayerBeingViewed = getPlayerFromModel(myUsername);
-
-        if (this.currentPlayerBeingViewed == null) {
-            showError("Could not load current player data. Building phase may not function correctly.");
-            nonLearnerButtonsContainer.setVisible(false);
-            nonLearnerButtonsContainer.setManaged(false);
-        }
 
         covered();
         loadShip();
@@ -134,7 +125,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
 
     private void loadShip() {
         ship = ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername());
-        ClientGameModel clientGameModel = ClientGameModel.getInstance();
         buildShipComponents(ship);
     }
 
@@ -319,32 +309,28 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
     }
 
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        // Definisci le coordinate per i diversi layout
         List<double[]> coordinates;
 
         if (comp.getSize() == 1) {
-            // Cargo singolo: al centro
             coordinates = List.of(
-                    new double[]{0.5, 0.5}  // Centro perfetto
+                    new double[]{0.5, 0.5}
             );
         } else if (comp.getSize() == 2) {
-            // Cargo da 2: uno sopra e uno sotto, distanza 18.4% dal centro
             coordinates = List.of(
-                    new double[]{0.5, 0.5 - 0.184}, // Sopra: centro orizzontale, 18.4% sopra il centro
-                    new double[]{0.5, 0.5 + 0.184}  // Sotto: centro orizzontale, 18.4% sotto il centro
+                    new double[]{0.5, 0.5 - 0.184},
+                    new double[]{0.5, 0.5 + 0.184}
             );
         } else {
-            // Cargo da 3: triangolo con punta a sinistra
+
             coordinates = List.of(
-                    new double[]{0.5 - 0.2, 0.5},     // Punto 3: sinistra 20%, altezza centro
-                    new double[]{0.5 + 0.2, 0.5 - 0.2}, // Punto 1: destra 20%, altezza +20% (sopra)
-                    new double[]{0.5 + 0.2, 0.5 + 0.2}  // Punto 2: destra 20%, altezza -20% (sotto)
+                    new double[]{0.5 - 0.2, 0.5},
+                    new double[]{0.5 + 0.2, 0.5 - 0.2},
+                    new double[]{0.5 + 0.2, 0.5 + 0.2}
             );
         }
 
         int index = 0;
 
-        // Aggiungi i quadratini nell'ordine: rosso, verde, blu, giallo, vuoti
         for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
             addCargoBox(layeredPane, coordinates.get(index), "red");
         }
@@ -360,16 +346,16 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
             addCargoBox(layeredPane, coordinates.get(index), "empty");
         }
+
+        layeredPane.setRotate(comp.rotComp * 90);
     }
 
     private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         Rectangle box = new Rectangle();
 
-        // Dimensioni ottimizzate per la visibilità
         box.widthProperty().bind(parent.widthProperty().multiply(0.15));
         box.heightProperty().bind(parent.heightProperty().multiply(0.15));
 
-        // Imposta colori migliorati
         switch (type) {
             case "red" -> {
                 box.setFill(javafx.scene.paint.Color.RED);
@@ -399,7 +385,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             box.setStrokeWidth(1.5);
         }
 
-        // Posizionamento usando le coordinate relative specificate
         box.translateXProperty().bind(
                 parent.widthProperty().multiply(relativePos[0] - 0.5)
         );
@@ -556,34 +541,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
                     );
                 } else {
                     showError("Invalid board index. Please enter a number between 1 and 4.");
-                }
-            } catch (NumberFormatException e) {
-                showError("Please enter a valid number.");
-            } catch (Exception e) {
-                showError("Error: " + e.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Takes a component from the booked components
-     */
-    @FXML
-    private void takeBookedComponent() {
-        TextInputDialog dialog = new TextInputDialog("0");
-        dialog.setTitle("Take Booked Component");
-        dialog.setHeaderText("Select a booked component to take");
-        dialog.setContentText("Enter component index (0 or 1):");
-
-        Optional<String> result = dialog.showAndWait();
-        result.ifPresent(indexStr -> {
-            try {
-                int index = Integer.parseInt(indexStr);
-                if (index == 0 || index == 1) {
-                    String username = ClientGameModel.getInstance().getUsername();
-                    ClientGameModel.getInstance().getClient().takeComponentFromBooked(username, index);
-                } else {
-                    showError("Invalid index. Please enter 0 or 1.");
                 }
             } catch (NumberFormatException e) {
                 showError("Please enter a valid number.");
@@ -869,7 +826,7 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         try {
             ClientGameModel.getInstance().getClient().addComponentToBooked(username);
         } catch (RemoteException e) {
-            System.err.println("Error taking component from booked: " + e.getMessage());
+            System.err.println("Error taking component from booked: " + index + e.getMessage());
         }
     }
 

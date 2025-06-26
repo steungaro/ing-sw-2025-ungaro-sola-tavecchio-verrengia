@@ -128,10 +128,6 @@ public class MenuController implements GameModelListener {
         discardButton.setVisible(visible);
     }
 
-    public void hideAcceptableButtons() {
-        setAcceptableButtonVisibility(false);
-    }
-
     private void updateBackButtonVisibility() {
         boolean shouldShowBack = currentContentType == ContentType.SHIP;
         backButton.setVisible(shouldShowBack);
@@ -184,26 +180,6 @@ public class MenuController implements GameModelListener {
     }
 
     /**
-     * Shows a temporary view using the stack approach
-     * @param fxmlPath Path to the FXML file to load
-     */
-    @FXML
-    private void showTemporaryView(String fxmlPath) {
-
-        saveCurrentStateToStack();
-
-        if (!currentFrame.getChildren().isEmpty()) {
-            Node currentView = currentFrame.getChildren().getFirst();
-            viewStack = currentView;
-            currentView.setVisible(false);
-        }
-
-        loadMenuInCurrentFrame(fxmlPath);
-
-        backButton.setVisible(true);
-    }
-
-    /**
      * Returns to the previous view in the stack
      */
     @FXML
@@ -244,7 +220,8 @@ public class MenuController implements GameModelListener {
                 gameModel.getClient().acceptCard(
                         ClientGameModel.getInstance().getUsername());
             } catch (Exception e) {
-                e.printStackTrace();
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
             }
         }
     }
@@ -256,7 +233,8 @@ public class MenuController implements GameModelListener {
                 ClientGameModel.getInstance().getClient().endMove(
                         ClientGameModel.getInstance().getUsername());
             } catch (Exception e) {
-                e.printStackTrace();
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
             }
         }
     }
@@ -265,8 +243,8 @@ public class MenuController implements GameModelListener {
      * Makes a ship container clickable and sets up the click handler
      */
     private void makeShipContainerClickable(StackPane shipContainer, ViewPlayer player) {
-        shipContainer.setOnMouseEntered(e -> shipContainer.setStyle("-fx-cursor: hand;"));
-        shipContainer.setOnMouseExited(e -> shipContainer.setStyle("-fx-cursor: default;"));
+        shipContainer.setOnMouseEntered(_ -> shipContainer.setStyle("-fx-cursor: hand;"));
+        shipContainer.setOnMouseExited(_ -> shipContainer.setStyle("-fx-cursor: default;"));
 
         shipContainer.setOnMouseClicked(event -> {
             if (event.getClickCount() == 1) {
@@ -312,47 +290,6 @@ public class MenuController implements GameModelListener {
         String fxmlPath = getFXMLPath(ContentType.BOARD);
         loadFXMLInContainer(gameBoard, fxmlPath, DisplayContext.MAIN_VIEW,
                 ContentType.BOARD, null);
-    }
-
-    /**
-     * Enhanced method to load the menu with controller configuration
-     */
-    public void loadMenuInCurrentFrame(String fxmlPath, Object... parameters) {
-        try {
-            if (!fxmlPath.startsWith("/")) {
-                fxmlPath = "/fxml/" + fxmlPath + ".fxml";
-            }
-            URL fxmlUrl = getClass().getResource(fxmlPath);
-
-            if (fxmlUrl == null) {
-                System.err.println("FXML file not found: " + fxmlPath);
-                return;
-            }
-
-            saveCurrentStateToStack();
-            closeCurrentControllerListeners();
-
-            Parent content = FXMLLoader.load(fxmlUrl);
-            try{
-                Region region = (Region) content;
-                region.prefWidthProperty().bind(currentFrame.widthProperty());
-                region.prefHeightProperty().bind(currentFrame.heightProperty());
-                region.setMaxWidth(Region.USE_PREF_SIZE);
-                region.setMaxHeight(Region.USE_PREF_SIZE);
-            } catch (ClassCastException e) {
-                System.err.println("Content is not a Region, cannot bind size: " + e.getMessage());
-            }
-
-            currentFrame.getChildren().clear();
-            currentFrame.getChildren().add(content);
-
-            currentContentType = null;
-            updateBackButtonVisibility();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading menu: " + fxmlPath);
-        }
     }
 
     private void saveCurrentStateToStack() {
@@ -438,11 +375,9 @@ public class MenuController implements GameModelListener {
 
         } catch (IOException e) {
             System.err.println("Error loading menu: " + e.getMessage());
-            e.printStackTrace();
             guiView.displayErrorMessage("Error loading menu " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Unexpected error: " + e.getMessage());
-            e.printStackTrace();
             guiView.displayErrorMessage("Unexpected error: " + e.getMessage());
         }
     }
@@ -497,8 +432,8 @@ public class MenuController implements GameModelListener {
             configureController(controller, contentType, player);
 
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Error loading FXML: " + fxmlPath);
+            serverMessages.setText("Error accepting card: " + e.getMessage());
+            serverMessages.getParent().getParent().setVisible(true);
         }
     }
 
@@ -566,13 +501,13 @@ public class MenuController implements GameModelListener {
         element.setMaxWidth(config.maxWidth);
         element.setMaxHeight(config.maxHeight);
 
-        container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+        container.widthProperty().addListener((_, _, newWidth) -> {
             if (newWidth.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
         });
 
-        container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+        container.heightProperty().addListener((_, _, newHeight) -> {
             if (newHeight.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
@@ -652,7 +587,7 @@ public class MenuController implements GameModelListener {
                     BoardController boardController = (BoardController) controller;
                     boardController.updateBoardDisplay(gameModel.getBoard());
                     try{
-                        ClientGameModel.getInstance().addListener((GameModelListener) boardController);
+                        ClientGameModel.getInstance().addListener(boardController);
                     } catch (ClassCastException e) {
                         System.err.println("Controller is not a GameModelListener: " + e.getMessage());
                     }
@@ -661,23 +596,6 @@ public class MenuController implements GameModelListener {
                 }
             }
         }
-    }
-
-    /**
-     * Initializes the currentFrame with the current player's ship
-     */
-    private void initializeCurrentFrame() {
-        ViewPlayer currentPlayer = Arrays.stream(gameModel.getPlayers())
-                .filter(p -> p != null && p.username.equals(gameModel.getUsername()))
-                .findFirst().orElse(null);
-
-        if (currentPlayer != null) {
-            String fxmlPath = getFXMLPath(ContentType.SHIP);
-            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
-                              ContentType.SHIP, currentPlayer);
-        }
-        currentContentType = ContentType.SHIP;
-        updateBackButtonVisibility();
     }
 
     /**
@@ -750,7 +668,8 @@ public class MenuController implements GameModelListener {
                 }
             } catch (Exception e) {
                 System.err.println("Error loading image: " + e.getMessage());
-                e.printStackTrace();
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
             }
         });
     }
@@ -770,7 +689,8 @@ public class MenuController implements GameModelListener {
             return new javafx.scene.image.Image(imageStream);
         } catch (Exception e) {
             System.err.println("Error loading img: " + e.getMessage());
-            e.printStackTrace();
+            serverMessages.setText("Error accepting card: " + e.getMessage());
+            serverMessages.getParent().getParent().setVisible(true);
             return null;
         }
 
@@ -782,7 +702,8 @@ public class MenuController implements GameModelListener {
             try {
                 ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
             } catch (Exception e) {
-                e.printStackTrace();
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
             }
         }
         Platform.exit();
@@ -794,7 +715,8 @@ public class MenuController implements GameModelListener {
             try {
                 gameModel.getClient().endMove(gameModel.getUsername());
             } catch (Exception e) {
-                e.printStackTrace();
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
             }
         }
     }

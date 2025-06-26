@@ -1,7 +1,6 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
@@ -255,11 +254,6 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
     }
 
-    @Override
-    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
-
-    }
-
     public interface BookedToHandClickHandler {
         void onBookedToHandClicked(int index);
     }
@@ -432,7 +426,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
 
         if (rootPane != null) {
             try {
-                rootPane.layoutBoundsProperty().removeListener((_, _, newBounds) -> {});
+                rootPane.layoutBoundsProperty().removeListener((_, _, _) -> {});
             } catch (Exception e) {
                 System.err.println("Error removing rootPane listener: " + e.getMessage());
             }
