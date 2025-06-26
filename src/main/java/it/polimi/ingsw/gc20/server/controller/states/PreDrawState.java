@@ -1,6 +1,7 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.PlayerUpdateMessage;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.StandbyMessage;
 import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import java.util.concurrent.Executors;
@@ -42,10 +43,12 @@ public class PreDrawState extends State{
             if (getModel().getGame().getPlayers().getFirst().getPosition()-p.getPosition() >= getModel().getGame().getBoard().getSpaces()){
                 p.setGameStatus(false);
                 getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().sendToPlayer(p.getUsername(), new StandbyMessage("You have been lapped by the leader. You retired from the game."));
             }
             if (p.getShip().getAstronauts()==0){
                 p.setGameStatus(false);
                 getController().getMessageManager().broadcastUpdate(new PlayerUpdateMessage(p.getUsername(), 0, p.isInGame(), p.getColor(), (p.getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces()));
+                getController().getMessageManager().sendToPlayer(p.getUsername(), new StandbyMessage("you don't have any humans left on the ship. You retired from the game"));
             }
         }
         getController().drawCard();
