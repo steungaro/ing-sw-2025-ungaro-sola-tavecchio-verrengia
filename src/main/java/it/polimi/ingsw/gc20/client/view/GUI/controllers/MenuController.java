@@ -208,12 +208,28 @@ public class MenuController implements GameModelListener {
      */
     @FXML
     private void returnToPreviousView(){
+        closeCurrentControllerListeners();
+        
         if (viewStack!= null) {
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(viewStack);
             currentContentType = null;
         }
         updateBackButtonVisibility();
+    }
+
+    /**
+     * Helper method to close listeners for the current controller
+     */
+    private void closeCurrentControllerListeners() {
+        if (!currentFrame.getChildren().isEmpty()) {
+            Node currentContent = currentFrame.getChildren().getFirst();
+            Object currentController = currentContent.getUserData();
+            
+            if (currentController instanceof GameModelListener) {
+                ClientGameModel.getInstance().removeListener((GameModelListener) currentController);
+            }
+        }
     }
 
     @FXML
@@ -346,8 +362,6 @@ public class MenuController implements GameModelListener {
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
         if (instance == null) {
-            // guiView.displayErrorMessage("MenuController not initialized");
-            // ignore this error, it can happen if the controller is not ready yet (case
             return;
         }
 
@@ -367,9 +381,25 @@ public class MenuController implements GameModelListener {
                 return;
             }
 
+            instance.closeCurrentControllerListeners();
+
             FXMLLoader loader = new FXMLLoader(fxmlResource);
             Parent content = loader.load();
             Object controller = loader.getController();
+
+            if (controller != null) {
+                content.setUserData(controller);
+
+                try {
+                    ((ContextDataReceiver) controller).setContextData(contextData);
+                } catch (ClassCastException e) {
+                    // ignore
+                }
+
+                if (controller instanceof GameModelListener) {
+                    ClientGameModel.getInstance().addListener((GameModelListener) controller);
+                }
+            }
 
             if (controller != null && contextData != null) {
                 try {
@@ -441,9 +471,6 @@ public class MenuController implements GameModelListener {
                 configureGenericSizing(container, wrapper, context, contentType);
                 content = wrapper;
             }
-            // TODO -> understand what type of content is expected
-
-            // Save container if is boa
 
             container.getChildren().add(content);
             configureController(loader.getController(), contentType, player);
@@ -584,9 +611,6 @@ public class MenuController implements GameModelListener {
         element.setMaxHeight(targetHeight);
     }
 
-    /**
-     * Configures the controller of the loaded content
-     */
     private void configureController(Object controller, ContentType contentType,
                                    ViewPlayer player) {
         switch (contentType) {
@@ -606,6 +630,11 @@ public class MenuController implements GameModelListener {
                 try {
                     BoardController boardController = (BoardController) controller;
                     boardController.updateBoardDisplay(gameModel.getBoard());
+                    try{
+                        ClientGameModel.getInstance().addListener((GameModelListener) boardController);
+                    } catch (ClassCastException e) {
+                        System.err.println("Controller is not a GameModelListener: " + e.getMessage());
+                    }
                 } catch (ClassCastException e) {
                     System.err.println("Controller is not a BoardController: " + e.getMessage());
                 }

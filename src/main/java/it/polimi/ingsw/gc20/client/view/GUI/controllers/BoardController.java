@@ -24,7 +24,6 @@ public abstract class BoardController implements GameModelListener {
 
     @FXML
     public void initialize() {
-        ClientGameModel.getInstance().addListener(this);
         updateBoardDisplay(ClientGameModel.getInstance().getBoard());
     }
 

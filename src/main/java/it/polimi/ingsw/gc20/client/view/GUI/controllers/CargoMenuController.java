@@ -1,7 +1,12 @@
 
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
+import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
@@ -23,7 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
 
-public class CargoMenuController implements MenuController.ContextDataReceiver {
+public class CargoMenuController implements MenuController.ContextDataReceiver, GameModelListener {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
@@ -276,5 +281,35 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
                 initializeWithParameters(message);
             }
         }
+    }
+
+    @Override
+    public void onShipUpdated(ViewShip ship) {
+        loadShipView();
+    }
+
+    @Override
+    public void onLobbyUpdated(ViewLobby lobby) {
+
+    }
+
+    @Override
+    public void onErrorMessageReceived(String message) {
+
+    }
+
+    @Override
+    public void onComponentInHandUpdated(ViewComponent component) {
+
+    }
+
+    @Override
+    public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
+
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
     }
 }
