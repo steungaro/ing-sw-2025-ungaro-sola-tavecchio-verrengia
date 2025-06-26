@@ -165,4 +165,33 @@ public class Ship0Controller extends ShipController{
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
     }
+
+    @Override
+    public void cleanup() {
+        System.out.println("Ship0Controller: Starting cleanup...");
+
+        super.cleanup();
+
+        if (rootPane != null) {
+            rootPane.layoutBoundsProperty().removeListener((obs, oldBounds, newBounds) -> {
+                bgImage.setFitWidth(newBounds.getWidth()*0.7);
+                bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            });
+        }
+
+        if (bgImage != null) {
+            bgImage.setImage(null);
+            bgImage.setFitWidth(0);
+            bgImage.setFitHeight(0);
+        }
+
+        imageCell_0_0 = null; imageCell_0_1 = null; imageCell_0_2 = null; imageCell_0_3 = null; imageCell_0_4 = null;
+        imageCell_1_0 = null; imageCell_1_1 = null; imageCell_1_2 = null; imageCell_1_3 = null; imageCell_1_4 = null;
+        imageCell_2_0 = null; imageCell_2_1 = null; imageCell_2_2 = null; imageCell_2_3 = null; imageCell_2_4 = null;
+        imageCell_3_0 = null; imageCell_3_1 = null; imageCell_3_2 = null; imageCell_3_3 = null; imageCell_3_4 = null;
+        imageCell_4_0 = null; imageCell_4_1 = null; imageCell_4_2 = null; imageCell_4_3 = null; imageCell_4_4 = null;
+        bgImage = null;
+
+        System.out.println("Ship0Controller: Cleanup completed");
+    }
 }

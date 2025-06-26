@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class PeekDecksController implements MenuController.ContextDataReceiver {
+public class PeekDecksController implements MenuController.ContextDataReceiver, BindCleanUp {
 
     @FXML
     private ScrollPane DeckPanel;
@@ -121,5 +121,49 @@ public class PeekDecksController implements MenuController.ContextDataReceiver {
         } else {
             throw new IllegalArgumentException("Context data must contain 'decks'");
         }
+    }
+
+    public void cleanup() {
+        System.out.println("PeekDecksController: Starting cleanup...");
+
+        if (DeckPanel != null) {
+            if (DeckPanel.getContent() != null) {
+                try {
+                    FlowPane flowPane = (FlowPane) DeckPanel.getContent();
+
+                    for (javafx.scene.Node node : flowPane.getChildren()) {
+                        try {
+                            VBox cardContainer = (VBox) node;
+                            cardContainer.setOnMouseEntered(null);
+                            cardContainer.setOnMouseExited(null);
+
+                            for (javafx.scene.Node child : cardContainer.getChildren()) {
+                                try {
+                                    ImageView imageView = (ImageView) child;
+                                    imageView.setImage(null);
+                                    imageView.setFitWidth(0);
+                                    imageView.setFitHeight(0);
+                                } catch (Exception e) {
+                                    System.err.println("Error cleaning up image view: " + e.getMessage());
+                                }
+                            }
+
+                            cardContainer.getChildren().clear();
+                        } catch (Exception e) {
+                            System.err.println("Error cleaning up card container: " + e.getMessage());
+                        }
+                    }
+
+                    flowPane.getChildren().clear();
+                } catch (Exception e) {
+                    System.err.println("Error cleaning up flow pane: " + e.getMessage());
+                }
+            }
+
+            DeckPanel.setContent(null);
+            DeckPanel = null;
+        }
+
+        System.out.println("PeekDecksController: Cleanup completed");
     }
 }

@@ -21,7 +21,7 @@ import javafx.scene.shape.Rectangle;
 import java.rmi.RemoteException;
 import java.util.*;
 
-public abstract class BuildingPhaseController implements GameModelListener {
+public abstract class BuildingPhaseController implements GameModelListener, BindCleanUp {
 
     @FXML
     protected StackPane shipContainer;

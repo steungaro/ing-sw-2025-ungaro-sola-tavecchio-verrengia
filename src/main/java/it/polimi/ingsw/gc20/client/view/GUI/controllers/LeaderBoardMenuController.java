@@ -6,7 +6,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import java.util.Map;
 
-public class LeaderBoardMenuController implements MenuController.ContextDataReceiver{
+public class LeaderBoardMenuController implements MenuController.ContextDataReceiver, BindCleanUp{
 
     private Map<String, Integer> leaderBoard;
 
@@ -61,5 +61,52 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
         } else {
             throw new IllegalArgumentException("Context data must contain 'leaderBoard'");
         }
+    }
+
+    public void cleanup() {
+        System.out.println("LeaderBoardMenuController: Starting cleanup...");
+
+        if (scoreboardContainer != null) {
+            for (javafx.scene.Node node : scoreboardContainer.getChildren()) {
+                try {
+                    Label label = (Label) node;
+                    label.setText("");
+                    label.setTextFill(null);
+                    label.setFont(null);
+                } catch (Exception e) {
+                    System.err.println("Error cleaning up score label: " + e.getMessage());
+                }
+            }
+            scoreboardContainer.getChildren().clear();
+        }
+
+        if (titleLabel != null) {
+            titleLabel.setText("");
+        }
+
+        if (endGameLabel != null) {
+            endGameLabel.setText("");
+        }
+
+        if (winnersLabel != null) {
+            winnersLabel.setText("");
+        }
+
+        if (disconnectionLabel != null) {
+            disconnectionLabel.setText("");
+        }
+
+        if (leaderBoard != null) {
+            leaderBoard.clear();
+            leaderBoard = null;
+        }
+
+        titleLabel = null;
+        endGameLabel = null;
+        winnersLabel = null;
+        scoreboardContainer = null;
+        disconnectionLabel = null;
+
+        System.out.println("LeaderBoardMenuController: Cleanup completed");
     }
 }

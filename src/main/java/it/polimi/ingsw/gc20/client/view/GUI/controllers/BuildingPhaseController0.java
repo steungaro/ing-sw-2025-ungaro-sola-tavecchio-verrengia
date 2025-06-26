@@ -201,4 +201,58 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
             }
         }
     }
+
+
+    @Override
+    public void cleanup() {
+        System.out.println("BuildingPhaseController0: Starting cleanup...");
+
+        if (rootPane != null) {
+            try {
+                rootPane.layoutBoundsProperty().removeListener((_, _, newBounds) -> {});
+            } catch (Exception e) {
+                System.err.println("Error removing rootPane listener: " + e.getMessage());
+            }
+        }
+
+        if (bgImage != null) {
+            bgImage.setImage(null);
+            bgImage.setFitWidth(0);
+            bgImage.setFitHeight(0);
+        }
+
+        if (componentsGrid != null) {
+            componentsGrid.setPrefSize(0, 0);
+            componentsGrid.setMaxSize(0, 0);
+            componentsGrid.setMinSize(0, 0);
+        }
+
+        imageCell_0_0 = null;
+        imageCell_0_1 = null;
+        imageCell_0_2 = null;
+        imageCell_0_3 = null;
+        imageCell_0_4 = null;
+        imageCell_1_0 = null;
+        imageCell_1_1 = null;
+        imageCell_1_2 = null;
+        imageCell_1_3 = null;
+        imageCell_1_4 = null;
+        imageCell_2_0 = null;
+        imageCell_2_1 = null;
+        imageCell_2_2 = null;
+        imageCell_2_3 = null;
+        imageCell_2_4 = null;
+        imageCell_3_0 = null;
+        imageCell_3_1 = null;
+        imageCell_3_2 = null;
+        imageCell_3_3 = null;
+        imageCell_3_4 = null;
+        imageCell_4_0 = null;
+        imageCell_4_1 = null;
+        imageCell_4_2 = null;
+        imageCell_4_3 = null;
+        imageCell_4_4 = null;
+
+        System.out.println("BuildingPhaseController0: Cleanup completed");
+    }
 }

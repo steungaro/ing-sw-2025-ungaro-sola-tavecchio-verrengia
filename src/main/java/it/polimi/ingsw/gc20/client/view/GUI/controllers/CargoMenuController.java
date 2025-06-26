@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
 
-public class CargoMenuController implements MenuController.ContextDataReceiver, GameModelListener {
+public class CargoMenuController implements MenuController.ContextDataReceiver, GameModelListener, BindCleanUp {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
@@ -321,5 +321,88 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
+    }
+
+    public void cleanup() {
+        System.out.println("CargoMenuController: Starting cleanup...");
+
+        ClientGameModel gameModel = ClientGameModel.getInstance();
+        if (gameModel != null) {
+            gameModel.removeListener(this);
+        }
+
+        if (shipController != null) {
+            try {
+                shipController.cleanup();
+            } catch (Exception e) {
+                System.err.println("Error cleaning up ship controller: " + e.getMessage());
+            }
+            shipController = null;
+        }
+
+        if (shipPane != null) {
+            shipPane.getChildren().clear();
+            if (shipPane.getChildren().size() > 0) {
+                Parent shipView = (Parent) shipPane.getChildren().get(0);
+                if (shipView != null) {
+                    try {
+                        Pane shipPaneTyped = (Pane) shipView;
+                        shipPaneTyped.prefWidthProperty().unbind();
+                        shipPaneTyped.prefHeightProperty().unbind();
+                    } catch (Exception e) {
+                        System.err.println("Error unbinding ship pane properties: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        if (cargoContainer != null) {
+            for (javafx.scene.Node node : cargoContainer.getChildren()) {
+                try {
+                    Rectangle rect = (Rectangle) node;
+                    rect.setOnMouseEntered(null);
+                    rect.setOnMouseExited(null);
+                    rect.setOnMouseClicked(null);
+                } catch (Exception e) {
+                    System.err.println("Error cleaning up cargo rectangle: " + e.getMessage());
+                }
+            }
+            cargoContainer.getChildren().clear();
+        }
+
+        if (messageLabel != null) {
+            messageLabel.setText("");
+        }
+
+        if (errorLabel != null) {
+            errorLabel.setText("");
+            errorLabel.setVisible(false);
+        }
+
+        if (cargoBoxPane != null) {
+            cargoBoxPane.setVisible(false);
+        }
+
+        username = null;
+        ship = null;
+        from = null;
+        colorFrom = null;
+        currentCargo = null;
+
+        if (cargoToGain != null) {
+            cargoToGain.clear();
+            cargoToGain = null;
+        }
+
+        losing = 0;
+        cargoToLose = 0;
+
+        messageLabel = null;
+        errorLabel = null;
+        shipPane = null;
+        cargoBoxPane = null;
+        cargoContainer = null;
+
+        System.out.println("CargoMenuController: Cleanup completed");
     }
 }

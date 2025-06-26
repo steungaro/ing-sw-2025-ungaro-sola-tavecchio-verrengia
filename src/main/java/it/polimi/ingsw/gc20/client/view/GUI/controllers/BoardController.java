@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
-public abstract class BoardController implements GameModelListener {
+public abstract class BoardController implements GameModelListener, BindCleanUp {
 
     protected List<Circle> circles = new ArrayList<>();
     protected List<Label> circleLabels = new ArrayList<>();
