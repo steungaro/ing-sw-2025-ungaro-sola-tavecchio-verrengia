@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,14 +42,24 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             }
 
             String fxmlPath = ship.isLearner ? "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent shipView = loader.load();
 
             shipPane.getChildren().clear();
             shipPane.getChildren().add(shipView);
 
-            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
-            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+            shipPane.applyCss();
+            shipPane.layout();
+
+            Pane shipPaneTyped = (Pane) shipView;
+
+            shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
+            shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
+
+            shipPaneTyped.prefWidthProperty().bind(shipPane.widthProperty());
+            shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
+
 
             Object controller = loader.getController();
             try {

@@ -62,16 +62,13 @@ public class Board0Controller extends BoardController {
 
         for (Circle circle : circles) {
             Label label = new Label();
-            label.setFont(new Font(16));
+            label.setFont(new Font(8));
             label.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
 
-
-            label.layoutXProperty().bind(circle.layoutXProperty().subtract(label.widthProperty().divide(2)).add(circle.getRadius() / 2 - 8));
-            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 12));
-
+            label.layoutXProperty().bind(circle.layoutXProperty().subtract(label.widthProperty().divide(2)).add(circle.getRadius() / 2 - 4));
+            label.layoutYProperty().bind(circle.layoutYProperty().subtract(label.heightProperty().divide(2)).add(circle.getRadius() / 2 - 6));
 
             circleLabels.add(label);
-
 
             circle.parentProperty().addListener((obs, oldParent, newParent) -> {
                 ((Group) newParent).getChildren().add(label);
@@ -109,17 +106,17 @@ public class Board0Controller extends BoardController {
             return;
         }
 
-        double originalContentWidth = 600.0;
-        double originalContentHeight = 330.0;
+        double originalContentWidth = 270.0;
+        double originalContentHeight = 150.0;
         
-        double maxAllowedWidth = Math.min(newPaneWidth, 700.0);
-        double maxAllowedHeight = Math.min(newPaneHeight, 400.0);
+        double maxAllowedWidth = Math.min(newPaneWidth, 300.0);
+        double maxAllowedHeight = Math.min(newPaneHeight, 180.0);
         
         double scaleX = maxAllowedWidth / originalContentWidth;
         double scaleY = maxAllowedHeight / originalContentHeight;
         double scaleFactor = Math.min(scaleX, scaleY);
         
-        scaleFactor = Math.min(scaleFactor, 1.2);
+        scaleFactor = Math.min(scaleFactor, 1.0);
 
         if (Double.isInfinite(scaleFactor) || Double.isNaN(scaleFactor) || scaleFactor <= 0) {
             scaleFactor = 1.0;
