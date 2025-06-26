@@ -47,7 +47,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     private MenuState currentMenuState;
     public boolean busy;
     private final BlockingQueue<MenuState> menuStateQueue = new LinkedBlockingQueue<>();
-    private final List<LobbyListObserver> lobbyListObservers = new ArrayList<>();
+    private final List<LobbyListListener> lobbyListListeners = new ArrayList<>();
 
     /**
      * Constructor for the ClientGameModel.
@@ -347,9 +347,9 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      *
      * @param observer the LobbyListListener to add
      */
-    public void addLobbyListObserver(LobbyListObserver observer) {
-        if (!lobbyListObservers.contains(observer)) {
-            lobbyListObservers.add(observer);
+    public void addLobbyListObserver(LobbyListListener observer) {
+        if (!lobbyListListeners.contains(observer)) {
+            lobbyListListeners.add(observer);
         }
     }
 
@@ -367,7 +367,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      * Notifies all lobby list observers that the lobby list has changed.
      */
     protected void notifyLobbyListObservers() {
-        for (LobbyListObserver observer : lobbyListObservers) {
+        for (LobbyListListener observer : lobbyListListeners) {
             observer.onLobbyListChanged();
         }
     }
