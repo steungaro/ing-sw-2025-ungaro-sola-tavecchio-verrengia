@@ -221,17 +221,20 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
+
     public void setComponentProp(StackPane pane, ViewComponent comp) {
         if (comp.isCabin()) {
             setComponentProp(pane, (ViewCabin) comp);
         } else if (comp.isBattery()) {
             setComponentProp(pane, (ViewBattery) comp);
+        } else if (comp.isCargoHold()) {
+            setComponentProp(pane, (ViewCargoHold) comp);
         }
     }
 
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
-        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
+        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 3px; -fx-background-radius: 3px;");
 
         try {
             ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
@@ -239,12 +242,19 @@ public abstract class BuildingPhaseController implements GameModelListener {
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
 
-            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.TOP_LEFT);
-            StackPane.setAlignment(batteryIcon, javafx.geometry.Pos.BOTTOM_LEFT);
+            StackPane iconBackground = new StackPane();
+            iconBackground.getChildren().add(batteryIcon);
 
-            layeredPane.getChildren().addAll(batteryLabel, batteryIcon);
+            javafx.scene.layout.HBox batteryContainer = new javafx.scene.layout.HBox(3);
+            batteryContainer.setAlignment(javafx.geometry.Pos.CENTER);
+            batteryContainer.getChildren().addAll(iconBackground, batteryLabel);
+
+            StackPane.setAlignment(batteryContainer, javafx.geometry.Pos.CENTER);
+            layeredPane.getChildren().add(batteryContainer);
+
         } catch (Exception e) {
-            System.err.println("Unable to load battery: " + e.getMessage());
+            System.err.println("Unable to load battery image: " + e.getMessage());
+            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.CENTER);
             layeredPane.getChildren().add(batteryLabel);
         }
     }
@@ -260,10 +270,10 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
                 alienIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.TOP_LEFT);
                 layeredPane.getChildren().add(alienIcon);
+                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.CENTER);
             } catch (Exception e) {
-                System.err.println("Unable to load alien: " + e.getMessage());
+                System.err.println("Unable to load alien image: " + e.getMessage());
             }
         } else if (comp.astronauts > 0) {
             Label astronautsLabel = new Label(Integer.toString(comp.astronauts));
@@ -275,12 +285,16 @@ public abstract class BuildingPhaseController implements GameModelListener {
                 astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
                 astronautIcon.setPreserveRatio(true);
 
-                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.TOP_LEFT);
-                StackPane.setAlignment(astronautIcon, javafx.geometry.Pos.BOTTOM_LEFT);
+                javafx.scene.layout.HBox astronautContainer = new javafx.scene.layout.HBox(5);
+                astronautContainer.setAlignment(javafx.geometry.Pos.CENTER);
+                astronautContainer.getChildren().addAll(astronautIcon, astronautsLabel);
 
-                layeredPane.getChildren().addAll(astronautsLabel, astronautIcon);
+                StackPane.setAlignment(astronautContainer, javafx.geometry.Pos.CENTER);
+                layeredPane.getChildren().add(astronautContainer);
+
             } catch (Exception e) {
-                System.err.println("IUnable to load astronaut: " + e.getMessage());
+                System.err.println("Unable to load astronaut image: " + e.getMessage());
+                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.CENTER);
                 layeredPane.getChildren().add(astronautsLabel);
             }
         }
@@ -304,28 +318,88 @@ public abstract class BuildingPhaseController implements GameModelListener {
         }
     }
 
+    public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
+        // Definisci le coordinate per i diversi layout
+        List<double[]> coordinates;
+
+        if (comp.getSize() == 1) {
+            // Cargo singolo: al centro
+            coordinates = List.of(
+                    new double[]{0.5, 0.5}  // Centro perfetto
+            );
+        } else if (comp.getSize() == 2) {
+            // Cargo da 2: uno sopra e uno sotto, distanza 18.4% dal centro
+            coordinates = List.of(
+                    new double[]{0.5, 0.5 - 0.184}, // Sopra: centro orizzontale, 18.4% sopra il centro
+                    new double[]{0.5, 0.5 + 0.184}  // Sotto: centro orizzontale, 18.4% sotto il centro
+            );
+        } else {
+            // Cargo da 3: triangolo con punta a sinistra
+            coordinates = List.of(
+                    new double[]{0.5 - 0.2, 0.5},     // Punto 3: sinistra 20%, altezza centro
+                    new double[]{0.5 + 0.2, 0.5 - 0.2}, // Punto 1: destra 20%, altezza +20% (sopra)
+                    new double[]{0.5 + 0.2, 0.5 + 0.2}  // Punto 2: destra 20%, altezza -20% (sotto)
+            );
+        }
+
+        int index = 0;
+
+        // Aggiungi i quadratini nell'ordine: rosso, verde, blu, giallo, vuoti
+        for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "red");
+        }
+        for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "green");
+        }
+        for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "blue");
+        }
+        for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "yellow");
+        }
+        for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
+            addCargoBox(layeredPane, coordinates.get(index), "empty");
+        }
+    }
+
     private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         Rectangle box = new Rectangle();
 
+        // Dimensioni ottimizzate per la visibilità
         box.widthProperty().bind(parent.widthProperty().multiply(0.15));
         box.heightProperty().bind(parent.heightProperty().multiply(0.15));
 
+        // Imposta colori migliorati
         switch (type) {
-            case "red" -> box.setFill(javafx.scene.paint.Color.RED);
-            case "green" -> box.setFill(javafx.scene.paint.Color.GREEN);
-            case "blue" -> box.setFill(javafx.scene.paint.Color.BLUE);
-            case "yellow" -> box.setFill(javafx.scene.paint.Color.YELLOW);
+            case "red" -> {
+                box.setFill(javafx.scene.paint.Color.RED);
+                box.setStroke(javafx.scene.paint.Color.DARKRED);
+            }
+            case "green" -> {
+                box.setFill(javafx.scene.paint.Color.LIME);
+                box.setStroke(javafx.scene.paint.Color.DARKGREEN);
+            }
+            case "blue" -> {
+                box.setFill(javafx.scene.paint.Color.BLUE);
+                box.setStroke(javafx.scene.paint.Color.DARKBLUE);
+            }
+            case "yellow" -> {
+                box.setFill(javafx.scene.paint.Color.YELLOW);
+                box.setStroke(javafx.scene.paint.Color.ORANGE);
+            }
             case "empty" -> {
                 box.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 box.setStroke(javafx.scene.paint.Color.WHITE);
-                box.setStrokeWidth(1);
-                box.getStrokeDashArray().addAll(5.0, 5.0);
+                box.setStrokeWidth(2);
+                box.getStrokeDashArray().addAll(3.0, 3.0);
             }
         }
 
-        box.setStroke(javafx.scene.paint.Color.BLACK);
-        box.setStrokeWidth(1);
+        if (!type.equals("empty")) {
+            box.setStrokeWidth(1.5);
+        }
 
+        // Posizionamento usando le coordinate relative specificate
         box.translateXProperty().bind(
                 parent.widthProperty().multiply(relativePos[0] - 0.5)
         );

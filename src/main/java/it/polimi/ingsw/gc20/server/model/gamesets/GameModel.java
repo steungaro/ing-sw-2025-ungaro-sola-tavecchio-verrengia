@@ -1197,6 +1197,7 @@ public class GameModel {
         s.addComponent(c, 3, 1);
 
         c = components.get(139);
+        c.rotateCounterclockwise();
         s.addComponent(c, 3, 2);
 
         c = components.get(1);
@@ -1222,7 +1223,6 @@ public class GameModel {
         s.addComponent(c, 4, 2);
 
         c = components.get(74);
-        c.rotateClockwise();
         s.addComponent(c, 4, 4);
 
         c = components.get(30);

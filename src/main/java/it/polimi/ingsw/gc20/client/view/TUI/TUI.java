@@ -344,7 +344,6 @@ public class TUI extends ClientGameModel {
             }
         });
         inputThread.start();
-        // add a shutdown hook to ensure the application can be closed gracefully
         Runtime.getRuntime().addShutdownHook(new Thread(inputThread::interrupt));
     }
 

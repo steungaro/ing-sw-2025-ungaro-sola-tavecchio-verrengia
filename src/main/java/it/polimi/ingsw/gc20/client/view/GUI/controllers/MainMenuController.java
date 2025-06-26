@@ -6,12 +6,12 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.LobbyListObserver;
+import it.polimi.ingsw.gc20.client.view.common.localmodel.LobbyListListener;
 
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class MainMenuController implements LobbyListObserver {
+public class MainMenuController implements LobbyListListener {
 
     @FXML
     private ListView<ViewLobby> lobbiesListView;
