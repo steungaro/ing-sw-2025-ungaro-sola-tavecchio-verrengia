@@ -2,11 +2,13 @@ package it.polimi.ingsw.gc20.server.model.player;
 
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
 
+import java.io.Serializable;
+
 /**
  * Represents a player in the game with attributes such as color, username, ship,
  * credits, leadership status, position on the board, and in-game status.
  */
-public class Player {
+public class Player implements Serializable {
 
     private PlayerColor color;
     private String username;
