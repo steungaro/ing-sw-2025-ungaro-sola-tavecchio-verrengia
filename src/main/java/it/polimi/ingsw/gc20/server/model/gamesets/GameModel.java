@@ -839,7 +839,7 @@ public class GameModel {
                     buildDemoNormalShipInvalid2(getInGamePlayers().get(2), components);
                 }
                 if (getInGamePlayers().size() > 3) {
-                    buildDemoNormalShipValid1(getInGamePlayers().get(3), components);
+                    buildDemoNormalShipValid2(getInGamePlayers().get(3), components);
                 }
             }catch (Exception e){
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, "error while trying to build demo ships", e);
@@ -851,95 +851,92 @@ public class GameModel {
     private void buildDemoNormalShipInvalid2(Player p, Map<Integer, Component> components) throws InvalidTileException {
         Component c;
         Ship s = p.getShip();
-        c = components.get(96);
+        c = components.get(97);
         s.addComponent(c, 0, 2);
 
-        c = components.get(121);
+        c = components.get(131);
         s.addComponent(c,0, 4);
 
-        c = components.get(125);
+        c = components.get(123);
         s.addComponent(c, 1, 1);
 
-        c = components.get(0);
-        c.rotateCounterclockwise();
+        c = components.get(45);
+        c.rotateClockwise();
         s.addComponent(c, 1, 2);
 
-        c = components.get(117);
+        c = components.get(110);
         s.addComponent( c, 1, 3);
 
-        c = components.get(18);
-        c.rotateCounterclockwise();
-        c.rotateCounterclockwise();
+        c = components.get(145);
+        c.rotateClockwise();
         s.addComponent( c, 1, 4);
 
-        c = components.get(104);
-        c.rotateClockwise();
+        c = components.get(107);
         s.addComponent(c, 1, 5);
 
-        c = components.get(114);
+        c = components.get(49);
         s.addComponent(c, 2, 0);
 
-        c = components.get(34);
-        c.rotateCounterclockwise();
+        c = components.get(31);
         s.addComponent( c, 2, 1);
 
-        c = components.get(138);
-        c.rotateCounterclockwise();
+        c = components.get(135);
         c.rotateCounterclockwise();
         s.addComponent( c, 2, 2);
 
-        c = components.get(60);
+        c = components.get(11);
+        c.rotateCounterclockwise();
         s.addComponent( c, 2, 4);
 
-        c = components.get(146);
+        c = components.get(19);
+        c.rotateClockwise();
+        c.rotateClockwise();
         s.addComponent( c, 2, 5);
 
-        c = components.get(10);
-        c.rotateCounterclockwise();
+        c = components.get(26);
         s.addComponent(c, 2, 6);
 
-        c = components.get(2);
+        c = components.get(98);
         s.addComponent(c, 3, 0);
 
-        c = components.get(3);
-        c.rotateCounterclockwise();
+        c = components.get(35);
+        c.rotateClockwise();
         s.addComponent(c, 3, 1);
 
-        c = components.get(149);
+        c = components.get(40);
+        c.rotateCounterclockwise();
         s.addComponent( c, 3, 2);
 
-        c = components.get(129);
-        c.rotateCounterclockwise();
-        c.rotateCounterclockwise();
+        c = components.get(148);
         s.addComponent( c, 3, 3);
 
-        c = components.get(136);
+        c = components.get(21);
         s.addComponent( c, 3, 4);
 
-        c = components.get(37);
+        c = components.get(32);
         s.addComponent( c, 3, 5);
 
-        c = components.get(57);
-        c.rotateClockwise();
+        c = components.get(62);
+        c.rotateCounterclockwise();
         s.addComponent( c, 3, 6);
 
-        c = components.get(90);
+        c = components.get(71);
         s.addComponent( c, 4, 0);
 
-        c = components.get(91);
+        c = components.get(66);
         s.addComponent( c, 4, 1);
 
-        c = components.get(77);
+        c = components.get(81);
         s.addComponent( c, 4, 2);
 
-        c = components.get(4);
+        c = components.get(70);
         c.rotateClockwise();
         s.addComponent( c, 4, 4);
 
-        c = components.get(82);
+        c = components.get(94);
         s.addComponent( c, 4, 5);
 
-        c = components.get(95);
+        c = components.get(86);
         s.addComponent( c, 4, 6);
     }
 
@@ -1020,7 +1017,7 @@ public class GameModel {
         c.rotateClockwise();
         s.addComponent( c, 3, 6);
 
-        c = components.get(90);
+        c = components.get(88);
         s.addComponent( c, 4, 0);
 
         c = components.get(64);
@@ -1029,7 +1026,7 @@ public class GameModel {
         c = components.get(84);
         s.addComponent( c, 4, 2);
 
-        c = components.get(88);
+        c = components.get(92);
         s.addComponent( c, 4, 4);
 
         c = components.get(83);
@@ -1087,7 +1084,8 @@ public class GameModel {
         c = components.get(146);
         s.addComponent( c, 2, 5);
 
-        c = components.get(10);
+        c = components.get(14);
+        c.rotateCounterclockwise();
         c.rotateCounterclockwise();
         s.addComponent(c, 2, 6);
 
@@ -1139,7 +1137,102 @@ public class GameModel {
 
     }
 
+    public void buildDemoNormalShipValid2(Player p, Map<Integer, Component> components) throws InvalidTileException {
+        Component c;
+        Ship s = p.getShip();
+        c = components.get(105);
+        s.addComponent(c, 0, 2);
 
+        c = components.get(128);
+        s.addComponent(c, 0, 4);
+
+        c = components.get(101);
+        s.addComponent(c, 1, 1);
+
+        c = components.get(59);
+        s.addComponent(c, 1, 2);
+
+        c = components.get(36);
+        c.rotateClockwise();
+        c.rotateClockwise();
+        s.addComponent(c, 1, 3);
+
+        c = components.get(143);
+        s.addComponent(c, 1, 4);
+
+        c = components.get(13);
+        c.rotateClockwise();
+        c.rotateClockwise();
+        s.addComponent(c, 1, 5);
+
+        c = components.get(99);
+        s.addComponent(c, 2, 0);
+
+        c = components.get(47);
+        c.rotateCounterclockwise();
+        c.rotateCounterclockwise();
+        s.addComponent(c, 2, 1);
+
+        c = components.get(33);
+        c.rotateClockwise();
+        s.addComponent(c, 2, 2);
+
+        c = components.get(53);
+        c.rotateClockwise();
+        c.rotateClockwise();
+        s.addComponent(c, 2, 4);
+
+        c = components.get(144);
+        c.rotateClockwise();
+        c.rotateClockwise();
+        s.addComponent(c, 2, 5);
+
+        c = components.get(46);
+        s.addComponent(c, 2, 6);
+
+        c = components.get(39);
+        c.rotateClockwise();
+        s.addComponent(c, 3, 0);
+
+        c = components.get(61);
+        s.addComponent(c, 3, 1);
+
+        c = components.get(139);
+        s.addComponent(c, 3, 2);
+
+        c = components.get(1);
+        s.addComponent(c, 3, 3);
+
+        c = components.get(6);
+        s.addComponent(c, 3, 4);
+
+        c = components.get(150);
+        s.addComponent(c, 3, 5);
+
+        c = components.get(134);
+        c.rotateClockwise();
+        s.addComponent(c, 3, 6);
+
+        c = components.get(73);
+        s.addComponent(c, 4, 0);
+
+        c = components.get(78);
+        s.addComponent(c, 4, 1);
+
+        c = components.get(93);
+        s.addComponent(c, 4, 2);
+
+        c = components.get(74);
+        c.rotateClockwise();
+        s.addComponent(c, 4, 4);
+
+        c = components.get(30);
+        c.rotateClockwise();
+        s.addComponent(c, 4, 5);
+
+        c = components.get(63);
+        s.addComponent(c, 4, 6);
+    }
 }
 
 
