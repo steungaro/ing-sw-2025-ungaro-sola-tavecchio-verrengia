@@ -142,6 +142,7 @@ public class MenuController implements GameModelListener {
      * Loads player names in the sidebar
      */
     private void loadPlayerNames() {
+        players = gameModel.getPlayers();
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) continue;
 
