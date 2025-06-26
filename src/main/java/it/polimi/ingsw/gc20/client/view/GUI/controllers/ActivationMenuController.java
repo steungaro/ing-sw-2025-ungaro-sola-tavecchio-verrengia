@@ -213,7 +213,6 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
         loadShipView();
-        shipController.enableCellClickHandler(this::selectComponent);
     }
 
     public void initializeData(ActivationType type, String message, int batteryNum) {
@@ -270,7 +269,8 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             Object controller = loader.getController();
 
             try{
-                ShipController shipController = (ShipController) controller;
+                shipController = (ShipController) controller;
+                shipController.enableCellClickHandler(this::selectComponent);
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
