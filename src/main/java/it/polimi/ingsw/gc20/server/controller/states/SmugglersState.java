@@ -84,6 +84,7 @@ public class SmugglersState extends CargoState {
         if (player.getShip().getTotalEnergy() == 0) {
             currentLostCargo = 0;
         }
+        getController().getMessageManager().notifyPhaseChange(phase, this);
 
         if (currentLostCargo == 0) {
             endMove(player);

@@ -3,6 +3,8 @@ package it.polimi.ingsw.gc20.server.controller.states;
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 
+import java.util.ArrayList;
+
 /**
  * Enum representing the different phases of the game state.
  * Each phase corresponds to a specific action or decision point in the game.
@@ -43,13 +45,13 @@ public enum StatePhase {
         ADD_CARGO {
             @Override
             public Message createMessage(State state) {
-                return new AddCargoMessage(state.cargoReward());
+                return new AddCargoMessage(new ArrayList<>(state.cargoReward()));
             }
         },
         LAND_ON_PLANET{
             @Override
             public Message createMessage(State state) {
-                return new LandOnPlanetPhase(state.getPlanets());            }
+                return new LandOnPlanetPhase(new ArrayList<>(state.getPlanets()));}
         },
         ENGINES_PHASE
         {

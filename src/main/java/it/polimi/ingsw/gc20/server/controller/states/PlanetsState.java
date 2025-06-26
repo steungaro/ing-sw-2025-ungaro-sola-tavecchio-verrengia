@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -69,12 +68,11 @@ public class PlanetsState extends CargoState {
             throw new InvalidStateException("You can't land on a planet unless you are in the planet phase.");
         }
         if (planets.get(planetIndex).getAvailable()) {
-            planets.get(planetIndex).setAvailable(false);
             landedPlayer = player.getUsername();
             landedPlanetIndex = planetIndex;
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
-            reward = planets.get(landedPlanetIndex).getReward();
+            reward = planets.get(planetIndex).land(player);
             setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo from the planet.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
@@ -93,21 +91,14 @@ public class PlanetsState extends CargoState {
             throw new InvalidStateException("You can't load cargo unless you are on the planet.");
         }
         if (reward.contains(loaded)) {
-            reward.remove(loaded);
             getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
+            reward.remove(loaded);
         } else {
             throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
         phase =  StatePhase.ADD_CARGO;
-        for (String user : getController().getInGameConnectedPlayers()){
-            if (getCurrentPlayer().equals(user)) {
-                NetworkService.getInstance().sendToClient(user, new AddCargoMessage(reward));
-            } else{
-                NetworkService.getInstance().sendToClient(user, new StandbyMessage(getStandbyMessage()));
-            }
-        }
-        //getController().getMessageManager().notifyPhaseChange(phase, this);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
