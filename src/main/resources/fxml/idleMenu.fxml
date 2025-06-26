@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.effect.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="30"
-      style="-fx-background-color: #222233;"
-      xmlns="http://javafx.com/javafx/17.0.12"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.IdleMenuController">
+<VBox alignment="CENTER" prefHeight="600.0" prefWidth="700.0" spacing="30" style="-fx-background-color: #222233;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.IdleMenuController">
 
     <padding>
         <Insets bottom="40" left="40" right="40" top="40" />
@@ -18,7 +14,7 @@
 
     <!-- Title container with shadow effect -->
     <VBox alignment="CENTER" spacing="15">
-        <Label text=" GAME Stopped " textFill="#ecf0f1" alignment="CENTER">
+        <Label alignment="CENTER" text="Please wait" textFill="#ecf0f1">
             <font>
                 <Font name="System Bold" size="28.0" />
             </font>
@@ -27,17 +23,12 @@
     </VBox>
 
     <!-- Message container with elegant border -->
-    <VBox alignment="CENTER" spacing="15"
-          style="-fx-background-color: #333344;
-                 -fx-background-radius: 10;
-                 -fx-border-radius: 10;
-                 -fx-border-width: 2;">
+    <VBox alignment="CENTER" spacing="15" style="-fx-background-color: #333344;                  -fx-background-radius: 10;                  -fx-border-radius: 10;                  -fx-border-width: 2;">
         <padding>
             <Insets bottom="25" left="30" right="30" top="25" />
         </padding>
 
-        <Label fx:id="messageLabel" textFill="#ecf0f1" wrapText="true" textAlignment="CENTER"
-               maxWidth="500">
+        <Label fx:id="messageLabel" alignment="CENTER" maxWidth="500" textAlignment="CENTER" textFill="#ecf0f1" wrapText="true">
             <font>
                 <Font name="System" size="16.0" />
             </font>
@@ -46,7 +37,7 @@
 
     <!-- Animated waiting indicator -->
     <VBox alignment="CENTER" spacing="15">
-        <Label text="Please wait..." textFill="#95a5a6" opacity="0.9">
+        <Label opacity="0.9" text="Please wait..." textFill="#95a5a6">
             <font>
                 <Font name="System Italic" size="14.0" />
             </font>

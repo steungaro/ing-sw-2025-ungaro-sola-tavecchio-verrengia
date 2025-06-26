@@ -99,7 +99,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
         Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
         targetCell.setImage(componentImage);
-        if (comp.rotComp >= 0 && comp.rotComp <= 3) {
+        if (comp.rotComp >= 0 && comp.rotComp <= 3 && (!comp.isCargoHold()  || !shouldLoadComponentStats)) {
             targetCell.setRotate(comp.rotComp * 90);
         }
 
@@ -156,7 +156,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
      */
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
-        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 3px; -fx-background-radius: 3px;");
+        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px; -fx-background-radius: 3px;");
 
         try {
             ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
@@ -261,7 +261,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         addCargoBox(layeredPane, coordinates.get(index), "empty");
     }
 
-    layeredPane.setRotate(comp.rotation * 90);
+    layeredPane.setRotate(comp.rotComp * 90);
 }
 
     private static List<double[]> getDoubles(ViewCargoHold comp) {

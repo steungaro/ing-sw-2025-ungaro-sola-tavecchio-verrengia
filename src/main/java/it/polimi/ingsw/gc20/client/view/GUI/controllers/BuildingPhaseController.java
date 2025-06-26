@@ -4,13 +4,10 @@ import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdventureCard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.server.model.components.AlienColor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -192,8 +189,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             }
 
             layeredPane.getChildren().add(targetCell);
-            setComponentProp(layeredPane, comp);
-
             // Make sure the layered pane fills the cell
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
             GridPane.setFillWidth(layeredPane, true);
@@ -209,190 +204,6 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
             System.err.println("Unable to load image: " + e.getMessage());
             return false;
         }
-    }
-
-
-    public void setComponentProp(StackPane pane, ViewComponent comp) {
-        if (comp.isCabin()) {
-            setComponentProp(pane, (ViewCabin) comp);
-        } else if (comp.isBattery()) {
-            setComponentProp(pane, (ViewBattery) comp);
-        } else if (comp.isCargoHold()) {
-            setComponentProp(pane, (ViewCargoHold) comp);
-        }
-    }
-
-    public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
-        Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
-        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 3px; -fx-background-radius: 3px;");
-
-        try {
-            ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
-            batteryIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
-            batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
-            batteryIcon.setPreserveRatio(true);
-
-            StackPane iconBackground = new StackPane();
-            iconBackground.getChildren().add(batteryIcon);
-
-            javafx.scene.layout.HBox batteryContainer = new javafx.scene.layout.HBox(3);
-            batteryContainer.setAlignment(javafx.geometry.Pos.CENTER);
-            batteryContainer.getChildren().addAll(iconBackground, batteryLabel);
-
-            StackPane.setAlignment(batteryContainer, javafx.geometry.Pos.CENTER);
-            layeredPane.getChildren().add(batteryContainer);
-
-        } catch (Exception e) {
-            System.err.println("Unable to load battery image: " + e.getMessage());
-            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.CENTER);
-            layeredPane.getChildren().add(batteryLabel);
-        }
-    }
-
-    public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
-        if (comp.alien) {
-            String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
-                    "/fxml/icons/purple_alien.png" : "/fxml/icons/brown_alien.png";
-
-            try {
-                ImageView alienIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream(alienImagePath))));
-                alienIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.4));
-                alienIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.4));
-                alienIcon.setPreserveRatio(true);
-
-                layeredPane.getChildren().add(alienIcon);
-                StackPane.setAlignment(alienIcon, javafx.geometry.Pos.CENTER);
-            } catch (Exception e) {
-                System.err.println("Unable to load alien image: " + e.getMessage());
-            }
-        } else if (comp.astronauts > 0) {
-            Label astronautsLabel = new Label(Integer.toString(comp.astronauts));
-            astronautsLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
-
-            try {
-                ImageView astronautIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/astr.png"))));
-                astronautIcon.fitWidthProperty().bind(layeredPane.widthProperty().multiply(0.3));
-                astronautIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
-                astronautIcon.setPreserveRatio(true);
-
-                javafx.scene.layout.HBox astronautContainer = new javafx.scene.layout.HBox(5);
-                astronautContainer.setAlignment(javafx.geometry.Pos.CENTER);
-                astronautContainer.getChildren().addAll(astronautIcon, astronautsLabel);
-
-                StackPane.setAlignment(astronautContainer, javafx.geometry.Pos.CENTER);
-                layeredPane.getChildren().add(astronautContainer);
-
-            } catch (Exception e) {
-                System.err.println("Unable to load astronaut image: " + e.getMessage());
-                StackPane.setAlignment(astronautsLabel, javafx.geometry.Pos.CENTER);
-                layeredPane.getChildren().add(astronautsLabel);
-            }
-        }
-
-        if (comp.cabinColor != AlienColor.NONE) {
-            String colorStr = switch (comp.cabinColor) {
-                case PURPLE -> "purple";
-                case BROWN -> "brown";
-                case BOTH -> "linear-gradient(45deg, purple 50%, brown 50%)";
-                default -> null;
-            };
-
-            if (colorStr != null) {
-                Label colorIndicator = new Label("");
-                colorIndicator.setStyle("-fx-background: " + colorStr +
-                        "; -fx-min-width: 15px; -fx-min-height: 15px; -fx-border-color: white; -fx-border-width: 1px;");
-                StackPane.setAlignment(colorIndicator, javafx.geometry.Pos.BOTTOM_RIGHT);
-                StackPane.setMargin(colorIndicator, new Insets(0, 5, 5, 0));
-                layeredPane.getChildren().add(colorIndicator);
-            }
-        }
-    }
-
-    public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-        List<double[]> coordinates;
-
-        if (comp.getSize() == 1) {
-            coordinates = List.of(
-                    new double[]{0.5, 0.5}
-            );
-        } else if (comp.getSize() == 2) {
-            coordinates = List.of(
-                    new double[]{0.5, 0.5 - 0.184},
-                    new double[]{0.5, 0.5 + 0.184}
-            );
-        } else {
-
-            coordinates = List.of(
-                    new double[]{0.5 - 0.2, 0.5},
-                    new double[]{0.5 + 0.2, 0.5 - 0.2},
-                    new double[]{0.5 + 0.2, 0.5 + 0.2}
-            );
-        }
-
-        int index = 0;
-
-        for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "red");
-        }
-        for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "green");
-        }
-        for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "blue");
-        }
-        for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "yellow");
-        }
-        for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
-            addCargoBox(layeredPane, coordinates.get(index), "empty");
-        }
-
-        layeredPane.setRotate(comp.rotComp * 90);
-    }
-
-    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
-        Rectangle box = new Rectangle();
-
-        box.widthProperty().bind(parent.widthProperty().multiply(0.15));
-        box.heightProperty().bind(parent.heightProperty().multiply(0.15));
-
-        switch (type) {
-            case "red" -> {
-                box.setFill(javafx.scene.paint.Color.RED);
-                box.setStroke(javafx.scene.paint.Color.DARKRED);
-            }
-            case "green" -> {
-                box.setFill(javafx.scene.paint.Color.LIME);
-                box.setStroke(javafx.scene.paint.Color.DARKGREEN);
-            }
-            case "blue" -> {
-                box.setFill(javafx.scene.paint.Color.BLUE);
-                box.setStroke(javafx.scene.paint.Color.DARKBLUE);
-            }
-            case "yellow" -> {
-                box.setFill(javafx.scene.paint.Color.YELLOW);
-                box.setStroke(javafx.scene.paint.Color.ORANGE);
-            }
-            case "empty" -> {
-                box.setFill(javafx.scene.paint.Color.TRANSPARENT);
-                box.setStroke(javafx.scene.paint.Color.WHITE);
-                box.setStrokeWidth(2);
-                box.getStrokeDashArray().addAll(3.0, 3.0);
-            }
-        }
-
-        if (!type.equals("empty")) {
-            box.setStrokeWidth(1.5);
-        }
-
-        box.translateXProperty().bind(
-                parent.widthProperty().multiply(relativePos[0] - 0.5)
-        );
-        box.translateYProperty().bind(
-                parent.heightProperty().multiply(relativePos[1] - 0.5)
-        );
-
-        parent.getChildren().add(box);
     }
 
     private void loadUncoveredComponents() {
