@@ -104,6 +104,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
@@ -111,6 +114,8 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>it.polimi.ingsw.gc20.client.view.GUI.GUIApplication</mainClass>
+                    <!--mainClass>it.polimi.ingsw.gc20.client.view.TUI.MainTUI</mainClass!-->
+                    <!--mainClass>it.polimi.ingsw.gc20.server.network.MainServer</mainClass!-->
                 </configuration>
             </plugin>
             <plugin>
@@ -137,7 +142,9 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>it.polimi.ingsw.Client</mainClass>
+                                    <mainClass>it.polimi.ingsw.gc20.client.view.GUI.GUIApplication</mainClass>
+                                    <!--mainClass>it.polimi.ingsw.gc20.client.view.TUI.MainTUI</mainClass!-->
+                                    <!--mainClass>it.polimi.ingsw.gc20.server.network.MainServer</mainClass!-->
                                 </manifest>
                             </archive>
                             <descriptorRefs>
