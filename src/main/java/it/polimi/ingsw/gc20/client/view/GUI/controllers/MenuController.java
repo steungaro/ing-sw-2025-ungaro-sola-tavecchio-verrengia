@@ -81,7 +81,7 @@ public class MenuController implements GameModelListener {
     public void initialize() {
         gameModel = ClientGameModel.getInstance();
         players = gameModel.getPlayers();
-        
+
         loadPlayerShips();
         loadPlayerNames();
         printCurrentCard(gameModel.getCurrentCard());
@@ -155,7 +155,7 @@ public class MenuController implements GameModelListener {
 
             if (playerNameLabel != null) {
                 if (players[i].username.equals(gameModel.getUsername())){
-                    playerNameLabel.setText(players[i].username + " (You)");
+                    playerNameLabel.setText(players[i].username + " (You) $" + players[i].credits);
                 }
                 else {
                     playerNameLabel.setText(players[i].username);
@@ -198,7 +198,7 @@ public class MenuController implements GameModelListener {
         }
 
         loadMenuInCurrentFrame(fxmlPath);
-        
+
         backButton.setVisible(true);
     }
 
@@ -412,8 +412,8 @@ public class MenuController implements GameModelListener {
     /**
      * Generic method to load any type of FXML content into a container
      */
-    private void loadFXMLInContainer(StackPane container, String fxmlPath, 
-                                   DisplayContext context, ContentType contentType, 
+    private void loadFXMLInContainer(StackPane container, String fxmlPath,
+                                   DisplayContext context, ContentType contentType,
                                    ViewPlayer player) {
         this.currentDisplayContext = context;
         try {
@@ -453,13 +453,13 @@ public class MenuController implements GameModelListener {
     /**
      * Unified method to configure sizing for any element
      */
-    private void configureGenericSizing(StackPane container, StackPane element, 
+    private void configureGenericSizing(StackPane container, StackPane element,
                                       DisplayContext context, ContentType contentType) {
         DisplayConfig config = getDisplayConfig(context, contentType);
-        
+
         element.prefWidthProperty().unbind();
         element.prefHeightProperty().unbind();
-        
+
         if (context == DisplayContext.THUMBNAIL) {
             configureThumbnailSizing(container, element, config);
         } else {
@@ -475,7 +475,7 @@ public class MenuController implements GameModelListener {
         element.setMinHeight(config.minHeight);
         element.setMaxWidth(config.maxWidth);
         element.setMaxHeight(config.maxHeight);
-        
+
         element.prefWidthProperty().bind(
             container.widthProperty()
                 .multiply(config.widthMultiplier)
@@ -486,15 +486,15 @@ public class MenuController implements GameModelListener {
                 .multiply(config.heightMultiplier)
                 .subtract(config.padding)
         );
-        
+
         Platform.runLater(() -> {
             double containerWidth = container.getWidth();
             double containerHeight = container.getHeight();
-            
+
             if (containerWidth > 0 && containerHeight > 0) {
                 double calculatedWidth = containerWidth * config.widthMultiplier - config.padding;
                 double calculatedHeight = containerHeight * config.heightMultiplier - config.padding;
-                
+
                 if (calculatedWidth < config.minWidth || calculatedHeight < config.minHeight) {
                     element.prefWidthProperty().unbind();
                     element.prefHeightProperty().unbind();
@@ -513,19 +513,19 @@ public class MenuController implements GameModelListener {
         element.setMinHeight(config.minHeight);
         element.setMaxWidth(config.maxWidth);
         element.setMaxHeight(config.maxHeight);
-        
+
         container.widthProperty().addListener((obs, oldWidth, newWidth) -> {
             if (newWidth.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
         });
-        
+
         container.heightProperty().addListener((obs, oldHeight, newHeight) -> {
             if (newHeight.doubleValue() > 0) {
                 updateElementSizeSafely(container, element, config);
             }
         });
-        
+
         Platform.runLater(() -> updateElementSizeSafely(container, element, config));
     }
 
@@ -552,14 +552,14 @@ public class MenuController implements GameModelListener {
     private void updateElementSizeSafely(StackPane container, StackPane element, DisplayConfig config) {
         double containerWidth = container.getWidth();
         double containerHeight = container.getHeight();
-        
+
         if (containerWidth <= 0 || containerHeight <= 0) return;
-        
+
         double availableWidth = containerWidth - config.padding;
         double availableHeight = containerHeight - config.padding;
-        
+
         double targetWidth, targetHeight;
-        
+
         if (availableWidth / availableHeight > config.aspectRatio) {
             targetHeight = availableHeight;
             targetWidth = targetHeight * config.aspectRatio;
@@ -567,13 +567,13 @@ public class MenuController implements GameModelListener {
             targetWidth = availableWidth;
             targetHeight = targetWidth / config.aspectRatio;
         }
-        
+
         targetWidth = Math.max(config.minWidth, Math.min(targetWidth, config.maxWidth));
         targetHeight = Math.max(config.minHeight, Math.min(targetHeight, config.maxHeight));
-        
+
         element.prefWidthProperty().unbind();
         element.prefHeightProperty().unbind();
-        
+
         element.setPrefWidth(targetWidth);
         element.setPrefHeight(targetHeight);
         element.setMaxWidth(targetWidth);
@@ -583,7 +583,7 @@ public class MenuController implements GameModelListener {
     /**
      * Configures the controller of the loaded content
      */
-    private void configureController(Object controller, ContentType contentType, 
+    private void configureController(Object controller, ContentType contentType,
                                    ViewPlayer player) {
         switch (contentType) {
             case SHIP -> {
@@ -616,10 +616,10 @@ public class MenuController implements GameModelListener {
         ViewPlayer currentPlayer = Arrays.stream(gameModel.getPlayers())
                 .filter(p -> p != null && p.username.equals(gameModel.getUsername()))
                 .findFirst().orElse(null);
-        
+
         if (currentPlayer != null) {
             String fxmlPath = getFXMLPath(ContentType.SHIP);
-            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW, 
+            loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
                               ContentType.SHIP, currentPlayer);
         }
         currentContentType = ContentType.SHIP;
@@ -631,9 +631,9 @@ public class MenuController implements GameModelListener {
      */
     private String getFXMLPath(ContentType contentType) {
         return switch (contentType) {
-            case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+            case SHIP -> gameModel.getShip(gameModel.getUsername()).isLearner ?
                         "/fxml/ship0.fxml" : "/fxml/ship2.fxml";
-            case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ? 
+            case BOARD -> gameModel.getShip(gameModel.getUsername()).isLearner ?
                          "/fxml/board0.fxml" : "/fxml/board2.fxml";
         };
     }
@@ -665,7 +665,7 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onBoardUpdated(ViewBoard board) {
-        // ignore
+        loadPlayerNames();
     }
 
     private void printCurrentCard(ViewAdventureCard currentCard) {
