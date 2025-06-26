@@ -11,7 +11,6 @@ import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import it.polimi.ingsw.gc20.server.model.ship.Ship;
-import it.polimi.ingsw.gc20.server.network.NetworkService;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -100,14 +99,7 @@ public class PlanetsState extends CargoState {
             throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
         phase =  StatePhase.ADD_CARGO;
-        for (String user : getController().getInGameConnectedPlayers()){
-            if (getCurrentPlayer().equals(user)) {
-                NetworkService.getInstance().sendToClient(user, new AddCargoMessage(reward));
-            } else{
-                NetworkService.getInstance().sendToClient(user, new StandbyMessage(getStandbyMessage()));
-            }
-        }
-        //getController().getMessageManager().notifyPhaseChange(phase, this);
+        getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
     @Override
