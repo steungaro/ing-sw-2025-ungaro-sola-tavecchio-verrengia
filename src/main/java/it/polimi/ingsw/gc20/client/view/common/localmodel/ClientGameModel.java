@@ -199,7 +199,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      */
     public void setLobbyList(List<ViewLobby> lobbyList) {
         this.lobbyList = new ArrayList<>(lobbyList);
-        notifyLobbyListObservers();
+        notifyLobbyListListeners();
         LOGGER.fine("Lobby list updated in model.");
     }
 
@@ -281,7 +281,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      * @param color the color of the player
      * @param posInBoard the position of the player on the board
      */
-    public void setPlayerInfo(String username, int creditsAdded, Boolean inGame, PlayerColor color, int posInBoard) {
+    public void setPlayerInfo(String username, int creditsAdded, boolean inGame, PlayerColor color, int posInBoard) {
         for (ViewPlayer player : board.players) {
             if (player.username.equals(username)) {
                 player.credits += creditsAdded;
@@ -345,11 +345,11 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
      * Adds a lobby list listener to the game model.
      * This method allows listeners to be notified when the lobby list changes.
      *
-     * @param observer the LobbyListListener to add
+     * @param listener the LobbyListListener to add
      */
-    public void addLobbyListObserver(LobbyListListener observer) {
-        if (!lobbyListListeners.contains(observer)) {
-            lobbyListListeners.add(observer);
+    public void addLobbyListListener(LobbyListListener listener) {
+        if (!lobbyListListeners.contains(listener)) {
+            lobbyListListeners.add(listener);
         }
     }
 
@@ -366,7 +366,7 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
     /**
      * Notifies all lobby list observers that the lobby list has changed.
      */
-    protected void notifyLobbyListObservers() {
+    protected void notifyLobbyListListeners() {
         for (LobbyListListener observer : lobbyListListeners) {
             observer.onLobbyListChanged();
         }

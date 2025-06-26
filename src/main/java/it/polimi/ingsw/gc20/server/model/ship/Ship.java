@@ -116,7 +116,7 @@ public abstract class Ship {
             if (cannon.getRotation() == Direction.UP)
                 power += cannon.getPower();
             else {
-                power += cannon.getPower() / 2;
+                power += (float) cannon.getPower() / 2;
             }
         }
         return power;
