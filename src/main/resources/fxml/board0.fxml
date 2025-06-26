@@ -6,102 +6,102 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<Pane fx:id="rootPane" maxHeight="400.0" maxWidth="700.0" prefHeight="330.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Board0Controller">
+<Pane fx:id="rootPane" maxHeight="180.0" maxWidth="300.0" prefHeight="150.0" prefWidth="270.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.Board0Controller">
    <Group fx:id="scalableContent">
-      <ImageView fitHeight="330.0" fitWidth="600.0">
+      <ImageView fitHeight="150.0" fitWidth="270.0">
          <Image url="@cardboard/cardboard-3.png" />
          <effect>
             <DropShadow color="black" spread="0.2" />
          </effect>
       </ImageView>
-      <Circle fx:id="circle0" fill="#ffffff00" layoutX="158.0" layoutY="73.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle0" fill="#ffffff00" layoutX="71.0" layoutY="33.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle1" fill="#ffffff00" layoutX="109.0" layoutY="103.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle1" fill="#ffffff00" layoutX="49.0" layoutY="47.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle2" fill="#ffffff00" layoutX="79.0" layoutY="159.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle2" fill="#ffffff00" layoutX="35.0" layoutY="72.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle3" fill="#ffffff00" layoutX="105.0" layoutY="222.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle3" fill="#ffffff00" layoutX="47.0" layoutY="100.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle4" fill="#ffffff00" layoutX="156.0" layoutY="255.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle4" fill="#ffffff00" layoutX="70.0" layoutY="115.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle5" fill="#ffffff00" layoutX="212.0" layoutY="273.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle5" fill="#ffffff00" layoutX="95.0" layoutY="124.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle6" fill="#ffffff00" layoutX="268.0" layoutY="281.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle6" fill="#ffffff00" layoutX="121.0" layoutY="127.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle7" fill="#ffffff00" layoutX="323.0" layoutY="283.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle7" fill="#ffffff00" layoutX="145.0" layoutY="128.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle8" fill="#ffffff00" layoutX="381.0" layoutY="273.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle8" fill="#ffffff00" layoutX="172.0" layoutY="124.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle9" fill="#ffffff00" layoutX="436.0" layoutY="257.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle9" fill="#ffffff00" layoutX="196.0" layoutY="116.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle10" fill="#ffffff00" layoutX="485.0" layoutY="224.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle10" fill="#ffffff00" layoutX="218.0" layoutY="101.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle11" fill="#ffffff00" layoutX="516.0" layoutY="170.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle11" fill="#ffffff00" layoutX="232.0" layoutY="77.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle12" fill="#ffffff00" layoutX="489.0" layoutY="108.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle12" fill="#ffffff00" layoutX="220.0" layoutY="49.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle13" fill="#ffffff00" layoutX="440.0" layoutY="75.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle13" fill="#ffffff00" layoutX="198.0" layoutY="34.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle14" fill="#ffffff00" layoutX="387.0" layoutY="57.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle14" fill="#ffffff00" layoutX="174.0" layoutY="26.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle15" fill="#ffffff00" layoutX="327.0" layoutY="50.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle15" fill="#ffffff00" layoutX="147.0" layoutY="23.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle16" fill="#ffffff00" layoutX="273.0" layoutY="51.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle16" fill="#ffffff00" layoutX="123.0" layoutY="23.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
-      <Circle fx:id="circle17" fill="#ffffff00" layoutX="215.0" layoutY="57.0" radius="20.0" stroke="white" strokeType="INSIDE" strokeWidth="1.5">
+      <Circle fx:id="circle17" fill="#ffffff00" layoutX="97.0" layoutY="26.0" radius="10.0" stroke="white" strokeType="INSIDE" strokeWidth="1.2">
          <effect>
-            <DropShadow color="aqua" radius="5" spread="0.1" />
+            <DropShadow color="aqua" radius="3" spread="0.1" />
          </effect>
       </Circle>
    </Group>
