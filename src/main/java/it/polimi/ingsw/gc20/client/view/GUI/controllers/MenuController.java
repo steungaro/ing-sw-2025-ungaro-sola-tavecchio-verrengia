@@ -365,10 +365,10 @@ public class MenuController implements GameModelListener {
             instance.currentFrame.getChildren().add(content);
 
             if (!isTemporaryView) {
-                instance.saveCurrentStateToStack();
                 instance.currentContentType = ContentType.SHIP;
             } else {
                 instance.updateBackButtonVisibility();
+                instance.currentContentType = null;
             }
 
         } catch (IOException e) {
