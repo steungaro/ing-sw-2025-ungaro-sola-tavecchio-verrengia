@@ -10,7 +10,6 @@ public class GUIApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws RemoteException {
-        // Inizializza la GUIView
         GUIView guiView = new GUIView();
         ClientGameModel.setInstance(guiView);
         guiView.initGUI(primaryStage);
