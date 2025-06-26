@@ -179,8 +179,6 @@ public class Ship0Controller extends ShipController{
         imageCell_3_0 = null; imageCell_3_1 = null; imageCell_3_2 = null; imageCell_3_3 = null; imageCell_3_4 = null;
         imageCell_4_0 = null; imageCell_4_1 = null; imageCell_4_2 = null; imageCell_4_3 = null; imageCell_4_4 = null;
         bgImage = null;
-
-        System.out.println("Ship0Controller: Cleanup completed");
     }
 
     @Override

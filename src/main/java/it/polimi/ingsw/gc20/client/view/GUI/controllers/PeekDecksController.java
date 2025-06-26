@@ -72,23 +72,19 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
             "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 6, 0, 0, 2);"
         );
         
-        cardContainer.setOnMouseEntered(_ -> {
-            cardContainer.setStyle(
-                "-fx-background-color: #3c4a5e; " +
-                "-fx-background-radius: 8; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3); " +
-                "-fx-scale-x: 1.05; -fx-scale-y: 1.05;"
-            );
-        });
+        cardContainer.setOnMouseEntered(_ -> cardContainer.setStyle(
+            "-fx-background-color: #3c4a5e; " +
+            "-fx-background-radius: 8; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 10, 0, 0, 3); " +
+            "-fx-scale-x: 1.05; -fx-scale-y: 1.05;"
+        ));
         
-        cardContainer.setOnMouseExited(_ -> {
-            cardContainer.setStyle(
-                "-fx-background-color: #333344; " +
-                "-fx-background-radius: 8; " +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 6, 0, 0, 2); " +
-                "-fx-scale-x: 1.0; -fx-scale-y: 1.0;"
-            );
-        });
+        cardContainer.setOnMouseExited(_ -> cardContainer.setStyle(
+            "-fx-background-color: #333344; " +
+            "-fx-background-radius: 8; " +
+            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 6, 0, 0, 2); " +
+            "-fx-scale-x: 1.0; -fx-scale-y: 1.0;"
+        ));
         
         Image cardImage = getCardImage(card.id);
         ImageView imageView = new ImageView(cardImage);
@@ -124,7 +120,6 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
     }
 
     public void cleanup() {
-        System.out.println("PeekDecksController: Starting cleanup...");
 
         if (DeckPanel != null) {
             if (DeckPanel.getContent() != null) {
@@ -163,7 +158,5 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
             DeckPanel.setContent(null);
             DeckPanel = null;
         }
-
-        System.out.println("PeekDecksController: Cleanup completed");
     }
 }

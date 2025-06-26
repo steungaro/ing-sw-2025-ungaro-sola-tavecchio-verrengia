@@ -81,12 +81,6 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             });
 
             Object controller = loader.getController();
-
-            try{
-                ShipController shipController = (ShipController) controller;
-            } catch (ClassCastException e) {
-                showError("Unable to get the ship controller");
-            }
         } catch (IOException e) {
             showError("Error while loading the ship view: " + e.getMessage());
         }
@@ -117,12 +111,10 @@ public class AutomaticActionController implements MenuController.ContextDataRece
 
     @Override
     public void cleanup() {
-        System.out.println("AutomaticActionController: Starting cleanup...");
 
         if (shipController != null) {
             try{
                 (shipController).cleanup();
-                System.out.println("AutomaticActionController: ShipController cleaned up");
             } catch (ClassCastException e){
                 System.err.println("AutomaticActionController: ShipController does not implement BindCleanUp, skipping cleanup");
             } catch (Exception e) {
@@ -133,7 +125,6 @@ public class AutomaticActionController implements MenuController.ContextDataRece
                 ClientGameModel gameModel = ClientGameModel.getInstance();
                 if (gameModel != null) {
                     gameModel.removeListener( shipController);
-                    System.out.println("AutomaticActionController: ShipController removed from GameModel listeners");
                 }
             } catch (ClassCastException e) {
                 System.err.println("AutomaticActionController: ShipController does not implement GameModelListener, skipping removal");
@@ -150,7 +141,6 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             }
 
             shipPane.getChildren().clear();
-            System.out.println("AutomaticActionController: ShipPane cleared and unbound");
         }
 
         ship = null;
@@ -167,7 +157,6 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             errorLabel.setVisible(false);
         }
 
-        System.out.println("AutomaticActionController: Cleanup completed");
     }
 
     private void unbindNodeProperties(javafx.scene.Node node) {

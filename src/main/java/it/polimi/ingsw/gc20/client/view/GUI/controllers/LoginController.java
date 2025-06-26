@@ -27,7 +27,7 @@ public class LoginController {
         String username = usernameField.getText().trim();
 
         if (username.isEmpty()) {
-            System.out.println("Username cannot be empty");
+            setErrorLabel("Username cannot be empty");
             return;
         }
 

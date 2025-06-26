@@ -89,7 +89,7 @@ public class MainMenuController implements LobbyListListener {
         try {
             ClientGameModel.getInstance().getClient().getLobbies(ClientGameModel.getInstance().getUsername());
         } catch (RemoteException e) {
-            System.out.println("Error while connecting to server: " + e.getMessage());
+            System.err.println("Error while fetching lobby list: " + e.getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ public class MainMenuController implements LobbyListListener {
             try {
                 client.joinLobby(lobby.getID(), ClientGameModel.getInstance().getUsername());
             } catch (java.rmi.RemoteException e){
-                System.out.println("Error while connecting to server: " + e.getMessage());
+                System.err.println("Error joining lobby: " + e.getMessage());
             }
         }
     }

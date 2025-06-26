@@ -133,7 +133,6 @@ public class Board0Controller extends BoardController {
 
     @Override
     public void cleanup() {
-        System.out.println("Board0Controller: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {

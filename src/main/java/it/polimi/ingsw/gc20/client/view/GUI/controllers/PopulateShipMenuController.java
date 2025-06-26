@@ -181,7 +181,6 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
     }
 
     public void cleanup() {
-        System.out.println("PopulateShipMenuController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -219,7 +218,5 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
         ship = null;
         shipPane = null;
         errorLabel = null;
-
-        System.out.println("PopulateShipMenuController: Cleanup completed");
     }
 }

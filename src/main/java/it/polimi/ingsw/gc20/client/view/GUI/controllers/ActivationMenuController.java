@@ -32,12 +32,10 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     @Override
     public void cleanup() {
-        System.out.println("ActivationMenuController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
             gameModel.removeListener(this);
-            System.out.println("ActivationMenuController: Removed from GameModel listeners");
         }
 
         if (shipPane != null && !shipPane.getChildren().isEmpty()) {
@@ -46,7 +44,6 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             }
 
             shipPane.getChildren().clear();
-            System.out.println("ActivationMenuController: ShipPane cleared and unbound");
         }
 
         selectedComponents.clear();
@@ -65,8 +62,6 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             errorLabel.setText("");
             errorLabel.setVisible(false);
         }
-
-        System.out.println("ActivationMenuController: Cleanup completed");
     }
 
     private void unbindNodeProperties(javafx.scene.Node node) {

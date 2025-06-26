@@ -62,7 +62,6 @@ public class MenuController implements GameModelListener {
     @FXML private Label player3Name;
     @FXML private Label player4Name;
     @FXML public Button backButton;
-    @FXML public Button quitButton;
     @FXML private Label serverMessages;
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
@@ -349,7 +348,6 @@ public class MenuController implements GameModelListener {
                     ((ContextDataReceiver) controller).setContextData(contextData);
                 } catch (ClassCastException e) {
                     guiView.displayErrorMessage("Unable to obtain the context data receiver: " + e.getMessage());
-                    System.out.println("Unable to obtain the context data receiver: " + e.getMessage());
                 }
             }
 

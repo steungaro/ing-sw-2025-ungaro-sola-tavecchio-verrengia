@@ -168,7 +168,6 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
     }
 
     public void cleanup() {
-        System.out.println("PlanetMenuController: Starting cleanup...");
 
         if (planetsContainer != null) {
             for (javafx.scene.Node node : planetsContainer.getChildren()) {
@@ -231,7 +230,5 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         selectedPlanetBox = null;
         planetsContainer = null;
         errorLabel = null;
-
-        System.out.println("PlanetMenuController: Cleanup completed");
     }
 }
