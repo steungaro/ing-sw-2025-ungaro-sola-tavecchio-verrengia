@@ -210,7 +210,10 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     public void initializeData(ActivationType type, String message, int batteryNum) {
         this.activationType = type;
-        titleLabel.setText(type.toString() + " Activation");
+        if(activationType == ActivationType.BRANCH)
+            titleLabel.setText("Choose a branch");
+        else
+            titleLabel.setText(type.toString() + " Activation");
         messageLabel.setText(message);
 
         if(activationType == ActivationType.BRANCH)
