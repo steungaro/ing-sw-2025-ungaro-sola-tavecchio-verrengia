@@ -76,8 +76,9 @@ public class PausedState extends State {
                 getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                 getModel().getActiveCard().playCard();
                 getController().setState(new PreDrawState(getController()));
+            } else {
+                getController().getMessageManager().notifyPhaseChange(previousState.getPhase(), previousState);
             }
-            getController().getMessageManager().notifyPhaseChange(previousState.getPhase(), previousState);
         }
     }
 
