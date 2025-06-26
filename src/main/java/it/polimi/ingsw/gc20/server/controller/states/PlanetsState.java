@@ -98,6 +98,7 @@ public class PlanetsState extends CargoState {
         } else {
             throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
+        phase =  StatePhase.ADD_CARGO;
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
