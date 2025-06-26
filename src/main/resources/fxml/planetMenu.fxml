@@ -30,7 +30,7 @@
             </font>
         </Label>
 
-        <HBox fx:id="planetsListView" minHeight="100.0" prefHeight="100.0" prefWidth="500" />
+        <HBox fx:id="planetsContainer" minHeight="100.0" prefHeight="100.0" prefWidth="500" />
 
         <Label text="Select a planet from the list and click 'Land' to explore it" textFill="#80ffaa">
             <font>
