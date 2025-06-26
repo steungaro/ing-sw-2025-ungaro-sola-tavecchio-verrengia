@@ -51,7 +51,7 @@ public class MainMenuController implements LobbyListListener {
             }
         });
 
-        ClientGameModel.getInstance().addLobbyListObserver(this);
+        ClientGameModel.getInstance().addLobbyListListener(this);
 
         lobbiesListView.getSelectionModel().selectedItemProperty().addListener((_, _, newVal) -> joinLobbyButton.setDisable(newVal == null));
 
