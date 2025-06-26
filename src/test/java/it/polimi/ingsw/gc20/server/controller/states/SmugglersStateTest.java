@@ -228,6 +228,7 @@ class SmugglersStateTest {
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2));
         state.moveCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.BLUE, new Pair<>(1, 4));
+        state.endMove(controller.getPlayerByID("player3"));
         assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
     }
 
