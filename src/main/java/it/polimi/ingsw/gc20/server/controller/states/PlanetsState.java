@@ -2,12 +2,15 @@ package it.polimi.ingsw.gc20.server.controller.states;
 
 import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.server.controller.GameController;
+import it.polimi.ingsw.gc20.server.controller.managers.Translator;
 import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
+import it.polimi.ingsw.gc20.server.model.components.CargoHold;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
+import it.polimi.ingsw.gc20.server.model.ship.Ship;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
@@ -91,7 +94,8 @@ public class PlanetsState extends CargoState {
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
             reward.remove(loaded);
-            super.loadCargo(player, loaded, chTo);
+            getModel().addCargo(player, loaded, Translator.getComponentAt(player, chTo, CargoHold.class));
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "loaded cargo"));
         } else {
             throw new CargoException("You can't load this cargo, it's not in the reward.");
         }
@@ -106,7 +110,12 @@ public class PlanetsState extends CargoState {
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't unload cargo unless you are on the planet.");
         }
-        super.unloadCargo(player, unloaded, ch);
+        try {
+            getModel().moveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
+        } catch (CargoNotLoadable | CargoFullException _) {
+            //ignore this exception, we are unloading the cargo
+        }
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
@@ -118,7 +127,8 @@ public class PlanetsState extends CargoState {
         if (phase != StatePhase.ADD_CARGO) {
             throw new InvalidStateException("You can't move cargo unless you are on the planet.");
         }
-        super.moveCargo(player, cargo, from, to);
+        getModel().moveCargo(player, cargo, Translator.getComponentAt(player, from, CargoHold.class), Translator.getComponentAt(player, to, CargoHold.class));
+        getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "moved cargo"));
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }
 
