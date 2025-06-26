@@ -50,6 +50,7 @@ public class PlanetsState extends CargoState {
         this.landedPlayer = null;
         this.landedPlanetIndex = -1;
         this.playersToMove = new ArrayList<>();
+        reward = new ArrayList<>();
         phase = StatePhase.LAND_ON_PLANET;
         setStandbyMessage("Waiting for " + getCurrentPlayer() + " to land on a planet.");
         getController().getMessageManager().notifyPhaseChange(phase, this);

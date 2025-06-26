@@ -76,6 +76,7 @@ public class CombatZone0State extends PlayingState {
         //set the phase to engine phase
         this.phase = StatePhase.ENGINES_PHASE;
         setStandbyMessage(p.getUsername() + " is activating engines.");
+        setCurrentPlayer(getController().getFirstOnlinePlayer());
         //notify the first player that he has to activate the engines and the others that they have to wait
         getController().getMessageManager().notifyPhaseChange(phase, this);
     }

@@ -23,7 +23,7 @@ public class Cannon extends Component {
      *
      * @return the power of the cannon as a float
      */
-    public float getPower() {
+    public int getPower() {
         return power;
     }
 
