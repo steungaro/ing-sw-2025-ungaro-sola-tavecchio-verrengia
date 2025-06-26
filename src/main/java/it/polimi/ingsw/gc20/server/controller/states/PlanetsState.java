@@ -68,11 +68,12 @@ public class PlanetsState extends CargoState {
             throw new InvalidStateException("You can't land on a planet unless you are in the planet phase.");
         }
         if (planets.get(planetIndex).getAvailable()) {
+            planets.get(planetIndex).setAvailable(false);
             landedPlayer = player.getUsername();
             landedPlanetIndex = planetIndex;
             playersToMove.add(player);
             phase = StatePhase.ADD_CARGO;
-            reward = planets.get(planetIndex).land(player);
+            reward = planets.get(planetIndex).getReward();
             setStandbyMessage("Waiting for " + getCurrentPlayer() + " to load cargo from the planet.");
             getController().getMessageManager().notifyPhaseChange(phase, this);
         } else {
