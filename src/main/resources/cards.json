@@ -123,7 +123,7 @@
             },
             {
             "direction": "UP",
-            "fireType": "HEAVY_FIRE"
+            "fireType": "HEAVY_METEOR"
             }
         ],
         "IDCard": "11",
