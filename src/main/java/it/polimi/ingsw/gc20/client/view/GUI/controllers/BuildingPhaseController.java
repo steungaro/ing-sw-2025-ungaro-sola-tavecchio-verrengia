@@ -33,7 +33,7 @@ public abstract class BuildingPhaseController implements GameModelListener {
     private Pane coveredDeckPane;
 
     @FXML
-    protected FlowPane uncoveredComponentsPane;
+    protected VBox uncoveredComponentsPane;
 
     @FXML
     private HBox nonLearnerButtonsContainer;
