@@ -159,6 +159,7 @@ public class CombatZone0State extends PlayingState {
                 try {
                     //fire the projectile
                     manager.fire();
+                    getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
                     //check if we finished shooting
                     finishManager();
                 } catch (InvalidShipException e) {
@@ -292,22 +293,23 @@ public class CombatZone0State extends PlayingState {
         //use the shield and battery to activate the shield
         try {
             manager.activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
-            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
+
             //fire the projectile
-                manager.fire();
-                if (manager.finished()) {
-                    //notify all connected players that the player finished shooting;
-                    // we will wait for the next card to be drawn
-                    getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
-                    phase = StatePhase.DRAW_CARD_PHASE;
-                    getModel().getActiveCard().playCard();
-                    getController().setState(new PreDrawState(getController()));
-                } else {
-                    phase = StatePhase.ROLL_DICE_PHASE;
-                    setStandbyMessage(getCurrentPlayer() + " is rolling the dice.");
-                    //notify the current player that he has to roll the dice again
-                    getController().getMessageManager().notifyPhaseChange(phase, this);
-                }
+            manager.fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
+            if (manager.finished()) {
+                //notify all connected players that the player finished shooting;
+                // we will wait for the next card to be drawn
+                getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
+                phase = StatePhase.DRAW_CARD_PHASE;
+                getModel().getActiveCard().playCard();
+                getController().setState(new PreDrawState(getController()));
+            } else {
+                phase = StatePhase.ROLL_DICE_PHASE;
+                setStandbyMessage(getCurrentPlayer() + " is rolling the dice.");
+                //notify the current player that he has to roll the dice again
+                getController().getMessageManager().notifyPhaseChange(phase, this);
+            }
         } catch (InvalidShipException e) {
             //notify all the players of the ship update
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));

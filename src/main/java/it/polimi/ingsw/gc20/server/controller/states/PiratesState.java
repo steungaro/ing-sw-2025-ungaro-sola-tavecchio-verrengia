@@ -152,6 +152,7 @@ public class PiratesState extends PlayingState {
                 try {
                     //fire the projectile
                     manager.fire();
+                    getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "hit by heavy fire"));
                     //check if we finished shooting
                     if (manager.finished()) {
                         //if we finished shooting, we can go to the next player
@@ -224,6 +225,7 @@ public class PiratesState extends PlayingState {
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             //fire the projectile
             manager.fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "hit by heavy fire"));
             //check if we finished shooting
             finishManager();
         } catch (InvalidShipException e){

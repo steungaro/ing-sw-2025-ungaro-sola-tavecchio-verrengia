@@ -264,6 +264,7 @@ public class  CombatZone1State extends CargoState {
     private void fireProjectile(Player player) {
         try {
             manager.fire();
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "destroyed a component"));
             //check if we finished shooting
             finishManager();
         } catch (InvalidShipException e) {
