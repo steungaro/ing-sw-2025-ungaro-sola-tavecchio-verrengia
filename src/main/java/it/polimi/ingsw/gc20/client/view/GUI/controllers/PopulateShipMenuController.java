@@ -15,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.javatuples.Pair;
 
@@ -52,8 +53,16 @@ public class PopulateShipMenuController implements GameModelListener {
             shipPane.getChildren().clear();
             shipPane.getChildren().add(shipView);
 
-            ((Pane) shipView).prefWidthProperty().bind(shipPane.widthProperty());
-            ((Pane) shipView).prefHeightProperty().bind(shipPane.heightProperty());
+            shipPane.applyCss();
+            shipPane.layout();
+
+            Pane shipPaneTyped = (Pane) shipView;
+
+            shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
+            shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
+
+            shipPaneTyped.prefWidthProperty().bind(shipPane.widthProperty());
+            shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
 
             Object controller = loader.getController();
             try {
