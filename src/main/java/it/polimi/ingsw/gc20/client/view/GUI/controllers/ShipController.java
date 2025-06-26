@@ -63,7 +63,6 @@ public abstract class ShipController implements GameModelListener {
     protected void initialize() {
         playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
-        ClientGameModel.getInstance().addListener(this);
         buildShipComponents(ship);
 
         if (rootPane != null) {
