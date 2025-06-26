@@ -53,7 +53,7 @@ public enum StatePhase {
         LAND_ON_PLANET{
             @Override
             public Message createMessage(State state) {
-                List<Planet> planets = new ArrayList<>(state.getPlanets());
+                List<Planet> planets = new ArrayList<>();
                 for (Planet planet : state.getPlanets()) {
                     Planet newPlanet = new Planet();
                     newPlanet.setReward(new ArrayList<>(planet.getReward()));
