@@ -154,7 +154,12 @@ public class MenuController implements GameModelListener {
             };
 
             if (playerNameLabel != null) {
-                playerNameLabel.setText(players[i].username);
+                if (players[i].username.equals(gameModel.getUsername())){
+                    playerNameLabel.setText(players[i].username + " (You)");
+                }
+                else {
+                    playerNameLabel.setText(players[i].username);
+                }
             }
         }
     }
