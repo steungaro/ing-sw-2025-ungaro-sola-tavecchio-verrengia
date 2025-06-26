@@ -423,6 +423,8 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         cellClickAreas.clear();
         for (int row = 0; row < getRows(); row++) {
             for (int col = 0; col < getCols(); col++) {
+                if(!checkIsValid(row, col))
+                    continue;
                 ImageView cell = getImageViewAt(row, col);
                 if (cell != null) {
                     int finalRow = row;
@@ -596,4 +598,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
         System.out.println("ShipController: Cleanup completed");
     }
+
+    protected abstract boolean checkIsValid(int row,int col);
+
 }

@@ -175,4 +175,15 @@ public class Ship2Controller extends ShipController{
 
         System.out.println("Ship2Controller: Cleanup completed");
     }
+
+    @Override
+    protected boolean checkIsValid(int row,int col){
+        if(row + col <= 1)
+            return false;
+        if(row == 0 && (col == 3 || col == 5 || col == 6))
+            return false;
+        if(row == 1 && col == 6)
+            return false;
+        return row != 4 || col != 3;
+    }
 }
