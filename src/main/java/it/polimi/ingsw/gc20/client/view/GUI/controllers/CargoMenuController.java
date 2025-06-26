@@ -27,7 +27,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
-    @FXML private Pane toLoadPane;
     @FXML private VBox cargoBoxPane;
     @FXML private VBox cargoContainer;
     private String username;
@@ -52,13 +51,11 @@ public class CargoMenuController implements MenuController.ContextDataReceiver {
         messageLabel.setText(message);
 
         if(losing==1){
-            toLoadPane.setVisible(false);
             cargoBoxPane.setVisible(false);
             for (int i = 0; i < cargoToLose; i++) {
                 shipController.enableCellClickHandler(this::handleUnloadCargo);
             }
         } else if(losing==2){
-            toLoadPane.setVisible(false);
             createCargoBoxes();
         } else {
             showError("Invalid operation, please try again.");
