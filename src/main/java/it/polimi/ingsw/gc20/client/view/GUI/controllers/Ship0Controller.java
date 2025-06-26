@@ -52,8 +52,8 @@ public class Ship0Controller extends ShipController{
         final double imageRatio = imageWidth / imageHeight;
 
         rootPane.layoutBoundsProperty().addListener((_, _, newBounds) -> {
-            bgImage.setFitWidth(newBounds.getWidth()*0.7);
-            bgImage.setFitHeight(newBounds.getHeight()*0.7);
+            bgImage.setFitWidth(newBounds.getWidth()*0.95);
+            bgImage.setFitHeight(newBounds.getHeight()*0.95);
             double containerWidth = bgImage.getFitWidth();
             double containerHeight = bgImage.getFitHeight();
             double containerRatio = containerWidth / containerHeight;
