@@ -320,7 +320,10 @@ public class GameController implements GameControllerInterface {
                 }
                 connectedPlayers.remove(username);
                 disconnectedPlayers.add(username);
-            } else {
+            } else if(pendingPlayers.contains(username)) {
+                pendingPlayers.remove(username);
+                disconnectedPlayers.add(username);
+            }else {
                 throw new IllegalArgumentException("Player not found in game, not connected or never joined");
             }
             if(connectedPlayers.size() == 1){
@@ -383,7 +386,6 @@ public class GameController implements GameControllerInterface {
             }
 
             if(connectedPlayers.size() == 1){
-                connectedPlayers.add(username);
                 state.resume(username);
             }
         } catch (Exception e) {
