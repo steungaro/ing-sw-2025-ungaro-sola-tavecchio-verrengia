@@ -6,7 +6,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane fx:id="rootPane" prefHeight="480.0" prefWidth="650.0" style="-fx-background-color: #222233; -fx-background-image: url('cardboard/cardboard-1.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController0">
+<StackPane fx:id="rootPane" minHeight="580.0" prefHeight="580.0" prefWidth="650.0"
+           style="-fx-background-color: #222233; -fx-background-image: url('cardboard/cardboard-1.jpg'); -fx-background-size: cover;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.BuildingPhaseController0">
    <BorderPane prefHeight="480.0" prefWidth="650.0">
       <top>
    
