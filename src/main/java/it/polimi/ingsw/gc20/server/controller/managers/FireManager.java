@@ -64,16 +64,25 @@ public class FireManager {
         if (validator.isSplit()) {
             throw new InvalidShipException("Ship is not valid, validate it before firing");
         }
+
         if (battery == null || cannon == null) {
-            skipNextFire = false;
-            return;
-        }
-        List<Battery> batteries = new ArrayList<>();
-        batteries.add(battery);
-        gm.removeEnergy(player, batteries);
-        // Check if the cannon is a heavy-meteor-defense cannon
-        if (gm.heavyMeteorCannon(player, gm.getGame().lastRolled(), fires.getFirst()).contains(cannon)) {
-            skipNextFire = true;
+            for (Cannon c : gm.heavyMeteorCannon(player, gm.getGame().lastRolled(), fires.getFirst())) {
+                if (c.getPower() == 1) {
+                    skipNextFire = true;
+                    break;
+                } else {
+                    skipNextFire = false;
+                }
+            }
+        } else {
+            List<Battery> batteries = new ArrayList<>();
+            batteries.add(battery);
+            gm.removeEnergy(player, batteries);
+            // Check if the cannon is a heavy-meteor-defense cannon
+
+            if (gm.heavyMeteorCannon(player, gm.getGame().lastRolled(), fires.getFirst()).contains(cannon)) {
+                skipNextFire = true;
+            }
         }
     }
 
