@@ -218,7 +218,6 @@ class SmugglersStateTest {
         assertEquals("player2", state.getCurrentPlayer());
         state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
         state.loseEnergy(controller.getPlayerByID("player2"), new Pair<>(2, 2));
-        state.endMove(controller.getPlayerByID("player2"));
         assertEquals("player3", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
         state.activateCannons(controller.getPlayerByID("player3"), List.of(new Pair<>(1, 3), new Pair<>(3, 3)), List.of(new Pair<>(2, 2), new Pair<>(2, 2)));
@@ -229,7 +228,6 @@ class SmugglersStateTest {
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2));
         state.moveCargo(controller.getPlayerByID("player3"), CargoColor.YELLOW, new Pair<>(1, 2), new Pair<>(1, 4));
         state.loadCargo(controller.getPlayerByID("player3"), CargoColor.BLUE, new Pair<>(1, 4));
-        state.endMove(controller.getPlayerByID("player3"));
         assertEquals(StatePhase.DRAW_CARD_PHASE, state.phase);
     }
 
@@ -282,7 +280,6 @@ class SmugglersStateTest {
         assertEquals("player2", state.getCurrentPlayer());
         state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
         state.unloadCargo(controller.getPlayerByID("player2"), CargoColor.GREEN, new Pair<>(1, 2));
-        state.endMove(controller.getPlayerByID("player2"));
         assertEquals("player3", state.getCurrentPlayer());
         assertEquals(StatePhase.CANNONS_PHASE, state.phase);
         state.activateCannons(controller.getPlayerByID("player3"), List.of(new Pair<>(1, 3), new Pair<>(3, 3)), List.of(new Pair<>(2, 2), new Pair<>(2, 2)));
