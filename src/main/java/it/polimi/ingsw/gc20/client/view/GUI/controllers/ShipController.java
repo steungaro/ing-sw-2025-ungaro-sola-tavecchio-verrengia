@@ -64,17 +64,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         playerUsername = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         buildShipComponents(ship);
-
-        if (rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> {
-                Platform.runLater(() -> rootPane.requestLayout());
-            });
-
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> {
-                Platform.runLater(() -> rootPane.requestLayout());
-            });
-        }
-
     }
 
     public void reloadShip() {
