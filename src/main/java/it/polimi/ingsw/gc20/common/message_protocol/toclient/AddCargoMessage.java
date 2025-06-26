@@ -20,6 +20,7 @@ public record AddCargoMessage(
 
     @Override
     public void handleMessage() {
+        System.out.println(reward);
         ClientGameModel.getInstance().cargoMenu("Load the cargo you gained to your ship", 0, reward, false);
     }
 
