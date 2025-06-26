@@ -370,6 +370,7 @@ public class MenuController implements GameModelListener {
                     ((ContextDataReceiver) controller).setContextData(contextData);
                 } catch (ClassCastException e) {
                     guiView.displayErrorMessage("Unable to obtain the context data receiver: " + e.getMessage());
+                    System.out.println("Unable to obtain the context data receiver: " + e.getMessage());
                 }
             }
 

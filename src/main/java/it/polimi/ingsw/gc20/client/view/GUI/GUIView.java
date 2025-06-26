@@ -79,7 +79,7 @@ public class GUIView extends ClientGameModel {
         /** Advanced building phase interface */
         BUILDING_PHASE2("buildingPhase2"),
         /** Branch selection menu for ship splits */
-        BRANCH_MENU("validationMenu"),
+        BRANCH_MENU("activationMenu"),
         /** Ship configuration validation interface */
         VALIDATION_MENU("validationMenu"),
         /** Crew placement interface */
