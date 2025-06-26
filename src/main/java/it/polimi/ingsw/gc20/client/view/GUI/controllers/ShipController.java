@@ -3,7 +3,6 @@ package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.*;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
@@ -38,16 +37,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
     private final Map<String, Rectangle> cellClickAreas = new HashMap<>();
 
-    private final List<double[]> cargoCord3 = List.of(
-            new double[]{0.3, 0.45},
-            new double[]{0.625, 0.285},
-            new double[]{0.625, 0.62}
-    );
-
-    private final List<double[]> cargoCord2 = List.of(
-            new double[]{0.45, 0.285},
-            new double[]{0.45, 0.62}
-    );
 
     @FXML protected GridPane componentsGrid;
 
@@ -66,14 +55,14 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         buildShipComponents(ship);
 
         if (rootPane != null) {
-            rootPane.widthProperty().addListener((obs, oldVal, newVal) -> {
+            rootPane.widthProperty().addListener((_, _, _) -> {
                 if (rootPane != null) {
                     rootPane.requestLayout();
                 }
 
             });
 
-            rootPane.heightProperty().addListener((obs, oldVal, newVal) -> {
+            rootPane.heightProperty().addListener((_, _, _) -> {
                 if (rootPane != null) {
                     rootPane.requestLayout();
                 }
@@ -121,7 +110,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         return true;
     }
 
-    private boolean loadCompInfo(ImageView targetCell, StackPane layeredPane, int row, int col, int componentId, ViewComponent comp, GridPane parent, String cellId) {
+    private boolean loadCompInfo(ImageView targetCell, StackPane layeredPane, int row, int col, int ignoredComponentId, ViewComponent comp, GridPane parent, String ignoredCellId) {
         if (!shouldLoadComponentStats) {
             layeredPane.getChildren().add(targetCell);
             layeredPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -288,6 +277,8 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
         addCargoBox(layeredPane, coordinates.get(index), "empty");
     }
+
+    layeredPane.setRotate(comp.rotation * 90);
 }
 
 private void addCargoBox(StackPane parent, double[] relativePos, String type) {
@@ -568,30 +559,26 @@ private void addCargoBox(StackPane parent, double[] relativePos, String type) {
         }
 
         if (rootPane != null) {
-            rootPane.widthProperty().removeListener((obs, oldVal, newVal) -> Platform.runLater(() -> rootPane.requestLayout()));
-            rootPane.heightProperty().removeListener((obs, oldVal, newVal) -> Platform.runLater(() -> rootPane.requestLayout()));
+            rootPane.widthProperty().removeListener((_, _, _) -> Platform.runLater(() -> rootPane.requestLayout()));
+            rootPane.heightProperty().removeListener((_, _, _) -> Platform.runLater(() -> rootPane.requestLayout()));
         }
 
-        if (cellClickAreas != null) {
-            for (Rectangle rect : cellClickAreas.values()) {
-                try {
-                    rect.setFill(null);
-                    rect.setStroke(null);
-                    rect.widthProperty().unbind();
-                    rect.heightProperty().unbind();
-                    rect.setOnMouseEntered(null);
-                    rect.setOnMouseExited(null);
-                    rect.setOnMouseClicked(null);
-                } catch (Exception e) {
-                    System.err.println("Error cleaning up cell click area: " + e.getMessage());
-                }
+        for (Rectangle rect : cellClickAreas.values()) {
+            try {
+                rect.setFill(null);
+                rect.setStroke(null);
+                rect.widthProperty().unbind();
+                rect.heightProperty().unbind();
+                rect.setOnMouseEntered(null);
+                rect.setOnMouseExited(null);
+                rect.setOnMouseClicked(null);
+            } catch (Exception e) {
+                System.err.println("Error cleaning up cell click area: " + e.getMessage());
             }
-            cellClickAreas.clear();
         }
+        cellClickAreas.clear();
 
-        if (gridComponents != null) {
-            gridComponents.clear();
-        }
+        gridComponents.clear();
 
         playerUsername = null;
         ship = null;
