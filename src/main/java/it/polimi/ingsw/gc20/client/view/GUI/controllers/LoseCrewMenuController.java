@@ -96,7 +96,7 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
             Object controller = loader.getController();
 
             try{
-                ShipController shipController = (ShipController) controller;
+                shipController = (ShipController) controller;
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }

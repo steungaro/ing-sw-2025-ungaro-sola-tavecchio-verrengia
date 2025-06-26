@@ -410,7 +410,10 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
             if (clickArea != null) {
                 // Apply a transparent version of the color
-                clickArea.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.4));
+                clickArea.setStrokeWidth(4);
+            }
+            else{
+                System.err.println("No click area found for cell: " + cellId);
             }
         }
     }
@@ -462,6 +465,9 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
                     componentsGrid.add(clickArea, col, row);
                     GridPane.setHalignment(clickArea, javafx.geometry.HPos.CENTER);
                     GridPane.setValignment(clickArea, javafx.geometry.VPos.CENTER);
+                    
+                    String cellId = row + "_" + col;
+                    cellClickAreas.put(cellId, clickArea);
                 }
             }
         }
