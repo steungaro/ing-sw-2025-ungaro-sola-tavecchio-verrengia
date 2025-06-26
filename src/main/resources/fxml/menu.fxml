@@ -122,11 +122,6 @@
                         <Font size="10.0" />
                     </font>
                 </Button>
-                <Button fx:id="quitButton" mnemonicParsing="false" onAction="#quit" prefHeight="35.0" prefWidth="180.0" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5;" text="GIVE UP">
-                    <font>
-                        <Font size="10.0" />
-                    </font>
-                </Button>
             </VBox>
         </VBox>
     </right>
