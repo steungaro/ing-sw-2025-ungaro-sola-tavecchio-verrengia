@@ -142,10 +142,8 @@ public class InLobbyController {
     @FXML
     public void onStartGame() {
         if (!isOwner) return;
-
         try {
-            ClientGameModel.getInstance().getClient().startLobby(currentUsername);
-            ((GUIView)ClientGameModel.getInstance()).showScene("game");
+            ClientGameModel.getInstance().getClient().startLobby(ClientGameModel.getInstance().getUsername());
         } catch (Exception e) {
             showError("Error starting game: " + e.getMessage());
         }
