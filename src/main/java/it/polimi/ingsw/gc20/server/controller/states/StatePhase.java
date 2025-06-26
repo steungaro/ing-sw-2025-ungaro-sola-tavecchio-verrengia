@@ -1,9 +1,11 @@
 package it.polimi.ingsw.gc20.server.controller.states;
 
-import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
+import it.polimi.ingsw.gc20.common.message_protocol.toclient.*;
+import it.polimi.ingsw.gc20.server.model.cards.Planet;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Enum representing the different phases of the game state.
@@ -51,7 +53,15 @@ public enum StatePhase {
         LAND_ON_PLANET{
             @Override
             public Message createMessage(State state) {
-                return new LandOnPlanetPhase(new ArrayList<>(state.getPlanets()));}
+                List<Planet> planets = new ArrayList<>();
+                for (Planet planet : state.getPlanets()) {
+                    Planet newPlanet = new Planet();
+                    newPlanet.setReward(new ArrayList<>(planet.getReward()));
+                    newPlanet.setAvailable(planet.getAvailable());
+                    newPlanet.setPlayer(planet.getPlayer());
+                    planets.add(newPlanet);
+                }
+                return new LandOnPlanetPhase(planets);}
         },
         ENGINES_PHASE
         {
