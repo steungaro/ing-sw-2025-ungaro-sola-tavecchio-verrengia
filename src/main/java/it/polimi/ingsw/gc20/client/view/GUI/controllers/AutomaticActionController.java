@@ -1,16 +1,15 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.GameModelListener;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
-import javax.swing.text.html.ImageView;
 import java.io.IOException;
 import java.util.Map;
 
@@ -81,21 +80,10 @@ public class AutomaticActionController implements MenuController.ContextDataRece
         errorLabel.setVisible(true);
     }
 
-    public void setTitle(String title) {
-        if (titleLabel != null) {
-            titleLabel.setText(title);
-        }
-    }
-
     public void setMessage(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
         }
-    }
-
-    public void initializeWithMessage(String title, String message) {
-        setTitle(title);
-        setMessage(message);
     }
 
     public void initializeWithMessage(String message) {
@@ -116,7 +104,7 @@ public class AutomaticActionController implements MenuController.ContextDataRece
 
         if (shipController != null) {
             try{
-                ((BindCleanUp) shipController).cleanup();
+                (shipController).cleanup();
                 System.out.println("AutomaticActionController: ShipController cleaned up");
             } catch (ClassCastException e){
                 System.err.println("AutomaticActionController: ShipController does not implement BindCleanUp, skipping cleanup");
@@ -127,7 +115,7 @@ public class AutomaticActionController implements MenuController.ContextDataRece
             try{
                 ClientGameModel gameModel = ClientGameModel.getInstance();
                 if (gameModel != null) {
-                    gameModel.removeListener((GameModelListener) shipController);
+                    gameModel.removeListener( shipController);
                     System.out.println("AutomaticActionController: ShipController removed from GameModel listeners");
                 }
             } catch (ClassCastException e) {
@@ -186,19 +174,11 @@ public class AutomaticActionController implements MenuController.ContextDataRece
                 pane.prefWidthProperty().unbind();
                 pane.prefHeightProperty().unbind();
 
-                for (javafx.scene.Node child : pane.getChildren()) {
+                for (Node child : pane.getChildren()) {
                     unbindNodeProperties(child);
                 }
             } catch (ClassCastException e) {
                 // If the node is not a Pane, we skip this part
-            }
-
-            try {
-                javafx.scene.image.ImageView imageView = (javafx.scene.image.ImageView) node;
-                imageView.fitWidthProperty().unbind();
-                imageView.fitHeightProperty().unbind();
-            } catch (ClassCastException e) {
-                // If the node is not an ImageView, we skip this part
             }
 
             node.setOnMouseClicked(null);

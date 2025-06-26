@@ -241,26 +241,9 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     }
 
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
-    List<double[]> coordinates;
-    
-    if (comp.getSize() == 1) {
-        coordinates = List.of(
-            new double[]{0.5, 0.5}
-        );
-    } else if (comp.getSize() == 2) {
-        coordinates = List.of(
-            new double[]{0.5, 0.5 - 0.2},
-            new double[]{0.5, 0.5 + 0.2}
-        );
-    } else {
-        coordinates = List.of(
-            new double[]{0.5 - 0.2, 0.5},
-            new double[]{0.5 + 0.2, 0.5 - 0.2},
-            new double[]{0.5 + 0.2, 0.5 + 0.2}
-        );
-    }
-    
-    int index = 0;
+        List<double[]> coordinates = getDoubles(comp);
+
+        int index = 0;
     
     for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
         addCargoBox(layeredPane, coordinates.get(index), "red");
@@ -281,7 +264,29 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     layeredPane.setRotate(comp.rotation * 90);
 }
 
-private void addCargoBox(StackPane parent, double[] relativePos, String type) {
+    private static List<double[]> getDoubles(ViewCargoHold comp) {
+        List<double[]> coordinates;
+
+        if (comp.getSize() == 1) {
+            coordinates = List.of(
+                new double[]{0.5, 0.5}
+            );
+        } else if (comp.getSize() == 2) {
+            coordinates = List.of(
+                new double[]{0.5, 0.5 - 0.2},
+                new double[]{0.5, 0.5 + 0.2}
+            );
+        } else {
+            coordinates = List.of(
+                new double[]{0.5 - 0.2, 0.5},
+                new double[]{0.5 + 0.2, 0.5 - 0.2},
+                new double[]{0.5 + 0.2, 0.5 + 0.2}
+            );
+        }
+        return coordinates;
+    }
+
+    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
     Rectangle box = new Rectangle();
 
     box.widthProperty().bind(parent.widthProperty().multiply(0.15));

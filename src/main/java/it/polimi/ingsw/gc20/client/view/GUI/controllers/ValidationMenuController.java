@@ -11,7 +11,6 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -107,15 +106,6 @@ public class ValidationMenuController implements GameModelListener {
     }
 
     @FXML
-    private void handleValidateShip() {
-        try {
-            updateValidationStatus();
-        } catch (Exception e) {
-            showError("Connection error: " + e.getMessage());
-        }
-    }
-
-    @FXML
     private void selectComponentToRemove(int row, int col) {
         try {
             Pair<Integer, Integer> coordinates = new Pair<>(row, col);
@@ -126,11 +116,6 @@ public class ValidationMenuController implements GameModelListener {
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
-    }
-
-    @FXML
-    private void handleViewOptions() {
-        // TODO
     }
 
     private void showError(String message) {
@@ -178,9 +163,9 @@ public class ValidationMenuController implements GameModelListener {
         }
 
         if (shipPane != null) {
-            if (shipPane.getChildren().size() > 0) {
+            if (!shipPane.getChildren().isEmpty()) {
                 try {
-                    Parent shipView = (Parent) shipPane.getChildren().get(0);
+                    Parent shipView = (Parent) shipPane.getChildren().getFirst();
                     if (shipView != null) {
                         try {
                             Pane shipPaneTyped = (Pane) shipView;

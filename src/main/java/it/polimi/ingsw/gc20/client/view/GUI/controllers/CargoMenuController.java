@@ -8,14 +8,12 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
-import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -82,10 +80,10 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
 
             VBox.setMargin(box, new javafx.geometry.Insets(2, 2, 2, 2));
 
-            box.setOnMouseEntered(e -> box.setStroke(Color.YELLOW));
-            box.setOnMouseExited(e -> box.setStroke(Color.WHITE));
+            box.setOnMouseEntered(_ -> box.setStroke(Color.YELLOW));
+            box.setOnMouseExited(_ -> box.setStroke(Color.WHITE));
 
-            box.setOnMouseClicked(e -> {
+            box.setOnMouseClicked(_ -> {
                 currentCargo = cargo;
                 shipController.enableCellClickHandler(this::handleLoadCargo);
 
@@ -107,7 +105,6 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
             case YELLOW -> Color.YELLOW;
             case BLUE -> Color.BLUE;
             case GREEN -> Color.GREEN;
-            default -> Color.GRAY;
         };
     }
 
@@ -342,8 +339,8 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
 
         if (shipPane != null) {
             shipPane.getChildren().clear();
-            if (shipPane.getChildren().size() > 0) {
-                Parent shipView = (Parent) shipPane.getChildren().get(0);
+            if (!shipPane.getChildren().isEmpty()) {
+                Parent shipView = (Parent) shipPane.getChildren().getFirst();
                 if (shipView != null) {
                     try {
                         Pane shipPaneTyped = (Pane) shipView;

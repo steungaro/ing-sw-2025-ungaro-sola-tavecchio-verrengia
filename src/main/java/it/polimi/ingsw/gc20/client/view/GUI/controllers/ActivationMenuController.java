@@ -47,9 +47,7 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             System.out.println("ActivationMenuController: ShipPane cleared and unbound");
         }
 
-        if (selectedComponents != null) {
-            selectedComponents.clear();
-        }
+        selectedComponents.clear();
 
         ship = null;
         username = null;

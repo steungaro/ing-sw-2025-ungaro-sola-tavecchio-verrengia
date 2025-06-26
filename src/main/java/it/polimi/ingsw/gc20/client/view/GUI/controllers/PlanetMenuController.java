@@ -1,24 +1,18 @@
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
-import it.polimi.ingsw.gc20.client.view.GUI.GUIView;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,12 +80,12 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         cargoContainer.getChildren().addAll(cargoLabel, cargoSquares);
         planetContainer.getChildren().addAll(planetNameLabel, cargoContainer);
 
-        planetContainer.setOnMouseClicked(event -> selectPlanet(planet, planetContainer));
+        planetContainer.setOnMouseClicked(_ -> selectPlanet(planet, planetContainer));
 
-        planetContainer.setOnMouseEntered(event -> 
+        planetContainer.setOnMouseEntered(_ ->
             planetContainer.setStyle("-fx-border-color: #80ffaa; -fx-border-width: 3; -fx-background-color: #3e4f5e; -fx-background-radius: 8;"));
         
-        planetContainer.setOnMouseExited(event -> {
+        planetContainer.setOnMouseExited(_ -> {
             if (selectedPlanetBox != planetContainer) {
                 planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
             }

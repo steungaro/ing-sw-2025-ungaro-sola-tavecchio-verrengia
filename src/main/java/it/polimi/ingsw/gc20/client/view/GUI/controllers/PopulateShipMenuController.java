@@ -170,9 +170,9 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
         }
 
         if (shipPane != null) {
-            if (shipPane.getChildren().size() > 0) {
+            if (!shipPane.getChildren().isEmpty()) {
                 try {
-                    Parent shipView = (Parent) shipPane.getChildren().get(0);
+                    Parent shipView = (Parent) shipPane.getChildren().getFirst();
                     if (shipView != null) {
                         try {
                             Pane shipPaneTyped = (Pane) shipView;

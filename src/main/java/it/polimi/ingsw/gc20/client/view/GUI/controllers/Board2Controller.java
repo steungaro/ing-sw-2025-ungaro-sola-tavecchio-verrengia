@@ -79,7 +79,7 @@ public class Board2Controller extends BoardController {
 
             circleLabels.add(label);
 
-            circle.parentProperty().addListener((obs, oldParent, newParent) -> {
+            circle.parentProperty().addListener((_, _, newParent) -> {
                 try{
                     ((Group) newParent).getChildren().add(label);
                 } catch (ClassCastException e) {
@@ -93,11 +93,11 @@ public class Board2Controller extends BoardController {
 
         Runnable updateOperation = this::updateScaleAndPosition;
 
-        rootPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+        rootPane.sceneProperty().addListener((_, _, newScene) -> {
             if (newScene != null) {
-                newScene.windowProperty().addListener((obsWindow, oldWindow, newWindow) -> {
+                newScene.windowProperty().addListener((_, _, newWindow) -> {
                     if (newWindow != null) {
-                        newWindow.showingProperty().addListener((obsShowing, oldShowing, showing) -> {
+                        newWindow.showingProperty().addListener((_, _, showing) -> {
                             if (showing) {
                                 Platform.runLater(updateOperation);
                             }
@@ -107,8 +107,8 @@ public class Board2Controller extends BoardController {
             }
         });
 
-        rootPane.widthProperty().addListener((obs, oldVal, newVal) -> updateOperation.run());
-        rootPane.heightProperty().addListener((obs, oldVal, newVal) -> updateOperation.run());
+        rootPane.widthProperty().addListener((_, _, _) -> updateOperation.run());
+        rootPane.heightProperty().addListener((_, _, _) -> updateOperation.run());
     }
 
     private void updateScaleAndPosition() {
@@ -178,7 +178,7 @@ public class Board2Controller extends BoardController {
                     circle.setOnMouseEntered(null);
                     circle.setOnMouseExited(null);
                     try {
-                        circle.parentProperty().removeListener((obs, oldParent, newParent) -> {});
+                        circle.parentProperty().removeListener((_, _, _) -> {});
                     } catch (Exception e) {
                         System.err.println("Error removing parent listener: " + e.getMessage());
                     }
@@ -189,9 +189,9 @@ public class Board2Controller extends BoardController {
 
         if (rootPane != null) {
             try {
-                rootPane.sceneProperty().removeListener((obs, oldScene, newScene) -> {});
-                rootPane.widthProperty().removeListener((obs, oldVal, newVal) -> {});
-                rootPane.heightProperty().removeListener((obs, oldVal, newVal) -> {});
+                rootPane.sceneProperty().removeListener((_, _, _) -> {});
+                rootPane.widthProperty().removeListener((_, _, _) -> {});
+                rootPane.heightProperty().removeListener((_, _, _) -> {});
             } catch (Exception e) {
                 System.err.println("Error removing rootPane listeners: " + e.getMessage());
             }
