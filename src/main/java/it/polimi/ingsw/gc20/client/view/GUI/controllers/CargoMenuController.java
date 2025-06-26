@@ -215,35 +215,9 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         Pair<Integer, Integer> coords = new Pair<>(row, col);
         try {
             ClientGameModel.getInstance().getClient().loadCargo(username, currentCargo, coords);
-
-            removeUsedCargo(currentCargo);
-
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
-    }
-
-    private void removeUsedCargo(CargoColor usedCargo) {
-        cargoToGain.remove(usedCargo);
-
-        cargoContainer.getChildren().removeIf(node -> {
-            try{
-                Rectangle rect = (Rectangle) node;
-                Color rectColor = (Color) rect.getFill();
-                Color cargoColor = getColorFromCargoColor(usedCargo);
-                return rectColor.equals(cargoColor);
-            }
-             catch (ClassCastException e) {
-                // Ignore nodes that are not rectangles
-            }
-            return false;
-        });
-
-        if (cargoToGain.isEmpty()) {
-            cargoBoxPane.setVisible(false);
-        }
-
-        currentCargo = null;
     }
 
     @FXML

@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.javatuples.Pair;
 
@@ -243,22 +245,37 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
             Pane shipPaneTyped = (Pane) shipView;
 
+            shipPaneTyped.setMinWidth(150);
+            shipPaneTyped.setMinHeight(120);
+
             shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
             shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
 
             shipPaneTyped.prefWidthProperty().bind(shipPane.widthProperty());
             shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
 
+            try{
+                StackPane stackPane = (StackPane)shipPaneTyped;
+                stackPane.setAlignment(javafx.geometry.Pos.CENTER);
+
+            } catch (ClassCastException e) {
+                showError("Error casting shipPaneTyped to StackPane: " + e.getMessage());
+            }
+
+            Platform.runLater(() -> {
+                shipPane.requestLayout();
+                shipPaneTyped.requestLayout();
+            });
+
             Object controller = loader.getController();
-            try {
-                this.shipController = (ShipController) controller;
+
+            try{
+                ShipController shipController = (ShipController) controller;
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
-
-
         } catch (IOException e) {
-            showError("Error uploading ship: " + e.getMessage());
+            showError("Error while loading the ship view: " + e.getMessage());
         }
     }
 

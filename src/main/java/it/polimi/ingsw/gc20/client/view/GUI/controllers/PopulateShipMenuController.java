@@ -8,6 +8,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import it.polimi.ingsw.gc20.server.model.components.AlienColor;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.javatuples.Pair;
 
@@ -58,21 +60,38 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
 
             Pane shipPaneTyped = (Pane) shipView;
 
+            shipPaneTyped.setMinWidth(150);
+            shipPaneTyped.setMinHeight(120);
+
             shipPaneTyped.setMaxWidth(Region.USE_COMPUTED_SIZE);
             shipPaneTyped.setMaxHeight(Region.USE_COMPUTED_SIZE);
 
             shipPaneTyped.prefWidthProperty().bind(shipPane.widthProperty());
             shipPaneTyped.prefHeightProperty().bind(shipPane.heightProperty());
 
+            try{
+                StackPane stackPane = (StackPane)shipPaneTyped;
+                stackPane.setAlignment(javafx.geometry.Pos.CENTER);
+
+            } catch (ClassCastException e) {
+                showError("Error casting shipPaneTyped to StackPane: " + e.getMessage());
+            }
+
+            Platform.runLater(() -> {
+                shipPane.requestLayout();
+                shipPaneTyped.requestLayout();
+            });
+
             Object controller = loader.getController();
-            try {
-                ((ShipController) controller).enableCellClickHandler(this::selectCabinToPopulate);
+
+            try{
+                ShipController shipController = (ShipController) controller;
+                shipController.enableCellClickHandler(this::selectCabinToPopulate);
             } catch (ClassCastException e) {
                 showError("Unable to get the ship controller");
             }
-
         } catch (IOException e) {
-            showError("Error uploading ship: " + e.getMessage());
+            showError("Error while loading the ship view: " + e.getMessage());
         }
     }
 
