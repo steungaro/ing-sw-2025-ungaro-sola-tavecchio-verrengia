@@ -640,7 +640,7 @@ public class MenuController implements GameModelListener {
 
     @Override
     public void onShipUpdated(ViewShip ship) {
-        // TODO
+        loadPlayerShips();
     }
 
     @Override
