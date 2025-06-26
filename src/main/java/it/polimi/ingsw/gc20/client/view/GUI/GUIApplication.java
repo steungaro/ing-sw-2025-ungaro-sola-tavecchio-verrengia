@@ -8,12 +8,10 @@ import java.rmi.RemoteException;
 
 public class GUIApplication extends Application {
 
-    private GUIView guiView;
-
     @Override
     public void start(Stage primaryStage) throws RemoteException {
         // Inizializza la GUIView
-        guiView = new GUIView();
+        GUIView guiView = new GUIView();
         ClientGameModel.setInstance(guiView);
         guiView.initGUI(primaryStage);
         primaryStage.setTitle("Galaxy Trucker");

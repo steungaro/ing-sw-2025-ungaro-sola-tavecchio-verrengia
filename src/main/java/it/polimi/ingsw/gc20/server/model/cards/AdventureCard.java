@@ -273,7 +273,7 @@ public class AdventureCard implements Serializable {
                 name = name + combatType();
             }
             // Construct the full class name with the package
-            String stateClassName = "it.polimi.ingsw.gc20.server.controller.states." + name + "State";
+            String stateClassName = this.getClass().getPackage().getName().replace("model.cards", "controller.states") + "." + name + "State";
             // Get the class object for the state
             Class<?> stateClass = Class.forName(stateClassName);
 
