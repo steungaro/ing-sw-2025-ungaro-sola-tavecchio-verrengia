@@ -43,9 +43,7 @@ public enum StatePhase {
         ADD_CARGO {
             @Override
             public Message createMessage(State state) {
-                AddCargoMessage message = new AddCargoMessage(state.cargoReward());
-                System.out.println(message.getReward());
-                return message;
+                return new AddCargoMessage(state.cargoReward());
             }
         },
         LAND_ON_PLANET{
