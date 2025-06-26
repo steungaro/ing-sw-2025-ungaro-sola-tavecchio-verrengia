@@ -148,45 +148,12 @@ public class GUIView extends ClientGameModel {
 
     /**
      * Constructs a new GUIView instance.
-     * Initializes the parent ClientGameModel and sets up GUI state change listeners.
-     * The listener automatically handles scene transitions when the GUI state changes.
+     * Initializes the parent ClientGameModel.
      * 
      * @throws RemoteException if RMI communication fails during initialization
      */
     public GUIView() throws RemoteException {
         super();
-        currentGuiStateProperty.addListener((_, oldValue, newValue) -> {
-            if (newValue != null) {
-                Platform.runLater(() -> handleGuiStateChange(oldValue, newValue));
-            }
-        });
-    }
-
-    /**
-     * Handles GUI state transitions by loading appropriate FXML scenes.
-     * This method is called automatically when the GUI state changes and ensures
-     * that scene transitions only occur when necessary to avoid redundant loads.
-     * 
-     * @param oldState the previous GUI state (maybe null)
-     * @param newState the new GUI state to transition to
-     */
-    private void handleGuiStateChange(GuiState oldState, GuiState newState) {
-        if (primaryStage == null) {
-            System.err.println("primaryStage not initialized: " + newState.getFxmlFileName());
-            return;
-        }
-
-        if (primaryStage.getScene() != null &&
-                primaryStage.getScene().getRoot() != null &&
-                primaryStage.getScene().getRoot().getId() != null &&
-                primaryStage.getScene().getRoot().getId().equals(newState.getFxmlFileName())) {
-            return;
-        }
-
-        System.out.println("GUI State changed from " +
-                (oldState != null ? oldState.name() : "null") +
-                " to " + newState.name());
-        showScene(newState.getFxmlFileName());
     }
 
     /**
