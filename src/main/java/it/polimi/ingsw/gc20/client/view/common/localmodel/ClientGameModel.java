@@ -12,6 +12,8 @@ import it.polimi.ingsw.gc20.common.interfaces.ViewInterface;
 import it.polimi.ingsw.gc20.common.message_protocol.Message;
 import it.polimi.ingsw.gc20.server.model.cards.Planet;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
@@ -267,6 +269,31 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
             listener.onBoardUpdated(this.board);
         }
 
+    }
+
+    /**
+     * Sets the player information in the game model.
+     * This method updates the player's credits, in-game status, color, and position on the board.
+     *
+     * @param username the username of the player whose information is to be updated
+     * @param creditsAdded the number of credits to add to the player's current credits
+     * @param inGame whether the player is currently in-game
+     * @param color the color of the player
+     * @param posInBoard the position of the player on the board
+     */
+    public void setPlayerInfo(String username, int creditsAdded, Boolean inGame, PlayerColor color, int posInBoard) {
+        for (ViewPlayer player : board.players) {
+            if (player.username.equals(username)) {
+                player.credits += creditsAdded;
+                player.inGame = inGame;
+                player.playerColor = color;
+                player.position = posInBoard;
+                break;
+            }
+        }
+        for (GameModelListener listener : listeners) {
+            listener.onBoardUpdated(this.board);
+        }
     }
 
     /**
