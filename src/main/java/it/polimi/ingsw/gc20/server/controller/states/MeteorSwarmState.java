@@ -68,6 +68,7 @@ public class MeteorSwarmState extends PlayingState {
             } else {
                 fireManagerMap.get(player).activateCannon(Translator.getComponentAt(player, cannons.getFirst(), Cannon.class), Translator.getComponentAt(player, batteries.getFirst(), Battery.class));
             }
+
             // activate the cannons of the current player
             //fire the projectile
             fireManagerMap.get(player).fire();
@@ -171,6 +172,7 @@ public class MeteorSwarmState extends PlayingState {
         try {
             //activate the shield
             fireManagerMap.get(player).activateShield(Translator.getComponentAt(player, shield, Shield.class), Translator.getComponentAt(player, battery, Battery.class));
+
             fireManagerMap.get(player).fire();
             getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "activated shield"));
             nextPlayer();
@@ -220,9 +222,9 @@ public class MeteorSwarmState extends PlayingState {
             //if there is no next player, we set the current player to the first player
             RestartTurn();
         } else {
-            if (phase == StatePhase.CANNONS_PHASE) {
+            if (phaseSave == StatePhase.CANNONS_PHASE) {
                 NotifyDefensiveCannon();
-            } else if (phase == StatePhase.SELECT_SHIELD) {
+            } else if (phaseSave == StatePhase.SELECT_SHIELD) {
                 notifyDefensiveShield();
             }
             //if there is a next player, we modify the state to the correct phase, memorized in the phase attribute
