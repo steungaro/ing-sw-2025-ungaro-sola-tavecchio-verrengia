@@ -908,6 +908,8 @@ public class GameModel {
         s.addComponent( c, 3, 2);
 
         c = components.get(148);
+        c.rotateCounterclockwise();
+        c.rotateCounterclockwise();
         s.addComponent( c, 3, 3);
 
         c = components.get(21);
