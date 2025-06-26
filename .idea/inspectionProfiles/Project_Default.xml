@@ -10,6 +10,7 @@
         <language minSize="81" name="Java" />
       </Languages>
     </inspection_tool>
+    <inspection_tool class="JavaModuleDefinition" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JavadocDeclaration" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ADDITIONAL_TAGS" value="TODO" />
     </inspection_tool>
