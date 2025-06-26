@@ -57,8 +57,7 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
         planetContainer.setMinWidth(150);
 
-        Label planetNameLabel = new Label("Planet " + planetNumber +
-            (planet.getAvailable() ? "\n(Available)" : "\n(Not Available)"));
+        Label planetNameLabel = new Label("Planet " + planetNumber);
         planetNameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
         planetNameLabel.setTextFill(Color.WHITE);
         planetNameLabel.setWrapText(true);
@@ -79,6 +78,8 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
 
         cargoContainer.getChildren().addAll(cargoLabel, cargoSquares);
         planetContainer.getChildren().addAll(planetNameLabel, cargoContainer);
+
+        planetContainer.setDisable(!planet.getAvailable());
 
         planetContainer.setOnMouseClicked(_ -> selectPlanet(planet, planetContainer));
 
