@@ -39,7 +39,11 @@ public class CargoMenu implements MenuState, GameModelListener {
     public void displayMenu() {
         ClientGameModel.getInstance().printBoard();
         System.out.println("\u001B[1mCargo Menu\u001B[0m");
-        System.out.println(message);
+        if (message == null || message.isEmpty()) {
+            System.out.println("You can now manage your cargo.");
+        } else {
+            System.out.println("\u001B[31m" + message + "\u001B[0m");
+        }
         if (losing) {
             System.out.println("You have to lose \u001B[31m" + cargoToLose + "\u001B[0m cargo.");
             System.out.println("1. Lose cargo");

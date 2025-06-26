@@ -89,6 +89,7 @@ public class PlanetsState extends CargoState {
         }
         if (planets.get(landedPlanetIndex).getReward().contains(loaded)) {
             planets.get(landedPlanetIndex).getReward().remove(loaded);
+            reward.remove(loaded);
             super.loadCargo(player, loaded, chTo);
         } else {
             throw new CargoException("You can't load this cargo, it's not in the reward.");

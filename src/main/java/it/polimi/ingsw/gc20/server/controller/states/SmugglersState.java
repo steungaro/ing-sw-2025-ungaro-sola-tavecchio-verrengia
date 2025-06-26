@@ -7,6 +7,7 @@ import it.polimi.ingsw.gc20.server.exceptions.*;
 import it.polimi.ingsw.gc20.server.model.cards.AdventureCard;
 import it.polimi.ingsw.gc20.server.model.components.Battery;
 import it.polimi.ingsw.gc20.server.model.components.Cannon;
+import it.polimi.ingsw.gc20.server.model.components.CargoHold;
 import it.polimi.ingsw.gc20.server.model.gamesets.CargoColor;
 import it.polimi.ingsw.gc20.server.model.gamesets.GameModel;
 import it.polimi.ingsw.gc20.server.model.player.Player;
@@ -114,9 +115,15 @@ public class SmugglersState extends CargoState {
             throw new InvalidStateException("You are not in the cargo managing phase.");
         }
 
-        super.unloadCargo(player, unloaded, ch);
-
         currentLostCargo--;
+        try {
+            getModel().moveCargo(player, unloaded, Translator.getComponentAt(player, ch, CargoHold.class), null);
+            getController().getMessageManager().broadcastUpdate(Ship.messageFromShip(player.getUsername(), player.getShip(), "unloaded cargo"));
+        } catch (CargoNotLoadable | CargoFullException _) {
+            //ignore this exception, we are unloading the cargo
+        }
+
+
 
         //check if the player has no more cargo
         Map<CargoColor, Integer> cargo = player.getShip().getCargo();
@@ -132,6 +139,7 @@ public class SmugglersState extends CargoState {
             phase = StatePhase.BATTERY_PHASE;
             setStandbyMessage("Waiting for " + getCurrentPlayer() + " to choose a battery to lose energy from.");
         }
+
         getController().getMessageManager().notifyPhaseChange(phase, this);
 
         if (currentLostCargo == 0 && phase == StatePhase.REMOVE_CARGO) {
