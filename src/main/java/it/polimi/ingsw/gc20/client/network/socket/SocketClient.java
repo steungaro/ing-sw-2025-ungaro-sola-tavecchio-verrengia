@@ -105,6 +105,7 @@ public class SocketClient implements Client {
     @Override
     public void login(String username) {
         try {
+            out.reset();
             out.writeObject(new LoginRequest(username));
             out.flush();
         } catch (IOException e) {
@@ -131,6 +132,7 @@ public class SocketClient implements Client {
     @Override
     public void pong(String username) {
         try {
+            out.reset();
             out.writeObject(new Pong(username));
             out.flush();
         } catch (IOException e) {
@@ -188,6 +190,7 @@ public class SocketClient implements Client {
     @Override
     public void takeComponentFromUnviewed(String username, int index) {
         try {
+            out.reset();
             out.writeObject(new TakeComponentMessage(username, index, PileEnum.UNVIEWED));
             out.flush();
         } catch (IOException e) {
@@ -198,6 +201,7 @@ public class SocketClient implements Client {
     @Override
     public void takeComponentFromViewed(String username, int index) {
         try {
+            out.reset();
             out.writeObject(new TakeComponentMessage(username, index, PileEnum.VIEWED));
             out.flush();
         } catch (IOException e) {
@@ -208,6 +212,7 @@ public class SocketClient implements Client {
     @Override
     public void takeComponentFromBooked(String username, int index) {
         try {
+            out.reset();
             out.writeObject(new TakeComponentMessage(username, index, PileEnum.BOOKED));
             out.flush();
         } catch (IOException e) {
@@ -218,6 +223,7 @@ public class SocketClient implements Client {
     @Override
     public void addComponentToBooked(String username) {
         try {
+            out.reset();
             out.writeObject(new AddComponentMessage(username, PileEnum.BOOKED));
             out.flush();
         } catch (IOException e) {
@@ -228,6 +234,7 @@ public class SocketClient implements Client {
     @Override
     public void addComponentToViewed(String username) {
         try {
+            out.reset();
             out.writeObject(new AddComponentMessage(username, PileEnum.VIEWED));
             out.flush();
         } catch (IOException e) {
@@ -238,6 +245,7 @@ public class SocketClient implements Client {
     @Override
     public void placeComponent(String username, Pair<Integer, Integer> coordinates) {
         try {
+            out.reset();
             out.writeObject(new PlaceComponentMessage(username, coordinates));
             out.flush();
         } catch (IOException e) {
@@ -248,6 +256,7 @@ public class SocketClient implements Client {
     @Override
     public void rotateComponentClockwise(String username) {
         try {
+            out.reset();
             out.writeObject(new RotateComponentMessage(username, 0));
             out.flush();
         } catch (IOException e) {
@@ -258,6 +267,7 @@ public class SocketClient implements Client {
     @Override
     public void rotateComponentCounterclockwise(String username) {
         try {
+            out.reset();
             out.writeObject(new RotateComponentMessage(username, 1));
             out.flush();
         } catch (IOException e) {
@@ -268,6 +278,7 @@ public class SocketClient implements Client {
     @Override
     public void stopAssembling(String username, int position) {
         try {
+            out.reset();
             out.writeObject(new AssemblyEndedMessage(username, position));
             out.flush();
         } catch (IOException e) {
@@ -278,6 +289,7 @@ public class SocketClient implements Client {
     @Override
     public void peekDeck(String username, int num) {
         try {
+            out.reset();
             out.writeObject(new PeekDeckMessage(username, num));
             out.flush();
         } catch (IOException e) {
@@ -288,6 +300,7 @@ public class SocketClient implements Client {
     @Override
     public void turnHourglass(String username) {
         try {
+            out.reset();
             out.writeObject(new TurnHourglassMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -298,6 +311,7 @@ public class SocketClient implements Client {
     @Override
     public void removeComponentFromShip(String username, Pair<Integer, Integer> coordinates) {
         try {
+            out.reset();
             out.writeObject(new RemoveComponentMessage(username, coordinates));
             out.flush();
         } catch (IOException e) {
@@ -308,6 +322,7 @@ public class SocketClient implements Client {
     @Override
     public void addAlien(String username, AlienColor color, Pair<Integer, Integer> cabin) {
         try {
+            out.reset();
             out.writeObject(new AddAlienMessage(username, cabin, color));
             out.flush();
         } catch (IOException e) {
@@ -318,6 +333,7 @@ public class SocketClient implements Client {
     @Override
     public void chooseBranch(String username, Pair<Integer, Integer> coordinates) {
         try {
+            out.reset();
             out.writeObject(new ChooseBranchMessage(username, coordinates));
             out.flush();
         } catch (IOException e) {
@@ -328,6 +344,7 @@ public class SocketClient implements Client {
     @Override
     public void rollDice(String username) {
         try {
+            out.reset();
             out.writeObject(new RollDiceMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -338,6 +355,7 @@ public class SocketClient implements Client {
     @Override
     public void landOnPlanet(String username, int planetIndex) {
         try {
+            out.reset();
             out.writeObject(new LandPlanetMessage(username, planetIndex));
             out.flush();
         } catch (IOException e) {
@@ -348,6 +366,7 @@ public class SocketClient implements Client {
     @Override
     public void loadCargo(String username, CargoColor loaded, Pair<Integer, Integer> ch) {
         try {
+            out.reset();
             out.writeObject(new LoadCargoMessage(username, ch, loaded));
             out.flush();
         } catch (IOException e) {
@@ -358,6 +377,7 @@ public class SocketClient implements Client {
     @Override
     public void unloadCargo(String username, CargoColor lost, Pair<Integer, Integer> ch) {
         try {
+            out.reset();
             out.writeObject(new MoveCargoMessage(username, ch, null, lost));
             out.flush();
         } catch (IOException e) {
@@ -368,6 +388,7 @@ public class SocketClient implements Client {
     @Override
     public void moveCargo(String username, CargoColor cargo, Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
         try {
+            out.reset();
             out.writeObject(new MoveCargoMessage(username, from, to, cargo));
             out.flush();
         } catch (IOException e) {
@@ -378,6 +399,7 @@ public class SocketClient implements Client {
     @Override
     public void acceptCard(String username) {
         try {
+            out.reset();
             out.writeObject(new AcceptCardMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -388,6 +410,7 @@ public class SocketClient implements Client {
     @Override
     public void loseCrew(String username, List<Pair<Integer, Integer>> cabins) {
         try {
+            out.reset();
             out.writeObject(new LoseCrewMessage(username, cabins));
             out.flush();
         } catch (IOException e) {
@@ -398,6 +421,7 @@ public class SocketClient implements Client {
     @Override
     public void endMove(String username) {
         try {
+            out.reset();
             out.writeObject(new EndMoveMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -408,6 +432,7 @@ public class SocketClient implements Client {
     @Override
     public void giveUp(String username) {
         try {
+            out.reset();
             out.writeObject(new GiveUpMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -418,6 +443,7 @@ public class SocketClient implements Client {
     @Override
     public void loseEnergy(String username, Pair<Integer, Integer> coordinates) throws RemoteException {
         try {
+            out.reset();
             out.writeObject(new LoseEnergyMessage(username, coordinates));
             out.flush();
         } catch (IOException e) {
@@ -428,6 +454,7 @@ public class SocketClient implements Client {
     @Override
     public void activateEngines(String username, List<Pair<Integer, Integer>> engines, List<Pair<Integer, Integer>> batteries) {
         try {
+            out.reset();
             out.writeObject(new ActivateDoubleEnginesMessage(username, engines, batteries));
             out.flush();
         } catch (IOException e) {
@@ -438,6 +465,7 @@ public class SocketClient implements Client {
     @Override
     public void activateShield(String username, Pair<Integer, Integer> shield, Pair<Integer, Integer> battery) {
         try {
+            out.reset();
             out.writeObject(new ActivateShieldMessage(username, shield, battery));
             out.flush();
         } catch (IOException e) {
@@ -448,6 +476,7 @@ public class SocketClient implements Client {
     @Override
     public void activateCannons(String username, List<Pair<Integer, Integer>> cannons, List<Pair<Integer, Integer>> batteries) {
         try {
+            out.reset();
             out.writeObject(new ActivateDoubleCannonsMessage(username, cannons, batteries));
             out.flush();
         } catch (IOException e) {
@@ -458,6 +487,7 @@ public class SocketClient implements Client {
     @Override
     public void joinLobby(String id, String user) {
         try {
+            out.reset();
             out.writeObject(new JoinLobbyMessage(user, id));
             out.flush();
         } catch (IOException e) {
@@ -468,6 +498,7 @@ public class SocketClient implements Client {
     @Override
     public void createLobby(String name, String user, int maxPlayers, int level) {
         try {
+            out.reset();
             out.writeObject(new CreateLobbyMessage(name, user, maxPlayers, level));
             out.flush();
         } catch (IOException e) {
@@ -478,6 +509,7 @@ public class SocketClient implements Client {
     @Override
     public void leaveLobby(String userid) {
         try {
+            out.reset();
             out.writeObject(new LeaveLobbyMessage(userid));
             out.flush();
         } catch (IOException e) {
@@ -488,6 +520,7 @@ public class SocketClient implements Client {
     @Override
     public void startLobby(String id) {
         try {
+            out.reset();
             out.writeObject(new StartLobbyMessage(id));
             out.flush();
         } catch (IOException e) {
@@ -498,6 +531,7 @@ public class SocketClient implements Client {
     @Override
     public void killLobby(String username) {
         try {
+            out.reset();
             out.writeObject(new KillLobbyMessage(username));
             out.flush();
         } catch (IOException e) {
@@ -508,6 +542,7 @@ public class SocketClient implements Client {
     @Override
     public void getLobbies(String username) throws RemoteException {
         try {
+            out.reset();
             out.writeObject(new LobbyListRequest(username));
             out.flush();
         } catch (IOException e) {
