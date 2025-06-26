@@ -71,6 +71,7 @@ public class SocketClientHandler implements ClientHandler {
         if (!connected) return;
 
         try {
+            out.reset();
             out.writeObject(message);
             out.flush();
         } catch (IOException e) {
