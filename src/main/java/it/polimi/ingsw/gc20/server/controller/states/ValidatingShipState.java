@@ -193,7 +193,7 @@ public class ValidatingShipState extends State {
     @Override
     public void rejoin(String username){
         getController().getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
-        if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 2 && !readyToFly.get(getController().getPlayerByID(username))) {
+        if (validShips.get(getController().getPlayerByID(username)) && getModel().getLevel() == 2 && !readyToFly.get(getController().getPlayerByID(username)) && phase == StatePhase.ADD_ALIEN_PHASE) {
             getController().getMessageManager().sendToPlayer(username, new AlienPlacementePhaseMessage());
         } else if (!validShips.get(getController().getPlayerByID(username)) && phase == StatePhase.VALIDATE_SHIP_PHASE) {
             getController().getMessageManager().sendToPlayer(username, new ValidateShipPhase());
