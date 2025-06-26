@@ -161,7 +161,7 @@ public abstract class ShipController implements GameModelListener {
      */
     public void setComponentProp(StackPane layeredPane, ViewBattery comp) {
         Label batteryLabel = new Label(Integer.toString(comp.availableEnergy));
-        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-background-color: rgba(0,0,0,0.7); -fx-padding: 2px;");
+        batteryLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 3px; -fx-background-radius: 3px;");
 
         try {
             ImageView batteryIcon = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/fxml/icons/battery.png"))));
@@ -169,19 +169,22 @@ public abstract class ShipController implements GameModelListener {
             batteryIcon.fitHeightProperty().bind(layeredPane.heightProperty().multiply(0.3));
             batteryIcon.setPreserveRatio(true);
 
-            javafx.scene.layout.HBox batteryContainer = new javafx.scene.layout.HBox(5); // 5 pixel di spacing
-            batteryContainer.setAlignment(Pos.CENTER);
-            batteryContainer.getChildren().addAll(batteryIcon, batteryLabel);
+            StackPane iconBackground = new StackPane();
+            iconBackground.getChildren().add(batteryIcon);
 
-            StackPane.setAlignment(batteryContainer, Pos.CENTER);
+            javafx.scene.layout.HBox batteryContainer = new javafx.scene.layout.HBox(3);
+            batteryContainer.setAlignment(javafx.geometry.Pos.CENTER);
+            batteryContainer.getChildren().addAll(iconBackground, batteryLabel);
+
+            StackPane.setAlignment(batteryContainer, javafx.geometry.Pos.CENTER);
             layeredPane.getChildren().add(batteryContainer);
-        
-    } catch (Exception e) {
-        System.err.println("Unable to load battery image: " + e.getMessage());
-        StackPane.setAlignment(batteryLabel, Pos.CENTER);
-        layeredPane.getChildren().add(batteryLabel);
+
+        } catch (Exception e) {
+            System.err.println("Unable to load battery image: " + e.getMessage());
+            StackPane.setAlignment(batteryLabel, javafx.geometry.Pos.CENTER);
+            layeredPane.getChildren().add(batteryLabel);
+        }
     }
-}
 
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
