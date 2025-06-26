@@ -30,10 +30,10 @@
     </Label>
     
     <ScrollPane fx:id="DeckPanel"
-                style="-fx-background-color: #34495e; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);"
+                style="-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 15;"
                 VBox.vgrow="ALWAYS"
                 fitToWidth="true"
                 fitToHeight="true">
-        <AnchorPane minHeight="0.0" minWidth="0.0"/>
+        <AnchorPane style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 2);" minHeight="0.0" minWidth="0.0"/>
     </ScrollPane>
 </VBox>

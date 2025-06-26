@@ -60,17 +60,19 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
     private VBox createPlanetBox(Planet planet, int planetNumber) {
         VBox planetContainer = new VBox(5);
         planetContainer.setPadding(new Insets(10));
-        planetContainer.setStyle("-fx-border-color: #CCCCCC; -fx-border-width: 1; -fx-background-color: #FAFAFA;");
+        planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
         planetContainer.setMinWidth(150);
 
         Label planetNameLabel = new Label("Planet " + planetNumber +
             (planet.getAvailable() ? "\n(Available)" : "\n(Not Available)"));
         planetNameLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+        planetNameLabel.setTextFill(Color.WHITE);
         planetNameLabel.setWrapText(true);
 
         VBox cargoContainer = new VBox(3);
         Label cargoLabel = new Label("Cargos:");
         cargoLabel.setFont(Font.font("System", 10));
+        cargoLabel.setTextFill(Color.web("#80ffaa"));
         
         HBox cargoSquares = new HBox(2);
         
@@ -85,14 +87,13 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver 
         planetContainer.getChildren().addAll(planetNameLabel, cargoContainer);
 
         planetContainer.setOnMouseClicked(event -> selectPlanet(planet, planetContainer));
-        
-        // Stile per hover
+
         planetContainer.setOnMouseEntered(event -> 
-            planetContainer.setStyle("-fx-border-color: #0078D4; -fx-border-width: 2; -fx-background-color: #F0F8FF;"));
+            planetContainer.setStyle("-fx-border-color: #80ffaa; -fx-border-width: 3; -fx-background-color: #3e4f5e; -fx-background-radius: 8;"));
         
         planetContainer.setOnMouseExited(event -> {
             if (selectedPlanetBox != planetContainer) {
-                planetContainer.setStyle("-fx-border-color: #CCCCCC; -fx-border-width: 1; -fx-background-color: #FAFAFA;");
+                planetContainer.setStyle("-fx-border-color: #4a7eb3; -fx-border-width: 2; -fx-background-color: #333344; -fx-background-radius: 8;");
             }
         });
 

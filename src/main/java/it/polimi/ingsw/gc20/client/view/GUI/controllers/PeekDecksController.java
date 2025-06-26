@@ -28,9 +28,10 @@ public class PeekDecksController implements MenuController.ContextDataReceiver {
         flowPane.setStyle("-fx-background-color: transparent;");
         
         double cardWidth = calculateCardWidth(deck.size());
+        double cardHeight = calculateCardHeight(deck.size());
         
         for (ViewAdventureCard card : deck) {
-            VBox cardContainer = createCardContainer(card, cardWidth);
+            VBox cardContainer = createCardContainer(card, cardWidth, cardHeight);
             flowPane.getChildren().add(cardContainer);
         }
         DeckPanel.setContent(flowPane);
@@ -48,7 +49,19 @@ public class PeekDecksController implements MenuController.ContextDataReceiver {
         }
     }
     
-    private VBox createCardContainer(ViewAdventureCard card, double cardWidth) {
+    private double calculateCardHeight(int numberOfCards) {
+        if (numberOfCards <= 3) {
+            return 250;
+        } else if (numberOfCards <= 6) {
+            return 200;
+        } else if (numberOfCards <= 10) {
+            return 170;
+        } else {
+            return 140;
+        }
+    }
+    
+    private VBox createCardContainer(ViewAdventureCard card, double cardWidth, double cardHeight) {
         VBox cardContainer = new VBox();
         cardContainer.setAlignment(Pos.CENTER);
         cardContainer.setSpacing(5);
@@ -80,6 +93,7 @@ public class PeekDecksController implements MenuController.ContextDataReceiver {
         Image cardImage = getCardImage(card.id);
         ImageView imageView = new ImageView(cardImage);
         imageView.setFitWidth(cardWidth);
+        imageView.setFitHeight(cardHeight);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
         

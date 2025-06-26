@@ -394,6 +394,9 @@ public class MenuController implements GameModelListener {
 
             if (!isTemporaryView) {
                 instance.saveCurrentStateToStack();
+                instance.currentContentType = ContentType.SHIP;
+            } else {
+                instance.updateBackButtonVisibility();
             }
 
         } catch (IOException e) {
