@@ -293,7 +293,7 @@ public class ViewBoard  implements Serializable {
         sb.append(EMPTY_ROW).append("\n");
         for (ViewPlayer player : players) {
             if (player != null) {
-                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append(" ".repeat(120-2-13 - player.username.length())).append("│").append("\n");
+                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append(player.inGame ? "" : " (early landed)").append(" ".repeat(120-2-13 - (player.inGame ? 0 : 15) - player.username.length())).append("│").append("\n");
             }
         }
 
