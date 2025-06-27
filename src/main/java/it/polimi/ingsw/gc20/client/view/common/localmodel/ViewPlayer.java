@@ -21,12 +21,13 @@ public class ViewPlayer  implements Serializable  {
      * @param player1      the username of the player
      * @param playerColor  the color of the player
      * @param i            the position of the player in the game
+     * @param inGame       whether the player is currently in the game
      */
-    public ViewPlayer(String player1, PlayerColor playerColor, int i) {
+    public ViewPlayer(String player1, PlayerColor playerColor, int i, boolean inGame) {
         this.username = player1;
         this.playerColor = playerColor;
         this.position = i;
         this.credits = 0;
-        this.inGame = true;
+        this.inGame = inGame;
     }
 }

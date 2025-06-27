@@ -29,7 +29,7 @@ public record BoardUpdateMessage(
     public static BoardUpdateMessage fromBoard(Board board, List<Player> players, boolean assemblingState){
         List<ViewPlayer> playerList = new ArrayList<>();
         for (Player player: players ){
-            ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), assemblingState ? -1 : (player.getPosition() % board.getSpaces() + board.getSpaces()) % board.getSpaces());
+            ViewPlayer p = new ViewPlayer(player.getUsername(), player.getColor(), assemblingState ? -1 : (player.getPosition() % board.getSpaces() + board.getSpaces()) % board.getSpaces(), player.isInGame());
             playerList.add(p);
         }
         ViewBoard viewBoard = new ViewBoard(board.isLearner(), playerList.toArray(new ViewPlayer[0]));
