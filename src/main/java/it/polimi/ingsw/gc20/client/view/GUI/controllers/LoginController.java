@@ -17,6 +17,12 @@ public class LoginController {
     @FXML
     private Label errorLabel;
 
+    /**
+     * Initializes the login controller and sets up the user interface components.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It configures the login button to handle the login action when clicked,
+     * setting up the event handler for user authentication.
+     */
     @FXML
     public void initialize() {
 
@@ -35,6 +41,14 @@ public class LoginController {
         ClientGameModel.getInstance().login();
     }
 
+    /**
+     * Sets and displays an error message to the user.
+     * This method updates the error label with the specified error message
+     * and makes it visible to provide feedback when login operations fail
+     * or when validation errors occur.
+     * 
+     * @param errorMessage the error message to display to the user
+     */
     public void setErrorLabel(String errorMessage) {
         errorLabel.setText(errorMessage);
         errorLabel.setVisible(true);

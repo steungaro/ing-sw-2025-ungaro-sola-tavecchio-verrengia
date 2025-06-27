@@ -31,6 +31,11 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     @FXML public Button skipButton;
 
+    /**
+     * Performs cleanup operations for this controller.
+     * This method removes listeners from the game model, unbinds node properties,
+     * clears selected components, and nullifies references to prevent memory leaks.
+     */
     @Override
     public void cleanup() {
 
@@ -211,6 +216,11 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
 
     private final List<Pair<Integer, Integer>> selectedComponents = new ArrayList<>();
 
+    /**
+     * Initializes the JavaFX components and sets up the initial state of the controller.
+     * This method is automatically called by JavaFX after loading the FXML file.
+     * It retrieves the current username and ship from the game model and loads the ship view.
+     */
     @FXML
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
@@ -218,6 +228,15 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         loadShipView();
     }
 
+    /**
+     * Initializes the controller with specific activation data.
+     * Sets the activation type, updates UI labels based on the activation type,
+     * and configures the skip button visibility for branch selection.
+     * 
+     * @param type the type of activation to perform (CANNONS, ENGINES, SHIELDS, BATTERY, or BRANCH)
+     * @param message the message to display to the user
+     * @param batteryNum the number of batteries (currently unused in implementation)
+     */
     public void initializeData(ActivationType type, String message, int batteryNum) {
         this.activationType = type;
         if(activationType == ActivationType.BRANCH)
@@ -373,6 +392,16 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Sets the context data for this controller from the menu system.
+     * Extracts activation type and message from context data and initializes the controller.
+     * Supports two different context data formats:
+     * 1. Contains "activationType" and "message" keys
+     * 2. Contains "activationTyper" and "batteryNum" keys (for energy loss scenarios)
+     * 
+     * @param contextData a map containing context data with activation parameters
+     * @throws IllegalArgumentException if context data doesn't contain the required keys
+     */
     @Override
     public void setContextData(Map<String, Object> contextData) {
         if (contextData.containsKey("activationType") && contextData.containsKey("message")) {
@@ -384,41 +413,74 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
             int batteryNum = (int) contextData.get("batteryNum");
             String message = "You have to lose " + batteryNum + " energy because you are short on cargo!";
             initializeData(activationType, message, batteryNum);
-        }
-
-
-        else {
+        } else {
             throw new IllegalArgumentException("Context data must contain activationType and message");
         }
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * Reloads the ship view when the ship state is updated to reflect current changes.
+     * 
+     * @param ship the updated ship view object
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadShipView();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * Currently provides no implementation as lobby updates are not relevant for activation menus.
+     * 
+     * @param lobby the updated lobby view object
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
-
+        // Empty implementation - not relevant for activation menu
     }
 
+    /**
+     * Handles error message events from the game model.
+     * Currently provides no implementation as error messages are handled separately.
+     * 
+     * @param message the error message received from the game model
+     */
     @Override
     public void onErrorMessageReceived(String message) {
-
+        // Empty implementation - errors handled through other mechanisms
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * Currently provides no implementation as hand components are not relevant for activation menus.
+     * 
+     * @param component the updated component in the player's hand
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
-
+        // Empty implementation - not relevant for activation menu
     }
 
+    /**
+     * Handles current adventure card update events from the game model.
+     * Currently provides no implementation as adventure cards are not directly relevant for activation menus.
+     * 
+     * @param currentCard the updated current adventure card
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
-
+        // Empty implementation - not relevant for activation menu
     }
 
+    /**
+     * Handles board update events from the game model.
+     * Currently provides no implementation as board updates are not directly relevant for activation menus.
+     * 
+     * @param board the updated game board view
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
-
+        // Empty implementation - not relevant for activation menu
     }
 }

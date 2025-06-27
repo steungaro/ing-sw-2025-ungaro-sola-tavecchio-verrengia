@@ -46,16 +46,42 @@ public class InLobbyController {
     private String currentUsername;
     private final ClientGameModel clientController = ClientGameModel.getInstance();
 
+    /**
+     * Initializes the lobby controller and sets up the user interface.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It performs the following operations:
+     * - Initializes the lobby data using the current lobby and username from the game model
+     * - Starts periodic updates to keep the lobby information synchronized
+     */
     @FXML
     public void initialize() {
         initLobbyData(clientController.getCurrentLobby(), clientController.getUsername());
         startPeriodicUpdates();
     }
 
+    /**
+     * Displays an error message to the user in the lobby interface.
+     * This method updates the waiting message label to show error information
+     * when lobby operations fail or encounter issues.
+     * 
+     * @param message the error message to display to the user
+     */
     public void showError(String message) {
         waitingMessageLabel.setText(message);
     }
 
+    /**
+     * Initializes the lobby data and configures the user interface based on the lobby state.
+     * This method sets up the lobby interface with the following information:
+     * - Lobby title and ID
+     * - Player count display (current/maximum)
+     * - Player list with owner and current user indicators
+     * - UI visibility and controls based on whether the user is the lobby owner
+     * - Start game button state based on minimum player requirements
+     * 
+     * @param lobby the lobby data to display
+     * @param username the current user's username
+     */
     public void initLobbyData(ViewLobby lobby, String username) {
         if (lobby != null) {
             this.currentLobby = lobby;
@@ -139,6 +165,12 @@ public class InLobbyController {
         }
     }
 
+    /**
+     * Handles the start game button click event.
+     * This FXML event handler attempts to start the game if the current user is the lobby owner.
+     * Only the lobby owner can initiate game start. If an error occurs during the start process,
+     * an error message is displayed to the user.
+     */
     @FXML
     public void onStartGame() {
         if (!isOwner) return;
@@ -149,6 +181,15 @@ public class InLobbyController {
         }
     }
 
+    /**
+     * Handles the leave lobby button click event.
+     * This FXML event handler performs the following operations:
+     * - Stops periodic updates to prevent memory leaks
+     * - Sends a leave lobby request to the server
+     * - Returns the user to the login screen
+     * 
+     * If an error occurs during the leave process, an error message is displayed.
+     */
     @FXML
     public void onLeaveLobby() {
         try {
@@ -160,6 +201,18 @@ public class InLobbyController {
         }
     }
 
+    /**
+     * Handles the kill lobby button click event.
+     * This FXML event handler allows the lobby owner to permanently delete the lobby.
+     * It performs the following operations:
+     * - Verifies the user is the lobby owner
+     * - Stops periodic updates to prevent memory leaks
+     * - Sends a kill lobby request to the server
+     * - Returns the user to the login screen
+     * 
+     * Only the lobby owner can perform this action. If an error occurs during the process,
+     * an error message is displayed.
+     */
     @FXML
     public void onKillLobby() {
         if (!isOwner) return;

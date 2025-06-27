@@ -31,6 +31,11 @@ public class AutomaticActionController implements MenuController.ContextDataRece
     private ShipController shipController;
 
 
+    /**
+     * Initializes the JavaFX components and sets up the initial state of the controller.
+     * This method is automatically called by JavaFX after loading the FXML file.
+     * It retrieves the current username and ship from the game model and loads the ship view.
+     */
     @FXML
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
@@ -91,16 +96,34 @@ public class AutomaticActionController implements MenuController.ContextDataRece
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Sets the message to be displayed in the message label.
+     * If the message label is not null, updates its text content with the provided message.
+     *
+     * @param message the message text to display
+     */
     public void setMessage(String message) {
         if (messageLabel != null) {
             messageLabel.setText(message);
         }
     }
 
+    /**
+     * Initializes the controller with a specific message.
+     * This method sets the message and performs any necessary initialization.
+     *
+     * @param message the message to initialize the controller with
+     */
     public void initializeWithMessage(String message) {
         setMessage(message);
     }
 
+    /**
+     * Sets the context data for this controller from the menu system.
+     * Extracts the message from the context data if present and initializes the controller with it.
+     *
+     * @param contextData a map containing context data, expected to contain a "message" key with a String value
+     */
     @Override
     public void setContextData(Map<String, Object> contextData) {
         if(contextData.containsKey("message")) {
@@ -109,7 +132,16 @@ public class AutomaticActionController implements MenuController.ContextDataRece
         }
     }
 
-    @Override
+    /**
+     * Performs cleanup operations for this controller to prevent memory leaks.
+     * This method:
+     * - Cleans up the ship controller if it implements BindCleanUp
+     * - Removes the ship controller from game model listeners if it implements GameModelListener
+     * - Unbinds properties from all child nodes in the ship pane
+     * - Clears the ship pane children
+     * - Nullifies object references
+     * - Resets all labels to empty state
+     */
     public void cleanup() {
 
         if (shipController != null) {

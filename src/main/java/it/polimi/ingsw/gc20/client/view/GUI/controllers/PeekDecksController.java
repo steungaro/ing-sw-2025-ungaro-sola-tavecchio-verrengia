@@ -14,11 +14,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Controller class for the deck peeking interface.
+ * Displays adventure cards in a scrollable flow layout with interactive card containers.
+ * Implements ContextDataReceiver to receive card data and BindCleanUp for resource management.
+ */
 public class PeekDecksController implements MenuController.ContextDataReceiver, BindCleanUp {
 
     @FXML
     private ScrollPane DeckPanel;
 
+    /**
+     * Initializes the controller with a list of adventure cards to display.
+     * Sets up a responsive flow layout with card containers that dynamically adjust size
+     * based on the number of cards to display.
+     *
+     * @param deck The list of adventure cards to display
+     */
     public void initializeWithCards(List<ViewAdventureCard> deck) {
         FlowPane flowPane = new FlowPane();
         flowPane.setAlignment(Pos.CENTER);
@@ -103,7 +115,14 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
         return new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
     }
 
-    @SuppressWarnings( "unchecked")
+    /**
+     * Sets contextual data received from a parent controller.
+     * Extracts a list of adventure cards from the context data and initializes the controller with it.
+     * 
+     * @param contextData A map containing contextual data, must include a "cards" key with a List of ViewAdventureCard objects
+     * @throws IllegalArgumentException if the required cards data is not present or is of incorrect type
+     */
+    @SuppressWarnings("unchecked")
     @Override
     public void setContextData(Map<String, Object> contextData) {
         if (contextData.containsKey("cards")) {
@@ -119,6 +138,11 @@ public class PeekDecksController implements MenuController.ContextDataReceiver, 
         }
     }
 
+    /**
+     * Cleans up resources used by this controller.
+     * Removes event handlers, clears images, and nullifies references to avoid memory leaks.
+     * Should be called when the view is no longer needed.
+     */
     public void cleanup() {
 
         if (DeckPanel != null) {

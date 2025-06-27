@@ -54,6 +54,16 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
     protected ShipController.CellClickHandler cellClickHandler;
     private ViewPlayer currentPlayerBeingViewed;
 
+    /**
+     * Initializes the building phase controller and sets up the user interface.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It performs the following operations:
+     * - Sets up the current player view based on the username
+     * - Initializes the covered deck background
+     * - Loads the ship view and uncovered components
+     * - Registers event listeners for user interactions
+     * - Updates the component in hand and booked components display
+     */
     public void initialize() {
         String myUsername = ClientGameModel.getInstance().getUsername();
         this.currentPlayerBeingViewed = getPlayerFromModel(myUsername);
@@ -125,6 +135,13 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         buildShipComponents(ship);
     }
 
+    /**
+     * Builds and displays the ship components on the grid.
+     * This method clears the current grid and rebuilds it with all components
+     * from the provided ship at their correct positions.
+     * 
+     * @param ship the ship view containing the components to display
+     */
     public void buildShipComponents(ViewShip ship) {
         if (ship == null || componentsGrid == null) return;
 
@@ -140,6 +157,11 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         }
     }
 
+    /**
+     * Clears all components from the ship grid and resets it to empty state.
+     * This method removes all component images and re-adds empty ImageViews
+     * to maintain the grid structure.
+     */
     public void clearAllComponents() {
         componentsGrid.getChildren().clear();
 
@@ -162,6 +184,16 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         return null;
     }
 
+    /**
+     * Adds a component to the ship grid at the specified position.
+     * This method loads the component image, applies rotation if needed,
+     * and places it in the grid with proper layout properties.
+     * 
+     * @param comp the component to add
+     * @param row the row position (0-based)
+     * @param col the column position (0-based)
+     * @return true if the component was successfully added, false otherwise
+     */
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
         if (row < 0 || row >= getRows() || col < 0 || col >= getCols()) {
@@ -437,6 +469,13 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         disableUncoveredComponentsInteraction();
     }
 
+    /**
+     * Enables interaction with uncovered components pile.
+     * This method sets up mouse click handlers and visual feedback
+     * for the uncovered components pane.
+     * 
+     * @param handler the runnable to execute when the uncovered components are clicked
+     */
     public void enableUncoveredComponentsInteraction(Runnable handler) {
         if (uncoveredComponentsPane != null) {
             uncoveredComponentsPane.setOnMouseClicked(_ -> {
@@ -450,6 +489,13 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         }
     }
 
+    /**
+     * Enables interaction with the ship grid for component placement.
+     * This method adds clickable areas to valid grid positions and sets up
+     * visual feedback for component placement operations.
+     * 
+     * @param handler the cell click handler to process grid interactions
+     */
     public void enableGridInteraction(ShipController.CellClickHandler handler) {
         this.cellClickHandler = handler;
 
@@ -571,6 +617,11 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         }
     }
 
+    /**
+     * Disables interaction with the uncovered components pile.
+     * This method removes mouse click handlers and resets the cursor
+     * and visual styling to default state.
+     */
     public void disableUncoveredComponentsInteraction() {
         if (uncoveredComponentsPane != null) {
             uncoveredComponentsPane.setOnMouseClicked(null);
@@ -579,6 +630,11 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         }
     }
 
+    /**
+     * Disables interaction with the ship grid.
+     * This method removes all clickable areas from the grid and
+     * clears the cell click handler.
+     */
     public void disableGridInteraction() {
         this.cellClickHandler = null;
 
@@ -637,6 +693,12 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
 
     protected abstract void updateBookedComponents();
 
+    /**
+     * Handles ship update events from the game model.
+     * This method rebuilds the ship components display when the ship is updated.
+     * 
+     * @param ship the updated ship view object
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         if (this.ship.equals(ship)) {
@@ -644,6 +706,13 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         }
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * This method updates the component in hand display, uncovered components,
+     * and booked components when the component in hand changes.
+     * 
+     * @param component the updated component in hand
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         updateComponentInHand();
@@ -651,24 +720,47 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
         updateBookedComponents();
     }
 
-
+    /**
+     * Handles lobby update events from the game model.
+     * This implementation ignores lobby updates as they are not relevant for the building phase.
+     * 
+     * @param lobby the updated lobby view object
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
-        // Ignore
+        // Ignore - not relevant for building phase
     }
 
+    /**
+     * Handles error message events from the game model.
+     * This implementation ignores error messages as they are handled elsewhere in the UI.
+     * 
+     * @param message the error message received from the game model
+     */
     @Override
     public void onErrorMessageReceived(String message) {
-        // Ignore
+        // Ignore - error messages handled elsewhere
     }
 
+    /**
+     * Handles current adventure card update events from the game model.
+     * This implementation ignores adventure card updates as they are not relevant for the building phase.
+     * 
+     * @param currentCard the updated current adventure card
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
-        // ignore
+        // ignore - not relevant for building phase
     }
 
+    /**
+     * Handles board update events from the game model.
+     * This implementation ignores board updates as they are not relevant for the building phase.
+     * 
+     * @param board the updated board view object
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
-        // ignore
+        // ignore - not relevant for building phase
     }
 }

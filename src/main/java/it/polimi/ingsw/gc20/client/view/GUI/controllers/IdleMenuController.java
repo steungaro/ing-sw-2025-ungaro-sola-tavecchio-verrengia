@@ -20,14 +20,35 @@ public class IdleMenuController implements MenuController.ContextDataReceiver {
     @FXML
     private Label dot4;
 
+    /**
+     * Initializes the idle menu controller and starts the loading animation.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It sets up the visual loading animation using the four dot elements to provide
+     * user feedback during waiting periods.
+     */
     public void initialize() {
         startLoadingAnimation();
     }
 
+    /**
+     * Initializes the idle menu with a specific message to display to the user.
+     * This method sets the message text that explains what the application is currently
+     * waiting for or processing.
+     * 
+     * @param message the message to display to the user explaining the current waiting state
+     */
     public void initializeWithMessage(String message) {
         messageLabel.setText(message);
     }
 
+    /**
+     * Sets the context data for the idle menu, specifically the message to display.
+     * This method processes the context data map to extract the message and initialize
+     * the idle menu accordingly. The context data must contain a "message" key.
+     * 
+     * @param contextData a map containing the context data, must include a "message" key with a String value
+     * @throws IllegalArgumentException if the context data does not contain the required "message" key
+     */
     @Override
     public void setContextData(Map<String, Object> contextData) {
         if (contextData.containsKey("message")) {

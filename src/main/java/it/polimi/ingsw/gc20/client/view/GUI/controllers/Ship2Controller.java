@@ -7,6 +7,11 @@ import javafx.scene.image.ImageView;
 
 import java.util.Objects;
 
+/**
+ * Controller class for the second ship type in the game.
+ * Manages a 5x7 grid of cells representing the ship's layout and handles
+ * its specific initialization, rendering, and validation rules.
+ */
 public class Ship2Controller extends ShipController{
 
     private final int ROWS = 5;
@@ -50,6 +55,11 @@ public class Ship2Controller extends ShipController{
 
     @FXML protected ImageView bgImage;
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Loads the background image and sets up responsive resizing for the ship grid.
+     * This method extends the parent class initialization with specific layout for ship type 2.
+     */
     @FXML
     @Override
     protected void initialize() {
@@ -98,6 +108,14 @@ public class Ship2Controller extends ShipController{
         });
     }
 
+    /**
+     * Retrieves the ImageView at the specified grid position.
+     * Maps row and column coordinates to the corresponding ImageView in the grid.
+     *
+     * @param row The row index (0-4)
+     * @param col The column index (0-6)
+     * @return The ImageView at the specified position, or null if invalid coordinates
+     */
     protected ImageView getImageViewAt(int row, int col) {
         return switch (row) {
             case 0 -> switch (col) {
@@ -129,19 +147,40 @@ public class Ship2Controller extends ShipController{
         };
     }
 
+    /**
+     * Returns the number of rows in the ship grid.
+     *
+     * @return The number of rows (5)
+     */
     protected int getRows() {
         return ROWS;
     }
 
+    /**
+     * Returns the number of columns in the ship grid.
+     *
+     * @return The number of columns (7)
+     */
     protected int getCols() {
         return COLS;
     }
 
+    /**
+     * Handles the current card update event from the game model.
+     * This implementation ignores the event as it's not relevant for this controller.
+     *
+     * @param currentCard The updated adventure card view model
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         // ignore
     }
 
+    /**
+     * Cleans up resources used by this controller.
+     * Extends the parent cleanup method with specific cleanup for Ship2Controller resources.
+     * Removes listeners, clears images, and nullifies references to avoid memory leaks.
+     */
     @Override
     public void cleanup() {
 
@@ -173,6 +212,14 @@ public class Ship2Controller extends ShipController{
         bgImage = null;
     }
 
+    /**
+     * Checks if a cell at the specified position is valid for component placement.
+     * Implements ship-specific layout rules determining where components can be placed.
+     *
+     * @param row The row index to check
+     * @param col The column index to check
+     * @return True if the position is valid for component placement, false otherwise
+     */
     @Override
     protected boolean checkIsValid(int row,int col){
         if(row + col <= 1)
