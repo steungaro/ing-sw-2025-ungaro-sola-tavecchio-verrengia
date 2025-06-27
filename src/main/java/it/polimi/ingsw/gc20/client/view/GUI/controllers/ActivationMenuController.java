@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -68,27 +69,36 @@ public class ActivationMenuController implements MenuController.ContextDataRecei
         if (node == null) return;
 
         try {
-            if (node instanceof Region region) {
+            try{
+                Region region = (Region) node;
                 region.prefWidthProperty().unbind();
                 region.prefHeightProperty().unbind();
                 region.minWidthProperty().unbind();
                 region.minHeightProperty().unbind();
                 region.maxWidthProperty().unbind();
                 region.maxHeightProperty().unbind();
+            } catch (ClassCastException e) {
+                // If the node is not a Region, we skip this part
             }
 
-            if (node instanceof Pane pane) {
+            try{
+                Pane pane = (Pane) node;
                 pane.prefWidthProperty().unbind();
                 pane.prefHeightProperty().unbind();
 
                 for (javafx.scene.Node child : pane.getChildren()) {
                     unbindNodeProperties(child);
                 }
+            } catch (ClassCastException e) {
+                // If the node is not a Pane, we skip this part
             }
 
-            if (node instanceof ImageView imageView) {
+            try{
+                ImageView imageView = (ImageView) node;
                 imageView.fitWidthProperty().unbind();
                 imageView.fitHeightProperty().unbind();
+            }  catch (ClassCastException e) {
+                // If the node is not an ImageView, we skip this part
             }
 
             node.setOnMouseClicked(null);

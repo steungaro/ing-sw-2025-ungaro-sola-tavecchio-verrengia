@@ -92,8 +92,10 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
                 shipController.enableCellClickHandler(this::handleLoadCargo);
 
                 cargoContainer.getChildren().forEach(node -> {
-                    if (node instanceof Rectangle) {
+                    try{
                         ((Rectangle) node).setStroke(Color.WHITE);
+                    } catch (ClassCastException e) {
+                        // Ignore if the node is not a Rectangle
                     }
                 });
                 box.setStroke(Color.LIME);
