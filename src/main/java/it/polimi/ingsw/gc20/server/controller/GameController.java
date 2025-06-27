@@ -400,14 +400,16 @@ public class GameController implements GameControllerInterface {
      * This method is called when a pending player is reconnected to the game in the pre-draw state.
      */
     public void preDrawConnect(){
+        List<String> playersToRemove = new ArrayList<>();
         for (String username : pendingPlayers){
             connectedPlayers.addLast(username);
             for (Player p:  getPlayers()){
                 getMessageManager().sendToPlayer(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init all ship"));
             }
             getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
-            pendingPlayers.remove(username);
+            playersToRemove.add(username);
         }
+        pendingPlayers.removeAll(playersToRemove);
     }
 
     /**
