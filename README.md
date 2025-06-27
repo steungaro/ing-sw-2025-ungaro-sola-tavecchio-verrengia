@@ -99,8 +99,8 @@ Run the TUI or GUI JAR file and provide the following address when prompt:
 ## Deliverables
 
 You can find a UML Sequence Diagram for RMI and Socket connection in some peculiar parts of the game (login, lobby creation, place component). 
-UML class diagrams are provided for client and server, please refer to the auto-generated version for network classes and for more details.
-A network architecture documentarion file can also be found for specific description of network classes and design patterns.
+UML class diagrams are provided for client and server, please refer to `UML (CG20).pdf` for more details.
+A network architecture documentation file can also be found for specific description of network classes and design patterns.
 
 ### Javadoc
 Javadoc documentation is available for both client and server code. You can find it in the zip file in the deliverables section of this project.
