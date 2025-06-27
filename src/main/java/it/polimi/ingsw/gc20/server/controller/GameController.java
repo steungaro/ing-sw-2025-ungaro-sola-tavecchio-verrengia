@@ -320,7 +320,6 @@ public class GameController implements GameControllerInterface {
                         state.currentQuit(getPlayerByID(username));
                     }
                 }
-
             } else if(pendingPlayers.contains(username)) {
                 pendingPlayers.remove(username);
                 disconnectedPlayers.add(username);
