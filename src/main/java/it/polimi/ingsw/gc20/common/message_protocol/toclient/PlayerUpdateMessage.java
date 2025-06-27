@@ -15,7 +15,7 @@ import java.util.Arrays;
 public record PlayerUpdateMessage(
         String username, // The username of the receiving client (broadcast to all clients)
         int creditsAdded,
-        Boolean inGame,
+        boolean inGame,
         PlayerColor color,
         int posInBoard //needs to be adapted to the board space (position % spaces)
 ) implements Message {
