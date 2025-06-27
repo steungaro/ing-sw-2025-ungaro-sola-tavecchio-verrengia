@@ -37,35 +37,50 @@ Please choose the corresponding TUI or GUI jar file.
 Before launching the client JARs, you will need to execute two PowerShell functions to enable proper font visualization (this is recommended for full TUI experience):
 
 ```bash
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8  
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 chcp 65001
 
 ```
 
-To launch with a Graphical User Interface (GUI):
+To launch with a **Graphical User Interface** (GUI):
 
 ```bash
-java -jar client-gui.jar
+java -jar client-gui-win.jar
 
 ```
 
-To launch with a Textual User Interface (TUI):
+To launch with a **Textual User Interface** (TUI):
 
 ```bash
 java -jar client-tui.jar
 
 ```
 
-#### macOS/Linux
-To launch with a Graphical User Interface (GUI):
+#### macOS
+To launch with a **Graphical User Interface** (GUI):
 
 ```bash
-java -jar client-gui.jar
+java -jar client-gui-macos.jar
 
 ```
 
-To launch with a Textual User Interface (TUI):
+To launch with a **Textual User Interface** (TUI):
+
+```bash
+java -jar client-tui.jar
+
+```
+
+#### Linux
+To launch with a **Graphical User Interface** (GUI):
+
+```bash
+java -jar client-gui-linux.jar
+
+```
+
+To launch with a **Textual User Interface** (TUI):
 
 ```bash
 java -jar client-tui.jar
