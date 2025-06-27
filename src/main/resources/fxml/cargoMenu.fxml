@@ -56,5 +56,15 @@
                 -fx-text-fill: white;
             </style>
         </Button>
+        <Button fx:id="unloadButton" onAction="#handleUnload" prefHeight="50" prefWidth="150" text="Remove cargo">
+            <font>
+                <Font size="14.0"/>
+            </font>
+            <style>
+                -fx-background-color: #4a7eb3;
+                -fx-text-fill: white;
+            </style>
+        </Button>
+
     </HBox>
 </VBox>
