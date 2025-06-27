@@ -258,7 +258,6 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
      * - Setting all references to null
      */
     public void cleanup() {
-        System.out.println("LoseCrewMenuController: Starting cleanup...");
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
@@ -306,7 +305,5 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         crewToLoseLabel = null;
         errorLabel = null;
         shipPane = null;
-
-        System.out.println("LoseCrewMenuController: Cleanup completed");
     }
 }

@@ -27,6 +27,8 @@ java -jar server.jar
 
 ```
 
+Note: a `server-no-javafx.jar` is also available for environments without JavaFX support. This does not affect the server's functionality.
+
 ### Client Launch
 Each client instance represents a player and can participate in only one game at a time. The client interface can be either textual (TUI) or graphical (GUI), and it can communicate with the server via Socket or RMI.
 
