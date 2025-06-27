@@ -406,6 +406,7 @@ public class GameController implements GameControllerInterface {
                 getMessageManager().sendToPlayer(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init all ship"));
             }
             getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
+            pendingPlayers.remove(username);
         }
     }
 
