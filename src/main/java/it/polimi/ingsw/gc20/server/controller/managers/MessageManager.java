@@ -67,7 +67,9 @@ public class MessageManager {
      */
     public void broadcastPhase (Message message){
         for (String username : gameController.getInGameConnectedPlayers()) {
-            NetworkService.getInstance().sendToClient(username, message);
+            if (!gameController.isPlayerDisconnected(username)) {
+                NetworkService.getInstance().sendToClient(username, message);
+            }
         }
     }
 
