@@ -26,7 +26,7 @@ public class PausedState extends State {
     private void shutdown() {
         if (scheduler != null && !scheduler.isShutdown()) {
             if (future != null && !future.isDone()) {
-                future.cancel(false);
+                future.cancel(true);
             }
             scheduler.shutdown();
         }
@@ -71,7 +71,7 @@ public class PausedState extends State {
                 //ignore cannot happen
             }
         } else {
-            if (getController().getActiveCard().getName().equals("CombatZone") || getController().getOnlinePlayers()==0) {
+            if (previousState.getClass().getSimpleName().equals("PreDrawState") || getController().getActiveCard().getName().equals("CombatZone") || getController().getOnlinePlayers()==0) {
                 phase = StatePhase.DRAW_CARD_PHASE;
                 getController().getMessageManager().broadcastPhase(new DrawCardPhaseMessage());
                 getModel().getActiveCard().playCard();

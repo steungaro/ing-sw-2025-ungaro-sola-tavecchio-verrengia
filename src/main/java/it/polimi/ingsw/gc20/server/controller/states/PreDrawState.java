@@ -6,6 +6,7 @@ import it.polimi.ingsw.gc20.server.controller.GameController;
 import it.polimi.ingsw.gc20.server.model.player.Player;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 
 /**
  * Represents the state of the game before a player draws a card.
@@ -13,6 +14,22 @@ import java.util.concurrent.ScheduledExecutorService;
  * It also handles player status updates based on their position and astronauts.
  */
 public class PreDrawState extends State{
+    ScheduledExecutorService scheduler;
+    ScheduledFuture<?> future;
+
+    /**
+     * Shuts down the scheduler and cancels any scheduled tasks.
+     * This method should be called when the game is over or when transitioning to a different state
+     * to ensure that no further actions are taken after the game has ended.
+     */
+    public void shutdown() {
+        if (scheduler != null && !scheduler.isShutdown()) {
+            if (future != null && !future.isDone()) {
+                future.cancel(true);
+            }
+            scheduler.shutdown();
+        }
+    }
 
     /**
      * Constructs a PreDrawState.
@@ -24,8 +41,8 @@ public class PreDrawState extends State{
         super(controller);
         getController().preDrawConnect();
         // scheduler executor in 5 seconds call nextRound()
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduler.schedule(this::nextRound, 5, java.util.concurrent.TimeUnit.SECONDS);
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        future = scheduler.schedule(this::nextRound, 5, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     /**
@@ -52,6 +69,5 @@ public class PreDrawState extends State{
             }
         }
         getController().drawCard();
-
     }
 }

@@ -327,6 +327,9 @@ public class GameController implements GameControllerInterface {
                 throw new IllegalArgumentException("Player not found in game, not connected or never joined");
             }
             if(connectedPlayers.size() == 1 || (!pendingPlayers.isEmpty() && connectedPlayers.isEmpty())){
+                if (state.getClass().getSimpleName().equals("PreDrawState")) {
+                    ((PreDrawState) state).shutdown();
+                }
                 state = new PausedState(state, model, this);
             }else if(connectedPlayers.isEmpty()){
                 killGame();
