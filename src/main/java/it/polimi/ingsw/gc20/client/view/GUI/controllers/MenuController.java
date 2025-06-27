@@ -66,6 +66,7 @@ public class MenuController implements GameModelListener {
     @FXML private Label serverMessages;
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
+    @FXML public Button turnHourGlassButton;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -137,6 +138,7 @@ public class MenuController implements GameModelListener {
      * Loads player names in the sidebar
      */
     private void loadPlayerNames() {
+        turnHourGlassButton.setVisible(gameModel.getBoard().assemblingState);
         players = gameModel.getPlayers();
         for (int i = 0; i < players.length; i++) {
             if (players[i] == null) continue;
@@ -193,6 +195,18 @@ public class MenuController implements GameModelListener {
             canGoBack = false;
         }
         updateBackButtonVisibility();
+    }
+
+    @FXML
+    public void tunrHourGlass(){
+        if (gameModel.getClient() != null) {
+            try {
+                gameModel.getClient().turnHourglass(gameModel.getUsername());
+            } catch (Exception e) {
+                serverMessages.setText("Error accepting card: " + e.getMessage());
+                serverMessages.getParent().getParent().setVisible(true);
+            }
+        }
     }
 
     /**
