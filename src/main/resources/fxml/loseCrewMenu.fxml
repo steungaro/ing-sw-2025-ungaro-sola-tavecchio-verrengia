@@ -9,7 +9,7 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.gc20.client.view.GUI.controllers.LoseCrewMenuController"
       spacing="20" alignment="CENTER" style="-fx-background-color: #222233;"
-      prefHeight="600.0" prefWidth="700.0">
+      prefHeight="800.0" prefWidth="900.0">
 
     <padding>
         <Insets bottom="20" left="20" right="20" top="20" />
@@ -33,9 +33,11 @@
         </font>
     </Label>
 
-    <VBox alignment="CENTER" style="-fx-background-color: #333344; -fx-background-radius: 10;">
-        <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
-    </VBox>
+    <HBox alignment="CENTER" VBox.vgrow="ALWAYS">
+        <VBox alignment="CENTER" style="-fx-background-color: #333344; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+            <Pane fx:id="shipPane" VBox.vgrow="ALWAYS" />
+        </VBox>
+    </HBox>
 
     <HBox spacing="20" alignment="CENTER">
         <Button fx:id="continueButton" prefHeight="50" prefWidth="200" text="Continue" onAction="#handleContinue">
