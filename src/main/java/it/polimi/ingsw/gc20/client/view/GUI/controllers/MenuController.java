@@ -9,6 +9,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 import javafx.animation.Timeline;
 import javafx.animation.KeyFrame;
 import javafx.application.Platform;
@@ -293,6 +294,9 @@ public class MenuController implements GameModelListener {
                 default -> null;
             };
 
+            String colorStyle = getColorStyle(players[i].playerColor);
+            playerNameLabel.setStyle(colorStyle);
+
             if (playerNameLabel != null) {
                 String text = players[i].username;
 
@@ -309,6 +313,20 @@ public class MenuController implements GameModelListener {
             }
         }
     }
+
+    private String getColorStyle(PlayerColor playerColor) {
+        if (playerColor == null) {
+            return "-fx-text-fill: black;"; // Colore di default
+        }
+
+        return switch (playerColor) {
+            case RED -> "-fx-text-fill: #e74c3c; -fx-font-weight: bold;";
+            case BLUE -> "-fx-text-fill: #3498db; -fx-font-weight: bold;";
+            case GREEN -> "-fx-text-fill: #27ae60; -fx-font-weight: bold;";
+            case YELLOW -> "-fx-text-fill: #f1c40f; -fx-font-weight: bold;";
+        };
+    }
+
 
     /**
      * Loads all player ships in the sidebar
