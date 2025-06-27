@@ -148,7 +148,6 @@ public class MenuController implements GameModelListener {
 
             if (hourglassTimeline != null) {
                 hourglassTimeline.stop();
-                System.out.println("DEBUG - Stopped previous timeline");
             }
 
             long startTimeMillis = hourglassStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
@@ -157,7 +156,6 @@ public class MenuController implements GameModelListener {
             long elapsedSeconds = elapsedMillis / 1000;
             long remainingSeconds = HOURGLASS_DURATION - elapsedSeconds;
 
-            System.out.println("DEBUG - At start - Elapsed: " + elapsedSeconds + ", Remaining: " + remainingSeconds);
 
             if (remainingSeconds > 0) {
                 hourglassTimeline.play();
@@ -183,7 +181,6 @@ public class MenuController implements GameModelListener {
 
     private void updateHourglassTimer() {
         if (hourglassStartTime == null) {
-            System.out.println("DEBUG - No start time, stopping countdown");
             stopHourglassCountdown();
             return;
         }
