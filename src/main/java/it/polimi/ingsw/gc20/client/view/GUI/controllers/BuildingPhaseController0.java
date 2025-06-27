@@ -63,6 +63,15 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
     @FXML
     private ImageView imageCell_4_4;
 
+    /**
+     * Initializes the building phase controller for ship type 0 and sets up the user interface.
+     * This method extends the parent initialization and adds specific functionality for type 0 ships:
+     * - Sets up the background image with cardboard-1.jpg
+     * - Configures responsive layout that maintains aspect ratio
+     * - Sets up layout bounds listeners for dynamic resizing
+     * - Calculates and applies proper grid dimensions based on background image proportions
+     * - Sets individual cell sizes for all ImageView components in the 5x5 grid
+     */
     @Override
     public void initialize() {
         super.initialize();
@@ -156,6 +165,16 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
         };
     }
 
+    /**
+     * Adds a component to the ship grid at the specified position with column offset adjustment.
+     * This method overrides the parent implementation to apply a column offset specific to ship type 0,
+     * adjusting the column position by subtracting 1 before placement.
+     * 
+     * @param comp the component to add to the ship
+     * @param row the row position (0-based)
+     * @param col the column position (0-based, will be adjusted by -1)
+     * @return true if the component was successfully added, false otherwise
+     */
     @Override
     public boolean addComponent(ViewComponent comp, int row, int col) {
         return super.addComponent(comp, row, col-1);
@@ -183,6 +202,13 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
         return row != 4 || col != 2;
     }
 
+    /**
+     * Builds and displays all ship components on the grid for ship type 0.
+     * This method overrides the parent implementation to handle the extended column range
+     * (COLS+1) specific to ship type 0 layout requirements.
+     * 
+     * @param ship the ship view containing the components to display
+     */
     @Override
     public void buildShipComponents(ViewShip ship) {
         if (ship == null || componentsGrid == null) return;
@@ -200,9 +226,17 @@ public class BuildingPhaseController0 extends BuildingPhaseController {
     }
 
 
+    /**
+     * Performs comprehensive cleanup operations specific to ship type 0 controller.
+     * This method handles the following cleanup tasks:
+     * - Removes layout bounds listener from the root pane
+     * - Clears and resets the background image properties
+     * - Resets components grid dimensions to zero
+     * - Nullifies all 25 ImageView cell references (imageCell_0_0 through imageCell_4_4)
+     * - Provides error handling for listener removal operations
+     */
     @Override
     public void cleanup() {
-
         if (rootPane != null) {
             try {
                 rootPane.layoutBoundsProperty().removeListener((_, _, _) -> {});

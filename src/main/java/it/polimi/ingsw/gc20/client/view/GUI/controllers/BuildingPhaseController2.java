@@ -91,6 +91,17 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
     @FXML
     private ImageView imageBooked_1;
 
+    /**
+     * Initializes the building phase controller for ship type 2 and sets up the user interface.
+     * This method extends the parent initialization and adds specific functionality for type 2 ships:
+     * - Sets up the background image with cardboard-1.jpg
+     * - Configures responsive layout that maintains aspect ratio
+     * - Sets up layout bounds listeners for dynamic resizing
+     * - Calculates and applies proper grid dimensions for the 5x7 ship grid
+     * - Configures the booked components grid with proper positioning and sizing
+     * - Sets individual cell sizes for all ImageView components in both grids
+     * - Handles both the main components grid and the 2-slot booked components area
+     */
     @Override
     public void initialize() {
         super.initialize();
@@ -256,6 +267,14 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         void onBookedToHandClicked(int index);
     }
 
+    /**
+     * Enables interaction with the booked components area for transferring components to hand.
+     * This method creates clickable areas over the booked component slots that allow players
+     * to move booked components back to their hand. Only slots with actual components are
+     * made interactive.
+     * 
+     * @param handler the handler to process booked-to-hand click events
+     */
     public void enableBookedToHandInteraction(BookedToHandClickHandler handler) {
         if (bookedGrid != null) {
 
@@ -265,7 +284,7 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
             for (int i = 0; i < 2; i++) {
                 if(ClientGameModel.getInstance().getShip(ClientGameModel.getInstance().getUsername()).getBooked(i) == null)
                     continue;
-            
+        
                 Rectangle clickArea = new Rectangle();
                 clickArea.setFill(javafx.scene.paint.Color.TRANSPARENT);
                 clickArea.setStroke(javafx.scene.paint.Color.LIGHTGREEN);
@@ -341,6 +360,13 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         void onBookedClicked(int index);
     }
 
+    /**
+     * Enables interaction with the booked components area for component placement.
+     * This method creates clickable areas over both booked component slots to allow
+     * placing components from hand into the booked area during placement mode.
+     * 
+     * @param handler the handler to process booked area click events
+     */
     public void enableBookedComponentsInteraction(BookedClickHandler handler) {
         addBookedClickArea(0, handler);
         addBookedClickArea(1, handler);
@@ -417,9 +443,20 @@ public class BuildingPhaseController2 extends BuildingPhaseController {
         }
     }
 
+    /**
+     * Performs comprehensive cleanup operations specific to ship type 2 controller.
+     * This method handles the following cleanup tasks:
+     * - Removes layout bounds listener from the root pane
+     * - Clears and resets the background image properties
+     * - Resets main components grid dimensions to zero
+     * - Clears and resets the booked components grid (position, size, children)
+     * - Unbinds properties and removes event handlers from booked ImageViews
+     * - Nullifies all 35 main grid ImageView cell references (imageCell_0_0 through imageCell_4_6)
+     * - Nullifies both booked ImageView references (imageBooked_0, imageBooked_1)
+     * - Provides error handling for listener removal operations
+     */
     @Override
     public void cleanup() {
-
         if (rootPane != null) {
             try {
                 rootPane.layoutBoundsProperty().removeListener((_, _, _) -> {});

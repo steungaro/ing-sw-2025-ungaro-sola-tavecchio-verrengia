@@ -38,10 +38,23 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
     private final List<Pair<Integer, Integer>> cabins = new ArrayList<>();
     private ShipController shipController;
 
+    /**
+     * Initializes the lose crew menu controller.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It retrieves and stores the current username from the game model for use
+     * in crew loss operations.
+     */
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
     }
 
+    /**
+     * Initializes the crew loss interface with the specified number of crew members to lose.
+     * This method sets up the UI to allow the player to select which crew members to lose
+     * by configuring the ship view and enabling cabin selection interactions.
+     * 
+     * @param crewToLose the number of crew members that must be lost
+     */
     public void initializeWithCrewToLose(int crewToLose) {
         crewToLoseLabel.setText("You need to lose " + crewToLose + " crew members!");
         ship = ClientGameModel.getInstance().getShip(username);
@@ -138,6 +151,15 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Sets the context data for the crew loss menu.
+     * This method processes the context data map to extract the number of crew members
+     * that need to be lost and initializes the interface accordingly. The context data
+     * must contain a "crewNum" key with an integer value.
+     * 
+     * @param contextData a map containing the context data, must include a "crewNum" key
+     *                   with an integer value representing the number of crew to lose
+     */
     @Override
     public void setContextData(Map<String, Object> contextData) {
         if (contextData.containsKey("crewNum")) {
@@ -148,36 +170,93 @@ public class LoseCrewMenuController implements MenuController.ContextDataReceive
         }
     }
 
+    /**
+     * Handles ship updates from the game model.
+     * This method is called when the ship state changes in the game model
+     * and reloads the ship view to reflect the current ship configuration.
+     * 
+     * @param ship the updated ship view data
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadShipView();
     }
 
+    /**
+     * Handles lobby updates from the game model.
+     * This method is called when the lobby state changes but currently
+     * performs no action for this controller as lobby updates are not
+     * relevant to crew loss operations.
+     * 
+     * @param lobby the updated lobby view data
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
 
     }
 
+    /**
+     * Handles error messages from the game model.
+     * This method is called when error messages are received from the game model
+     * but currently performs no action for this controller.
+     * 
+     * @param message the error message received
+     */
     @Override
     public void onErrorMessageReceived(String message) {
 
     }
 
+    /**
+     * Handles component updates from the game model.
+     * This method is called when components in hand are updated but currently
+     * performs no action for this controller as component updates are not
+     * relevant to crew loss operations.
+     * 
+     * @param component the updated component view data
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
 
     }
 
+    /**
+     * Handles current card updates from the game model.
+     * This method is called when the current adventure card changes but currently
+     * performs no action for this controller as card updates are not
+     * relevant to crew loss operations.
+     * 
+     * @param currentCard the updated current adventure card view data
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
     }
 
+    /**
+     * Handles board updates from the game model.
+     * This method is called when the game board state changes but currently
+     * performs no action for this controller as board updates are not
+     * relevant to crew loss operations.
+     * 
+     * @param board the updated board view data
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
     }
 
+    /**
+     * Performs cleanup operations to free resources and reset the controller state.
+     * This method clears all UI components, unbinds properties, removes listeners,
+     * and resets references to prevent memory leaks when the crew loss menu is
+     * no longer needed. It performs comprehensive cleanup including:
+     * - Removing game model listeners
+     * - Cleaning up the ship controller
+     * - Clearing and unbinding ship pane components
+     * - Resetting all labels and clearing selections
+     * - Setting all references to null
+     */
     public void cleanup() {
         System.out.println("LoseCrewMenuController: Starting cleanup...");
 

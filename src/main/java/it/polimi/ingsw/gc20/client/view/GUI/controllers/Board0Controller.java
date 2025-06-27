@@ -34,6 +34,16 @@ public class Board0Controller extends BoardController {
     @FXML private Circle circle16;
     @FXML private Circle circle17;
 
+    /**
+     * Initializes the JavaFX components and sets up the board controller for type 0 board.
+     * This method is automatically called by JavaFX after loading the FXML file.
+     * It performs the following operations:
+     * - Calls the parent class initialization
+     * - Adds all 18 circles (circle0 to circle17) to the circles collection
+     * - Creates and binds labels for each circle with proper positioning and styling
+     * - Sets up responsive scaling and positioning listeners for window resizing
+     * - Configures automatic layout updates when the window is shown or resized
+     */
     @FXML
     public void initialize() {
         super.initialize();
@@ -131,9 +141,20 @@ public class Board0Controller extends BoardController {
         scalableContent.setLayoutY(Math.max(0, offsetY));
     }
 
+    /**
+     * Performs comprehensive cleanup operations for this board controller to prevent memory leaks.
+     * This method handles the following cleanup tasks:
+     * - Removes this controller as a listener from the game model
+     * - Unbinds layout properties from all circle labels and removes their event handlers
+     * - Removes event handlers from all circles and clears parent property listeners
+     * - Removes property listeners from the root pane (scene, width, height)
+     * - Clears transforms and children from scalable content and resets its position
+     * - Nullifies all circle references (circle0 through circle17)
+     * - Nullifies root pane and scalable content references
+     * - Prints a completion message for debugging purposes
+     */
     @Override
     public void cleanup() {
-
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
             gameModel.removeListener(this);

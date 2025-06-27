@@ -1,4 +1,3 @@
-
 package it.polimi.ingsw.gc20.client.view.GUI.controllers;
 
 import it.polimi.ingsw.gc20.client.view.common.ViewLobby;
@@ -46,6 +45,14 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
     private int cargoToLose;
     private CargoColor currentCargo;
 
+    /**
+     * Initializes the cargo menu controller and sets up the basic components.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It performs the following operations:
+     * - Retrieves the current username from the game model
+     * - Gets the ship associated with the current player
+     * - Loads and displays the ship view in the interface
+     */
     @FXML
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
@@ -54,6 +61,15 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         loadShipView();
     }
 
+    /**
+     * Initializes the cargo menu with specific parameters and sets up the appropriate mode.
+     * This method configures the interface based on the current operation mode:
+     * - For cargo losing mode (losing=1): hides cargo selection UI and enables unload functionality
+     * - For cargo gaining mode (losing=2): shows cargo selection boxes for loading
+     * - For invalid states: displays an error message
+     * 
+     * @param message the message to display to the user explaining the current operation
+     */
     public void initializeWithParameters(String message) {
         messageLabel.setText(message);
 
@@ -185,6 +201,14 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         shipController.enableCellClickHandler(this::handleUnloadCargo);
     }
 
+    /**
+     * Displays a color selection dialog for cargo operations.
+     * This static method creates a modal dialog with buttons for each cargo color
+     * (Red, Yellow, Blue, Green) and a Cancel option. The user can select one
+     * color or cancel the operation.
+     * 
+     * @return the selected CargoColor, or null if the operation was cancelled
+     */
     public static CargoColor showColorSelectionDialog() {
         Alert dialog = new Alert(Alert.AlertType.NONE);
         dialog.setTitle("Cargo Selection");
@@ -259,6 +283,17 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Sets the context data for the cargo menu operations.
+     * This method processes different types of cargo operations based on the provided context:
+     * - Single parameter (cargoNum): Sets up cargo removal mode
+     * - Four parameters (message, cargoToLose, cargoToGain, losing): Sets up complex cargo operations
+     * 
+     * The method determines the operation mode and initializes the interface accordingly.
+     * 
+     * @param contextData a map containing operation parameters such as cargo numbers, 
+     *                   messages, and operation type flags
+     */
     @SuppressWarnings( "unchecked")
     @Override
     public void setContextData(Map<String, Object> contextData) {
@@ -288,43 +323,95 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         }
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * This method reloads the ship view when the ship state is updated,
+     * ensuring the display reflects the current ship configuration.
+     * 
+     * @param ship the updated ship view object
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadShipView();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * This implementation provides no functionality as lobby updates are not relevant for cargo operations.
+     * 
+     * @param lobby the updated lobby view object
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
 
     }
 
+    /**
+     * Handles error message events from the game model.
+     * This implementation provides no functionality as error messages are handled locally.
+     * 
+     * @param message the error message received from the game model
+     */
     @Override
     public void onErrorMessageReceived(String message) {
 
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * This implementation provides no functionality as component updates are not relevant for cargo operations.
+     * 
+     * @param component the updated component in the player's hand
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
 
     }
 
+    /**
+     * Handles current adventure card update events from the game model.
+     * This implementation provides no functionality as adventure card updates are not relevant for cargo operations.
+     * 
+     * @param currentCard the updated current adventure card
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
     }
 
+    /**
+     * Handles board update events from the game model.
+     * This implementation provides no functionality as board updates are not relevant for cargo operations.
+     * 
+     * @param board the updated board view object
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
     }
 
+    /**
+     * Handles the unload cargo button click event.
+     * This FXML event handler enables the cell click handler for cargo unloading operations,
+     * allowing the user to select a ship cell to unload cargo from.
+     */
     @FXML
     public void handleUnload() {
         shipController.enableCellClickHandler(this::handleUnloadCargo);
     }
 
+    /**
+     * Performs comprehensive cleanup operations for the cargo menu controller.
+     * This method handles the following cleanup tasks:
+     * - Removes the controller as a listener from the game model
+     * - Cleans up and nullifies the ship controller
+     * - Clears ship pane contents and unbinds properties
+     * - Removes event handlers from cargo container rectangles
+     * - Resets all UI components to their default states
+     * - Nullifies all object references and resets primitive values
+     * - Provides error handling for cleanup operations
+     */
     public void cleanup() {
-
         ClientGameModel gameModel = ClientGameModel.getInstance();
         if (gameModel != null) {
             gameModel.removeListener(this);
