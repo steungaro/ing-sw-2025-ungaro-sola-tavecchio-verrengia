@@ -99,9 +99,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
         Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
         targetCell.setImage(componentImage);
-        if (!(comp.isCargoHold()  && shouldLoadComponentStats)) {
-            targetCell.setRotate(comp.rotComp * 90);
-        }
+        targetCell.setRotate(comp.rotComp * 90);
 
         if(!loadCompInfo(targetCell, layeredPane, row, col, componentId, comp, parent, cellId))
             return false;
