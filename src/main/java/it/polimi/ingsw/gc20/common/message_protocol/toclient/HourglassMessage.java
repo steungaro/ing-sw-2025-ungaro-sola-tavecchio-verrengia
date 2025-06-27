@@ -18,6 +18,8 @@ public record HourglassMessage(
 
     @Override
     public void handleMessage() {
+        ClientGameModel.getInstance().setHourglassMessage(numberOfRotations, timestamp);
+
         ClientGameModel.getInstance().getBoard().timeStampOfLastHourglassRotation = timestamp;
         ClientGameModel.getInstance().getBoard().numberOfRotations = numberOfRotations;
     }
