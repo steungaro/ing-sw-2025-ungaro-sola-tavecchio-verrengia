@@ -300,9 +300,12 @@ public class MenuController implements GameModelListener {
             if (playerNameLabel != null) {
                 String text = players[i].username;
 
-
                 if (players[i].username.equals(gameModel.getUsername())){
                     text += " (You)";
+                }
+
+                if (players[i].username.equals(gameModel.getUsername())){
+                    text += " $" + players[i].credits;
                 }
 
                 if(!players[i].inGame){
