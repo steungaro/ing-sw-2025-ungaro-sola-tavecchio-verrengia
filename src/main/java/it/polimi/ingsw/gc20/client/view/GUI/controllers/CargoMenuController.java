@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 public class CargoMenuController implements MenuController.ContextDataReceiver, GameModelListener, BindCleanUp {
+    @FXML public Button unloadButton;
     @FXML private Label messageLabel;
     @FXML private Label errorLabel;
     @FXML private Pane shipPane;
@@ -58,9 +59,9 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
 
         if(losing==1){
             cargoBoxPane.setVisible(false);
-            for (int i = 0; i < cargoToLose; i++) {
-                shipController.enableCellClickHandler(this::handleUnloadCargo);
-            }
+            unloadButton.setVisible(false);
+            shipController.enableCellClickHandler(this::handleUnloadCargo);
+
         } else if(losing==2){
             createCargoBoxes();
         } else {
@@ -87,6 +88,7 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
 
             box.setOnMouseClicked(_ -> {
                 currentCargo = cargo;
+                unloadButton.setVisible(true);
                 shipController.enableCellClickHandler(this::handleLoadCargo);
 
                 cargoContainer.getChildren().forEach(node -> {
@@ -174,9 +176,11 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
 
         try {
             ClientGameModel.getInstance().getClient().unloadCargo(username, color, coords);
+            unloadButton.setVisible(false);
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
+        shipController.enableCellClickHandler(this::handleUnloadCargo);
     }
 
     public static CargoColor showColorSelectionDialog() {
@@ -310,6 +314,11 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
+    }
+
+    @FXML
+    public void handleUnload() {
+        shipController.enableCellClickHandler(this::handleUnloadCargo);
     }
 
     public void cleanup() {
