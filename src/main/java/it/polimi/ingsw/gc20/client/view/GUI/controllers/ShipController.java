@@ -394,42 +394,23 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     }
 
     public void highlightCells(Map<Pair<Integer, Integer>, Color> highlights) {
-        for (Rectangle rect : cellClickAreas.values()) {
-            rect.setFill(Color.TRANSPARENT);
-            rect.setStroke(Color.TRANSPARENT);
-            rect.setStrokeWidth(0);
-        }
 
-        Map<Pair<Integer, Integer>, Integer> coordinateCount = new HashMap<>();
-        for (Pair<Integer, Integer> coords : highlights.keySet()) {
-            coordinateCount.put(coords, coordinateCount.getOrDefault(coords, 0) + 1);
-        }
-
+        // Apply new highlights
         for (Map.Entry<Pair<Integer, Integer>, Color> entry : highlights.entrySet()) {
             Pair<Integer, Integer> coords = entry.getKey();
-            int count = coordinateCount.get(coords);
+            Color color = entry.getValue();
 
             String cellId = coords.getValue0() + "_" + coords.getValue1();
             Rectangle clickArea = cellClickAreas.get(cellId);
 
             if (clickArea != null) {
-            Color strokeColor = getStrokeColorByCount(count);
-            
-            clickArea.setStroke(strokeColor);
+                // Apply a transparent version of the color
                 clickArea.setStrokeWidth(4);
-            } else {
+            }
+            else{
                 System.err.println("No click area found for cell: " + cellId);
             }
         }
-    }
-
-    private Color getStrokeColorByCount(int count) {
-        return switch (count) {
-            case 1 -> Color.YELLOW;
-            case 2 -> Color.ORANGE;
-            case 3 -> Color.RED;
-            default -> Color.PURPLE;
-        };
     }
 
     public interface CellClickHandler {
