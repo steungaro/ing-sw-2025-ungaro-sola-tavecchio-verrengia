@@ -26,7 +26,7 @@ public class PausedState extends State {
     private void shutdown() {
         if (scheduler != null && !scheduler.isShutdown()) {
             if (future != null && !future.isDone()) {
-                future.cancel(false);
+                future.cancel(true);
             }
             scheduler.shutdown();
         }
