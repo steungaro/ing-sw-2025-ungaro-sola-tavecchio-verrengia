@@ -200,15 +200,18 @@ public class MenuController implements GameModelListener {
         if (!currentFrame.getChildren().isEmpty()) {
             Node currentContent = currentFrame.getChildren().getFirst();
             Object currentController = currentContent.getUserData();
-            
-            if (currentController instanceof GameModelListener) {
+
+            try{
                 ClientGameModel.getInstance().removeListener((GameModelListener) currentController);
+            } catch (ClassCastException e) {
+                // ignore, not a GameModelListener
             }
 
-            if (currentController instanceof BindCleanUp) {
+            try{
                 ((BindCleanUp) currentController).cleanup();
+            } catch (ClassCastException e) {
+                // ignore, not a BindCleanUp
             }
-
         }
     }
 
@@ -338,8 +341,10 @@ public class MenuController implements GameModelListener {
                     // ignore
                 }
 
-                if (controller instanceof GameModelListener) {
+                try{
                     ClientGameModel.getInstance().addListener((GameModelListener) controller);
+                } catch (ClassCastException e) {
+                    // ignore, not a GameModelListener
                 }
             }
 
@@ -403,8 +408,11 @@ public class MenuController implements GameModelListener {
             if (!container.getChildren().isEmpty()) {
                 Node oldContent = container.getChildren().getFirst();
                 Object oldController = oldContent.getUserData();
-                if (oldController instanceof BindCleanUp) {
+
+                try{
                     ((BindCleanUp) oldController).cleanup();
+                } catch (ClassCastException e) {
+                    // ignore, not a BindCleanUp
                 }
             }
 
@@ -413,9 +421,12 @@ public class MenuController implements GameModelListener {
             Node content = loader.load();
             Object controller = loader.getController();
 
-            if (content instanceof StackPane contentPane) {
+
+            try{
+                StackPane contentPane = (StackPane) content;
                 configureGenericSizing(container, contentPane, context, contentType);
-            } else if (content instanceof Pane contentPane) {
+            } catch (ClassCastException e) {
+                Pane contentPane = (Pane) content;
                 StackPane wrapper = new StackPane(contentPane);
                 configureGenericSizing(container, wrapper, context, contentType);
                 content = wrapper;
