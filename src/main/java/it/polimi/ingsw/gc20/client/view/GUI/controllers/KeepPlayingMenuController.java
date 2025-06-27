@@ -17,12 +17,9 @@ public class KeepPlayingMenuController {
     @FXML
     private void handleGiveUp() {
         try {
-            ClientGameModel.getInstance().setBusy();
             ClientGameModel.getInstance().getClient().giveUp(ClientGameModel.getInstance().getUsername());
-            ClientGameModel.getInstance().setFree();
         } catch (RemoteException e) {
             ClientGameModel.getInstance().setErrorMessage("Connection error: " + e.getMessage());
-            ClientGameModel.getInstance().setFree();
         }
     }
 }
