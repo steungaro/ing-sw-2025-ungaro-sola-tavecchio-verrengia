@@ -933,7 +933,7 @@ public class GameModel {
         c = components.get(81);
         s.addComponent( c, 4, 2);
 
-        c = components.get(70);
+        c = components.get(67);
         s.addComponent( c, 4, 4);
 
         c = components.get(94);
