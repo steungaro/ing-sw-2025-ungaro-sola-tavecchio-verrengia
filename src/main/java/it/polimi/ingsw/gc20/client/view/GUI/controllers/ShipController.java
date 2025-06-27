@@ -395,7 +395,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
     public void highlightCells(Map<Pair<Integer, Integer>, Color> highlights) {
 
-        // Apply new highlights
         for (Map.Entry<Pair<Integer, Integer>, Color> entry : highlights.entrySet()) {
             Pair<Integer, Integer> coords = entry.getKey();
             Color color = entry.getValue();
@@ -404,7 +403,6 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
             Rectangle clickArea = cellClickAreas.get(cellId);
 
             if (clickArea != null) {
-                // Apply a transparent version of the color
                 clickArea.setStrokeWidth(4);
             }
             else{
