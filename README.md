@@ -27,7 +27,7 @@ java -jar server.jar
 
 ```
 
-Note: a `server-no-javafx.jar` is also available for environments without JavaFX support. This does not affect the server's functionality.
+Note: a `server-no-fx.jar` is also available for environments without JavaFX support. This does not affect the server's functionality.
 
 ### Client Launch
 Each client instance represents a player and can participate in only one game at a time. The client interface can be either textual (TUI) or graphical (GUI), and it can communicate with the server via Socket or RMI.
@@ -101,3 +101,6 @@ Run the TUI or GUI JAR file and provide the following address when prompt:
 You can find a UML Sequence Diagram for RMI and Socket connection in some peculiar parts of the game (login, lobby creation, place component). 
 UML class diagrams are provided for client and server, please refer to the auto-generated version for network classes and for more details.
 A network architecture documentarion file can also be found for specific description of network classes and design patterns.
+
+### Javadoc
+Javadoc documentation is available for both client and server code. You can find it in the zip file in the deliverables section of this project.
