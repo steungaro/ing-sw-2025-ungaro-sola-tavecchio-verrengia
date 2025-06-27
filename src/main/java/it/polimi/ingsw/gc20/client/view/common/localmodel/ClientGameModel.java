@@ -558,6 +558,14 @@ public abstract class ClientGameModel extends UnicastRemoteObject implements Vie
         }
     }
 
+    public void setHourglassMessage(int numberOfRotations, long timestamp) {
+        board.timeStampOfLastHourglassRotation = timestamp;
+        board.numberOfRotations = numberOfRotations;
+        for (GameModelListener listener : listeners) {
+            listener.onBoardUpdated(this.board);
+        }
+    }
+
     /**
      * Abstract method for logging in the player.
      * This method should be implemented by subclasses to handle the login process.

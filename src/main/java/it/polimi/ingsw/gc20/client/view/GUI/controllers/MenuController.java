@@ -9,6 +9,8 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAdv
 import it.polimi.ingsw.gc20.client.view.common.localmodel.board.ViewBoard;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
+import javafx.animation.Timeline;
+import javafx.animation.KeyFrame;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,9 +23,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class MenuController implements GameModelListener {
@@ -50,6 +57,9 @@ public class MenuController implements GameModelListener {
 
     private boolean canGoBack = false;
 
+    private Timeline hourglassTimeline;
+    private LocalDateTime hourglassStartTime;
+    private static final int HOURGLASS_DURATION = 90;
 
     @FXML public VBox drawnCard;
     @FXML private StackPane currentFrame;
@@ -67,6 +77,8 @@ public class MenuController implements GameModelListener {
     @FXML public Button acceptButton;
     @FXML public Button discardButton;
     @FXML public Button turnHourGlassButton;
+    @FXML private Label hourglassTimer;
+    @FXML private VBox hourglassContainer;
 
     private ClientGameModel gameModel;
     private ViewPlayer[] players;
@@ -88,11 +100,145 @@ public class MenuController implements GameModelListener {
         printCurrentCard(gameModel.getCurrentCard());
         initializeGameBoard();
         setVisibility();
+        initializeHourglassTimer();
 
         ClientGameModel.getInstance().addListener(this);
         currentInstance = this;
     }
 
+    private void initializeHourglassTimer() {
+
+        hourglassTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1.0), e -> updateHourglassTimer())
+        );
+        hourglassTimeline.setCycleCount(Timeline.INDEFINITE);
+
+        ViewBoard currentBoard = gameModel.getBoard();
+
+        if (currentBoard != null && currentBoard.timeStampOfLastHourglassRotation > 0) {
+
+            long currentTimeMillis = System.currentTimeMillis();
+            long elapsedMillis = currentTimeMillis - currentBoard.timeStampOfLastHourglassRotation;
+            long elapsedSeconds = elapsedMillis / 1000;
+            long remainingSeconds = HOURGLASS_DURATION - elapsedSeconds;
+
+            if (remainingSeconds > 0) {
+                this.hourglassStartTime = LocalDateTime.ofInstant(
+                        Instant.ofEpochMilli(currentBoard.timeStampOfLastHourglassRotation),
+                        ZoneId.systemDefault()
+                );
+
+                hourglassTimeline.play();
+                hourglassContainer.setVisible(!gameModel.getBoard().isLearner);
+            } else {
+                updateHourglassDisplay(0);
+                hourglassContainer.setVisible(false);
+            }
+        } else {
+            updateHourglassDisplay(0);
+            hourglassContainer.setVisible(false);
+        }
+    }
+
+
+    public void startHourglassCountdown(LocalDateTime timeStampOfLastHourglassRotation) {
+
+        Platform.runLater(() -> {
+            this.hourglassStartTime = timeStampOfLastHourglassRotation;
+
+            if (hourglassTimeline != null) {
+                hourglassTimeline.stop();
+                System.out.println("DEBUG - Stopped previous timeline");
+            }
+
+            long startTimeMillis = hourglassStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            long currentTimeMillis = System.currentTimeMillis();
+            long elapsedMillis = currentTimeMillis - startTimeMillis;
+            long elapsedSeconds = elapsedMillis / 1000;
+            long remainingSeconds = HOURGLASS_DURATION - elapsedSeconds;
+
+            System.out.println("DEBUG - At start - Elapsed: " + elapsedSeconds + ", Remaining: " + remainingSeconds);
+
+            if (remainingSeconds > 0) {
+                hourglassTimeline.play();
+                hourglassContainer.setVisible(!gameModel.getBoard().isLearner);
+            } else {
+                updateHourglassDisplay(0);
+                hourglassContainer.setVisible(false);
+            }
+        });
+    }
+
+    public void stopHourglassCountdown() {
+
+        Platform.runLater(() -> {
+            if (hourglassTimeline != null) {
+                hourglassTimeline.stop();
+            }
+            hourglassStartTime = null;
+            updateHourglassDisplay(0);
+            hourglassContainer.setVisible(false);
+        });
+    }
+
+    private void updateHourglassTimer() {
+        if (hourglassStartTime == null) {
+            System.out.println("DEBUG - No start time, stopping countdown");
+            stopHourglassCountdown();
+            return;
+        }
+
+        long startTimeMillis = hourglassStartTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        long currentTimeMillis = System.currentTimeMillis();
+        long elapsedMillis = currentTimeMillis - startTimeMillis;
+        long elapsedSeconds = elapsedMillis / 1000;
+        long remainingSeconds = HOURGLASS_DURATION - elapsedSeconds;
+
+        if (remainingSeconds <= 0) {
+            updateHourglassDisplay(0);
+            hourglassTimer.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 16px;");
+            if (hourglassTimeline != null) {
+                hourglassTimeline.stop();
+            }
+        } else {
+            System.out.println("" + remainingSeconds);
+            updateHourglassDisplay(remainingSeconds);
+
+            if (remainingSeconds <= 10) {
+                hourglassTimer.setStyle("-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 16px;");
+            } else if (remainingSeconds <= 30) {
+                hourglassTimer.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: bold; -fx-font-size: 16px;");
+            } else {
+                hourglassTimer.setStyle("-fx-text-fill: #2ecc71; -fx-font-weight: bold; -fx-font-size: 16px;");
+            }
+        }
+    }
+
+    /**
+     * Aggiorna il display del timer (solo secondi)
+     */
+    private void updateHourglassDisplay(long seconds) {
+        Platform.runLater(() -> {
+            String timeText = String.format("%02d", seconds);
+            hourglassTimer.setText(timeText);
+        });
+    }
+
+    @Override
+    public void onBoardUpdated(ViewBoard board) {
+
+        loadPlayerNames();
+
+        if (board.timeStampOfLastHourglassRotation > 0) {
+            LocalDateTime hourglassTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(board.timeStampOfLastHourglassRotation),
+                    ZoneId.systemDefault()
+            );
+            startHourglassCountdown(hourglassTime);
+        } else {
+            stopHourglassCountdown();
+        }
+    }
     /**
      * Static method to get the current MenuController instance
      */
@@ -121,7 +267,7 @@ public class MenuController implements GameModelListener {
         boolean isCardDrawn = currentCard != null && currentCard.id != 0;
         drawnCard.setVisible(isCardDrawn);
         acceptButton.setVisible(false);
-        discardButton.setVisible(false) ;
+        discardButton.setVisible(false);
     }
 
     public void setAcceptableButtonVisibility(boolean visible) {
@@ -132,7 +278,6 @@ public class MenuController implements GameModelListener {
     private void updateBackButtonVisibility() {
         backButton.setVisible(canGoBack);
     }
-
 
     /**
      * Loads player names in the sidebar
@@ -655,11 +800,6 @@ public class MenuController implements GameModelListener {
         printCurrentCard(currentCard);
     }
 
-    @Override
-    public void onBoardUpdated(ViewBoard board) {
-        loadPlayerNames();
-    }
-
     private void printCurrentCard(ViewAdventureCard currentCard) {
         Platform.runLater(() -> {
             try {
@@ -738,6 +878,15 @@ public class MenuController implements GameModelListener {
                 serverMessages.setText("Error accepting card: " + e.getMessage());
                 serverMessages.getParent().getParent().setVisible(true);
             }
+        }
+    }
+
+    /**
+     * Cleanup method to stop timers when the controller is destroyed
+     */
+    public void cleanup() {
+        if (hourglassTimeline != null) {
+            hourglassTimeline.stop();
         }
     }
 }
