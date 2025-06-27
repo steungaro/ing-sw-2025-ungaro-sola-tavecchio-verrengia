@@ -47,7 +47,8 @@ public class MenuController implements GameModelListener {
     private static final DisplayConfig SHIP_DIALOG = new DisplayConfig(1.25, 400, 300, 150, 100, 10, 0.92, 0.92);
     private static final DisplayConfig BOARD_MAIN_VIEW = new DisplayConfig(1.8, 1200, 800, 300, 200, 15, 0.98, 0.98);
     private static final DisplayConfig BOARD_DIALOG = new DisplayConfig(1.8, 600, 450, 200, 150, 12, 0.92, 0.92);
-    private ContentType currentContentType = null;
+
+    private boolean canGoBack = false;
 
 
     @FXML public VBox drawnCard;
@@ -128,8 +129,7 @@ public class MenuController implements GameModelListener {
     }
 
     private void updateBackButtonVisibility() {
-        boolean shouldShowBack = currentContentType == ContentType.SHIP;
-        backButton.setVisible(shouldShowBack);
+        backButton.setVisible(canGoBack);
     }
 
 
@@ -173,6 +173,8 @@ public class MenuController implements GameModelListener {
             if (shipContainer != null) {
                 loadFXMLInContainer(shipContainer, fxmlPath, DisplayContext.THUMBNAIL,
                         ContentType.SHIP, players[i]);
+                canGoBack = true;
+                updateBackButtonVisibility();
                 makeShipContainerClickable(shipContainer, players[i]);
             }
         }
@@ -188,7 +190,7 @@ public class MenuController implements GameModelListener {
         if (viewStack!= null) {
             currentFrame.getChildren().clear();
             currentFrame.getChildren().add(viewStack);
-            currentContentType = null;
+            canGoBack = false;
         }
         updateBackButtonVisibility();
     }
@@ -256,8 +258,6 @@ public class MenuController implements GameModelListener {
     }
 
     private void loadPlayerShipInCurrentFrame(ViewPlayer currentPlayer) {
-        if (viewStack == null)
-            saveCurrentStateToStack();
 
         currentFrame.getChildren().clear();
 
@@ -266,7 +266,7 @@ public class MenuController implements GameModelListener {
             loadFXMLInContainer(currentFrame, fxmlPath, DisplayContext.MAIN_VIEW,
                     ContentType.SHIP, currentPlayer);
 
-            currentContentType = ContentType.SHIP;
+            canGoBack = true;
             updateBackButtonVisibility();
         }
 
@@ -294,13 +294,6 @@ public class MenuController implements GameModelListener {
                 ContentType.BOARD, null);
     }
 
-    private void saveCurrentStateToStack() {
-        if (!currentFrame.getChildren().isEmpty()) {
-            viewStack = currentFrame.getChildren().getFirst();
-        }
-        updateBackButtonVisibility();
-    }
-
     /**
      * Static method with parameters support
      */
@@ -326,7 +319,9 @@ public class MenuController implements GameModelListener {
                 return;
             }
 
-            instance.closeCurrentControllerListeners();
+            if(!isTemporaryView) {
+                instance.closeCurrentControllerListeners();
+            }
 
             FXMLLoader loader = new FXMLLoader(fxmlResource);
             Parent content = loader.load();
@@ -370,10 +365,12 @@ public class MenuController implements GameModelListener {
             instance.currentFrame.getChildren().add(content);
 
             if (!isTemporaryView) {
-                instance.currentContentType = ContentType.SHIP;
-            } else {
+                instance.canGoBack = false;
                 instance.updateBackButtonVisibility();
-                instance.currentContentType = null;
+                instance.viewStack = instance.currentFrame.getChildren().getFirst();
+            } else {
+                instance.canGoBack = true;
+                instance.updateBackButtonVisibility();
             }
 
         } catch (IOException e) {
