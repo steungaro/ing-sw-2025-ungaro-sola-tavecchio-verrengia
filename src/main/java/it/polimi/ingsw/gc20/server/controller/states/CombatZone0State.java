@@ -426,7 +426,7 @@ public class CombatZone0State extends PlayingState {
     @Override
     public String createsEnginesMessage() {
         //write the message to notify the next player that he has to activate the engines and show him the declared engine power of the previous players
-        StringBuilder message = new StringBuilder("It's your turn, please select the engines to activate. The declared engine power of the other players is: ");
+        StringBuilder message = new StringBuilder("It's your turn, please select the engines to activate. The declared engine power of the other players is: \n");
         for (Map.Entry<String, Integer> entry : declaredEnginePower.entrySet()) {
             message.append(" - ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
         }
