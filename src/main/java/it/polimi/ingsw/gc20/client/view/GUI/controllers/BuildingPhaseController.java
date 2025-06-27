@@ -362,7 +362,7 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
      */
     @FXML
     private void peekDeck() {
-        TextInputDialog dialog = new TextInputDialog("0");
+        TextInputDialog dialog = new TextInputDialog("1");
         dialog.setTitle("Peek Deck");
         dialog.setHeaderText("Select a deck to peek");
         dialog.setContentText("Enter deck index (1, 2, 3):");
