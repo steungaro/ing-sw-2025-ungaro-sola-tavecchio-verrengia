@@ -29,6 +29,15 @@ public class CreateLobbyController {
     private Label errorLabel;
 
 
+    /**
+     * Initializes the create lobby controller and sets up the user interface components.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * It performs the following operations:
+     * - Populates the number of players combo box with options 2, 3, and 4 (default: 2)
+     * - Populates the level combo box with options "L" (Learner) and "2" (Advanced) (default: "L")
+     * - Hides the error label initially
+     * - Sets up the cancel button event handler
+     */
     @FXML
     public void initialize() {
         numPlayersComboBox.getItems().addAll(2, 3, 4);

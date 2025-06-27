@@ -25,10 +25,23 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
     @FXML
     private Label disconnectionLabel;
 
+    /**
+     * Initializes the leaderboard menu controller.
+     * This method is called automatically by JavaFX after loading the FXML file.
+     * Currently performs no specific initialization actions but is required for FXML compliance.
+     */
     @FXML
     public void initialize() {
     }
 
+    /**
+     * Sets and displays the scoreboard with player scores.
+     * This method clears the existing scoreboard container and populates it with player scores
+     * sorted in descending order (highest score first). Each score entry is displayed as a
+     * formatted label with the player name and their points.
+     * 
+     * @param playerScores a map containing player names as keys and their scores as values
+     */
     public void setScoreboard(Map<String, Integer> playerScores) {
         scoreboardContainer.getChildren().clear();
 
@@ -43,10 +56,28 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
                 });
     }
 
+    /**
+     * Initializes the leaderboard with player scores.
+     * This method serves as a convenient wrapper around setScoreboard() to initialize
+     * the leaderboard display with the provided player scores.
+     * 
+     * @param playerScores a map containing player names as keys and their scores as values
+     */
     public void initializeWithScores(Map<String, Integer> playerScores) {
         setScoreboard(playerScores);
     }
 
+    /**
+     * Sets the context data for the leaderboard, specifically the player scores.
+     * This method processes the context data map to extract the leaderboard information
+     * and initialize the scoreboard display. The context data must contain a "leaderBoard" key
+     * with a Map&lt;String, Integer&gt; value representing player names and scores.
+     * 
+     * @param contextData a map containing the context data, must include a "leaderBoard" key 
+     *                   with a Map&lt;String, Integer&gt; value
+     * @throws IllegalArgumentException if the context data does not contain the required "leaderBoard" key
+     *                                or if the leaderBoard value is not of the expected type
+     */
     @SuppressWarnings( "unchecked")
     @Override
     public void setContextData(Map<String, Object> contextData) {
@@ -63,6 +94,15 @@ public class LeaderBoardMenuController implements MenuController.ContextDataRece
         }
     }
 
+    /**
+     * Performs cleanup operations to free resources and reset the controller state.
+     * This method clears all UI components and resets their properties to prevent memory leaks
+     * and ensure proper cleanup when the leaderboard menu is no longer needed. It performs:
+     * - Clears and resets all labels in the scoreboard container
+     * - Resets all title and message labels
+     * - Clears the leaderboard data map
+     * - Sets all component references to null
+     */
     public void cleanup() {
 
         if (scoreboardContainer != null) {
