@@ -69,7 +69,7 @@ public abstract class BoardController implements GameModelListener, BindCleanUp 
 
         ViewPlayer[] playerPositions = newBoard.players;
         for(ViewPlayer player : playerPositions) {
-            if (player != null && player.position >= 0 && player.position < circles.size()) {
+            if (player != null && player.position >= 0 && player.position < circles.size() && player.inGame) {
                 setPlayerPosition(player.position, player.playerColor);
             }
         }

@@ -1,14 +1,10 @@
 package it.polimi.ingsw.gc20.client.view.common.localmodel.board;
 
-import it.polimi.ingsw.gc20.client.view.TUI.TUI;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ClientGameModel;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ViewPlayer;
-import it.polimi.ingsw.gc20.client.view.common.localmodel.adventureCards.ViewAbandonedShip;
 import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewComponent;
-import it.polimi.ingsw.gc20.server.model.player.PlayerColor;
 
 import java.io.Serializable;
-import java.rmi.RemoteException;
 import java.util.*;
 
 public class ViewBoard  implements Serializable {
@@ -51,7 +47,7 @@ public class ViewBoard  implements Serializable {
     private String learnerPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
-            if (player != null) {
+            if (player != null && player.inGame) {
                 positions.put(player.position, player);
             }
         }
@@ -112,7 +108,7 @@ public class ViewBoard  implements Serializable {
     private String normalPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
-            if (player != null) {
+            if (player != null && player.inGame) {
                 positions.put(player.position, player);
             }
         }
@@ -174,7 +170,7 @@ public class ViewBoard  implements Serializable {
     private String learnerAssemblingPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
-            if (player != null) {
+            if (player != null && player.inGame) {
                 positions.put(player.position, player);
             }
         }
@@ -234,7 +230,7 @@ public class ViewBoard  implements Serializable {
     private String normalAssemblingPrint() {
         Map<Integer, ViewPlayer> positions = new HashMap<>();
         for (ViewPlayer player : players) {
-            if (player != null) {
+            if (player != null && player.inGame) {
                 positions.put(player.position, player);
             }
         }
@@ -297,7 +293,7 @@ public class ViewBoard  implements Serializable {
         sb.append(EMPTY_ROW).append("\n");
         for (ViewPlayer player : players) {
             if (player != null) {
-                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append(" ".repeat(120-2-13 - player.username.length())).append("│").append("\n");
+                sb.append("│         ").append(player.playerColor.TUIPrint()).append(": ").append(player.username).append(player.inGame ? "" : " (early landed)").append(" ".repeat(120-2-13 - (player.inGame ? 0 : 15) - player.username.length())).append("│").append("\n");
             }
         }
 

@@ -287,7 +287,7 @@ public class GameController implements GameControllerInterface {
 
     @Override
     public void giveUp(String username) {
-        if(!Objects.equals(state.toString(), "PreDrawState")){
+        if(!Objects.equals(state.getClass().getSimpleName(), "PreDrawState")){
             getMessageManager().sendToPlayer(username, new ErrorMessage("Can only give up when the turn has ended"));
         }
         getPlayerByID(username).setGameStatus(false);
@@ -297,6 +297,7 @@ public class GameController implements GameControllerInterface {
                 false,
                 getPlayerByID(username).getColor(),
                 ((getPlayerByID(username).getPosition() % getModel().getGame().getBoard().getSpaces() + getModel().getGame().getBoard().getSpaces()) % getModel().getGame().getBoard().getSpaces())));
+        getMessageManager().sendToPlayer(username, new StandbyMessage("You have given up, from now on, you will spectate the game."));
     }
 
     /**
@@ -400,14 +401,16 @@ public class GameController implements GameControllerInterface {
      * This method is called when a pending player is reconnected to the game in the pre-draw state.
      */
     public void preDrawConnect(){
+        List<String> playersToRemove = new ArrayList<>();
         for (String username : pendingPlayers){
             connectedPlayers.addLast(username);
             for (Player p:  getPlayers()){
                 getMessageManager().sendToPlayer(username, Ship.messageFromShip(p.getUsername(), p.getShip(), "init all ship"));
             }
             getMessageManager().sendToPlayer(username, BoardUpdateMessage.fromBoard(getModel().getGame().getBoard(), getModel().getGame().getPlayers(), false));
-            pendingPlayers.remove(username);
+            playersToRemove.add(username);
         }
+        pendingPlayers.removeAll(playersToRemove);
     }
 
     /**
