@@ -60,9 +60,8 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         if(losing==1){
             cargoBoxPane.setVisible(false);
             unloadButton.setVisible(false);
-            for (int i = 0; i < cargoToLose; i++) {
-                shipController.enableCellClickHandler(this::handleUnloadCargo);
-            }
+            shipController.enableCellClickHandler(this::handleUnloadCargo);
+
         } else if(losing==2){
             createCargoBoxes();
         } else {
@@ -181,6 +180,7 @@ public class CargoMenuController implements MenuController.ContextDataReceiver, 
         } catch (RemoteException e) {
             showError("Connection error: " + e.getMessage());
         }
+        shipController.enableCellClickHandler(this::handleUnloadCargo);
     }
 
     public static CargoColor showColorSelectionDialog() {
