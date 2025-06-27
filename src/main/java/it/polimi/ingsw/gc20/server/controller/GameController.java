@@ -313,13 +313,13 @@ public class GameController implements GameControllerInterface {
                     disconnectedPlayers.add(username);
                     return;
                 }
-                connectedPlayers.remove(username);
                 disconnectedPlayers.add(username);
                 if (state.getCurrentPlayer() != null) {
                     if(state.getCurrentPlayer().equals(username)) {
                         state.currentQuit(getPlayerByID(username));
                     }
                 }
+                connectedPlayers.remove(username);
             } else if(pendingPlayers.contains(username)) {
                 pendingPlayers.remove(username);
                 disconnectedPlayers.add(username);

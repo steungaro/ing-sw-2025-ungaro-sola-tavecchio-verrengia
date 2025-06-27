@@ -35,14 +35,16 @@ public class MessageManager {
      */
     public void notifyPhaseChange(StatePhase statePhase, State state){
         for (String username : gameController.getInGameConnectedPlayers()) {
-            try {
-                if (username.equals(state.getCurrentPlayer())) {
-                    NetworkService.getInstance().sendToClient(username, statePhase.createMessage(state));
-                } else {
-                    NetworkService.getInstance().sendToClient(username, new StandbyMessage(state.getStandbyMessage()));
+            if (!gameController.isPlayerDisconnected(username)) {
+                try {
+                    if (username.equals(state.getCurrentPlayer())) {
+                        NetworkService.getInstance().sendToClient(username, statePhase.createMessage(state));
+                    } else {
+                        NetworkService.getInstance().sendToClient(username, new StandbyMessage(state.getStandbyMessage()));
+                    }
+                } catch (InvalidStateException _){
+                    // This should never happen, as the state is always valid when the phase changes
                 }
-            } catch (InvalidStateException _){
-                // This should never happen, as the state is always valid when the phase changes
             }
         }
     }
