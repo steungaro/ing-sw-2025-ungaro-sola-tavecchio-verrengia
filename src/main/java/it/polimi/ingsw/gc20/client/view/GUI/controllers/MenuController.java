@@ -34,15 +34,32 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+/**
+ * Main controller for the game interface.
+ * Manages the main game view, including player ships, game board, adventure cards,
+ * and handles navigation between different game views.
+ * Implements GameModelListener to respond to game state changes.
+ */
 public class MenuController implements GameModelListener {
 
+    /**
+     * Enum defining the context in which content is displayed, affecting layout and sizing.
+     */
     public enum DisplayContext {
         THUMBNAIL,
         MAIN_VIEW,
         DIALOG
     }
 
+    /**
+     * Interface for controllers that need to receive contextual data when loaded.
+     */
     public interface ContextDataReceiver {
+        /**
+         * Sets contextual data for the controller.
+         * 
+         * @param contextData Map containing the data to be passed to the controller
+         */
         void setContextData(Map<String, Object> contextData);
     }
 
@@ -87,10 +104,18 @@ public class MenuController implements GameModelListener {
     private Node viewStack = null;
     private DisplayContext currentDisplayContext = DisplayContext.MAIN_VIEW;
 
+    /**
+     * Enum defining the types of content that can be displayed in the game view.
+     */
     public enum ContentType {
         SHIP, BOARD
     }
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets up the game view, including player ships, names, current card, and game board.
+     * Registers this controller as a listener for game model updates.
+     */
     @FXML
     public void initialize() {
         gameModel = ClientGameModel.getInstance();
@@ -141,6 +166,12 @@ public class MenuController implements GameModelListener {
         }
     }
 
+    /**
+     * Starts or restarts the hourglass countdown timer with the given timestamp.
+     * Updates the UI to display the remaining time.
+     *
+     * @param timeStampOfLastHourglassRotation The timestamp when the hourglass was last rotated
+     */
 
     public void startHourglassCountdown(LocalDateTime timeStampOfLastHourglassRotation) {
 
@@ -168,6 +199,9 @@ public class MenuController implements GameModelListener {
         });
     }
 
+    /**
+     * Stops the hourglass countdown timer and hides the hourglass display.
+     */
     public void stopHourglassCountdown() {
 
         Platform.runLater(() -> {
@@ -222,6 +256,12 @@ public class MenuController implements GameModelListener {
         });
     }
 
+    /**
+     * Handles board update events from the game model.
+     * Updates player names and manages the hourglass timer based on the board state.
+     *
+     * @param board The updated board view model
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
@@ -237,8 +277,12 @@ public class MenuController implements GameModelListener {
             stopHourglassCountdown();
         }
     }
+    
     /**
-     * Static method to get the current MenuController instance
+     * Gets the current instance of the MenuController.
+     * Useful for accessing the controller from static contexts.
+     *
+     * @return The current MenuController instance
      */
     public static MenuController getCurrentInstance() {
         return currentInstance;
@@ -268,6 +312,11 @@ public class MenuController implements GameModelListener {
         discardButton.setVisible(false);
     }
 
+    /**
+     * Sets the visibility of the accept and discard buttons.
+     *
+     * @param visible True to show the buttons, false to hide them
+     */
     public void setAcceptableButtonVisibility(boolean visible) {
         acceptButton.setVisible(visible);
         discardButton.setVisible(visible);
@@ -352,7 +401,8 @@ public class MenuController implements GameModelListener {
     }
 
     /**
-     * Returns to the previous view in the stack
+     * Returns to the previous view in the stack.
+     * Used for navigation within the game interface.
      */
     @FXML
     private void returnToPreviousView(){
@@ -366,6 +416,10 @@ public class MenuController implements GameModelListener {
         updateBackButtonVisibility();
     }
 
+    /**
+     * Handles the turn hourglass action triggered by the user.
+     * Sends a request to the server to turn the hourglass.
+     */
     @FXML
     public void tunrHourGlass(){
         if (gameModel.getClient() != null) {
@@ -400,6 +454,10 @@ public class MenuController implements GameModelListener {
         }
     }
 
+    /**
+     * Handles the accept card action triggered by the user.
+     * Sends a request to the server to accept the current adventure card.
+     */
     @FXML
     public void handleAcceptCard(){
         if (gameModel.getClient() != null) {
@@ -413,6 +471,10 @@ public class MenuController implements GameModelListener {
         }
     }
 
+    /**
+     * Handles the discard card action triggered by the user.
+     * Sends a request to the server to discard the current adventure card.
+     */
     @FXML
     public void handleDiscardCard() {
         if (ClientGameModel.getInstance().getClient() != null) {
@@ -478,7 +540,14 @@ public class MenuController implements GameModelListener {
     }
 
     /**
-     * Static method with parameters support
+     * Loads content in the current frame with the specified parameters.
+     * Used to display various menus and views in the main game area.
+     *
+     * @param contentFileName The name of the FXML file to load (without extension)
+     * @param guiView The GUIView instance for error reporting
+     * @param contextData Data to pass to the loaded controller
+     * @param isTemporaryView Whether this view should be considered temporary (affects navigation)
+     * @param acceptable Whether the accept/discard buttons should be visible
      */
     public static void loadContentInCurrentFrame(String contentFileName, GUIView guiView, Map<String, Object> contextData, boolean isTemporaryView, boolean acceptable) {
         MenuController instance = getCurrentInstance();
@@ -799,26 +868,56 @@ public class MenuController implements GameModelListener {
         };
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * Reloads player ships when an update is received.
+     *
+     * @param ship The updated ship view model
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadPlayerShips();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param lobby The updated lobby view model
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
         // ignore
     }
 
+    /**
+     * Handles error message events from the game model.
+     * This implementation is empty as errors are handled differently in this controller.
+     *
+     * @param message The error message received
+     */
     @Override
     public void onErrorMessageReceived(String message) {
         // ignore
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param component The updated component view model
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         // ignore
     }
 
+    /**
+     * Handles current card update events from the game model.
+     * Updates the display to show the current adventure card.
+     *
+     * @param currentCard The updated adventure card view model
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         printCurrentCard(currentCard);
@@ -880,6 +979,10 @@ public class MenuController implements GameModelListener {
 
     }
 
+    /**
+     * Handles the quit game action triggered by the user.
+     * Sends a request to the server to give up and then exits the application.
+     */
     @FXML
     public void quit(){
         if (gameModel.getClient() != null) {
@@ -893,6 +996,10 @@ public class MenuController implements GameModelListener {
         Platform.exit();
     }
 
+    /**
+     * Handles the end turn action triggered by the user.
+     * Sends a request to the server to end the current move.
+     */
     @FXML
     public void endTurn(){
         if (gameModel.getClient() != null) {
@@ -906,7 +1013,9 @@ public class MenuController implements GameModelListener {
     }
 
     /**
-     * Cleanup method to stop timers when the controller is destroyed
+     * Cleans up resources used by this controller.
+     * Stops the hourglass timer to prevent memory leaks.
+     * Should be called when the view is no longer needed.
      */
     public void cleanup() {
         if (hourglassTimeline != null) {

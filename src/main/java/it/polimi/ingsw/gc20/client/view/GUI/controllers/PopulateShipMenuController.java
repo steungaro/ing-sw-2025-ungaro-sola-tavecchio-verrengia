@@ -24,6 +24,11 @@ import org.javatuples.Pair;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+/**
+ * Controller class for the ship population menu interface.
+ * Handles user interactions for adding aliens to cabins and manages the ship view.
+ * Implements GameModelListener to respond to game state changes and BindCleanUp for resource management.
+ */
 public class PopulateShipMenuController implements GameModelListener, BindCleanUp {
     @FXML
     private Pane shipPane;
@@ -34,6 +39,10 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
     private String username;
     private ViewShip ship;
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Retrieves the current username and ship from the client game model and loads the ship view.
+     */
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
         ship = ClientGameModel.getInstance().getShip(username);
@@ -133,6 +142,11 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
         });
     }
 
+    /**
+     * Handles the finish population action triggered by the user.
+     * Sends a request to the server to end the current move after the ship has been populated with aliens.
+     * Sets the game model to busy during the operation and free afterwards.
+     */
     @FXML
     private void handleFinishPopulation() {
         try {
@@ -150,36 +164,77 @@ public class PopulateShipMenuController implements GameModelListener, BindCleanU
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * Reloads the ship view when an update is received.
+     *
+     * @param ship The updated ship view model
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadShipView();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param lobby The updated lobby view model
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
 
     }
 
+    /**
+     * Handles error message events from the game model.
+     * This implementation is empty as errors are handled differently in this controller.
+     *
+     * @param message The error message received
+     */
     @Override
     public void onErrorMessageReceived(String message) {
 
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param component The updated component view model
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
 
     }
 
+    /**
+     * Handles current card update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param currentCard The updated adventure card view model
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
 
     }
 
+    /**
+     * Handles board update events from the game model.
+     * This implementation is empty as it's not relevant for this controller.
+     *
+     * @param board The updated board view model
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
     }
 
+    /**
+     * Cleans up resources used by this controller.
+     * Removes listeners, unbinds properties, and clears references to avoid memory leaks.
+     * Should be called when the view is no longer needed.
+     */
     public void cleanup() {
 
         ClientGameModel gameModel = ClientGameModel.getInstance();

@@ -9,6 +9,11 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
+/**
+ * Controller class for the network configuration interface.
+ * Handles the setup of connection parameters (IP address, port, and connection type)
+ * and manages the connection attempt to the game server.
+ */
 public class NetworkController {
 
     @FXML
@@ -31,6 +36,11 @@ public class NetworkController {
 
     private GUIView guiView;
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets up toggle groups for connection type selection, configures default values,
+     * and assigns action handlers to UI components.
+     */
     @FXML
     public void initialize() {
         guiView = (GUIView) ClientGameModel.getInstance();

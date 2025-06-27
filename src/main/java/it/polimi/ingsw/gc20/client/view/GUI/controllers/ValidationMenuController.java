@@ -20,6 +20,11 @@ import org.javatuples.Pair;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+/**
+ * Controller class for the ship validation menu.
+ * Handles the ship validation process and displays validation status to the user.
+ * Implements GameModelListener to respond to game state changes.
+ */
 public class ValidationMenuController implements GameModelListener {
 
     @FXML
@@ -34,6 +39,11 @@ public class ValidationMenuController implements GameModelListener {
     private String username;
     private ViewShip ship;
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Retrieves the current user's information and ship, then updates the validation status
+     * and loads the ship view.
+     */
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
 
@@ -110,6 +120,13 @@ public class ValidationMenuController implements GameModelListener {
         }
     }
 
+    /**
+     * Processes the selection of a component to remove from the ship.
+     * Sends a request to the server to remove the component at the specified coordinates.
+     *
+     * @param row The row coordinate of the component to remove
+     * @param col The column coordinate of the component to remove
+     */
     @FXML
     private void selectComponentToRemove(int row, int col) {
         try {
@@ -128,37 +145,77 @@ public class ValidationMenuController implements GameModelListener {
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * Reloads the ship view when the ship is updated.
+     *
+     * @param ship The updated ship view model
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         loadShipView();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * Currently not implemented.
+     *
+     * @param lobby The updated lobby view model
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
         //
     }
 
+    /**
+     * Handles error message events from the game model.
+     * Currently not implemented.
+     *
+     * @param message The error message received
+     */
     @Override
     public void onErrorMessageReceived(String message) {
         //
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * Currently not implemented.
+     *
+     * @param component The updated component view model
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         //
     }
 
+    /**
+     * Handles current card update events from the game model.
+     * Currently not implemented.
+     *
+     * @param currentCard The updated adventure card view model
+     */
     @Override
     public void onCurrentCardUpdated(ViewAdventureCard currentCard) {
         //
     }
 
+    /**
+     * Handles board update events from the game model.
+     * Currently not implemented.
+     *
+     * @param board The updated board view model
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
         //
     }
 
-
+    /**
+     * Cleans up resources used by this controller.
+     * Removes listeners, unbinds properties, and clears references to avoid memory leaks.
+     * Should be called when the view is no longer needed.
+     */
     public void cleanup() {
 
         ClientGameModel gameModel = ClientGameModel.getInstance();

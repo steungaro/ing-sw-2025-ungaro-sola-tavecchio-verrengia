@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller class for the planet selection menu interface.
+ * Handles the display of available planets and user interactions for landing on planets
+ * or continuing the journey. Implements ContextDataReceiver to receive planet data
+ * and BindCleanUp for resource management.
+ */
 public class PlanetMenuController implements MenuController.ContextDataReceiver, BindCleanUp {
     @FXML
     private HBox planetsContainer;
@@ -30,10 +36,20 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
     private Planet selectedPlanet;
     private VBox selectedPlanetBox;
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Retrieves the current username from the client game model.
+     */
     public void initialize() {
         username = ClientGameModel.getInstance().getUsername();
     }
 
+    /**
+     * Initializes the controller with a list of planets to display.
+     * Sets up the visual representation of each planet in the interface.
+     *
+     * @param planets The list of planets to display
+     */
     public void initializeWithPlanets(List<Planet> planets) {
         this.planets = planets;
         setupPlanetsDisplay();
@@ -120,6 +136,11 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         return square;
     }
 
+    /**
+     * Handles the land on planet action triggered by the user.
+     * Sends a request to the server to land on the selected planet.
+     * Displays an error if no planet is selected or if the connection fails.
+     */
     @FXML
     private void handleLandOnPlanet() {
         if (selectedPlanet == null) {
@@ -136,6 +157,11 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         }
     }
 
+    /**
+     * Handles the continue journey action triggered by the user.
+     * Sends a request to the server to end the current move without landing on a planet.
+     * Displays an error if the connection fails.
+     */
     @FXML
     private void handleContinueJourney() {
         try {
@@ -151,6 +177,12 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         errorLabel.setVisible(true);
     }
 
+    /**
+     * Sets contextual data received from a parent controller.
+     * Extracts a list of planets from the context data and initializes the controller with it.
+     * 
+     * @param contextData A map containing contextual data, must include a "planets" key with a List of Planet objects
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void setContextData(Map<String, Object> contextData) {
@@ -167,6 +199,11 @@ public class PlanetMenuController implements MenuController.ContextDataReceiver,
         }
     }
 
+    /**
+     * Cleans up resources used by this controller.
+     * Removes event handlers, clears collections, and nullifies references to avoid memory leaks.
+     * Should be called when the view is no longer needed.
+     */
     public void cleanup() {
 
         if (planetsContainer != null) {

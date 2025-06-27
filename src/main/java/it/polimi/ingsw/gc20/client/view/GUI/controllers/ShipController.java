@@ -25,6 +25,11 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Abstract controller class for managing ship components in the game interface.
+ * Handles the display and interaction with ship components on the grid.
+ * Implements GameModelListener to respond to game state changes.
+ */
 public abstract class ShipController implements GameModelListener, BindCleanUp {
     public String playerUsername;
     protected ViewShip ship;
@@ -43,11 +48,21 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     protected final Map<String, Integer> gridComponents = new HashMap<>();
     protected boolean shouldLoadComponentStats = true;
 
+    /**
+     * Sets whether component statistics should be loaded and displayed.
+     * When true, additional component information like battery levels or alien presence is shown.
+     *
+     * @param shouldLoad True to display component statistics, false to hide them
+     */
     public void setShouldLoadComponentStats(boolean shouldLoad) {
         this.shouldLoadComponentStats = shouldLoad;
     }
 
 
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets up the player information, loads the ship model, and configures the layout.
+     */
     @FXML
     protected void initialize() {
         playerUsername = ClientGameModel.getInstance().getUsername();
@@ -72,12 +87,24 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
     }
 
+    /**
+     * Reloads the ship data from the client game model and rebuilds the ship components.
+     * Used when the ship model is updated and the view needs to be refreshed.
+     */
     public void reloadShip() {
         ship = ClientGameModel.getInstance().getShip(playerUsername);
         buildShipComponents(ship);
     }
 
 
+    /**
+     * Adds a component to the ship grid at the specified position.
+     *
+     * @param comp The component to add
+     * @param row The row position on the grid
+     * @param col The column position on the grid
+     * @return True if the component was successfully added, false otherwise
+     */
     public boolean addComponent(ViewComponent comp, int row, int col) {
         int componentId = comp.id;
         if (row < 0 || row >= getRows() || col < 0 || col >= getCols()) {
@@ -179,6 +206,13 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         }
     }
 
+    /**
+     * Sets the properties for a cabin component.
+     * Displays aliens, astronauts, and cabin color information.
+     *
+     * @param layeredPane The StackPane where the component will be displayed
+     * @param comp The cabin component to display
+     */
     public void setComponentProp(StackPane layeredPane, ViewCabin comp) {
         if (comp.alien) {
             String alienImagePath = comp.alienColor == AlienColor.PURPLE ?
@@ -238,6 +272,13 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         }
     }
 
+    /**
+     * Sets the properties for a cargo hold component.
+     * Displays cargo slots with different colors based on their content.
+     *
+     * @param layeredPane The StackPane where the component will be displayed
+     * @param comp The cargo hold component to display
+     */
     public void setComponentProp(StackPane layeredPane, ViewCargoHold comp) {
         List<double[]> coordinates = getDoubles(comp);
 
@@ -329,6 +370,10 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
     parent.getChildren().add(box);
 }
 
+    /**
+     * Clears all components from the ship grid.
+     * Resets the grid to its initial empty state.
+     */
     public void clearAllComponents() {
         componentsGrid.getChildren().clear();
 
@@ -344,6 +389,12 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         gridComponents.clear();
     }
 
+    /**
+     * Builds the ship components on the grid based on the ship model.
+     * Adds all components in their correct positions with appropriate visual representations.
+     *
+     * @param ship The ship model containing component information
+     */
     public void buildShipComponents(ViewShip ship) {
         if (ship == null || componentsGrid == null) return;
 
@@ -359,6 +410,12 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         }
     }
 
+    /**
+     * Highlights selected cabin cells on the grid.
+     * Different highlight colors are used based on how many times a cabin is selected.
+     *
+     * @param selectedCabins List of coordinate pairs representing selected cabins
+     */
     public void highlightSelectedCabins(List<org.javatuples.Pair<Integer, Integer>> selectedCabins) {
         Map<org.javatuples.Pair<Integer, Integer>, Long> counts = selectedCabins.stream()
                 .collect(Collectors.groupingBy(p -> p, Collectors.counting()));
@@ -391,6 +448,12 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         }
     }
 
+    /**
+     * Highlights specific cells on the grid with custom colors.
+     * Used to visually indicate important cells or possible actions.
+     *
+     * @param highlights Map of coordinate pairs to colors for highlighting
+     */
     public void highlightCells(Map<Pair<Integer, Integer>, Color> highlights) {
 
         for (Map.Entry<Pair<Integer, Integer>, Color> entry : highlights.entrySet()) {
@@ -409,10 +472,25 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         }
     }
 
+    /**
+     * Interface for handling cell click events.
+     */
     public interface CellClickHandler {
+        /**
+         * Called when a cell on the ship grid is clicked.
+         *
+         * @param row The row coordinate of the clicked cell
+         * @param col The column coordinate of the clicked cell
+         */
         void onCellClicked(int row, int col);
     }
 
+    /**
+     * Enables cell click handling on the ship grid.
+     * Creates click areas for each valid cell and registers the provided handler for click events.
+     *
+     * @param handler The handler to call when a cell is clicked
+     */
     public void enableCellClickHandler(CellClickHandler handler) {
         cellClickAreas.clear();
         for (int row = 0; row < getRows(); row++) {
@@ -471,31 +549,66 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         return null;
     }
 
+    /**
+     * Handles ship update events from the game model.
+     * Reloads the ship when an update is received.
+     *
+     * @param ship The updated ship view model
+     */
     @Override
     public void onShipUpdated(ViewShip ship) {
         reloadShip();
     }
 
+    /**
+     * Handles lobby update events from the game model.
+     * Currently not implemented.
+     *
+     * @param lobby The updated lobby view model
+     */
     @Override
     public void onLobbyUpdated(ViewLobby lobby) {
         // ignore
     }
 
+    /**
+     * Handles error message events from the game model.
+     * Currently not implemented.
+     *
+     * @param message The error message received
+     */
     @Override
     public void onErrorMessageReceived(String message) {
         // ignore
     }
 
+    /**
+     * Handles component in hand update events from the game model.
+     * Currently not implemented.
+     *
+     * @param component The updated component view model
+     */
     @Override
     public void onComponentInHandUpdated(ViewComponent component) {
         // ignore
     }
 
+    /**
+     * Handles board update events from the game model.
+     * Currently not implemented.
+     *
+     * @param board The updated board view model
+     */
     @Override
     public void onBoardUpdated(ViewBoard board) {
 
     }
 
+    /**
+     * Cleans up resources used by this controller.
+     * Removes listeners, unbinds properties, and clears references to avoid memory leaks.
+     * Should be called when the view is no longer needed.
+     */
     public void cleanup() {
 
         ClientGameModel gameModel = ClientGameModel.getInstance();
