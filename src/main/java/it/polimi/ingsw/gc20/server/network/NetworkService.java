@@ -89,10 +89,17 @@ public class NetworkService {
      */
     public void sendToClient(String username, Message message) {
         ClientHandler client = clients.get(username);
-        System.out.println("\n Sending message to client: " + username + " - Message: " + message + "\n");
-        if (client != null) {
-            client.sendToClient(message);
+        if (client == null) {
+            System.out.println("Client " + username + " not found in the network service.\n");
+            return;
         }
+        if (client.isConnected()){
+            System.out.println("Sending message to client: " + username + " - Message: " + message + "\n");
+        } else {
+            System.out.println("Client " + username + " \n");
+            return;
+        }
+        client.sendToClient(message);
     }
 
     /**
