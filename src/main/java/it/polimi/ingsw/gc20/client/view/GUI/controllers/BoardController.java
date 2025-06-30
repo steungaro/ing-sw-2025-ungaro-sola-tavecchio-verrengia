@@ -10,6 +10,7 @@ import it.polimi.ingsw.gc20.client.view.common.localmodel.components.ViewCompone
 import it.polimi.ingsw.gc20.client.view.common.localmodel.ship.ViewShip;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.paint.Color;
 import java.util.*;
@@ -21,6 +22,9 @@ public abstract class BoardController implements GameModelListener, BindCleanUp 
     protected List<Circle> circles = new ArrayList<>();
     protected List<Label> circleLabels = new ArrayList<>();
 
+    @FXML protected Pane rootPane;
+
+
     /**
      * Initializes the JavaFX components and sets up the board controller.
      * This method is automatically called by JavaFX after loading the FXML file.
@@ -29,6 +33,22 @@ public abstract class BoardController implements GameModelListener, BindCleanUp 
     @FXML
     public void initialize() {
         updateBoardDisplay(ClientGameModel.getInstance().getBoard());
+
+        if (rootPane != null) {
+            rootPane.widthProperty().addListener((_, _, _) -> {
+                if (rootPane != null) {
+                    rootPane.requestLayout();
+                }
+
+            });
+
+            rootPane.heightProperty().addListener((_, _, _) -> {
+                if (rootPane != null) {
+                    rootPane.requestLayout();
+                }
+
+            });
+        }
     }
 
     /**

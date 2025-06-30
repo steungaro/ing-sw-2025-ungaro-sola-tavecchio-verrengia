@@ -240,13 +240,19 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
 
     private void loadUncoveredComponents() {
         uncoveredComponentsPane.getChildren().clear();
+
+        uncoveredComponentsPane.setPrefWidth(140);
+        uncoveredComponentsPane.setMinWidth(140);
+
         ClientGameModel client = ClientGameModel.getInstance();
         List<ViewComponent> uncoveredComponents;
         if (client.getBoard() != null && client.getBoard().viewedPile != null) {
             uncoveredComponents = client.getBoard().viewedPile;
             for (ViewComponent component : uncoveredComponents) {
                 Pane componentPane = createComponentPane(component);
-                // Take the index of the component in the list to use as a unique identifier
+
+                VBox.setVgrow(componentPane, Priority.NEVER);
+
                 int index = uncoveredComponents.indexOf(component);
                 componentPane.setOnMouseClicked(_ -> selectComponent(component, componentPane, index));
                 uncoveredComponentsPane.getChildren().add(componentPane);
@@ -478,6 +484,10 @@ public abstract class BuildingPhaseController implements GameModelListener, Bind
      */
     public void enableUncoveredComponentsInteraction(Runnable handler) {
         if (uncoveredComponentsPane != null) {
+            uncoveredComponentsPane.setFillWidth(true);
+            uncoveredComponentsPane.setMinHeight(300);
+            uncoveredComponentsPane.setMaxHeight(Double.MAX_VALUE);
+
             uncoveredComponentsPane.setOnMouseClicked(_ -> {
                 if (handler != null) {
                     handler.run();

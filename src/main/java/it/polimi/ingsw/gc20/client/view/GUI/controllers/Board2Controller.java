@@ -12,7 +12,6 @@ import javafx.scene.transform.Scale;
 
 public class Board2Controller extends BoardController {
 
-    @FXML private Pane rootPane;
     @FXML private Group scalableContent;
 
     @FXML private Circle circle0;

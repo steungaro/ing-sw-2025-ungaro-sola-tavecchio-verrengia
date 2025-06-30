@@ -331,11 +331,6 @@ public abstract class Ship {
                 Direction dir = entry.getKey();
                 ConnectorEnum connector = entry.getValue();
 
-                // Skip if there's no connector in this direction
-                if (connector == null || connector == ConnectorEnum.ZERO) {
-                    continue;
-                }
-
                 // Calculate adjacent cell coordinates
                 int adjRow = i, adjCol = j;
 
@@ -454,8 +449,6 @@ public abstract class Ship {
                             System.out.println("Engine has a component in the direction of the engine at the coordinates " + adjRow + ", " + adjCol);
                             return false;
                         }
-                    } else {
-                        continue; // No connector, skip to the next direction
                     }
                 }
 
@@ -466,7 +459,9 @@ public abstract class Ship {
                         // Check if the adjacent component has a matching connector
                         if (component.isValid(adjComponent, dir)) {
                             // Valid connection found, add to queue
-                            queue.add(new int[]{adjRow, adjCol});
+                            if (connector != ConnectorEnum.ZERO) {
+                                queue.add(new int[]{adjRow, adjCol});
+                            }
                         }else{
                             System.out.println("Invalid connection found at coordinates: " + adjRow + ", " + adjCol);
                             return false;

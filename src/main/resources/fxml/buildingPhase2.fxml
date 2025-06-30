@@ -112,8 +112,12 @@
                             </font>
                         </Label>
 
-                        <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: transparent; -fx-background-color: transparent;" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
-                            <VBox fx:id="uncoveredComponentsPane" alignment="TOP_CENTER" spacing="8" style="-fx-background-color: rgba(68,68,85,0.7); -fx-background-radius: 10;">
+                        <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                                    style="-fx-background: transparent; -fx-background-color: transparent; -fx-padding: 10;"
+                                    VBox.vgrow="ALWAYS">
+                            <VBox fx:id="uncoveredComponentsPane" alignment="TOP_CENTER" spacing="8"
+                                  style="-fx-background-color: rgba(68,68,85,0.7); -fx-background-radius: 10;"
+                                  prefWidth="140">
                                 <padding>
                                     <Insets bottom="8" left="8" right="8" top="8" />
                                 </padding>

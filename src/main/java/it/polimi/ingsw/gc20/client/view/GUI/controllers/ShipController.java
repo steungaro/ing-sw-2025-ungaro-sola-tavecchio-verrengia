@@ -126,8 +126,8 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
 
         Image componentImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(imagePath)));
         targetCell.setImage(componentImage);
-        targetCell.setRotate(comp.rotComp * 90);
-
+        if(!shouldLoadComponentStats)
+            targetCell.setRotate(comp.rotComp * 90);
         if(!loadCompInfo(targetCell, layeredPane, row, col, componentId, comp, parent, cellId))
             return false;
 
@@ -146,6 +146,8 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
             parent.add(layeredPane, col, row);
             return true;
         }
+
+        targetCell.setRotate(comp.rotComp * 90);
 
 
         try {
@@ -285,23 +287,22 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         int index = 0;
     
     for (int i = 0; i < comp.red && index < coordinates.size(); i++, index++) {
-        addCargoBox(layeredPane, coordinates.get(index), "red");
+        addCargoBox(layeredPane, coordinates.get(index), "red", comp.rotComp);
     }
     for (int i = 0; i < comp.green && index < coordinates.size(); i++, index++) {
-        addCargoBox(layeredPane, coordinates.get(index), "green");
+        addCargoBox(layeredPane, coordinates.get(index), "green", comp.rotComp);
     }
     for (int i = 0; i < comp.blue && index < coordinates.size(); i++, index++) {
-        addCargoBox(layeredPane, coordinates.get(index), "blue");
+        addCargoBox(layeredPane, coordinates.get(index), "blue", comp.rotComp);
     }
     for (int i = 0; i < comp.yellow && index < coordinates.size(); i++, index++) {
-        addCargoBox(layeredPane, coordinates.get(index), "yellow");
+        addCargoBox(layeredPane, coordinates.get(index), "yellow", comp.rotComp);
     }
     for (int i = 0; i < comp.free && index < coordinates.size(); i++, index++) {
-        addCargoBox(layeredPane, coordinates.get(index), "empty");
+        addCargoBox(layeredPane, coordinates.get(index), "empty", comp.rotComp);
     }
 
-    layeredPane.setRotate(comp.rotComp * 90);
-}
+    }
 
     private static List<double[]> getDoubles(ViewCargoHold comp) {
         List<double[]> coordinates;
@@ -325,7 +326,7 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         return coordinates;
     }
 
-    private void addCargoBox(StackPane parent, double[] relativePos, String type) {
+    private void addCargoBox(StackPane parent, double[] relativePos, String type, int rot) {
     Rectangle box = new Rectangle();
 
     box.widthProperty().bind(parent.widthProperty().multiply(0.15));
@@ -360,15 +361,33 @@ public abstract class ShipController implements GameModelListener, BindCleanUp {
         box.setStrokeWidth(1.5);
     }
 
+    double[] rotatedPos = rotatePosition(relativePos[0], relativePos[1], rot);
+
     box.translateXProperty().bind(
-            parent.widthProperty().multiply(relativePos[0] - 0.5)
+            parent.widthProperty().multiply(rotatedPos[0] - 0.5)
     );
     box.translateYProperty().bind(
-            parent.heightProperty().multiply(relativePos[1] - 0.5)
+            parent.heightProperty().multiply(rotatedPos[1] - 0.5)
     );
-
     parent.getChildren().add(box);
 }
+
+    private double[] rotatePosition(double x, double y, int rot) {
+        double centerX = 0.5;
+        double centerY = 0.5;
+
+        double relX = x - centerX;
+        double relY = y - centerY;
+
+        double angle = Math.toRadians(rot * 90);
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+
+        double newX = relX * cos - relY * sin + centerX;
+        double newY = relX * sin + relY * cos + centerY;
+
+        return new double[]{newX, newY};
+    }
 
     /**
      * Clears all components from the ship grid.
