@@ -5,10 +5,10 @@ This project is a software implementation of the board game "[Galaxy Trucker](ht
 **Final grade: 30/30 cum Laude**
 
 ## Group Components
-- [Stefano Ungaro](https://github.com/steungaro) (209901)
-- [Alessandro Sola](https://github.com/aleo113) (210105)
-- [Michele Tavecchio](https://github.com/Mic-Tave) (210160)
-- [Alessandro Ferdinando Verrengia](https://github.com/AleVerri-03) (212680)
+- [Stefano Ungaro](https://github.com/steungaro)
+- [Alessandro Sola](https://github.com/aleo113)
+- [Michele Tavecchio](https://github.com/Mic-Tave)
+- [Alessandro Ferdinando Verrengia](https://github.com/AleVerri-03)
 
 ## Requirements
 The project consists of a Java version of the board game **Galaxy Trucker**, made by **Cranio Creations**.
